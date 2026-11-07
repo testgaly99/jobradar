@@ -2,7 +2,7 @@
 import re
 
 _TITEL_WOERTER = (
-    "Ausbildung", "Duales Studium", "Dual", "Praktikum", "Intern", "Internship", "Working Student",
+    "Ausbildung", "Duales Studium", r"Dual(?:e[rsn]?)?(?![- ]?use\b)", "Praktikum", "Intern", "Internship", "Working Student",
     "Bachelorarbeit", "Masterarbeit", "Abschlussarbeit", "Thesis", "Filiale",
 )
 # Stämme mit weiblicher/Pluralform (Werkstudentin, Aushilfen, Azubis); \w* nur hier, sonst träfe es "International"

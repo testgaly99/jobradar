@@ -67,3 +67,16 @@ def test_daten_json_enthaelt_nur_offene(aufbau):
 def test_unbekannter_adapter_ist_fehler(aufbau):
     d = aufbau([firma("A", "nix")], {})
     assert "kein Adapter für nix" in run.lauf("2026-11-07", d, d)["firmen"][0]["fehler"]
+
+
+def test_filterfehler_bricht_nicht_ab(aufbau):
+    d = aufbau([firma("A", "a"), firma("B", "b")],
+               {"a": lambda _: [stelle("1")], "b": lambda _: [stelle("1")]})
+    run.lauf("2026-11-06", d, d)
+    run.ADAPTER["a"] = lambda _: [{"ext_id": "2", "ort": "Berlin", "remote": False}]  # titel fehlt
+    run.ADAPTER["b"] = lambda _: [stelle("1"), stelle("9")]
+    bericht = run.lauf("2026-11-07", d, d)
+    jobs = lies(d / "jobs.json")
+    assert "KeyError" in bericht["firmen"][0]["fehler"]
+    assert jobs["A:1"]["status"] == "offen" and "A:2" not in jobs
+    assert "B:9" in jobs

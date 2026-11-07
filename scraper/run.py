@@ -36,23 +36,24 @@ def _firma(bestand, f, heute):
         if adapter is None:
             raise LookupError(f"kein Adapter für {f['ats_typ']}")
         stellen = adapter(f["ats_id"])
+        behalten, gruende = [], Counter()
+        for s in stellen:
+            ok, grund = ist_relevant(s["titel"], s["ort"], s["remote"])
+            if ok:
+                behalten.append(s)
+            else:
+                gruende[grund] += 1
+        neu = abgleichen(bestand, name, behalten, heute)
+        vorher = {i: s for i, s in bestand.items() if s["unternehmen"] == name}
+        zeile.update(
+            gefunden=len(stellen), gefiltert=sum(gruende.values()), gruende=dict(gruende),
+            neu=sum(1 for i, s in neu.items() if s["unternehmen"] == name and i not in vorher),
+            geschlossen=sum(1 for i, s in vorher.items()
+                            if s["status"] == "offen" and neu[i]["status"] == "geschlossen"))
     except Exception as e:
+        zeile.update(gefunden=0, gefiltert=0, gruende={}, neu=0, geschlossen=0)
         zeile["fehler"] = f"{type(e).__name__}: {e}"[:200]
         return bestand, zeile  # Bestand bleibt unberuehrt
-    behalten, gruende = [], Counter()
-    for s in stellen:
-        ok, grund = ist_relevant(s["titel"], s["ort"], s["remote"])
-        if ok:
-            behalten.append(s)
-        else:
-            gruende[grund] += 1
-    neu = abgleichen(bestand, name, behalten, heute)
-    vorher = {i: s for i, s in bestand.items() if s["unternehmen"] == name}
-    zeile.update(
-        gefunden=len(stellen), gefiltert=sum(gruende.values()), gruende=dict(gruende),
-        neu=sum(1 for i, s in neu.items() if s["unternehmen"] == name and i not in vorher),
-        geschlossen=sum(1 for i, s in vorher.items()
-                        if s["status"] == "offen" and neu[i]["status"] == "geschlossen"))
     return neu, zeile
 
 
