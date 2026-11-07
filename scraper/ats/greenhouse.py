@@ -10,7 +10,8 @@ def hole_stellen(ats_id: str) -> list[dict]:
     stellen = []
     for j in daten["jobs"]:
         ort = (j.get("location") or {}).get("name") or ""
-        text = re.sub(r"<[^>]+>", " ", html.unescape(j.get("content") or ""))
+        # Greenhouse liefert doppelt escaped: erst entpacken, Tags entfernen, nochmal entpacken.
+        text = html.unescape(re.sub(r"<[^>]+>", " ", html.unescape(j.get("content") or "")))
         stellen.append({
             "ext_id": str(j["id"]),
             "titel": j["title"],

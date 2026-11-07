@@ -24,3 +24,12 @@ def test_fixture(monkeypatch):
         assert 0 < len(s["beschreibung_kurz"]) <= 300
         assert "<" not in s["beschreibung_kurz"]
     assert ADAPTER["greenhouse"] is greenhouse.hole_stellen
+
+
+def test_doppelt_escapte_entities(monkeypatch):
+    class A:
+        def json(self):
+            return {"jobs": [{"id": 1, "title": "T", "absolute_url": "http://x", "location": {"name": "Berlin"},
+                              "content": "&lt;p&gt;A&amp;nbsp;B &amp;amp; C&lt;/p&gt;"}]}
+    monkeypatch.setattr(http, "hole", lambda u: A())
+    assert greenhouse.hole_stellen("x")[0]["beschreibung_kurz"] == "A B & C"
