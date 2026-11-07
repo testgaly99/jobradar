@@ -23,6 +23,6 @@ input[type=text], input[type=search], input[type=date] { width: 100%; padding: .
 .tag.remote { border-color: #146c2e; color: #146c2e; font-weight: 600; }
 @media (min-width: 800px) {
   .layout { display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; align-items: start; }
-  .filterbox { position: sticky; top: 1rem; }
+  .filterbox { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow-y: auto; }
   summary { pointer-events: none; list-style: none; } /* Filter bleiben auf dem Laptop offen */
 }
