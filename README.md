@@ -53,7 +53,7 @@ Die Spalten:
 
 **Bericht lesen:** Öffne auf GitHub `data/bericht.md`. Es zeigt pro Unternehmen eine Zeile mit: gefunden, gefiltert, neu, geschlossen, Fehler. Steht bei einem Unternehmen ein Fehler, ist meist dessen Karriereseite umgezogen oder die `ats_id` ist falsch. Die anderen Unternehmen laufen trotzdem weiter.
 
-**Roter Warnhinweis auf der Website** („letzter Lauf mehr als 2 Tage her“): Wahrscheinlich hat GitHub den Zeitplan abgeschaltet, weil 60 Tage lang nichts im Repo passiert ist (das gilt für öffentliche Repos). So schaltest du ihn wieder ein:
+**Roter Warnhinweis auf der Website** („Letzter Lauf am <Datum> – automatischen Abruf prüfen (siehe README)“, erscheint, wenn der letzte Lauf mehr als 2 Tage her ist): Wahrscheinlich hat GitHub den Zeitplan abgeschaltet, weil 60 Tage lang nichts im Repo passiert ist (das gilt für öffentliche Repos). So schaltest du ihn wieder ein:
 
 1. Öffne den Reiter „Actions“.
 2. Klicke links auf „Täglicher Lauf“.

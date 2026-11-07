@@ -11,7 +11,7 @@ Stand: 2026-11-07 (nach Task 10)
 ## Umgebung (geprüft am 2026-11-07, lokal auf Windows 11)
 | Programm | Status |
 |---|---|
-| Git | 2.56.0 installiert. Name und E-Mail für Commits sind **noch nicht eingerichtet**. |
+| Git | 2.56.0, Name/E-Mail für dieses Repo eingerichtet (testgaly99). |
 | Python | 3.12.10 über `py` installiert. Der Befehl `python` öffnet nur den Microsoft Store, deshalb immer `py` verwenden. |
 | Node.js / npm | v24.22.2 / 11.19.1 installiert |
 | GitHub CLI (`gh`) | Nicht installiert. Erst später nötig, und auch dann nur vielleicht. |
