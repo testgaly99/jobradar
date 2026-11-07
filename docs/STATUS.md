@@ -1,52 +1,27 @@
-# STATUS – Projekt „Jobsuche“
+# STATUS
 
-Stand: 2026-11-07 (nach Task 10)
+Stand: 2026-11-08
 
-## Was funktioniert
-- Scraper für 4 Unternehmen (Helsing, The Exploration Company, Taktile, telli) mit Vorfilter und Bericht (`data/bericht.md`).
-- Website mit Filtern (`site/`).
-- Tests (`py -m pytest`, `node --test tests/test_app.js`).
-- README mit Anleitung, Backup und Wiederherstellung.
-
-## Umgebung (geprüft am 2026-11-07, lokal auf Windows 11)
-| Programm | Status |
-|---|---|
-| Git | 2.56.0, Name/E-Mail für dieses Repo eingerichtet (testgaly99). |
-| Python | 3.12.10 über `py` installiert. Der Befehl `python` öffnet nur den Microsoft Store, deshalb immer `py` verwenden. |
-| Node.js / npm | v24.22.2 / 11.19.1 installiert |
-| GitHub CLI (`gh`) | Nicht installiert. Erst später nötig, und auch dann nur vielleicht. |
-
-## Skills aus CLAUDE.md Abschnitt 7
-Superpowers, Karpathy, Ponytail und I have ADHD sind installiert. **Fehlen noch:** Playwright und Firecrawl. grill-me liegt in `~/.agents/skills` statt `~/.claude/skills`.
+## Was funktioniert (Phase 0)
+- Ein täglicher Lauf per GitHub Actions („Täglicher Lauf“, 04:00 UTC) ruft die Stellen von 4 Firmen ab: Helsing, The Exploration Company, Taktile und telli.
+- Der Lauf filtert vor, gleicht mit dem Bestand ab und schreibt einen Bericht nach `data/bericht.md`.
+- Die Website ist live: https://testgaly99.github.io/jobradar/
+- Repo: https://github.com/testgaly99/jobradar (öffentlich, Zweig `main`)
+- Tests: `py -m pytest` (62) und `node --test tests/test_app.js` (7).
 
 ## In Arbeit
-- Task 9: täglicher Lauf und Veröffentlichung (GitHub Actions + Pages), gemeinsam mit dem Nutzer.
+- Die Architektur für das Zielbild klären (CLAUDE.md Abschnitt 5 und 6). Davor werden die Gratis-Tarife geprüft.
+- Pausiert: `docs/plans/2026-11-07-website-filter-design.md` (neue Filter, neues Design, Scroll-Fix). Der Plan wartet, bis die Architektur feststeht.
 
 ## Bekannte Probleme
-- Die Website wurde noch nicht im Browser angesehen.
-- Die eingecheckten Daten stammen von vor der Korrektur des Dual-Use-Filters.
-- Phase B (9 weitere Unternehmen) ist noch offen.
+- Die Filterleiste lässt sich am Laptop schwer scrollen, und die Oberfläche wirkt langweilig. Das soll der pausierte Plan beheben.
+- 9 der 13 Firmen in `data/companies.csv` sind noch nicht angebunden (`aktiv=nein`).
 
-## Bisherige Antworten (Fragerunde V1)
-- Repo: **öffentlich** + Website über **GitHub Pages** (Weg 1, entschieden 2026-11-07). GitHub-Konto vorhanden.
-  - Grund: am einfachsten, kein zweiter Dienst; im Repo stehen nur öffentliche Stellenanzeigen.
-  - Vor dem Plan prüfen: 60-Tage-Inaktivitätsregel für Zeitpläne in öffentlichen Repos (zählen Commits vom täglichen Lauf als Aktivität?).
-- Geräte: **Handy und Laptop gleich oft** → Seite passt sich der Bildschirmgröße an.
-- Abruf: **1× täglich automatisch, ca. 6 Uhr** (Verspätung durch GitHub möglich); manueller Start per Knopf nur als Zusatz.
-- Kategorien: **mehrere pro Unternehmen** erlaubt. Liste bestätigt (kommt später nach `data/kategorien.md`):
-  Bank · Versicherung · Asset Management & Investment · Fintech · Unternehmensberatung · Wirtschaftsprüfung & Steuern · Recht · Personal & Recruiting · Marketing, Medien & Werbung · Tech & Software · IT-Dienstleistung · Telekommunikation · Gaming & Entertainment · Automobil & Mobilität · Maschinenbau & Industrie · Chemie & Pharma · Medizintechnik & Gesundheit · Energie & Versorgung · Luft- & Raumfahrt, Verteidigung · Handel & E-Commerce · Konsumgüter & Lebensmittel · Reise, Hotel & Gastronomie · Mode & Lifestyle · Logistik & Transport · Immobilien & Bau · Bildung & Forschung · Öffentlicher Sektor & NGO · Nachhaltigkeit & Klima · Startup / Venture-finanziert · Sonstige
-- Größenklassen (`groesse_klasse`): **<50 | 50–249 | 250–999 | 1.000+** (Größe der ganzen Unternehmensgruppe).
-
-- Vorfilter beim Abruf: **nur Deutschland (+ Remote) und bestimmte Stellenarten ausschließen** (Variante C). Raus (per Wort im Titel): Ausbildung, Duales Studium, Praktikum, Werkstudent, Abschlussarbeit, Minijob/Aushilfe, Filial-/Verkaufsjobs. Drin: Trainee/Graduate/Junior. Bericht zählt herausgefilterte Stellen pro Unternehmen.
-- Startliste **13 Unternehmen** (bestätigt; weicht bewusst von „10“ in CLAUDE.md ab): Helsing, Neura Robotics, Quantum Systems, Proxima Fusion, The Exploration Company, Techniker Krankenkasse, dm-drogerie markt, Deutsche Bundesbank, Porsche, Controlware, Taktile, telli, Plato. Größen + ATS noch prüfen; nicht abrufbare Firmen werden mit Rückmeldung getauscht.
-
-## Zielbild (nicht vergessen!)
-- Unternehmensliste soll **monatlich automatisch** aktualisiert werden, aus offiziellen Rankings/Umfragen: beliebteste, beste Bewertungen, bestes Gehalt, bestes Funding, beste Arbeitgeber usw. (= Stufe 5 in CLAUDE.md).
-- Bewusst **nach** Version 1. Bis dahin: Startliste einmalig von Hand aus solchen Rankings recherchiert.
-- Offen für Stufe 5: welche Quellen das Abrufen erlauben; ob neue Firmen automatisch übernommen werden oder als Vorschlagsliste (CLAUDE.md: Vorschlagsliste).
-
-## Offene To-dos für mich
-- Optional: Playwright + Firecrawl nachinstallieren.
+## Umgebung (Windows 11, lokal)
+- Python 3.12 immer über `py` aufrufen, nicht über `python`.
+- Node v24 ist installiert.
+- In Git ist für dieses Repo die Identität testgaly99 eingetragen.
+- Die GitHub CLI (`gh`) ist nicht installiert.
 
 ## Nächster Schritt
-Task 9: täglicher Lauf und Veröffentlichung, zusammen mit dem Nutzer.
+Gratis-Tarife prüfen (Supabase, Vercel, Google OAuth, GitHub Models, Claude Code Action), danach die Architektur mit dem Nutzer festlegen.

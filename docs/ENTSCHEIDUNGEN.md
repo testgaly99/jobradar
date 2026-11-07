@@ -11,3 +11,7 @@
 | 2026-11-07 | Vorfilter: **nur Deutschland plus Remote**; ohne Ausbildung, duales Studium, Praktikum, Werkstudent, Abschlussarbeit, Minijob/Aushilfe, Filial- und Verkaufsjobs | Große Firmen haben sonst Tausende unpassende Stellen. |
 | 2026-11-07 | Zielbild: Unternehmensliste **monatlich automatisch** aus offiziellen Rankings aktualisieren (Stufe 5) | Gewünscht, aber erst nach einer stabilen Version 1. |
 | 2026-11-07 | Daten (`data/`) werden **im Repo gespeichert** | Das Repo ist zugleich das Backup, mit vollständiger Historie. |
+| 2026-11-08 | Anforderungen erweitert und in CLAUDE.md zusammengeführt (Tracker, Freunde, Gmail und Kalender, KI-Auswertung, Selbstreparatur, Benachrichtigungen) | CLAUDE.md ist die einzige Anforderungsquelle, damit es keine widersprüchlichen Angaben gibt. |
+| 2026-11-08 | KI im Betrieb ist erlaubt, aber nur über den Claude-Abo-Token oder Gratis-Kontingente, nie mit kostenpflichtigem API-Schlüssel | Keine laufenden Kosten. |
+| 2026-11-08 | Neue Reihenfolge der Phasen: Tracker zuerst, die Jobsuche wird in Phase 4 und 5 ausgebaut | Wunsch des Nutzers. |
+| 2026-11-08 | Website-Plan (Filter, Design, Scroll-Fix) pausiert, bis die Architektur geklärt ist | Die Website könnte mit Next.js neu gebaut werden. Dann wäre Arbeit an der alten Seite doppelt. |
