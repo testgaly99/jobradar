@@ -19,3 +19,8 @@
 | 2026-11-08 | KI nur über den Claude-Abo-Token, ohne Ausweichlösung | GitHub Models wurde am 30.07.2026 abgeschaltet. Ein weiterer Anbieter hieße ein neues Konto und noch ein Ort für die Daten. |
 | 2026-11-08 | Repo bleibt öffentlich, persönliche Daten nur in Supabase | Actions bleiben gratis. Im Repo steht nichts Privates. |
 | 2026-11-08 | Login mit Google oder mit E-Mail und Passwort (Supabase Auth) | Wunsch des Nutzers. Für Mails an Freunde wird in Phase 2 ein eigener SMTP-Zugang nötig. |
+| 2026-11-08 | Phase 1 erweitert: Die Jobsuche zieht schon in Phase 1 in die neue Website um, mit „Bewerbung anlegen“ per Klick, per Link oder manuell | Der Nutzer will Bewerbungen aus gespeicherten Stellen übernehmen. |
+| 2026-11-08 | Link-Erkennung nur per Code, ohne KI. LinkedIn, Stepstone usw. werden nie abgerufen; ist nichts erkennbar, gibt es 2 Felder (Firma, Titel) | Kostenlos, sofort, regelkonform. |
+| 2026-11-08 | Geschlossene Stellen ohne Bewerbung verlieren den Text und werden ausgeblendet; es bleibt eine Mini-Notiz für das echte Erstdatum | Nur beworbene oder gemerkte Stellen interessieren. Spart Platz bei rund 1000 Firmen. |
+| 2026-11-08 | Backup in einem privaten Repo `jobradar-privat` (täglich), dazu ein Export-Knopf | Persönliche Daten gehören nicht ins öffentliche Repo, und Supabase Free hat kein herunterladbares Backup. |
+| 2026-11-08 | Ziel: rund 1000 Firmen | Wunsch des Nutzers. |

@@ -10,7 +10,7 @@ Stand: 2026-11-08
 - Tests: `py -m pytest` (62) und `node --test tests/test_app.js` (7).
 
 ## In Arbeit
-- Die Architektur ist festgelegt (CLAUDE.md Abschnitt 5). Als Nächstes wird Phase 1 (Tracker) geklärt.
+- Phase 1 ist geklärt, der Plan wartet auf Freigabe.
 - Pausiert: `docs/plans/2026-11-07-website-filter-design.md` (neue Filter, neues Design, Scroll-Fix). Der Plan wartet, bis die Architektur feststeht.
 
 ## Bekannte Probleme
@@ -24,4 +24,4 @@ Stand: 2026-11-08
 - Die GitHub CLI (`gh`) ist nicht installiert.
 
 ## Nächster Schritt
-Phase 1 (Tracker) mit grill-me klären, Plan schreiben, dann Supabase- und Vercel-Konto mit dem Nutzer anlegen.
+Plan `docs/plans/2026-11-08-phase-1-tracker.md` vom Nutzer freigeben lassen, dann Task 0 (Scroll-Fix) und Task 1 (Konten anlegen).

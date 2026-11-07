@@ -21,7 +21,7 @@ Claude Code liest diese Datei zu Beginn jeder Sitzung. Sie ist die **einzige Que
 ## 2. Ziel
 
 Eine eigene Website zur Jobsuche, die besser filtert als Stepstone, Indeed, LinkedIn oder Glassdoor.
-- Die Stellen kommen direkt von den **offiziellen Karriereseiten** ausgewählter Zielunternehmen. Ausbauziel sind rund 100 Firmen.
+- Die Stellen kommen direkt von den **offiziellen Karriereseiten** ausgewählter Zielunternehmen. Ausbauziel sind rund 1000 Firmen.
 - Dazu kommt ein **persönlicher Bewerbungs-Tracker**.
 - Freunde bekommen später eigene Konten.
 
@@ -125,7 +125,7 @@ Wichtigste Filter, in dieser Reihenfolge:
   - Gehaltsbenchmark
 - **Workflow**
   - Sperrliste für Firmen
-  - Merkliste
+  - Merkliste: Das sind Bewerbungen im Status „Gemerkt“. Eine eigene Liste gibt es nicht.
   - Notizen
   - Kontakte
   - Nachfass-Erinnerung
@@ -160,7 +160,13 @@ Wichtigste Filter, in dieser Reihenfolge:
 - **Protokoll:** Es gibt ein Laufprotokoll pro Lauf und Firma und einen wöchentlichen Kurzbericht (Firmen mit 0 Stellen, offene Issues, neue Stellen).
 
 ### 4.4 Bewerbungs-Tracker
-Eine Bewerbung entsteht mit einem Klick aus einem Treffer oder wird manuell angelegt (Empfehlung, Headhunter, nachgetragen).
+Eine Bewerbung entsteht auf einem dieser Wege:
+- **Ein Klick aus einem Treffer** der Stellenliste.
+- **Link einfügen** in der Bewerbungstabelle. Firma, Titel usw. werden **ohne KI** per Code ermittelt:
+  - Bei Links auf Karriereseiten bzw. das ATS fragt der Code die offizielle Schnittstelle ab.
+  - Bei Links von LinkedIn, Stepstone o. Ä. liest der Code nur Titel und Firma aus dem Link selbst. Die Seite wird **nicht** geöffnet. Danach sucht er die Stelle in der eigenen Stellenliste und in den gängigen ATS der Firma.
+  - Ist nichts erkennbar, gibt es zwei Felder für Firma und Titel.
+- **Manuell**, z. B. bei Empfehlung, Headhunter oder nachgetragenen Bewerbungen.
 - **Stelle:**
   - Firma, verknüpft mit den Firmendaten
   - Titel, Link, Quelle, Standort, Präsenzmodell
@@ -267,7 +273,8 @@ Eine Bewerbung entsteht mit einem Klick aus einem Treffer oder wird manuell ange
 | Website | Next.js auf Vercel (Hobby) | Nur private, nicht-kommerzielle Nutzung. Zeitgesteuerte Jobs laufen deshalb über GitHub Actions statt über Vercel. |
 | Benachrichtigung | Telegram-Bot, dazu E-Mail | – |
 
-- Die Jobsuche zieht von GitHub Pages in die neue Website um. Danach wird GitHub Pages abgeschaltet.
+- Die Jobsuche zieht in Phase 1 von GitHub Pages in die neue Website um. Danach wird GitHub Pages abgeschaltet.
+- **Backup:** Das private Repo `jobradar-privat` sichert täglich alle Supabase-Tabellen als Datei. Dateien wie CVs werden nicht gesichert. Zusätzlich gibt es auf der Website den Knopf „Meine Daten exportieren“ (Excel).
 - Das Repo bleibt öffentlich und enthält nur Code und die Firmenliste. Persönliche Daten liegen nur in Supabase.
 
 Tabellen im Zielbild:
@@ -284,10 +291,17 @@ Tabellen im Zielbild:
 Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung und einem eigenen Plan (Abschnitt 7).
 
 0. **Erledigt:** Scraper-Grundlage mit 4 Firmen, statische Website und täglicher Lauf (Version 1, 2026-11-07).
-1. **Tracker für mich allein:** Login, Bewerbungen, Kanban, Notizen, Ansprechpartner, Upload von CV und Anschreiben, alte Bewerbungen nachtragen.
+1. **Tracker und neue Website für mich allein:**
+   - Login (Google oder E-Mail und Passwort).
+   - Stellenliste aus Supabase mit den Filtern Größe, Kategorie, Erfahrungslevel, Arbeitsmodell, Vertragsart, Bereich, Unternehmen, Stadt, Remote, Stichwort und „neu seit“, jeweils mit Trefferzahlen.
+   - Bewerbung per Klick aus einem Treffer, per Link oder manuell.
+   - Alle Felder aus 4.4, dazu Kanban, Tabelle, Notizen, Ansprechpartner, Interviews und Upload von CV und Anschreiben.
+   - Tägliches Backup und Export.
+   - Die Daten werden übernommen, und GitHub Pages wird abgeschaltet.
+   - **Nicht in Phase 1:** Erinnerungen, „Anzeige offline“, Auswertung.
 2. **Vorlagen und Freunde:** Vorlagen, Textbausteine, Einladungen, Datentrennung, Export und Löschen.
 3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung.
-4. **Scraper für alle Zielfirmen:** rund 100 Firmen, Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern.
+4. **Scraper für alle Zielfirmen:** rund 1000 Firmen, Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern.
 5. **KI-Auswertung und Filter:** Extraktion über den Abo-Token, alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
 6. **Passung und Analyse:** Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
 
@@ -346,7 +360,10 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 4. **Firecrawl,** nur als letzter Ausweg und nur nach meiner Zustimmung, mit einer Schätzung des monatlichen Verbrauchs.
 
 Dazu gilt:
-- Komplette Stellentexte werden nur gespeichert, soweit eine Auswertung sie braucht (Hash, KI-Extraktion, Snapshot bei einer Bewerbung). Die Website zeigt nur eine Kurzfassung und den Link.
+- Für **offene Stellen** wird der vollständige Anzeigentext gespeichert. Er wird für den Snapshot, den Hash und die KI-Auswertung gebraucht.
+- **Geschlossene Stellen:**
+  - Gibt es dazu eine Bewerbung (auch „Gemerkt“), bleibt die Stelle vollständig erhalten.
+  - Bei allen anderen wird der Text sofort gelöscht und die Stelle ausgeblendet. Es bleibt nur eine Mini-Notiz mit Firma, Titel, erstmals und zuletzt gesehen. Sie hält das echte Erstdatum fest, falls die Anzeige wieder auftaucht.
 - Jeder neue Adapter wird an mindestens 2 echten Firmen getestet. Du zeigst mir die Anzahl der Stellen und 3 Beispieltitel.
 
 ---
