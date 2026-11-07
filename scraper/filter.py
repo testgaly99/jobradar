@@ -10,7 +10,7 @@ _TITEL_STAEMME = (
     "Azubi", "Auszubildende", "Praktikant", "Werkstudent", "Minijob", "Aushilfe", "Verkäufer", "Kassierer",
 )
 _TITEL_RE = re.compile(
-    r"(" + "|".join(_TITEL_WOERTER) + "|" + "|".join(s + r"\w*" for s in _TITEL_STAEMME) + r")",
+    r"\b(" + "|".join(_TITEL_WOERTER) + "|" + "|".join(s + r"\w*" for s in _TITEL_STAEMME) + r")\b",
     re.IGNORECASE,
 )
 
