@@ -2,11 +2,17 @@
 import re
 
 _TITEL_WOERTER = (
-    "Ausbildung", "Azubi", "Auszubildende", "Duales Studium", "Dual", "Praktikum", "Praktikant",
-    "Intern", "Internship", "Werkstudent", "Working Student", "Bachelorarbeit", "Masterarbeit",
-    "Abschlussarbeit", "Thesis", "Minijob", "Aushilfe", "Verkäufer", "Filiale", "Kassierer",
+    "Ausbildung", "Duales Studium", "Dual", "Praktikum", "Intern", "Internship", "Working Student",
+    "Bachelorarbeit", "Masterarbeit", "Abschlussarbeit", "Thesis", "Filiale",
 )
-_TITEL_RE = re.compile(r"\b(" + "|".join(_TITEL_WOERTER) + r")\b", re.IGNORECASE)
+# Stämme mit weiblicher/Pluralform (Werkstudentin, Aushilfen, Azubis); \w* nur hier, sonst träfe es "International"
+_TITEL_STAEMME = (
+    "Azubi", "Auszubildende", "Praktikant", "Werkstudent", "Minijob", "Aushilfe", "Verkäufer", "Kassierer",
+)
+_TITEL_RE = re.compile(
+    r"(" + "|".join(_TITEL_WOERTER) + "|" + "|".join(s + r"\w*" for s in _TITEL_STAEMME) + r")",
+    re.IGNORECASE,
+)
 
 # shortcut: Städteliste deckt Kleinstädte nicht ab, Länderfeld des ATS nutzen, wo vorhanden
 _STAEDTE = (
