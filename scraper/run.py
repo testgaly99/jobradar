@@ -51,7 +51,6 @@ def _firma(bestand, f, heute):
             geschlossen=sum(1 for i, s in vorher.items()
                             if s["status"] == "offen" and neu[i]["status"] == "geschlossen"))
     except Exception as e:
-        zeile.update(gefunden=0, gefiltert=0, gruende={}, neu=0, geschlossen=0)
         zeile["fehler"] = f"{type(e).__name__}: {e}"[:200]
         return bestand, zeile  # Bestand bleibt unberuehrt
     return neu, zeile
@@ -84,7 +83,8 @@ def lauf(heute, datenordner="data", seitenordner="site"):
         bericht["firmen"].append(zeile)
     speichere(datenordner / "jobs.json", bestand)
     _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
-    offen = sorted((s for s in bestand.values() if s["status"] == "offen"), key=lambda s: s["id"])
+    aktiv = {f["name"] for f in firmen if f["aktiv"] == "ja"}
+    offen = sorted((s for s in bestand.values() if s["status"] == "offen" and s["unternehmen"] in aktiv), key=lambda s: s["id"])
     offen.sort(key=lambda s: s["erstmals_gesehen"], reverse=True)  # stabil: id bleibt Nebenschluessel
     daten = {"stand": heute,
              "unternehmen": [{k: v for k, v in f.items() if k != "notiz"} for f in firmen],

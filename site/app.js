@@ -93,7 +93,7 @@ if (typeof document !== "undefined") {
     if (s.remote) tags.append(el("span", "Remote", "tag remote"));
     if (u) tags.append(el("span", u.groesse_klasse, "tag"), ...u.kategorie.map((k) => el("span", k, "tag")));
     li.append(tags, el("p", "Erstmals gesehen: " + s.erstmals_gesehen, "meta"));
-    if (s.beschreibung_kurz) li.append(el("p", s.beschreibung_kurz.replace(/&nbsp;/g, " ")));
+    if (s.beschreibung_kurz) li.append(el("p", s.beschreibung_kurz));
     return li;
   }
 
@@ -110,7 +110,7 @@ if (typeof document !== "undefined") {
     .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then((d) => {
       daten = d;
-      daten.stellen = d.stellen.filter((s) => s.status === "offen" || s.status === undefined);
+      daten.stellen = d.stellen;
       $("stand").textContent = "Stand: " + d.stand;
       if ((Date.now() / TAG) - tage(d.stand) > 2) {
         $("warnung").textContent = `Letzter Lauf am ${d.stand} – automatischen Abruf prüfen (siehe README)`;
@@ -118,7 +118,7 @@ if (typeof document !== "undefined") {
       }
       const grossen = ["<50", "50–249", "250–999", "1.000+"];
       checkboxen($("groessen"), "groesse", grossen);
-      checkboxen($("kategorien"), "kategorie", [...new Set(d.unternehmen.flatMap((u) => u.kategorie))].sort());
+      checkboxen($("kategorien"), "kategorie", [...new Set(d.unternehmen.filter((u) => d.stellen.some((s) => s.unternehmen === u.name)).flatMap((u) => u.kategorie))].sort());
       stelleUrlWieder();
       $("filter").addEventListener("input", zeige);
       zeige();

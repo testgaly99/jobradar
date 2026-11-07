@@ -80,3 +80,13 @@ def test_filterfehler_bricht_nicht_ab(aufbau):
     assert "KeyError" in bericht["firmen"][0]["fehler"]
     assert jobs["A:1"]["status"] == "offen" and "A:2" not in jobs
     assert "B:9" in jobs
+
+
+def test_inaktive_firma_nicht_in_daten_json(aufbau):
+    firmen = [firma("A", "a"), firma("B", "b")]
+    d = aufbau(firmen, {"a": lambda _: [stelle("1")], "b": lambda _: [stelle("1")]})
+    run.lauf("2026-11-06", d, d)
+    firmen[1]["aktiv"] = "nein"
+    run.lauf("2026-11-07", d, d)
+    assert [s["id"] for s in lies(d / "daten.json")["stellen"]] == ["A:1"]
+    assert lies(d / "jobs.json")["B:1"]["status"] == "offen"
