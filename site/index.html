@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jobradar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Jobradar</h1>
+    <p id="stand"></p>
+  </header>
+  <div id="warnung" class="warnung" role="alert" hidden></div>
+  <div class="layout">
+    <details id="filterbox" class="filterbox" open>
+      <summary>Filter</summary>
+      <form id="filter" onsubmit="return false">
+        <fieldset><legend>Größe</legend><div id="groessen"></div></fieldset>
+        <fieldset><legend>Kategorie</legend><div id="kategorien"></div></fieldset>
+        <label for="ort">Ort</label>
+        <input id="ort" type="text">
+        <label class="check"><input id="remote" type="checkbox"> Nur Remote</label>
+        <label for="q">Stichwort (Titel, Beschreibung)</label>
+        <input id="q" type="search">
+        <label for="neu">Neu seit</label>
+        <input id="neu" type="date">
+      </form>
+    </details>
+    <main>
+      <p id="anzahl" aria-live="polite"></p>
+      <ul id="liste" class="liste"></ul>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
