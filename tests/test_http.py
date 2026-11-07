@@ -56,3 +56,22 @@ def test_user_agent_gesetzt(monkeypatch):
     http.hole("https://example.com/a")
     assert aufrufe and all(kw["headers"]["User-Agent"] == UA for _, kw in aufrufe)
     assert all(kw["timeout"] == 30 for _, kw in aufrufe)
+
+
+def test_robots_404_alles_erlaubt(monkeypatch):
+    monkeypatch.setattr(requests, "get", lambda url, **kw: Antwort(404) if url.endswith("/robots.txt") else Antwort(200, "ok"))
+    assert http.hole("https://example.com/x").text == "ok"
+
+
+def test_robots_503_wirft(monkeypatch):
+    monkeypatch.setattr(requests, "get", lambda url, **kw: Antwort(503))
+    with pytest.raises(http.RobotsNichtErreichbar):
+        http.hole("https://example.com/x")
+
+
+def test_robots_netzfehler_wirft(monkeypatch):
+    def get(url, **kw):
+        raise requests.ConnectionError("weg")
+    monkeypatch.setattr(requests, "get", get)
+    with pytest.raises(http.RobotsNichtErreichbar):
+        http.hole("https://example.com/x")
