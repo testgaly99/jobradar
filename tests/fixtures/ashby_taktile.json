@@ -1,0 +1,172 @@
+{
+ "jobs": [
+  {
+   "id": "0862c6a1-cf8f-41c3-a88c-eafaec03bc15",
+   "title": "Senior Business Development Representative ",
+   "department": "Business Development ",
+   "team": "Business Development ",
+   "employmentType": "FullTime",
+   "location": "New York Office ",
+   "secondaryLocations": [],
+   "publishedAt": "2026-10-22T13:35:46.900+00:00",
+   "isListed": true,
+   "isRemote": true,
+   "workplaceType": "Hybrid",
+   "address": {
+    "postalAddress": {
+     "addressRegion": "New York",
+     "addressCountry": "United States",
+     "addressLocality": "New York"
+    }
+   },
+   "jobUrl": "https://jobs.ashbyhq.com/taktile/0862c6a1-cf8f-41c3-a88c-eafaec03bc15",
+   "applyUrl": "https://jobs.ashbyhq.com/taktile/0862c6a1-cf8f-41c3-a88c-eafaec03bc15/application",
+   "descriptionPlain": "About Taktile\n\nTaktile enables financial institutions to transform into AI-native organizations that are increasingly powered by autonomous agents. With our modular Agentic Decision Platform, customers combine AI agents, rules, relevant context, and human oversight to safely automate and optimize their decisions—approving more customers, reimbursing claims instantly, stopping fraud before it spreads, and financing every business worth funding. Founded in 2020, Taktile powers millions of decisions daily for institutions including Mercury, Monzo, Faire, and Pleo. With offices in New York, Berlin"
+  },
+  {
+   "id": "09144540-136d-4e29-8c98-ff001be560f1",
+   "title": "Senior Backend Engineer - Developer Experience & Productivity",
+   "department": "Engineering",
+   "team": "Engineering",
+   "employmentType": "FullTime",
+   "location": "Berlin Office ",
+   "secondaryLocations": [
+    {
+     "location": "Iasi Office",
+     "address": {
+      "postalAddress": {
+       "addressRegion": "Iasi",
+       "addressCountry": "Romania",
+       "addressLocality": "Iasi"
+      }
+     }
+    },
+    {
+     "location": "London Office ",
+     "address": {
+      "postalAddress": {
+       "addressRegion": "London",
+       "addressCountry": "United Kingdom",
+       "addressLocality": "London"
+      }
+     }
+    },
+    {
+     "location": "Dublin",
+     "address": {
+      "postalAddress": {
+       "addressRegion": "Dublin",
+       "streetAddress": "Remote ",
+       "addressCountry": "Ireland",
+       "addressLocality": "Dublin"
+      }
+     }
+    }
+   ],
+   "publishedAt": "2026-10-28T14:01:56.561+00:00",
+   "isListed": true,
+   "isRemote": true,
+   "workplaceType": "Hybrid",
+   "address": {
+    "postalAddress": {
+     "addressRegion": "Berlin",
+     "addressCountry": "Germany",
+     "addressLocality": "Berlin"
+    }
+   },
+   "jobUrl": "https://jobs.ashbyhq.com/taktile/09144540-136d-4e29-8c98-ff001be560f1",
+   "applyUrl": "https://jobs.ashbyhq.com/taktile/09144540-136d-4e29-8c98-ff001be560f1/application",
+   "descriptionPlain": "ABOUT THE ROLE\n\nTaktile helps financial institutions make smarter, safer decisions with the power of AI. Internally, AI coding agents have made writing code dramatically faster. The bottleneck is now everything around the code: builds, tests, reviews, merges, and deploys.\n\nWe're looking for a Senior Backend Engineer focused on Developer Productivity and Developer Experience to remove that bottleneck. This is a high-leverage, internal engineering role on our Platform Team: your users are Taktile's backend and frontend engineers and the AI agents working alongside them, and your product is the p"
+  },
+  {
+   "id": "bce11078-1da2-4826-a70e-7eccfd702dd1",
+   "title": "Software Engineer Intern",
+   "department": "Engineering",
+   "team": "Engineering",
+   "employmentType": "Intern",
+   "location": "Iasi Office",
+   "secondaryLocations": [
+    {
+     "location": "Berlin Office ",
+     "address": {
+      "postalAddress": {
+       "addressRegion": "Berlin",
+       "addressCountry": "Germany",
+       "addressLocality": "Berlin"
+      }
+     }
+    }
+   ],
+   "publishedAt": "2026-10-07T09:12:55.275+00:00",
+   "isListed": true,
+   "isRemote": true,
+   "workplaceType": "Hybrid",
+   "address": {
+    "postalAddress": {
+     "addressRegion": "Iasi",
+     "addressCountry": "Romania",
+     "addressLocality": "Iasi"
+    }
+   },
+   "jobUrl": "https://jobs.ashbyhq.com/taktile/bce11078-1da2-4826-a70e-7eccfd702dd1",
+   "applyUrl": "https://jobs.ashbyhq.com/taktile/bce11078-1da2-4826-a70e-7eccfd702dd1/application",
+   "descriptionPlain": "ABOUT THE ROLE\n\nTaktile empowers financial institutions to transform into truly AI-native organizations. We’re growing rapidly with enterprise customers across banks and insurance companies, and we’re looking for students with a passion for distributed systems who want to turbocharge their career. If you’re ambitious, have strong engineering fundamentals, and want to grow as a software engineer, then this role is for you!\n\n\n\n\nWHAT YOU'LL DO\n\n - Depending on your final team, either work on backend components written in Python / FastAPI, hosted on an AWS serverless architecture, or work on React"
+  },
+  {
+   "id": "unlisted-test-copy",
+   "title": "Senior Backend Engineer - Developer Experience & Productivity",
+   "department": "Engineering",
+   "team": "Engineering",
+   "employmentType": "FullTime",
+   "location": "Berlin Office ",
+   "secondaryLocations": [
+    {
+     "location": "Iasi Office",
+     "address": {
+      "postalAddress": {
+       "addressRegion": "Iasi",
+       "addressCountry": "Romania",
+       "addressLocality": "Iasi"
+      }
+     }
+    },
+    {
+     "location": "London Office ",
+     "address": {
+      "postalAddress": {
+       "addressRegion": "London",
+       "addressCountry": "United Kingdom",
+       "addressLocality": "London"
+      }
+     }
+    },
+    {
+     "location": "Dublin",
+     "address": {
+      "postalAddress": {
+       "addressRegion": "Dublin",
+       "streetAddress": "Remote ",
+       "addressCountry": "Ireland",
+       "addressLocality": "Dublin"
+      }
+     }
+    }
+   ],
+   "publishedAt": "2026-10-28T14:01:56.561+00:00",
+   "isListed": false,
+   "isRemote": true,
+   "workplaceType": "Hybrid",
+   "address": {
+    "postalAddress": {
+     "addressRegion": "Berlin",
+     "addressCountry": "Germany",
+     "addressLocality": "Berlin"
+    }
+   },
+   "jobUrl": "https://jobs.ashbyhq.com/taktile/09144540-136d-4e29-8c98-ff001be560f1",
+   "applyUrl": "https://jobs.ashbyhq.com/taktile/09144540-136d-4e29-8c98-ff001be560f1/application",
+   "descriptionPlain": "ABOUT THE ROLE\n\nTaktile helps financial institutions make smarter, safer decisions with the power of AI. Internally, AI coding agents have made writing code dramatically faster. The bottleneck is now everything around the code: builds, tests, reviews, merges, and deploys.\n\nWe're looking for a Senior Backend Engineer focused on Developer Productivity and Developer Experience to remove that bottleneck. This is a high-leverage, internal engineering role on our Platform Team: your users are Taktile's backend and frontend engineers and the AI agents working alongside them, and your product is the p"
+  }
+ ],
+ "apiVersion": "1"
+}
