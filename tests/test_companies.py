@@ -17,9 +17,16 @@ def _erlaubte_kategorien():
 def test_companies_gueltig():
     firmen = lade_unternehmen(str(ROOT / "data" / "companies.csv"))
     erlaubt = _erlaubte_kategorien()
-    assert len(firmen) == 13
+    assert len(firmen) >= 1
     for f in firmen:
         assert all(s in f for s in SPALTEN)
         assert f["groesse_klasse"] in GROESSEN
         assert f["kategorie"] and all(k in erlaubt for k in f["kategorie"])
         assert f["aktiv"] in ("ja", "nein")
+
+
+def test_bom_wird_toleriert(tmp_path):
+    p = tmp_path / "c.csv"
+    p.write_text("name,kategorie\nA,Tech\n", encoding="utf-8-sig")
+    firmen = lade_unternehmen(str(p))
+    assert list(firmen[0])[0] == "name"

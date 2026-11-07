@@ -25,7 +25,9 @@ Die Liste steht in `data/companies.csv` (*CSV* ist eine einfache Tabelle als Tex
 4. Klicke auf „Commit changes“ (speichern) und bestätige mit „Commit changes“.
 5. Der Eintrag gilt ab dem nächsten Lauf. Du kannst den Lauf auch sofort starten (siehe unten).
 
-Alternativ kannst du die Datei in Excel bearbeiten. Speichere sie dann als „CSV UTF-8“, sonst gehen Umlaute kaputt, und lade sie auf GitHub wieder hoch.
+Bearbeite `companies.csv` nur direkt auf GitHub (Stift-Symbol), nicht in Excel: Excel stellt in der deutschen Version das Trennzeichen auf `;` um und macht die Datei kaputt.
+
+Wird der automatische Lauf rot, nachdem du `companies.csv` bearbeitet hast, prüfe die Schreibweise von `kategorie` (muss genau zu `data/kategorien.md` passen), `groesse_klasse` und `aktiv`.
 
 Die Spalten:
 
