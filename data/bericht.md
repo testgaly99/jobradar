@@ -3,7 +3,7 @@
 | Unternehmen | gefunden | gefiltert | neu | geschlossen | Fehler |
 |---|---|---|---|---|---|
 | Helsing | 160 | 43 | 0 | 0 |  |
-| The Exploration Company | 124 | 44 | 1 | 0 |  |
+| The Exploration Company | 124 | 44 | 0 | 0 |  |
 | Taktile | 36 | 22 | 0 | 0 |  |
 | telli | 17 | 7 | 0 | 0 |  |
 
