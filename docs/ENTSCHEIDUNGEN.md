@@ -15,3 +15,7 @@
 | 2026-11-08 | KI im Betrieb ist erlaubt, aber nur über den Claude-Abo-Token oder Gratis-Kontingente, nie mit kostenpflichtigem API-Schlüssel | Keine laufenden Kosten. |
 | 2026-11-08 | Neue Reihenfolge der Phasen: Tracker zuerst, die Jobsuche wird in Phase 4 und 5 ausgebaut | Wunsch des Nutzers. |
 | 2026-11-08 | Website-Plan (Filter, Design, Scroll-Fix) pausiert, bis die Architektur geklärt ist | Die Website könnte mit Next.js neu gebaut werden. Dann wäre Arbeit an der alten Seite doppelt. |
+| 2026-11-08 | Zielarchitektur: Supabase (Frankfurt), Next.js auf Vercel Hobby, Jobs per GitHub Actions; die Jobsuche zieht später von GitHub Pages um | Gratis-Tarife geprüft. Supabase bleibt durch den täglichen Lauf wach, Login, Datentrennung und Dateien gibt es fertig. |
+| 2026-11-08 | KI nur über den Claude-Abo-Token, ohne Ausweichlösung | GitHub Models wurde am 30.07.2026 abgeschaltet. Ein weiterer Anbieter hieße ein neues Konto und noch ein Ort für die Daten. |
+| 2026-11-08 | Repo bleibt öffentlich, persönliche Daten nur in Supabase | Actions bleiben gratis. Im Repo steht nichts Privates. |
+| 2026-11-08 | Login mit Google oder mit E-Mail und Passwort (Supabase Auth) | Wunsch des Nutzers. Für Mails an Freunde wird in Phase 2 ein eigener SMTP-Zugang nötig. |

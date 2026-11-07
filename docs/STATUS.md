@@ -10,7 +10,7 @@ Stand: 2026-11-08
 - Tests: `py -m pytest` (62) und `node --test tests/test_app.js` (7).
 
 ## In Arbeit
-- Die Architektur für das Zielbild klären (CLAUDE.md Abschnitt 5 und 6). Davor werden die Gratis-Tarife geprüft.
+- Die Architektur ist festgelegt (CLAUDE.md Abschnitt 5). Als Nächstes wird Phase 1 (Tracker) geklärt.
 - Pausiert: `docs/plans/2026-11-07-website-filter-design.md` (neue Filter, neues Design, Scroll-Fix). Der Plan wartet, bis die Architektur feststeht.
 
 ## Bekannte Probleme
@@ -24,4 +24,4 @@ Stand: 2026-11-08
 - Die GitHub CLI (`gh`) ist nicht installiert.
 
 ## Nächster Schritt
-Gratis-Tarife prüfen (Supabase, Vercel, Google OAuth, GitHub Models, Claude Code Action), danach die Architektur mit dem Nutzer festlegen.
+Phase 1 (Tracker) mit grill-me klären, Plan schreiben, dann Supabase- und Vercel-Konto mit dem Nutzer anlegen.

@@ -36,9 +36,9 @@ Wichtigste Filter, in dieser Reihenfolge:
 
 1. **Kostenlos.** Keine Dienste, die Geld kosten oder eine Kreditkarte verlangen, ohne meine ausdrückliche Zustimmung. Grenzen von Gratis-Tarifen nennst du mir, bevor wir uns festlegen.
 2. **Keine API-Kosten für KI.**
-   - KI im laufenden Betrieb ist erlaubt, aber nur über einen dieser Wege:
-     - meinen Claude-Abo-Token (`claude setup-token`, in GitHub Actions als Secret `CLAUDE_CODE_OAUTH_TOKEN`)
-     - kostenlose Kontingente (z. B. GitHub Models über `GITHUB_TOKEN`)
+   - KI im laufenden Betrieb ist erlaubt, aber **nur** über meinen Claude-Abo-Token (`claude setup-token`, in GitHub Actions als Secret `CLAUDE_CODE_OAUTH_TOKEN`).
+   - Es gibt keine Ausweichlösung. GitHub Models wurde am 30.07.2026 abgeschaltet.
+   - Ist das Kontingent erschöpft, wird der Rest in der nächsten Nacht ausgewertet.
    - **Nie ein kostenpflichtiger API-Schlüssel.**
 3. **Zuverlässig und dauerhaft.** Daten dürfen nicht verloren gehen. Ich will mein Konto nicht neu anlegen und Verbindungen nicht ständig neu herstellen.
    - Prüfe bei jedem Gratis-Dienst **anhand der aktuellen offiziellen Doku**, ob es Löschfristen gibt, ob bei Inaktivität pausiert wird und ob Tokens ablaufen. Verlass dich nicht auf Vorwissen.
@@ -140,7 +140,7 @@ Wichtigste Filter, in dieser Reihenfolge:
 - **Per Regex, ohne KI:** Befristung, Urlaubstage, Gehaltszahlen, Schlagwörter wie „Remote“.
 - **Per KI:** Seniority, Präsenztage, normalisiertes Gehalt, Vermittler, Personalverantwortung, Abschluss, Vertriebsanteil, Remote-Gebiet, Workation, variable Vergütung, Ghost-Job-Ampel.
 - **Ablauf:** ein nächtlicher Batch-Lauf, nur für neue oder geänderte Stellen. Das Ergebnis ist JSON pro Stelle, gespeichert unter einem Hash des Anzeigentexts.
-- **Modell:** primär Claude über den Abo-Token, als Ausweichlösung GitHub Models.
+- **Modell:** nur Claude über den Abo-Token.
 - **Passungs-Score und Skill-Lücken** laufen nur über Claude, damit mein CV nicht bei weiteren Anbietern landet.
 
 ### 4.3 Selbstreparatur
@@ -211,7 +211,9 @@ Eine Bewerbung entsteht mit einem Klick aus einem Treffer oder wird manuell ange
 - Dateien liegen in einem Speicher pro Nutzer. Zugriff gibt es nur über kurzlebige signierte Links.
 
 ### 4.6 Konten für mich und Freunde
-- **Anmeldung:** Google als Standard. Alternative ist ein Login-Link per E-Mail; dann gibt es keine Gmail- und Kalender-Anbindung.
+- **Anmeldung:** mit Google oder mit E-Mail und Passwort, beides über Supabase Auth. Wer sich mit E-Mail anmeldet, bekommt keine Gmail- und Kalender-Anbindung.
+  - Für Mails an Freunde (Bestätigung, Passwort zurücksetzen) ist ein eigener SMTP-Zugang nötig. Der Standard-Mailversand von Supabase schickt nur an Team-Mitglieder und höchstens 2 Mails pro Stunde.
+  - Welcher Zugang das wird, entscheiden wir in Phase 2.
 - **Nur auf Einladung.**
 - **Datentrennung** auf Datenbankebene (Row Level Security). Getestet wird, dass Person A die Daten von Person B nicht sieht.
 - **Gemeinsam genutzt** werden Firmendaten und gescrapte Stellen. Setzt jemand eine Firma auf seine Zielliste, erweitert das den Scraper für alle. Niemand sieht, wer sie verfolgt.
@@ -255,16 +257,18 @@ Eine Bewerbung entsteht mit einem Klick aus einem Treffer oder wird manuell ange
 - Die Website ist statisch, auf GitHub Pages.
 - Abgedeckt sind 4 Firmen.
 
-**Vorschlag für das Zielbild.** Er wird erst festgelegt, wenn die Gratis-Tarife gegen die aktuelle Doku geprüft sind (Abschnitt 3.3).
+**Zielbild (entschieden 2026-11-08, Gratis-Tarife geprüft):**
 
-| Baustein | Vorschlag |
-|---|---|
-| Datenbank, Login, Dateien | Supabase, Region Frankfurt |
-| Scraper | Python, täglich per GitHub Actions |
-| KI-Auswertung und Reparatur | Claude Code Action mit Abo-Token; Ausweichlösung GitHub Models |
-| Website | Next.js auf Vercel |
-| Hintergrundjobs | zeitgesteuerte Funktionen für Digest, Alarme, Briefings, Gmail-Abgleich und Erinnerungen |
-| Benachrichtigung | E-Mail plus Telegram-Bot |
+| Baustein | Festlegung | Gratis-Grenzen und Fallen |
+|---|---|---|
+| Datenbank, Login, Dateien | Supabase, Region Frankfurt | Pausiert nach ca. 1 Woche ohne Datenbank-Aktivität. Der tägliche Scraper-Lauf schreibt in die Datenbank und hält sie wach. Limits: 500 MB Datenbank, 1 GB Dateien, 50 MB pro Datei, 2 Projekte. |
+| Scraper und Hintergrundjobs | Python, zeitgesteuert per GitHub Actions (Digest, Alarme, Briefings, Gmail-Abgleich, Erinnerungen) | Im öffentlichen Repo unbegrenzt gratis. Abschaltung nach 60 Tagen ohne Aktivität; der tägliche Commit verhindert sie. |
+| KI-Auswertung und Reparatur | Claude Code Action mit Abo-Token | Der Verbrauch zählt gegen das Abo-Kontingent. |
+| Website | Next.js auf Vercel (Hobby) | Nur private, nicht-kommerzielle Nutzung. Zeitgesteuerte Jobs laufen deshalb über GitHub Actions statt über Vercel. |
+| Benachrichtigung | Telegram-Bot, dazu E-Mail | – |
+
+- Die Jobsuche zieht von GitHub Pages in die neue Website um. Danach wird GitHub Pages abgeschaltet.
+- Das Repo bleibt öffentlich und enthält nur Code und die Firmenliste. Persönliche Daten liegen nur in Supabase.
 
 Tabellen im Zielbild:
 - **Gemeinsam:**
@@ -288,7 +292,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 6. **Passung und Analyse:** Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
 
 **Offene Entscheidungen:**
-- Architektur des Zielbilds (Abschnitt 5)
+- SMTP-Zugang für Mails an Freunde (Phase 2)
 - Bundesagentur für Arbeit als zweite Quelle? Ohne eine zweite Quelle bringen Dubletten-Abgleich, Karriereseiten-Abgleich und Gehaltsbenchmark wenig.
 - Nutzen Freunde auch die Jobsuche oder nur den Tracker?
 - Nur Telegram oder zusätzlich Teams?
