@@ -15,7 +15,3 @@ venv/
 .ipynb_checkpoints/
 Thumbs.db
 .DS_Store
-
-# Gesammelte Rohdaten nicht einchecken (Platzhalter behalten)
-data/*
-!data/.gitkeep
