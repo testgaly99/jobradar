@@ -1,0 +1,54 @@
+# Holt täglich die Stellen, speichert die Daten im Repo und veröffentlicht site/ auf GitHub Pages.
+# 04:00 UTC sind 5 Uhr (Winter) bzw. 6 Uhr (Sommer) deutscher Zeit. Per Knopf jederzeit startbar.
+name: Täglicher Lauf
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: taeglich
+  cancel-in-progress: false
+
+jobs:
+  lauf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+      - run: node --test tests/test_app.js
+      # Exit 1 = alle Firmen fehlgeschlagen: Job schlägt fehl, GitHub schickt eine Mail.
+      - run: python -m scraper.run
+      - name: Änderungen committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ site/daten.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Täglicher Lauf $(date -u +%F)"
+            git push
+          fi
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: lauf
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
