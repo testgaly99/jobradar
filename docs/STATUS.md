@@ -1,10 +1,12 @@
 # STATUS – Projekt „Jobsuche“
 
-Stand: 2026-11-07
+Stand: 2026-11-07 (nach Task 10)
 
 ## Was funktioniert
-- Grundgerüst des Repos liegt an: `scraper/`, `data/`, `site/`, `tests/`, `README.md`, `requirements.txt`, `.gitignore`.
-- Noch kein Code und noch kein Commit.
+- Scraper für 4 Unternehmen (Helsing, The Exploration Company, Taktile, telli) mit Vorfilter und Bericht (`data/bericht.md`).
+- Website mit Filtern (`site/`).
+- Tests (`py -m pytest`, `node --test tests/test_app.js`).
+- README mit Anleitung, Backup und Wiederherstellung.
 
 ## Umgebung (geprüft am 2026-11-07, lokal auf Windows 11)
 | Programm | Status |
@@ -15,15 +17,15 @@ Stand: 2026-11-07
 | GitHub CLI (`gh`) | Nicht installiert. Erst später nötig, und auch dann nur vielleicht. |
 
 ## Skills aus CLAUDE.md Abschnitt 7
-Keiner der vorgesehenen Skills ist installiert: Superpowers, grill-me, Karpathy Skills, Ponytail, Playwright, Firecrawl und I have ADHD fehlen alle.
-Bis sie installiert sind, arbeitet Claude deren Methoden von Hand ab, zum Beispiel die Fragerunde im grill-me-Stil.
+Superpowers, Karpathy, Ponytail und I have ADHD sind installiert. **Fehlen noch:** Playwright und Firecrawl. grill-me liegt in `~/.agents/skills` statt `~/.claude/skills`.
 
 ## In Arbeit
-- Abschnitt 11, Schritt 3 (Fragerunde V1): **abgeschlossen** am 2026-11-07.
-- Schritt 4: Plan geschrieben → `docs/plans/2026-11-07-version-1.md` (**wartet auf Freigabe**).
-- Angelegt: `docs/ENTSCHEIDUNGEN.md`, `data/kategorien.md`; CLAUDE.md angepasst (13 Firmen, mehrere Kategorien, Vorfilter, Zielbild).
-- Git-Identität im Repo gesetzt (testgaly99 / markgaly99@gmail.com).
-- Skills: Superpowers, Karpathy, Ponytail, I have ADHD installiert. **Fehlen noch:** Playwright, Firecrawl (nicht in Plugin-Liste); grill-me liegt in `~/.agents/skills` statt `~/.claude/skills`.
+- Task 9: täglicher Lauf und Veröffentlichung (GitHub Actions + Pages), gemeinsam mit dem Nutzer.
+
+## Bekannte Probleme
+- Die Website wurde noch nicht im Browser angesehen.
+- Die eingecheckten Daten stammen von vor der Korrektur des Dual-Use-Filters.
+- Phase B (9 weitere Unternehmen) ist noch offen.
 
 ## Bisherige Antworten (Fragerunde V1)
 - Repo: **öffentlich** + Website über **GitHub Pages** (Weg 1, entschieden 2026-11-07). GitHub-Konto vorhanden.
@@ -44,8 +46,7 @@ Bis sie installiert sind, arbeitet Claude deren Methoden von Hand ab, zum Beispi
 - Offen für Stufe 5: welche Quellen das Abrufen erlauben; ob neue Firmen automatisch übernommen werden oder als Vorschlagsliste (CLAUDE.md: Vorschlagsliste).
 
 ## Offene To-dos für mich
-- Plan freigeben.
 - Optional: Playwright + Firecrawl nachinstallieren.
 
 ## Nächster Schritt
-Nach Freigabe: Plan Phase A, Task 1 umsetzen.
+Task 9: täglicher Lauf und Veröffentlichung, zusammen mit dem Nutzer.
