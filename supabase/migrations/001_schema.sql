@@ -61,7 +61,7 @@ create table if not exists public.applications (
   gehalt_spanne_anzeige text, gehalt_wunsch text, angebot_fix text, angebot_variabel text,
   angebot_urlaub text, angebot_benefits text, gehalt_aktuell_vergleich text,
   starttermin date, kuendigungsfrist text, referenzen text,
-  ergebnis text check (ergebnis in ('zusage','absage','zurueckgezogen')),
+  ergebnis text check (ergebnis in ('zusage','absage','zurueckgezogen','angebot_abgelehnt')),
   absagegrund text, feedback text, rueckzug_grund text,
   interesse int check (interesse between 1 and 5),
   tags text[], notizen text,
@@ -72,6 +72,8 @@ create table if not exists public.applications (
 );
 create index if not exists applications_owner_status_idx on public.applications (owner_id, status);
 create index if not exists applications_job_idx on public.applications (job_id);
+create index if not exists applications_cv_idx on public.applications (cv_dokument_id);
+create index if not exists applications_anschreiben_idx on public.applications (anschreiben_dokument_id);
 
 create table if not exists public.application_events (
   id uuid primary key default gen_random_uuid(),
@@ -154,6 +156,7 @@ create policy companies_select on public.companies for select to authenticated u
 drop policy if exists laeufe_select on public.laeufe;
 create policy laeufe_select on public.laeufe for select to authenticated using (true);
 
+-- Jobs sind geteilte, nicht private Daten: eine versteckte Stelle ueber die eigene Bewerbung zu sehen ist gewollt.
 drop policy if exists jobs_select on public.jobs;
 create policy jobs_select on public.jobs for select to authenticated using (
   sichtbar = true
@@ -176,9 +179,13 @@ create policy applications_own on public.applications for all to authenticated
          where d.id = anschreiben_dokument_id and d.owner_id = (select auth.uid())))
   );
 
+-- Audit-Trail: nur lesen und anlegen, kein Update/Delete
 drop policy if exists application_events_own on public.application_events;
-create policy application_events_own on public.application_events for all to authenticated
-  using (owner_id = (select auth.uid()))
+drop policy if exists application_events_select on public.application_events;
+create policy application_events_select on public.application_events for select to authenticated
+  using (owner_id = (select auth.uid()));
+drop policy if exists application_events_insert on public.application_events;
+create policy application_events_insert on public.application_events for insert to authenticated
   with check (
     owner_id = (select auth.uid())
     and exists (select 1 from public.applications a
