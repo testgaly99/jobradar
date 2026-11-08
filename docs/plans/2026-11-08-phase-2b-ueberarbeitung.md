@@ -250,6 +250,44 @@
 - [ ] `npm test`, `npm run build`
 - [ ] Commit `Design mit Hallmark`
 
+### Task 7: Steckbrief (nach Task 5 ausführen, vor Task 6)
+
+**Wunsch des Nutzers vom 2026-11-08:** „Ich schaue täglich hunderte Stellenanzeigen durch und habe keine Zeit, sie zu lesen.“
+
+**Files:**
+- Create: `scraper/steckbrief.py`, `tests/test_steckbrief.py`, Liste-Darstellung in `web/lib/steckbrief.ts`, Test `web/tests/steckbrief.test.ts`
+- Modify: Migration 005 (ergänzen), Scraper (Adapter, `run.py`, `db.py`), `web/app/stellen/page.tsx`, `web/app/stellen/[id]/page.tsx`, `web/app/konto/page.tsx` + `actions.ts`
+
+**Interfaces:**
+- `steckbrief(abschnitte: list, text: str) -> dict` (Python, rein, nur Standardbibliothek). Felder:
+  - `erfahrung_jahre`: int oder None. Regeln für „3+ years“, „mind. 5 Jahre“, „5–7 Jahre“; bei einer Spanne gilt die kleinste Zahl.
+  - `sprachen`: Liste von `{sprache, niveau}`. Deutsch/Englisch/Französisch; Niveau aus A1–C2, „fließend/fluent“, „verhandlungssicher“, „Muttersprache/native“; sonst leer.
+  - `gehalt`: `{min, max, waehrung, zeitraum}` oder None. Erkennt €/EUR/CHF, „k“, Spannen mit „–“ und „-“, „pro Jahr/brutto/p.a.“.
+  - `sicherheitsueberpruefung`: bool, bei security clearance, Sicherheitsüberprüfung oder Ü1/Ü2/Ü3.
+- Speicherung in `jobs.steckbrief` (jsonb), in Migration 005 ergänzt. Schutz wie bei `abschnitte`: Fehlt die Spalte, wird sie nicht geschrieben.
+- Neue Tabelle `public.listen_felder` in 005:
+  - Spalten: `owner_id uuid primary key default auth.uid() references auth.users on delete cascade`, `felder text[] not null`
+  - RLS nur eigene Zeile, `anon` revoked
+  - Erlaubte Feldnamen (check): `groesse, level, modell, vertrag, ort, online_seit, erfahrung, gehalt, sprachen, sicherheit, branche`
+- **Standard**, wenn keine Zeile existiert: `groesse, level, modell, ort, online_seit, erfahrung, gehalt`. Sprachen sind standardmäßig aus.
+- Konto-Seite: Abschnitt „Kurzbeschreibung in der Stellenliste“ mit Checkboxen für alle Felder. Server-Action speichert per Upsert, Sitzung zuerst prüfen, nur erlaubte Namen.
+- Stellenliste: Pro Stelle eine Zeile mit genau den gewählten Feldern, in der festen Reihenfolge oben. Fehlt ein Wert, entfällt das Feld still (kein „unbekannt“).
+- Detailseite: Oben ein Steckbrief-Kasten mit allen vorhandenen Feldern. Die gegliederte Anzeige folgt darunter in `<details>` „Ganze Anzeige lesen“, standardmäßig zu.
+
+- [ ] Tests (Python):
+  - „3+ years of experience“ → 3
+  - „mindestens 5 Jahre Berufserfahrung“ → 5
+  - „5–7 years“ → 5
+  - kein Hinweis → None
+  - „€70.000 – €85.000 brutto pro Jahr“ → min 70000, max 85000, EUR, Jahr
+  - „70k-85k EUR“ → gleiches Ergebnis
+  - „German (C1)“ → Deutsch C1
+  - „fließend Englisch“ → Englisch fließend
+  - „Ü2“ → `sicherheitsueberpruefung` true
+- [ ] Tests (TS): Feldauswahl und Reihenfolge, Standard ohne Zeile, unbekannte Feldnamen werden ignoriert.
+- [ ] `py -m pytest -q`, `npm test`, `npx tsc --noEmit`, `npm run build`
+- [ ] Commit `Steckbrief und einstellbare Kurzbeschreibung`
+
 ### Task 6: Doku und Nutzer-To-dos
 
 - [ ] `README.md`: Begriffe (Branche, Funktion, Online seit), Merken und Detailseite.

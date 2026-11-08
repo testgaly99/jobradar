@@ -339,6 +339,11 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
      - Name nur bei Google-Konten.
      - Einblicke nur als Zahlen ohne Inhalte: pro Nutzer letzte Anmeldung und Anzahl Bewerbungen, gesamt aktive Nutzer 7/30 Tage und Bewerbungen pro Woche. Die Datenschutzerklärung nennt das.
    - **Design:** mit dem Skill Hallmark.
+   - **Steckbrief statt Textwand (ohne KI):**
+     - Der Scraper zieht per Regeln heraus: Erfahrung in Jahren, Sprachen, Gehalt (falls angegeben), Sicherheitsüberprüfung.
+     - Die Detailseite zeigt oben den Steckbrief, die gegliederte Anzeige eingeklappt darunter.
+     - In der Stellenliste steht eine Kurzbeschreibung. Welche Felder sie zeigt, stellt jeder Nutzer auf der Konto-Seite selbst ein.
+     - „Kurz gesagt“, Top-3-Anforderungen und „Auffällig“ brauchen KI und bleiben in Phase 5.
    - **Wichtige Punkte:** Auf der Konto-Seite pflege ich Begriffe, die mir bei einer Stelle wichtig sind. Kommen sie in einem Stichpunkt der Anzeige vor, werden sie auf der Detailseite hervorgehoben. Reiner Textvergleich, ohne KI: Ein Begriff trifft ganze Wörter und Wortanfänge („Team“ trifft „Teamfähigkeit“). Übergangslösung; in Phase 6 kommt der Abgleich nach Bedeutung per KI dazu.
    - **Gegliederte Snapshots für alle:** Jede Bewerbung bekommt die gegliederte Anzeige, auch bestehende. Der tägliche Lauf rüstet fehlende Snapshots automatisch nach, solange die Stelle noch online ist.
 3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung.
