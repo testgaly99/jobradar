@@ -1,10 +1,12 @@
-# Holt täglich die Stellen, schreibt in Supabase.
-# 04:00 UTC sind 5 Uhr (Winter) bzw. 6 Uhr (Sommer) deutscher Zeit. Per Knopf jederzeit startbar.
+# Holt die Stellen und schreibt sie in Supabase.
+# Der tägliche Zeitplan ist pausiert, bis alle Phasen fertig sind (Wunsch des Nutzers, 2026-11-08).
+# Wieder einschalten: die zwei Zeilen unter "schedule" entkommentieren (04:00 UTC = 5/6 Uhr deutscher Zeit).
+# Per Knopf (Actions -> Täglicher Lauf -> Run workflow) jederzeit startbar.
 name: Täglicher Lauf
 
 on:
-  schedule:
-    - cron: "0 4 * * *"
+  # schedule:
+  #   - cron: "0 4 * * *"
   workflow_dispatch:
 
 permissions:
