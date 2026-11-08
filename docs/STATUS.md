@@ -23,5 +23,8 @@ Stand: 2026-11-08
 - In Git ist für dieses Repo die Identität testgaly99 eingetragen.
 - Die GitHub CLI (`gh`) ist nicht installiert.
 
+## Offene To-dos für den Nutzer
+- Supabase-Secret-Key ersetzen: Er war einmal im Chat sichtbar (Supabase → API Keys → neuen Secret key anlegen → in `.env` und im GitHub-Secret `SUPABASE_SERVICE_KEY` eintragen → alten löschen).
+
 ## Nächster Schritt
 Plan `docs/plans/2026-11-08-phase-1-tracker.md` vom Nutzer freigeben lassen, dann Task 0 (Scroll-Fix) und Task 1 (Konten anlegen).
