@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { STATUS, STATUS_LABEL, istUuid, parseAbschnitt, leseTabelle, tabelleZuUrl, escapeLike } from "../lib/bewerbung.ts";
+import { STATUS, STATUS_LABEL, istUuid, parseAbschnitt, leseTabelle, tabelleZuUrl, escapeLike, berlinZuIso } from "../lib/bewerbung.ts";
 
 const fd = (o: Record<string, string>) => ({ get: (k: string) => (k in o ? o[k] : null) });
 
@@ -73,4 +73,21 @@ test("tabelleZuUrl und escapeLike", () => {
   assert.equal(u.searchParams.get("firma"), "A&B");
   assert.equal(u.searchParams.get("sort"), "firma");
   assert.equal(escapeLike("100%_\\"), "100\\%\\_\\\\");
+});
+
+test("berlinZuIso: Winter, Sommer, Wechsel, leer", () => {
+  assert.equal(berlinZuIso("2026-11-08T10:00"), "2026-11-08T09:00:00.000Z"); // MEZ
+  assert.equal(berlinZuIso("2026-07-15T10:00"), "2026-07-15T08:00:00.000Z"); // MESZ
+  assert.equal(berlinZuIso("2026-03-29T01:30"), "2026-03-29T00:30:00.000Z"); // vor dem Wechsel
+  assert.equal(berlinZuIso("2026-03-29T03:30"), "2026-03-29T01:30:00.000Z"); // nach dem Wechsel
+  assert.equal(berlinZuIso("2026-10-25T01:30"), "2026-10-24T23:30:00.000Z"); // vor Ende der Sommerzeit
+  assert.equal(berlinZuIso("2026-10-25T04:00"), "2026-10-25T03:00:00.000Z"); // danach
+  assert.equal(berlinZuIso(""), null);
+});
+
+test("Interview-Zeit wird als ISO gespeichert, leer wird null", () => {
+  const a = parseAbschnitt("interview", fd({ datum: "2026-11-08T10:00" })), b = parseAbschnitt("interview", fd({ datum: "" }));
+  assert.equal("daten" in a && a.daten.datum, "2026-11-08T09:00:00.000Z");
+  assert.equal("daten" in b && b.daten.datum, null);
+  assert.ok("fehler" in parseAbschnitt("interview", fd({ datum: "2026-11-08T25:00" })));
 });

@@ -63,7 +63,7 @@ export function parseAbschnitt(abschnitt: Abschnitt, f: Eingabe): { daten: Recor
         break;
       }
       case "datum": if (!datumOk(s)) return { fehler: "Ungültiges Datum." }; daten[k] = s; break;
-      case "zeit": if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s) || !datumOk(s.slice(0, 10))) return { fehler: "Ungültiges Datum." }; daten[k] = s; break;
+      case "zeit": if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s) || !datumOk(s.slice(0, 10))) return { fehler: "Ungültiges Datum." }; { const z = berlinZuIso(s); if (!z || +s.slice(11, 13) > 23 || +s.slice(14) > 59) return { fehler: "Ungültiges Datum." }; daten[k] = z; } break;
       case "int15": if (!/^[1-5]$/.test(s)) return { fehler: "Interesse muss zwischen 1 und 5 liegen." }; daten[k] = Number(s); break;
       case "tags": {
         const t = [...new Set(s.split(",").map((x) => x.trim()).filter(Boolean))];
@@ -114,3 +114,20 @@ export const datumDe = (iso: string | null) => (iso ? iso.slice(0, 10).split("-"
 export const zeitDe = (iso: string) =>
   new Date(iso).toLocaleString("de-DE", { timeZone: "Europe/Berlin", dateStyle: "short", timeStyle: "short" });
 export const tagDe = (iso: string) => new Date(iso).toLocaleDateString("de-DE", { timeZone: "Europe/Berlin" });
+
+// Berliner Wanduhrzeit ("2026-11-08T10:00") als ISO-Zeitpunkt, sommerzeitrichtig, ohne Bibliothek.
+const berlinTeile = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Europe/Berlin", hourCycle: "h23", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric",
+});
+function berlinOffsetMs(t: number): number {
+  const p = Object.fromEntries(berlinTeile.formatToParts(new Date(t)).map((x) => [x.type, +x.value]));
+  return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute) - Math.floor(t / 60000) * 60000;
+}
+export function berlinZuIso(lokal: string): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(lokal.trim());
+  if (!m) return null;
+  const wand = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+  let t = wand - berlinOffsetMs(wand);
+  t = wand - berlinOffsetMs(t); // Offset am Zielzeitpunkt erneut prüfen (Sommerzeitwechsel)
+  return new Date(t).toISOString();
+}
