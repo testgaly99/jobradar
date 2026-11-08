@@ -63,3 +63,7 @@ test("Abruf-Allowlist und Sperrliste", () => {
     "https://www.glassdoor.com/x", "https://stepstone.fr/x", "https://example.com/", "https://a.b.jobs.personio.de/xml",
     "http://boards-api.greenhouse.io/x", "https://boards-api.greenhouse.io.evil.com/x", "https://localhost/"]) assert.throws(() => pruefeAbrufHost(u), u);
 });
+
+test("Stepstone mit kaputter Prozent-Kodierung wirft nicht", () => {
+  assert.doesNotThrow(() => analysiereLink("https://www.stepstone.de/stellenangebote--%E0%A4%A--1-inline.html"));
+});

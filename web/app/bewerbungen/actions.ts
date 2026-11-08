@@ -12,23 +12,25 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   try { u = new URL(url.trim()); } catch { return { fehler: "Das ist kein gültiger Link." }; }
   if (u.protocol !== "http:" && u.protocol !== "https:") return { fehler: "Nur http- und https-Links sind möglich." };
   const link = u.toString();
+  const sb = await createClient();
+  const { data: claims } = await sb.auth.getClaims();
+  if (!claims?.claims) return { fehler: "Bitte melde dich an." };
   const a = analysiereLink(link);
   firma = firma?.trim() || a.firma;
   titel = titel?.trim() || a.titel;
 
-  const sb = await createClient();
   const vorhandenZu = async (spalte: "job_id" | "link", wert: string) =>
     (await sb.from("applications").select("id").eq(spalte, wert).limit(1).maybeSingle()).data?.id as string | undefined;
 
   const dupLink = await vorhandenZu("link", link);
   if (dupLink) redirect(`/bewerbungen/${dupLink}`);
 
-  // Ist die ATS-Stelle schon in jobs (gleiche URL oder ext_id am Ende der id), wird sie verknüpft.
-  const ausStelle = async (s: Stelle): Promise<Ziel> => {
-    const ext = s.extId.replace(/[^\w-]/g, "");
-    const felder = "id,unternehmen,titel,ort,text";
-    let job = s.url ? (await sb.from("jobs").select(felder).eq("url", s.url).limit(1).maybeSingle()).data : null;
-    if (!job && ext) job = (await sb.from("jobs").select(felder).like("id", `%:${ext}`).limit(1).maybeSingle()).data;
+  // Verknüpfung nur über die Firma des Boards (companies.ats_typ/ats_id) und die exakte id "<firma>:<ext_id>".
+  const ausStelle = async (s: Stelle, typ: string, boardId: string): Promise<Ziel> => {
+    const { data: fz } = await sb.from("companies").select("name").eq("ats_typ", typ).eq("ats_id", boardId).limit(1).maybeSingle();
+    const job = fz
+      ? (await sb.from("jobs").select("id,unternehmen,titel,ort,text").eq("id", `${fz.name}:${s.extId}`).limit(1).maybeSingle()).data
+      : null;
     if (job) return { firma: job.unternehmen ?? firma, titel: job.titel, ort: job.ort, link, quelle: a.quelle, text: job.text, jobId: job.id };
     return { firma, titel: s.titel, ort: s.ort, link, quelle: a.quelle, text: s.text };
   };
@@ -36,7 +38,7 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   let ziel: Ziel | null = null;
   // Schritt 1: ATS-Link über die offizielle Schnittstelle.
   if (a.ats?.id) {
-    try { ziel = await ausStelle(await holeStelle({ ...a.ats, id: a.ats.id })); } catch { /* weiter mit Schritt 2 */ }
+    try { ziel = await ausStelle(await holeStelle({ ...a.ats, id: a.ats.id }), a.ats.typ, a.ats.id); } catch { /* weiter mit Schritt 2 */ }
   }
 
   // Schritt 2: Firma und Titel in jobs suchen.
@@ -56,7 +58,7 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
     if (slug) for (const typ of ["greenhouse", "ashby", "lever"] as const) {
       try {
         const s = await sucheTitel(typ, slug, titel);
-        if (s) { ziel = await ausStelle(s); break; }
+        if (s) { ziel = await ausStelle(s, typ, slug); break; }
       } catch { /* Board fehlt oder Netzfehler: nächster Anbieter */ }
     }
   }

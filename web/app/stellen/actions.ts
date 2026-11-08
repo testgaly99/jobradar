@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function bewerbungAusStelle(jobId: string) {
   const sb = await createClient();
+  const { data: claims } = await sb.auth.getClaims();
+  if (!claims?.claims) redirect("/login");
   const { data: vorhanden } = await sb.from("applications").select("id").eq("job_id", jobId).limit(1).maybeSingle();
   if (vorhanden) redirect(`/bewerbungen/${vorhanden.id}`);
   const { data: job } = await sb.from("jobs")

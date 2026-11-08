@@ -26,7 +26,8 @@ export function analysiereLink(url: string): LinkInfo {
     if ((m = p[2].match(/^(.+)-at-(.+)-\d+$/))) { info.titel = wort(m[1]); info.firma = wort(m[2]); }
   } else if (/(^|\.)stepstone\./.test(host)) {
     // shortcut: Titel, Ort und Firma sind nur bei je einem Wort eindeutig trennbar.
-    const t = decodeURIComponent(u.pathname).match(/stellenangebote--(.+?)--\d+-inline\.html/)?.[1].split("-");
+    const pfad = (() => { try { return decodeURIComponent(u.pathname); } catch { return u.pathname; } })();
+    const t = pfad.match(/stellenangebote--(.+?)--\d+-inline\.html/)?.[1].split("-");
     if (t?.length === 3) { info.titel = t[0]; info.firma = t[2]; }
   }
   return info;
