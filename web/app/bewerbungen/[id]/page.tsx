@@ -106,6 +106,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <Text a={row} name="portal_hinweis" label="Hinweis zum Bewerberportal (kein Passwort!)" />
           <label>CV
             <select name="cv_dokument_id" defaultValue={v(row.cv_dokument_id)}>{dokOptionen("cv")}</select>
+            <a href="/dokumente" className="klein">Dokument hochladen</a>
           </label>
           <label>Anschreiben
             <select name="anschreiben_dokument_id" defaultValue={v(row.anschreiben_dokument_id)}>{dokOptionen("anschreiben")}</select>

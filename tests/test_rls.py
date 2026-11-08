@@ -155,3 +155,13 @@ def test_rls_isolation(users):
     # Anon darf jobs nicht lesen (revoke -> 401/403)
     r = requests.get(f"{rest}/jobs", headers=_h(ANON), timeout=30)
     assert r.status_code in (401, 403)
+
+
+def test_admin_einblicke_nicht_fuer_authenticated(users):
+    _, tok = users[0]
+    r = requests.post(f"{URL}/rest/v1/rpc/admin_einblicke", headers=_h(ANON, tok), json={}, timeout=30)
+    if r.status_code == 404 or "PGRST202" in r.text:
+        pytest.skip("Migration 005 noch nicht angewendet (admin_einblicke existiert nicht)")
+    assert r.status_code in (401, 403), f"authenticated darf admin_einblicke nicht aufrufen: {r.status_code} {r.text}"
+    r = requests.post(f"{URL}/rest/v1/rpc/admin_einblicke", headers=_h(SERVICE), json={}, timeout=30)
+    assert r.status_code == 200 and "aktiv_7" in r.json()

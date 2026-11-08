@@ -19,6 +19,7 @@ export default function Seite() {
       </ul>
       <h2>Wer es sieht</h2>
       <p>Nur du. Auch der Betreiber sieht deine Bewerbungen nicht über die Website. Technisch hat er als Datenbank-Inhaber Zugriff.</p>
+      <p>Der Betreiber sieht pro Konto nur Zahlen: letzte Anmeldung und Anzahl der Bewerbungen, keine Inhalte.</p>
       <h2>Löschen</h2>
       <p>Jederzeit unter „Konto“. Alles wird sofort entfernt. Ausgenommen ist nur das Konto des Betreibers. Aus dem Backup verschwindet es mit dem nächsten täglichen Lauf, die Git-Historie des privaten Backups behält ältere Stände.</p>
       <h2>Sonstiges</h2>
