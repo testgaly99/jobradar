@@ -23,11 +23,18 @@ export default function Login() {
 
   async function google() {
     setFehler("");
-    const { error } = await createClient().auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${location.origin}/auth/callback` },
-    });
-    if (error) setFehler(fehlerText(error));
+    setLaedt(true);
+    try {
+      const { error } = await createClient().auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${location.origin}/auth/callback` },
+      });
+      if (error) setFehler(fehlerText(error));
+    } catch {
+      setFehler(fehlerText({}));
+    } finally {
+      setLaedt(false);
+    }
   }
 
   async function senden(e: React.FormEvent) {
@@ -35,28 +42,33 @@ export default function Login() {
     setFehler("");
     setInfo("");
     setLaedt(true);
-    const auth = createClient().auth;
-    if (modus === "anmelden") {
-      const { error } = await auth.signInWithPassword({ email, password: passwort });
-      if (error) setFehler(fehlerText(error));
-      else location.href = "/"; // harter Wechsel, damit Proxy und Kopfzeile die neue Sitzung sehen
-    } else if (modus === "registrieren") {
-      const { data, error } = await auth.signUp({ email, password: passwort, options: { emailRedirectTo: `${location.origin}/auth/callback` } });
-      if (error) setFehler(fehlerText(error));
-      else if (data.session) location.href = "/";
-      else setInfo("Fast geschafft: Wir haben dir eine E-Mail geschickt. Bestätige sie mit dem Link darin.");
-    } else {
-      const { error } = await auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/neues-passwort` });
-      if (error) setFehler(fehlerText(error));
-      else setInfo("Wenn es ein Konto mit dieser E-Mail gibt, ist ein Link zum Zurücksetzen unterwegs.");
+    try {
+      const auth = createClient().auth;
+      if (modus === "anmelden") {
+        const { error } = await auth.signInWithPassword({ email, password: passwort });
+        if (error) setFehler(fehlerText(error));
+        else location.href = "/"; // harter Wechsel, damit Proxy und Kopfzeile die neue Sitzung sehen
+      } else if (modus === "registrieren") {
+        const { data, error } = await auth.signUp({ email, password: passwort, options: { emailRedirectTo: `${location.origin}/auth/callback` } });
+        if (error) setFehler(fehlerText(error));
+        else if (data.session) location.href = "/";
+        else setInfo("Fast geschafft: Wir haben dir eine E-Mail geschickt. Bestätige sie mit dem Link darin.");
+      } else {
+        const { error } = await auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/callback?next=/auth/neues-passwort` });
+        if (error) setFehler(fehlerText(error));
+        else setInfo("Wenn es ein Konto mit dieser E-Mail gibt, ist ein Link zum Zurücksetzen unterwegs.");
+      }
+    } catch {
+      setFehler(fehlerText({}));
+    } finally {
+      setLaedt(false);
     }
-    setLaedt(false);
   }
 
   return (
     <div className="karte schmal">
       <h1>Jobradar</h1>
-      <button type="button" className="knopf knopf-rand" onClick={google}>
+      <button type="button" className="knopf knopf-rand" onClick={google} disabled={laedt}>
         <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
           <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z" />
           <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z" />

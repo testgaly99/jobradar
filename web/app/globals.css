@@ -119,7 +119,7 @@ h2 { font-size: 1.1rem; margin: 0; }
 }
 .knopf:disabled { opacity: 0.6; cursor: wait; }
 .knopf-rand { background: transparent; color: var(--text); border-color: var(--rand); }
-.knopf-leise { width: auto; background: transparent; color: var(--text); border-color: var(--rand); min-height: 36px; }
+.knopf-leise { width: auto; background: transparent; color: var(--text); border-color: var(--rand); min-height: 44px; }
 .link { background: none; border: 0; padding: 0.4rem 0; font: inherit; color: var(--primaer); text-decoration: underline; cursor: pointer; }
 
 /* Formulare */

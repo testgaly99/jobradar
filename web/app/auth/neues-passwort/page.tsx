@@ -1,13 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { fehlerText } from "@/lib/fehler";
 
 export default function NeuesPasswort() {
+  const [sitzung, setSitzung] = useState<boolean | null>(null);
   const [passwort, setPasswort] = useState("");
   const [fehler, setFehler] = useState("");
   const [fertig, setFertig] = useState(false);
+
+  useEffect(() => {
+    createClient().auth.getSession().then(({ data }) => setSitzung(!!data.session));
+  }, []);
 
   async function senden(e: React.FormEvent) {
     e.preventDefault();
@@ -20,7 +25,11 @@ export default function NeuesPasswort() {
   return (
     <div className="karte schmal">
       <h1>Neues Passwort</h1>
-      {fertig ? (
+      {sitzung === null ? null : !sitzung ? (
+        <p role="alert" className="meldung fehler">
+          Link abgelaufen – bitte erneut anfordern. <a href="/login">Zur Anmeldung</a>
+        </p>
+      ) : fertig ? (
         <p role="status" className="meldung info">Passwort geändert. <a href="/">Weiter zu Jobradar</a></p>
       ) : (
         <form onSubmit={senden} className="formular">
