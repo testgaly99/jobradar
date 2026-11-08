@@ -1,4 +1,4 @@
-# Holt täglich die Stellen, schreibt in Supabase und veröffentlicht site/ auf GitHub Pages.
+# Holt täglich die Stellen, schreibt in Supabase.
 # 04:00 UTC sind 5 Uhr (Winter) bzw. 6 Uhr (Sommer) deutscher Zeit. Per Knopf jederzeit startbar.
 name: Täglicher Lauf
 
@@ -25,7 +25,6 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python -m pytest -q
-      - run: node --test tests/test_app.js
       # Exit 1 = alle Firmen fehlgeschlagen: Job schlägt fehl, GitHub schickt eine Mail.
       - run: python -m scraper.run
         env:
@@ -41,19 +40,3 @@ jobs:
             git pull --rebase
             git push
           fi
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-  deploy:
-    needs: lauf
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
