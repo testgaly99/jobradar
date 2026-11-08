@@ -1,6 +1,6 @@
 # Website 1.1 – mehr Filter, neues Design, Scroll-Fix: Implementation Plan
 
-> **Status: PAUSIERT (2026-11-08).** Dieser Plan wartet, bis die Architektur geklärt ist (CLAUDE.md Abschnitt 5).
+> **Status: aufgegangen in Phase 1 (2026-11-08).**
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

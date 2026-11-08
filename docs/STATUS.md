@@ -2,29 +2,30 @@
 
 Stand: 2026-11-08
 
-## Was funktioniert (Phase 0)
-- Ein täglicher Lauf per GitHub Actions („Täglicher Lauf“, 04:00 UTC) ruft die Stellen von 4 Firmen ab: Helsing, The Exploration Company, Taktile und telli.
-- Der Lauf filtert vor, gleicht mit dem Bestand ab und schreibt einen Bericht nach `data/bericht.md`.
-- Die Website ist live: https://testgaly99.github.io/jobradar/
-- Repo: https://github.com/testgaly99/jobradar (öffentlich, Zweig `main`)
-- Tests: `py -m pytest` (62) und `node --test tests/test_app.js` (7).
-
-## In Arbeit
-- Phase 1 ist geklärt, der Plan wartet auf Freigabe.
-- Pausiert: `docs/plans/2026-11-07-website-filter-design.md` (neue Filter, neues Design, Scroll-Fix). Der Plan wartet, bis die Architektur feststeht.
+## Was funktioniert (Phase 1, Code fertig)
+- Täglicher Lauf per GitHub Actions („Täglicher Lauf“, 04:00 UTC): ruft die Stellen von 4 Firmen ab (Helsing, The Exploration Company, Taktile, telli), schreibt sie in Supabase und legt `data/bericht.md` ab.
+- Neue Website in `web/` (Next.js): Login, Stellenliste mit Filtern, Bewerbungs-Tracker, Link einfügen, Dokumente, Export.
+- Die alten Stellen aus `data/jobs.json` sind nach Supabase umgezogen (`scraper/umzug.py`, einmalig, 221 Stellen mit dem echten Erstdatum). Die alte Seite (`site/`) und GitHub Pages im Workflow sind entfernt.
+- Backup-Repo `jobradar-privat` ist lokal vorbereitet (täglicher `pg_dump`), aber noch nicht auf GitHub.
+- Repo: https://github.com/testgaly99/jobradar (öffentlich)
+- Tests: `py -m pytest` und `npm test` in `web/`.
 
 ## Bekannte Probleme
-- Die Filterleiste lässt sich am Laptop schwer scrollen, und die Oberfläche wirkt langweilig. Das soll der pausierte Plan beheben.
 - 9 der 13 Firmen in `data/companies.csv` sind noch nicht angebunden (`aktiv=nein`).
+- Das Backup-Workflow ist noch nie gelaufen.
 
 ## Umgebung (Windows 11, lokal)
 - Python 3.12 immer über `py` aufrufen, nicht über `python`.
-- Node v24 ist installiert.
+- Node v24 ist installiert, die GitHub CLI (`gh`) auch.
 - In Git ist für dieses Repo die Identität testgaly99 eingetragen.
-- Die GitHub CLI (`gh`) ist nicht installiert.
 
 ## Offene To-dos für den Nutzer
-- Supabase-Secret-Key ersetzen: Er war einmal im Chat sichtbar (Supabase → API Keys → neuen Secret key anlegen → in `.env` und im GitHub-Secret `SUPABASE_SERVICE_KEY` eintragen → alten löschen).
+1. Migrationen `002`, `003`, `004` im Supabase SQL Editor ausführen (siehe README „Datenbank einrichten“).
+2. Neue Registrierungen abschalten (Supabase → Authentication → Sign In / Providers → „Allow new users to sign up“ aus), sobald dein Konto existiert.
+3. Secret Key rotieren: Er war einmal im Chat sichtbar. Supabase → API Keys → neuen Secret key anlegen → in `.env` und im GitHub-Secret `SUPABASE_SERVICE_KEY` eintragen → alten löschen.
+4. Vercel einrichten (README „Vercel einrichten“), danach die Vercel-Adresse in Supabase → Authentication → URL Configuration eintragen.
+5. `jobradar-privat` auf GitHub anlegen (privat), den Ordner dorthin pushen und das Secret `SUPABASE_DB_URL` (Session pooler URI) setzen. Dann den Workflow einmal von Hand starten.
+6. Nach dem Merge GitHub Pages abschalten: Repo → Settings → Pages → Source auf „None“ bzw. die Seite entfernen.
 
 ## Nächster Schritt
-Plan `docs/plans/2026-11-08-phase-1-tracker.md` vom Nutzer freigeben lassen, dann Task 0 (Scroll-Fix) und Task 1 (Konten anlegen).
+Abschlussprüfung von Phase 1 (`/ponytail-review`), Merge von `phase-1` nach `main`, dann die To-dos oben. Danach Phase 2.

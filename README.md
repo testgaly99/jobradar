@@ -1,98 +1,105 @@
 # jobradar
 
-jobradar holt jeden Tag die offenen Stellen von ausgewählten Unternehmen und zeigt sie auf einer Website, die du auf Handy und Laptop öffnen kannst.
+jobradar holt jeden Tag die offenen Stellen von ausgewählten Unternehmen und zeigt sie auf einer privaten Website. Dort behältst du auch deine Bewerbungen im Blick.
 
-- Website (wenn eingerichtet): https://testgaly99.github.io/jobradar/
-- Code und Daten: https://github.com/testgaly99/jobradar
+**Kurz erklärt:** *GitHub* ist die Seite, auf der die Dateien dieses Projekts liegen (das *Repo*). *GitHub Actions* startet dort jeden Tag das Programm. *Supabase* ist die Datenbank mit Login. *Vercel* zeigt die Website im Netz.
 
-**Kurz erklärt:** *GitHub* ist die Webseite, auf der alle Dateien dieses Projekts liegen. Das Projekt dort heißt *Repo*. *GitHub Actions* ist der Dienst dort, der jeden Tag automatisch das Programm startet. *GitHub Pages* macht aus den Dateien die Website.
+## Was die Website kann
 
-## Wie es funktioniert
+- **Stellen:** Alle offenen Stellen der Firmen aus `data/companies.csv`, mit Filtern.
+- **Bewerbungen:** Du legst Bewerbungen aus einer Stelle an, per Link oder von Hand, und setzt den Stand (gemerkt, beworben, Gespräch …).
+- **Dokumente:** Lebenslauf und Anschreiben hochladen, jede Bewerbung merkt sich die benutzte Version.
 
-1. Jeden Tag um 04:00 UTC (5 Uhr im Winter, 6 Uhr im Sommer) startet der Lauf „Täglicher Lauf“. GitHub kann sich um bis zu etwa 1 Stunde verspäten.
-2. Das Programm ruft für jedes Unternehmen in `data/companies.csv` die Stellen ab.
-3. Es behält nur Stellen in Deutschland und Remote-Stellen. Ausbildung, Duales Studium, Praktikum, Werkstudent, Abschlussarbeit, Minijob/Aushilfe sowie Filial- und Verkaufsjobs werden aussortiert (Details: CLAUDE.md, Abschnitt 4). Wie viele aussortiert wurden, steht im Bericht.
-4. Die Stellen landen in `data/jobs.json`. Stellen, die nicht mehr online sind, werden als „geschlossen“ markiert und nicht gelöscht.
-5. Die Website wird neu veröffentlicht.
+## Login
+
+Du meldest dich mit Google oder mit E-Mail und Passwort an. *Warum:* Deine Bewerbungen sind privat. Jeder Nutzer sieht nur seine eigenen Daten (das erzwingt die Datenbank selbst).
+
+## Link einfügen
+
+Klicke auf „Bewerbung anlegen“ und füge den Link einer Stellenanzeige ein. Die Seite erkennt Firma und Titel allein aus dem Link. Seiten wie LinkedIn oder Stepstone werden nie abgerufen (das wäre gegen deren Regeln). Wird nichts erkannt, trägst du Firma und Titel in zwei Feldern selbst ein.
+
+## Dokumente und Export
+
+- Unter „Dokumente“ lädst du PDFs hoch. Sie liegen in Supabase Storage.
+- Der Export-Knopf lädt deine Bewerbungen als CSV oder ZIP herunter. *Warum:* So hast du jederzeit eine eigene Kopie, ohne ein Programm zu brauchen.
+
+## Der tägliche Lauf
+
+Jeden Tag um 04:00 UTC (5 Uhr im Winter, 6 Uhr im Sommer) startet in GitHub Actions „Täglicher Lauf“. Er ruft die Stellen ab, schreibt sie in Supabase und legt `data/bericht.md` ab (pro Firma: gefunden, gefiltert, neu, geschlossen, Fehler). Dieser tägliche Bericht-Commit hält das Repo aktiv, sonst schaltet GitHub nach 60 Tagen den Zeitplan ab.
+
+Von Hand starten: GitHub → Reiter „Actions“ → „Täglicher Lauf“ → „Run workflow“. Erfolg: nach ein paar Minuten steht ein grüner Haken da.
+
+Stellen, die nicht mehr online sind, werden „geschlossen“. Gibt es dazu keine Bewerbung, wird der Text gelöscht und die Stelle ausgeblendet (es bleibt eine Mini-Notiz mit dem Erstdatum).
 
 ## Ein Unternehmen hinzufügen
 
-Die Liste steht in `data/companies.csv` (*CSV* ist eine einfache Tabelle als Textdatei; jede Zeile ist ein Unternehmen).
+Die Liste steht in `data/companies.csv` (eine Tabelle als Textdatei). Bearbeite sie nur direkt auf GitHub (Stift-Symbol), nicht in Excel: Excel macht aus dem Trennzeichen ein `;` und zerstört die Datei.
 
-1. Öffne https://github.com/testgaly99/jobradar und klicke auf den Ordner `data`, dann auf `companies.csv`.
-2. Klicke oben rechts auf das Stift-Symbol (Bearbeiten).
-3. Kopiere eine bestehende Zeile, hänge sie unten an und ändere die Werte.
-4. Klicke auf „Commit changes“ (speichern) und bestätige mit „Commit changes“.
-5. Der Eintrag gilt ab dem nächsten Lauf. Du kannst den Lauf auch sofort starten (siehe unten).
-
-Bearbeite `companies.csv` nur direkt auf GitHub (Stift-Symbol), nicht in Excel: Excel stellt in der deutschen Version das Trennzeichen auf `;` um und macht die Datei kaputt.
-
-Wird der automatische Lauf rot, nachdem du `companies.csv` bearbeitet hast, prüfe die Schreibweise von `kategorie` (muss genau zu `data/kategorien.md` passen), `groesse_klasse` und `aktiv`.
-
-Die Spalten:
+1. Öffne `data/companies.csv` auf GitHub und klicke auf das Stift-Symbol.
+2. Kopiere eine Zeile, hänge sie unten an, ändere die Werte.
+3. „Commit changes“. Der Eintrag gilt ab dem nächsten Lauf.
 
 | Spalte | Bedeutung |
 |---|---|
 | `name` | Name des Unternehmens |
 | `careers_url` | Link zur Karriereseite |
-| `ats_typ` | Das Bewerbungssystem der Firma (*ATS*). Aktuell möglich: `greenhouse` oder `ashby`. Alles andere: setze `aktiv` auf `nein` und bitte Claude, einen Adapter zu bauen (ein kleines Programmstück für dieses System). |
-| `ats_id` | Der letzte Teil der Stellenseiten-Adresse, z. B. `helsing` bei `boards.greenhouse.io/helsing` oder `the-exploration-company` bei `jobs.ashbyhq.com/the-exploration-company`. Du findest ihn, indem du auf der Karriereseite eine Stelle öffnest und in die Adresszeile schaust. |
-| `groesse_klasse` | Eine von `<50`, `50–249`, `250–999`, `1.000+` (Größe der ganzen Unternehmensgruppe) |
+| `ats_typ` | Bewerbungssystem: `greenhouse` oder `ashby`. Alles andere: `aktiv` auf `nein` setzen und Claude um einen Adapter bitten. |
+| `ats_id` | Letzter Teil der Stellenseiten-Adresse, z. B. `helsing` bei `boards.greenhouse.io/helsing` |
+| `groesse_klasse` | `<50`, `50–249`, `250–999` oder `1.000+` |
 | `mitarbeitende_ca` | Ungefähre Zahl der Mitarbeitenden |
-| `kategorie` | Eine oder mehrere Kategorien aus `data/kategorien.md`, getrennt durch `;` |
-| `hauptsitz` | Stadt des Hauptsitzes |
-| `aktiv` | `ja` = wird abgerufen, `nein` = wird übersprungen |
-| `notiz` | Freitext für dich |
+| `kategorie` | Kategorien aus `data/kategorien.md`, getrennt durch `;` |
+| `hauptsitz` | Stadt |
+| `aktiv` | `ja` = wird abgerufen, `nein` = übersprungen |
+| `notiz` | Freitext |
 
-## Einen Lauf manuell starten
+## Datenbank einrichten (Migrationen 001–004)
 
-1. Öffne https://github.com/testgaly99/jobradar und klicke oben auf „Actions“.
-2. Klicke links auf „Täglicher Lauf“.
-3. Klicke rechts auf „Run workflow“ und dann im Fenster auf den grünen Knopf „Run workflow“.
-4. Warte ein paar Minuten, bis vorne ein grüner Haken steht. Danach ist die Website aktuell.
+Die Dateien in `supabase/migrations/` bauen die Tabellen und den Zugriffsschutz auf: `001_schema.sql` (Tabellen und Schutz), `002_facetten.sql` (Filterwerte), `003_bewerbung_eindeutig.sql` (keine doppelten Bewerbungen), `004_dokumente.sql` (Dokumente und Storage).
 
-## Wenn etwas kaputt ist
+1. Öffne Supabase → dein Projekt → „SQL Editor“.
+2. Öffne die Datei auf deinem Rechner, kopiere den ganzen Inhalt, füge ihn ein und klicke „Run“. Immer in der Reihenfolge 001, 002, 003, 004.
+3. Erfolg: unten steht „Success“. Die Dateien lassen sich ohne Schaden mehrfach ausführen.
 
-**Bericht lesen:** Öffne auf GitHub `data/bericht.md`. Es zeigt pro Unternehmen eine Zeile mit: gefunden, gefiltert, neu, geschlossen, Fehler. Steht bei einem Unternehmen ein Fehler, ist meist dessen Karriereseite umgezogen oder die `ats_id` ist falsch. Die anderen Unternehmen laufen trotzdem weiter.
+## Backup und Wiederherstellung
 
-**Roter Warnhinweis auf der Website** („Letzter Lauf am <Datum> – automatischen Abruf prüfen (siehe README)“, erscheint, wenn der letzte Lauf mehr als 2 Tage her ist): Wahrscheinlich hat GitHub den Zeitplan abgeschaltet, weil 60 Tage lang nichts im Repo passiert ist (das gilt für öffentliche Repos). So schaltest du ihn wieder ein:
+Eine tägliche Kopie aller Daten liegt im privaten Repo `jobradar-privat` (*warum privat:* die Kopie enthält deine persönlichen Daten, dieses Repo ist öffentlich). Einrichtung und Wiederherstellung stehen in dessen `README.md`. Dokumente (PDFs) sind nicht im Backup: Behalte die Originale bei dir oder nutze den Export-Knopf.
 
-1. Öffne den Reiter „Actions“.
-2. Klicke links auf „Täglicher Lauf“.
-3. Klicke auf „Enable workflow“.
-4. Starte einmal von Hand (siehe oben).
+## Lokal starten
 
-Hilft das nicht, schau im Reiter „Actions“ in den letzten Lauf (rotes Kreuz) und gib Claude die Fehlermeldung.
+```powershell
+cd web
+npm install
+npm run dev
+```
 
-## Backup
+Dann öffne http://localhost:3000. Dafür braucht `web/.env.local` die Werte `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Supabase → Project Settings → API). *Warum:* So weiß die Seite, mit welcher Datenbank sie spricht.
 
-Alle Daten liegen zusammen mit ihrer ganzen Geschichte im Repo, jede Änderung ist gespeichert. Als zusätzliche Sicherung: Auf der Startseite des Repos „Code“ → „Download ZIP“ klicken und die Datei an einem sicheren Ort ablegen, zum Beispiel einmal im Monat.
-
-## Wiederherstellen
-
-**Alten Stand von `data/jobs.json` zurückholen:**
-
-1. Öffne auf GitHub `data/jobs.json` und klicke oben rechts auf „History“.
-2. Wähle den Eintrag mit dem gewünschten Datum und klicke auf die Dateiversion (`<>`-Symbol).
-3. Kopiere den Inhalt (Knopf „Raw“, dann alles markieren und kopieren).
-4. Gehe zurück zur aktuellen `data/jobs.json`, klicke auf das Stift-Symbol, ersetze den ganzen Inhalt durch das Kopierte und speichere mit „Commit changes“.
-
-Oder sag Claude: „Stelle `data/jobs.json` vom <Datum> wieder her.“
-
-**Aus der ZIP-Datei:** Entpacke die ZIP, kopiere die gewünschten Dateien in deinen lokalen Projektordner und lade sie hoch (Claude kann dir dabei helfen).
-
-## Für Fortgeschrittene (lokal auf Windows)
-
-Einrichten:
+Scraper und Tests:
 
 ```powershell
 py -3.12 -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+py -m scraper.run      # braucht .env mit SUPABASE_URL und SUPABASE_SERVICE_KEY
+py -m pytest
+cd web; npm test
 ```
 
-Lauf starten: `py -m scraper.run`
+## Vercel einrichten
 
-Tests: `py -m pytest` und `node --test tests/test_app.js`
+*Warum:* Vercel stellt die Website unter einer festen Adresse ins Netz.
+
+1. Auf vercel.com anmelden, „Add New → Project“, dieses Repo importieren.
+2. Bei „Root Directory“ `web` eintragen (die Website liegt im Unterordner).
+3. Unter „Environment Variables“ `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_ANON_KEY` eintragen, dann „Deploy“. Erfolg: Vercel zeigt eine Adresse, die Seite lädt.
+4. Supabase → Authentication → URL Configuration: die Vercel-Adresse als „Site URL“ eintragen und unter „Redirect URLs“ `https://<deine-adresse>/**` hinzufügen. *Warum:* Sonst schickt dich der Login auf die falsche Seite zurück.
+5. Der Google-Login braucht normalerweise nichts Neues, denn Supabases Rückruf-Adresse bleibt gleich. Nur wenn Google meckert: in der Google Cloud Console beim OAuth-Client prüfen, ob die Supabase-Adresse als „Authorized redirect URI“ steht.
+
+## Wenn etwas nicht klappt
+
+- **Die Seite lädt nicht oder meldet Datenbankfehler:** Supabase Free pausiert Projekte nach 7 Tagen ohne Zugriff. Der tägliche Lauf verhindert das normalerweise. Ist es doch passiert: supabase.com → Projekt → „Restore project“.
+- **Nach dem Login landest du auf der falschen Seite oder bekommst einen Fehler:** Die Adresse fehlt in Supabase → Authentication → URL Configuration (Site URL und Redirect URLs, siehe „Vercel einrichten“).
+- **Der Lauf ist rot:** GitHub → Actions → den roten Lauf öffnen und die Fehlermeldung lesen. Steht bei einer Firma ein Fehler in `data/bericht.md`, ist meist deren Karriereseite umgezogen oder die `ats_id` falsch. Die anderen Firmen laufen trotzdem. Sind die Zugangsdaten abgelaufen, erneuere die Secrets `SUPABASE_URL` und `SUPABASE_SERVICE_KEY` (GitHub → Settings → Secrets and variables → Actions).
+- **Der Lauf startet nicht mehr von selbst:** Nach 60 Tagen ohne Aktivität schaltet GitHub Zeitpläne ab. Actions → „Täglicher Lauf“ → „Enable workflow“.
 
 Die Projektregeln stehen in [CLAUDE.md](CLAUDE.md).
