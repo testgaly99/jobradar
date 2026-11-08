@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { csvDatei } from "@/lib/export";
+import { csvDatei, SPALTEN } from "@/lib/export";
 import { zip } from "@/lib/zip";
 
 const TABELLEN = [
@@ -24,8 +24,7 @@ export async function GET() {
       zeilen.push(...data);
       if (data.length < 1000) break;
     }
-    const spalten = [...new Set(zeilen.flatMap((z) => Object.keys(z)))];
-    dateien.push({ name: `${datei}.csv`, data: csvDatei(spalten, zeilen) });
+    dateien.push({ name: `${datei}.csv`, data: csvDatei(SPALTEN[tabelle], zeilen) });
   }
   return new Response(new Uint8Array(zip(dateien)), {
     headers: {

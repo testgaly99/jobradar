@@ -4,12 +4,17 @@ import { crc32 } from "node:zlib";
 export function zip(dateien: { name: string; data: Buffer | string }[]): Buffer {
   const teile: Buffer[] = [], zentral: Buffer[] = [];
   let pos = 0;
+  const t = new Date();
+  const zeit = (t.getHours() << 11) | (t.getMinutes() << 5) | (t.getSeconds() >> 1);
+  const datum = ((t.getFullYear() - 1980) << 9) | ((t.getMonth() + 1) << 5) | t.getDate();
   for (const d of dateien) {
     const name = Buffer.from(d.name, "utf8"), daten = Buffer.from(d.data), crc = crc32(daten);
     const lokal = Buffer.alloc(30);
     lokal.writeUInt32LE(0x04034b50, 0);
     lokal.writeUInt16LE(20, 4);
     lokal.writeUInt16LE(0x800, 6); // Bit 11: Name ist UTF-8
+    lokal.writeUInt16LE(zeit, 10);
+    lokal.writeUInt16LE(datum, 12);
     lokal.writeUInt32LE(crc, 14);
     lokal.writeUInt32LE(daten.length, 18);
     lokal.writeUInt32LE(daten.length, 22);
@@ -19,6 +24,8 @@ export function zip(dateien: { name: string; data: Buffer | string }[]): Buffer 
     z.writeUInt16LE(20, 4);
     z.writeUInt16LE(20, 6);
     z.writeUInt16LE(0x800, 8);
+    z.writeUInt16LE(zeit, 12);
+    z.writeUInt16LE(datum, 14);
     z.writeUInt32LE(crc, 16);
     z.writeUInt32LE(daten.length, 20);
     z.writeUInt32LE(daten.length, 24);

@@ -17,9 +17,10 @@ export async function dokumentAnlegen(art: string, name: string, versionDatum: s
   if (!uid) return { fehler: "Bitte melde dich an." };
   if (!ARTEN.includes(art)) return { fehler: "Ungültige Art." };
   if (!pfad.startsWith(`${uid}/`) || pfad.includes("..")) return { fehler: "Ungültiger Speicherpfad." };
-  if (!name.trim()) return { fehler: "Bitte gib einen Versionsnamen an." };
+  name = name.trim();
+  if (!name || name.length > 120) return { fehler: "Der Versionsname muss 1 bis 120 Zeichen lang sein." };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(versionDatum)) return { fehler: "Ungültiges Datum." };
-  const { error } = await sb.from("documents").insert({ art, name: name.trim(), version_datum: versionDatum, storage_pfad: pfad });
+  const { error } = await sb.from("documents").insert({ art, name, version_datum: versionDatum, storage_pfad: pfad });
   if (error) return { fehler: "Dokument konnte nicht gespeichert werden." };
   revalidatePath("/dokumente");
   return {};
@@ -33,7 +34,10 @@ export async function dokumentLoeschen(id: string): Promise<{ fehler?: string }>
   // Zeile zuerst: der FK (restrict) blockiert Dokumente, die eine Bewerbung nutzt.
   const { error } = await sb.from("documents").delete().eq("id", id);
   if (error) return { fehler: error.code === "23503" ? "Dokument wird noch in einer Bewerbung verwendet." : "Dokument konnte nicht gelöscht werden." };
-  if (d.storage_pfad) await sb.storage.from("dokumente").remove([d.storage_pfad]);
+  if (d.storage_pfad) {
+    const { error: e } = await sb.storage.from("dokumente").remove([d.storage_pfad]);
+    if (e) console.error("Speicherobjekt nicht gelöscht:", d.storage_pfad, e.message); // Zeile ist schon weg: nicht scheitern
+  }
   revalidatePath("/dokumente");
   return {};
 }

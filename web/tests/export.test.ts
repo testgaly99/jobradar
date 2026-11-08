@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { crc32 } from "node:zlib";
-import { csvDatei, csvFeld, dateiname } from "../lib/export.ts";
+import { csvDatei, csvFeld, dateiname, SPALTEN } from "../lib/export.ts";
 import { zip } from "../lib/zip.ts";
 
 test("csvFeld: Quoting", () => {
@@ -63,4 +63,21 @@ test("zip: Round-Trip", () => {
     assert.deepEqual(z.subarray(lokal + 30 + ln + le, lokal + 30 + ln + le + gr), daten);
     p += 46 + nl;
   });
+});
+
+test("leere Tabelle: Kopfzeile bleibt", () => {
+  assert.equal(csvDatei(SPALTEN.contacts, []), "\uFEFFid;owner_id;application_id;firma;name;rolle;email;telefon;linkedin;art\r\n");
+});
+
+test("csvFeld: Zahl bleibt, Objekt als JSON", () => {
+  assert.equal(csvFeld(-1), "-1");
+  assert.equal(csvFeld({ a: 1 }), '"{""a"":1}"');
+});
+
+test("zip: DOS-Datum gesetzt, lokal und zentral gleich", () => {
+  const z = zip([{ name: "a", data: "x" }]);
+  const zd = z.readUInt32LE(z.length - 6);
+  assert.ok(z.readUInt16LE(12) >> 9 >= 46);
+  assert.equal(z.readUInt16LE(12), z.readUInt16LE(zd + 14));
+  assert.equal(z.readUInt16LE(10), z.readUInt16LE(zd + 12));
 });
