@@ -134,7 +134,7 @@ Wichtigste Filter, in dieser Reihenfolge:
   - täglicher Digest mit allem, was seit dem letzten Versand neu ist
   - Sofort-Alarm bei einem Top-Treffer
   - Beobachtung von Wunscharbeitgebern
-  - Kanal: Telegram, Teams optional
+  - Kanal: Telegram (kein Teams)
 
 ### 4.2 KI-Auswertung der Anzeigen
 - **Per Regex, ohne KI:** Befristung, Urlaubstage, Gehaltszahlen, Schlagwörter wie „Remote“.
@@ -217,14 +217,27 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 - Dateien liegen in einem Speicher pro Nutzer. Zugriff gibt es nur über kurzlebige signierte Links.
 
 ### 4.6 Konten für mich und Freunde
-- **Anmeldung:** mit Google oder mit E-Mail und Passwort, beides über Supabase Auth. Wer sich mit E-Mail anmeldet, bekommt keine Gmail- und Kalender-Anbindung.
-  - Für Mails an Freunde (Bestätigung, Passwort zurücksetzen) ist ein eigener SMTP-Zugang nötig. Der Standard-Mailversand von Supabase schickt nur an Team-Mitglieder und höchstens 2 Mails pro Stunde.
-  - Welcher Zugang das wird, entscheiden wir in Phase 2.
-- **Nur auf Einladung.**
-- **Datentrennung** auf Datenbankebene (Row Level Security). Getestet wird, dass Person A die Daten von Person B nicht sieht.
-- **Gemeinsam genutzt** werden Firmendaten und gescrapte Stellen. Setzt jemand eine Firma auf seine Zielliste, erweitert das den Scraper für alle. Niemand sieht, wer sie verfolgt.
-- **Rollen:** Ich bin Admin (Einladungen, Scraper-Quellen, Firmendaten). Alle anderen sind normale Nutzer.
-- **Export und Löschen:** Bewerbungen als eine CSV-Tabelle mit klickbaren Links (Dokumente nur mit Namen), dazu Konto löschen. Auf der Seite steht eine kurze Datenschutzerklärung.
+- **Anmeldung:**
+  - Freunde melden sich **nur mit Google** an (Supabase Auth).
+  - Ich habe zusätzlich mein bestehendes Konto mit E-Mail und Passwort.
+  - Wer sich mit E-Mail anmeldet, bekommt keine Gmail- und Kalender-Anbindung.
+- **Zugang:**
+  - Ich teile den Link zur Website. Wer sich mit Google anmeldet, ist sofort drin. Es gibt keine Einladungsliste.
+  - Solange die Google-App im Testmodus ist, kommen nur Google-Konten hinein, die ich in der Google Cloud Console als Testnutzer eingetragen habe (höchstens 100).
+  - Erst mit eigener Domain wird die App veröffentlicht. Dann kann sich jeder mit dem Link anmelden (siehe Backlog).
+- **Größe:** zuerst 1–5 Freunde, perspektivisch bis 20.
+- **Datentrennung** auf Datenbankebene (Row Level Security). Getestet wird, dass Person A die Daten von Person B nicht sieht. Das gilt auch für mich als Admin.
+- **Gemeinsam genutzt** werden Firmendaten und gescrapte Stellen. Freunde sehen die Stellenliste und ihren eigenen Tracker. Setzt jemand eine Firma auf seine Zielliste, erweitert das den Scraper für alle. Niemand sieht, wer sie verfolgt.
+- **Rollen:**
+  - Ich bin Admin. Auf der Seite „Nutzer“ sehe ich alle angemeldeten Nutzer mit Name, E-Mail und „dabei seit“.
+  - „Entfernen“ löscht nach Bestätigung Konto und Daten. Vorher erscheint der Hinweis, die Person solle zuerst exportieren.
+  - Später verwalte ich als Admin auch Scraper-Quellen und Firmendaten. Alle anderen sind normale Nutzer.
+- **Export und Löschen:**
+  - Bewerbungen lassen sich als eine CSV-Tabelle mit klickbaren Links exportieren (Dokumente nur mit Namen).
+  - **Konto löschen** kann jeder selbst. Die Seite empfiehlt dabei ausdrücklich den Export und bietet ihn direkt daneben an.
+  - Zum Bestätigen wird „LÖSCHEN“ eingetippt. Danach sind alle Daten und Dateien sofort und endgültig entfernt.
+- **Datenschutzerklärung:** eine kurze Seite. Kontakt: Mark Galysh, markgaly99@gmail.com.
+- **Domain-Wechsel:** Die Adresse der Website steht nie im Code, nur in den Einstellungen von Vercel, Supabase und Google.
 
 ### 4.7 Gmail und Google Kalender
 - Der Zugriff ist **nur lesend**. Termine ändert die Website nur, wenn sie sie selbst angelegt hat.
@@ -257,10 +270,9 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 
 ## 5. Architektur
 
-**Heute in Betrieb:**
-- Ein Python-Scraper läuft täglich per GitHub Actions.
-- Daten liegen als JSON im öffentlichen Repo `testgaly99/jobradar`.
-- Die Website ist statisch, auf GitHub Pages.
+**Heute in Betrieb (nach Phase 1):**
+- Ein Python-Scraper läuft täglich per GitHub Actions und schreibt in Supabase.
+- Die Website ist mit Next.js in `web/` gebaut. Der Umzug zu Vercel ist ein offenes To-do in Phase 2.
 - Abgedeckt sind 4 Firmen.
 
 **Zielbild (entschieden 2026-11-08, Gratis-Tarife geprüft):**
@@ -271,7 +283,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 | Scraper und Hintergrundjobs | Python, zeitgesteuert per GitHub Actions (Digest, Alarme, Briefings, Gmail-Abgleich, Erinnerungen) | Im öffentlichen Repo unbegrenzt gratis. Abschaltung nach 60 Tagen ohne Aktivität; der tägliche Commit verhindert sie. |
 | KI-Auswertung und Reparatur | Claude Code Action mit Abo-Token | Der Verbrauch zählt gegen das Abo-Kontingent. |
 | Website | Next.js auf Vercel (Hobby) | Nur private, nicht-kommerzielle Nutzung. Zeitgesteuerte Jobs laufen deshalb über GitHub Actions statt über Vercel. |
-| Benachrichtigung | Telegram-Bot, dazu E-Mail | – |
+| Benachrichtigung | Telegram-Bot, später zusätzlich Google Kalender (kein Teams). E-Mail erst mit dem Mail-Paket. | – |
 
 - Die Jobsuche zieht in Phase 1 von GitHub Pages in die neue Website um. Danach wird GitHub Pages abgeschaltet.
 - **Backup:** Das private Repo `jobradar-privat` sichert täglich alle Supabase-Tabellen als Datei. Dateien wie CVs werden nicht gesichert. Zusätzlich gibt es auf der Website den Knopf „Meine Daten exportieren“ (Excel).
@@ -291,7 +303,7 @@ Tabellen im Zielbild:
 Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung und einem eigenen Plan (Abschnitt 7).
 
 0. **Erledigt:** Scraper-Grundlage mit 4 Firmen, statische Website und täglicher Lauf (Version 1, 2026-11-07).
-1. **Tracker und neue Website für mich allein:**
+1. **Erledigt (Code, 2026-11-08): Tracker und neue Website für mich allein:**
    - Login (Google oder E-Mail und Passwort).
    - Stellenliste aus Supabase mit den Filtern Größe, Kategorie, Erfahrungslevel, Arbeitsmodell, Vertragsart, Bereich, Unternehmen, Stadt, Remote, Stichwort und „neu seit“, jeweils mit Trefferzahlen.
    - Bewerbung per Klick aus einem Treffer, per Link oder manuell.
@@ -299,16 +311,27 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
    - Tägliches Backup und Export.
    - Die Daten werden übernommen, und GitHub Pages wird abgeschaltet.
    - **Nicht in Phase 1:** Erinnerungen, „Anzeige offline“, Auswertung.
-2. **Vorlagen und Freunde:** Vorlagen, Textbausteine, Einladungen, Datentrennung, Export und Löschen.
+2. **Freunde (geklärt 2026-11-08):**
+   - Anmeldung per Google über den geteilten Link
+   - Admin-Seite „Nutzer“
+   - Konto löschen mit Export-Empfehlung
+   - Datenschutzerklärung
+   - Datentrennung testen
+   - Als letzter Schritt meine offenen To-dos aus `docs/STATUS.md`, darunter Vercel und die Migrationen.
 3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung.
+   - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
 4. **Scraper für alle Zielfirmen:** rund 1000 Firmen, Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern.
 5. **KI-Auswertung und Filter:** Extraktion über den Abo-Token, alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
 6. **Passung und Analyse:** Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
 
-**Offene Entscheidungen:**
-- SMTP-Zugang für Mails an Freunde (Phase 2)
-- Nutzen Freunde auch die Jobsuche oder nur den Tracker?
-- Nur Telegram oder zusätzlich Teams?
+**Backlog (noch keiner Phase zugeordnet):**
+- **Mail-Paket:**
+  - eigene Domain
+  - Mail-Dienst, z. B. Resend (gratis)
+  - Google-App veröffentlichen, damit „Link teilen, jeder kommt rein“ ohne Testnutzer klappt
+  - dabei entscheiden: neue Nutzer sofort drin oder erst nach Freigabe?
+  - spätestens nötig, wenn es Richtung 20 Nutzer geht
+- **Login für Freunde:** E-Mail und Passwort zusätzlich zu Google (braucht das Mail-Paket).
 
 ---
 
