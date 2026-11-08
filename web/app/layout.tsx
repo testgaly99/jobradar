@@ -13,6 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Kopf />
         <main className="seite">{children}</main>
+        <footer className="seite"><a href="/datenschutz">Datenschutz</a></footer>
       </body>
     </html>
   );

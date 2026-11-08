@@ -104,6 +104,7 @@ export default function Login() {
           </>
         )}
       </p>
+      <p><a href="/datenschutz">Datenschutz</a></p>
     </div>
   );
 }
