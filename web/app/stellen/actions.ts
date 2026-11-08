@@ -34,7 +34,10 @@ export async function beworben(jobId: string) {
   const patch: Record<string, string> = {};
   if (a?.status === "gemerkt") patch.status = "beworben";
   if (a && !a.beworben_am) patch.beworben_am = heuteLokal();
-  if (Object.keys(patch).length) await sb.from("applications").update(patch).eq("id", r.id);
+  if (Object.keys(patch).length) {
+    const { error } = await sb.from("applications").update(patch).eq("id", r.id);
+    if (error) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Der Status konnte nicht gespeichert werden. Bitte erneut versuchen.")}`);
+  }
   revalidatePath("/stellen");
   redirect(`/bewerbungen/${r.id}`);
 }

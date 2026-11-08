@@ -118,3 +118,17 @@ def schreibe(firma, neue, heute):
 
 def speichere_lauf(bericht):
     _req("POST", "laeufe", json={"datum": bericht["stand"], "bericht": bericht})
+
+
+def snapshot_nachruesten():
+    """Einmal pro Lauf: Bewerbungen ohne gegliederten Snapshot bekommen ihn aus der Stelle. Darf den Lauf nie scheitern lassen."""
+    try:
+        n = _req("POST", "rpc/snapshot_nachruesten", json={})
+        print(f"Snapshots nachgerüstet: {n}")
+    except RuntimeError as e:
+        if ": 404 " in str(e) or "PGRST202" in str(e):
+            print("Hinweis: snapshot_nachruesten fehlt (Migration 005 offen), übersprungen.")
+        else:
+            print(f"Hinweis: snapshot_nachruesten fehlgeschlagen: {e}")
+    except Exception as e:  # Netzwerk o. Ä.: Lauf geht trotzdem weiter
+        print(f"Hinweis: snapshot_nachruesten fehlgeschlagen: {type(e).__name__}: {e}")

@@ -4,11 +4,11 @@ export type Segment = { text: string; treffer: boolean };
 
 const maskiere = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-// Zerlegt text in Segmente; treffer=true für ganze Wörter aus begriffe (ohne Groß/Klein, Unicode-sicher, \b taugt für ä/ö/ü nicht).
+// Zerlegt text in Segmente; treffer=true für Wortanfänge (und ganze Wörter) aus begriffe (ohne Groß/Klein, Unicode-sicher, \b taugt für ä/ö/ü nicht).
 export function markiere(text: string, begriffe: string[]): Segment[] {
   const liste = [...new Set(begriffe.map((b) => b.trim()).filter(Boolean))].sort((a, b) => b.length - a.length);
   if (!liste.length || !text) return text ? [{ text, treffer: false }] : [];
-  const re = new RegExp(`(?<![\\p{L}\\p{N}])(?:${liste.map(maskiere).join("|")})(?![\\p{L}\\p{N}])`, "giu");
+  const re = new RegExp(`(?<![\\p{L}\\p{N}])(?:${liste.map(maskiere).join("|")})`, "giu");
   const out: Segment[] = [];
   let pos = 0;
   for (const m of text.matchAll(re)) {

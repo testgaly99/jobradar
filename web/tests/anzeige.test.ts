@@ -10,9 +10,10 @@ test("Treffer am Anfang, in der Mitte und am Ende", () => {
   ]);
   assert.deepEqual(treffer("Wir nutzen SQL täglich", ["SQL"]), ["SQL"]);
 });
-test("Wortanfang und Ende: Python-Kenntnisse ja, JavaScript nicht für Java", () => {
+test("Wortanfang: Team trifft Teamfähigkeit, Java trifft JavaScript, nie mitten im Wort", () => {
   assert.deepEqual(treffer("Python-Kenntnisse", ["Python"]), ["Python"]);
-  assert.deepEqual(treffer("JavaScript und Java", ["Java"]), ["Java"]);
+  assert.deepEqual(treffer("JavaScript und Java", ["Java"]), ["Java", "Java"]);
+  assert.deepEqual(treffer("im Team, Teamfähigkeit", ["Team"]), ["Team", "Team"]);
   assert.deepEqual(treffer("Datenbank", ["bank"]), []);
 });
 test("Umlaute zählen als Buchstaben", () => {

@@ -23,12 +23,19 @@ def _in(p):
 class FakeDB:
     def __init__(self):
         self.ohne_spalten = False
+        self.ohne_funktion = False
+        self.nachgeruestet = 0
         self.pruefungen = 0
         self.t = {"companies": {}, "jobs": {}, "laeufe": [], "applications": []}
 
     def __call__(self, method, pfad, params=None, json=None, headers=None):
         params = params or {}
-        if method == "POST" and pfad == "laeufe":
+        if method == "POST" and pfad == "rpc/snapshot_nachruesten":
+            self.nachgeruestet += 1
+            if self.ohne_funktion:
+                raise RuntimeError("Supabase POST rpc/snapshot_nachruesten: 404 {\"code\":\"PGRST202\"}")
+            return 3
+        elif method == "POST" and pfad == "laeufe":
             self.t["laeufe"].append(json)
         elif method == "POST":
             assert "merge-duplicates" in headers["Prefer"]

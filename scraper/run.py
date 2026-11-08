@@ -73,6 +73,7 @@ def lauf(heute, datenordner="data"):
     db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in firmen if f["aktiv"] == "ja"]}
     _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
+    db.snapshot_nachruesten()  # nach allen Firmen
     db.speichere_lauf(bericht)
     return bericht
 

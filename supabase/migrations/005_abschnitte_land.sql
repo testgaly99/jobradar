@@ -75,3 +75,17 @@ grant select, insert, delete on public.wichtige_punkte to authenticated;
 drop policy if exists wichtige_punkte_eigene on public.wichtige_punkte;
 create policy wichtige_punkte_eigene on public.wichtige_punkte for all to authenticated
   using (owner_id = (select auth.uid())) with check (owner_id = (select auth.uid()));
+
+-- Bestehende Bewerbungen bekommen die gegliederte Anzeige nachgereicht (der Scraper ruft das nach jedem Lauf auf).
+create or replace function public.snapshot_nachruesten() returns integer
+  language plpgsql security definer set search_path = '' as $$
+declare n integer;
+begin
+  update public.applications a set snapshot_abschnitte = j.abschnitte
+    from public.jobs j
+    where a.job_id = j.id and a.snapshot_abschnitte is null and j.abschnitte is not null;
+  get diagnostics n = row_count;
+  return n;
+end $$;
+revoke execute on function public.snapshot_nachruesten() from public, anon, authenticated;
+grant execute on function public.snapshot_nachruesten() to service_role;
