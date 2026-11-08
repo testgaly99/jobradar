@@ -140,3 +140,34 @@ h2 { font-size: 1.1rem; margin: 0; }
 .fehler { background: var(--fehler-bg); color: var(--fehler-text); }
 .info { background: var(--info-bg); color: var(--info-text); }
 .info a { color: inherit; }
+
+/* Stellenliste */
+.stellen-layout { display: grid; gap: 1rem; align-items: start; }
+@media (min-width: 900px) { .stellen-layout { grid-template-columns: 300px 1fr; } }
+.filterleiste { background: var(--flaeche); border-radius: var(--radius); box-shadow: var(--schatten); padding: 0.75rem 1rem; }
+@media (min-width: 900px) {
+  .filterleiste { position: sticky; top: 4.5rem; max-height: calc(100vh - 2rem); overflow-y: auto; }
+}
+.filterblock > summary, .gruppe > summary { cursor: pointer; font-weight: 700; min-height: 44px; display: flex; align-items: center; }
+.filterform { display: grid; gap: 0.75rem; }
+.filterform label { display: grid; gap: 0.25rem; font-weight: 600; }
+.filterform input[type="search"], .filterform input[type="date"] {
+  min-height: 44px; padding: 0.5rem 0.7rem; border: 1px solid var(--gedaempft); border-radius: 10px;
+  background: var(--bg); color: var(--text); font: inherit;
+}
+.filteraktionen { display: grid; gap: 0.5rem; }
+.filteraktionen .knopf { text-decoration: none; }
+.gruppe { border-top: 1px solid var(--rand); }
+.optionen { display: grid; gap: 0.1rem; padding-bottom: 0.5rem; }
+.filterform label.option { display: flex; align-items: center; gap: 0.6rem; font-weight: 400; min-height: 36px; }
+.option input { width: 1.2rem; height: 1.2rem; flex: none; }
+.klein { font-size: 0.85rem; margin: 0; }
+.stellenliste { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+.stelle > * { margin: 0 0 0.4rem; }
+.stelle h2 a { color: var(--text); }
+.firma { font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chip-neu { background: var(--primaer); color: var(--primaer-text); }
+.knopf-schmal { width: auto; }
+.seiten { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin: 1.25rem 0; }
+.seiten .knopf { width: auto; text-decoration: none; }
