@@ -25,10 +25,15 @@ def test_fixture(monkeypatch):
     stellen = _stellen(monkeypatch)
     assert len(stellen) == 3  # unlisted copy excluded
     for s in stellen:
-        assert set(s) == {"ext_id", "titel", "ort", "remote", "url", "beschreibung_kurz"}
+        assert set(s) == {"ext_id", "titel", "ort", "remote", "url", "beschreibung_kurz", "text",
+                          "abteilung", "arbeitsmodell", "vertragsart"}
         assert isinstance(s["ext_id"], str) and s["url"].startswith("http")
         assert isinstance(s["remote"], bool)
-        assert len(s["beschreibung_kurz"]) <= 300
+        assert len(s["beschreibung_kurz"]) <= 300 and s["text"].startswith(s["beschreibung_kurz"])
+        assert s["arbeitsmodell"] == "Hybrid"
+    assert [s["vertragsart"] for s in stellen] == ["Vollzeit", "Vollzeit", ""]  # Intern: keine Zuordnung
+    assert [s["abteilung"] for s in stellen] == ["Business Development", "Engineering", "Engineering"]
+    assert max(len(s["text"]) for s in stellen) > 300
     assert "unlisted-test-copy" not in [s["ext_id"] for s in stellen]
     ny, berlin, _ = stellen
     assert "United States" in ny["ort"] and ny["remote"] is True

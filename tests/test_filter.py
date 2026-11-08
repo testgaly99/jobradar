@@ -1,6 +1,6 @@
 import pytest
 
-from scraper.filter import ist_relevant
+from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant
 
 
 @pytest.mark.parametrize("titel,ort,remote", [
@@ -49,3 +49,23 @@ def test_werkstudent():
 def test_stellenart_raus(titel):
     ok, grund = ist_relevant(titel, "Berlin", False)
     assert not ok and grund.startswith("Stellenart: ")
+
+
+@pytest.mark.parametrize("titel,level", [
+    ("Senior Engineering Manager", "Senior"), ("Head of Junior Talent", "Lead"), ("Trainee Finance", "Junior"),
+    ("Backend Engineer", "Mid"), ("Teamleiter Controlling", "Mid"), ("Leiter Controlling", "Lead"),
+    ("Sr. Data Scientist", "Senior"), ("Staff Engineer", "Lead"),
+])
+def test_erfahrungslevel(titel, level):
+    assert erfahrungslevel(titel) == level
+
+
+@pytest.mark.parametrize("ort,staedte", [
+    ("Berlin; London; Munich; Paris", ["Berlin", "München"]),
+    ("Remote - Europe", []),
+    ("Muenchen, Cologne, Frankfurt am Main, Nuremberg, Duesseldorf",
+     ["München", "Köln", "Frankfurt", "Nürnberg", "Düsseldorf"]),
+    ("Berlin / Berlin, Germany", ["Berlin"]),
+])
+def test_deutsche_staedte(ort, staedte):
+    assert deutsche_staedte(ort) == staedte

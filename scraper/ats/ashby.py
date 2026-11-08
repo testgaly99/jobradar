@@ -1,6 +1,9 @@
 """Ashby: öffentliche Posting-API."""
 from scraper import http
 
+_MODELL = {"Remote": "Remote", "Hybrid": "Hybrid", "OnSite": "Vor Ort"}
+_VERTRAG = {"FullTime": "Vollzeit", "PartTime": "Teilzeit", "Contract": "Befristet", "Temporary": "Befristet"}
+
 
 def hole_stellen(ats_id: str) -> list[dict]:
     daten = http.hole(f"https://api.ashbyhq.com/posting-api/job-board/{ats_id}").json()
@@ -10,12 +13,17 @@ def hole_stellen(ats_id: str) -> list[dict]:
             continue
         land = (((j.get("address") or {}).get("postalAddress")) or {}).get("addressCountry")
         teile = [j.get("location"), land] + [(s or {}).get("location") for s in j.get("secondaryLocations") or []]
+        text = " ".join((j.get("descriptionPlain") or "").split())
         stellen.append({
             "ext_id": str(j["id"]),
             "titel": j["title"],
             "ort": ", ".join(t.strip() for t in teile if t and t.strip()),
             "remote": bool(j.get("isRemote")),
             "url": j["jobUrl"],
-            "beschreibung_kurz": " ".join((j.get("descriptionPlain") or "").split())[:300],
+            "beschreibung_kurz": text[:300],
+            "text": text,
+            "abteilung": (j.get("department") or "").strip(),
+            "arbeitsmodell": _MODELL.get(j.get("workplaceType"), ""),
+            "vertragsart": _VERTRAG.get(j.get("employmentType"), ""),
         })
     return stellen

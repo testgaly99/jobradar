@@ -1,4 +1,4 @@
-# Holt täglich die Stellen, speichert die Daten im Repo und veröffentlicht site/ auf GitHub Pages.
+# Holt täglich die Stellen, schreibt in Supabase und veröffentlicht site/ auf GitHub Pages.
 # 04:00 UTC sind 5 Uhr (Winter) bzw. 6 Uhr (Sommer) deutscher Zeit. Per Knopf jederzeit startbar.
 name: Täglicher Lauf
 
@@ -28,11 +28,14 @@ jobs:
       - run: node --test tests/test_app.js
       # Exit 1 = alle Firmen fehlgeschlagen: Job schlägt fehl, GitHub schickt eine Mail.
       - run: python -m scraper.run
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       - name: Änderungen committen
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/ site/daten.json
+          git add data/bericht.md
           if ! git diff --cached --quiet; then
             git commit -m "Täglicher Lauf $(date -u +%F)"
             git pull --rebase

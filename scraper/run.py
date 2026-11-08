@@ -1,5 +1,4 @@
-"""Gesamtlauf: alle aktiven Unternehmen abrufen, filtern, abgleichen, Berichte schreiben."""
-import json
+"""Gesamtlauf: alle aktiven Unternehmen abrufen, filtern, in Supabase abgleichen, Bericht schreiben."""
 import os
 import sys
 import tempfile
@@ -8,13 +7,13 @@ from datetime import date
 from pathlib import Path
 
 from scraper.ats import ADAPTER
-from scraper.bestand import abgleichen, lade, speichere
+from scraper import db
 from scraper.companies import lade_unternehmen
-from scraper.filter import ist_relevant
+from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant
 
 
 def _schreibe_text(pfad, text):
-    # Temp-Datei + os.replace wie in bestand.speichere: nie eine halbe Datei.
+    # Temp-Datei + os.replace : nie eine halbe Datei.
     fd, tmp = tempfile.mkstemp(dir=Path(pfad).parent, suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
@@ -26,8 +25,8 @@ def _schreibe_text(pfad, text):
         raise
 
 
-def _firma(bestand, f, heute):
-    """Gibt (neuer Bestand, Berichtszeile) fuer ein Unternehmen zurueck."""
+def _firma(f, heute):
+    """Gibt die Berichtszeile fuer ein Unternehmen zurueck; bei Fehler wird nichts geschrieben."""
     name = f["name"]
     zeile = {"name": name, "gefunden": 0, "gefiltert": 0, "neu": 0,
              "geschlossen": 0, "fehler": "", "gruende": {}}
@@ -40,20 +39,16 @@ def _firma(bestand, f, heute):
         for s in stellen:
             ok, grund = ist_relevant(s["titel"], s["ort"], s["remote"])
             if ok:
-                behalten.append(s)
+                behalten.append({**s, "erfahrungslevel": erfahrungslevel(s["titel"]),
+                                 "staedte": deutsche_staedte(s["ort"])})
             else:
                 gruende[grund] += 1
-        neu = abgleichen(bestand, name, behalten, heute)
-        vorher = {i: s for i, s in bestand.items() if s["unternehmen"] == name}
-        zeile.update(
-            gefunden=len(stellen), gefiltert=sum(gruende.values()), gruende=dict(gruende),
-            neu=sum(1 for i, s in neu.items() if s["unternehmen"] == name and i not in vorher),
-            geschlossen=sum(1 for i, s in vorher.items()
-                            if s["status"] == "offen" and neu[i]["status"] == "geschlossen"))
+        neu, geschlossen = db.schreibe(name, behalten, heute)
+        zeile.update(gefunden=len(stellen), gefiltert=sum(gruende.values()), gruende=dict(gruende),
+                     neu=neu, geschlossen=geschlossen)
     except Exception as e:
         zeile["fehler"] = f"{type(e).__name__}: {e}"[:200]
-        return bestand, zeile  # Bestand bleibt unberuehrt
-    return neu, zeile
+    return zeile
 
 
 def _markdown(bericht):
@@ -71,25 +66,13 @@ def _markdown(bericht):
     return "\n".join(z) + "\n"
 
 
-def lauf(heute, datenordner="data", seitenordner="site"):
-    datenordner, seitenordner = Path(datenordner), Path(seitenordner)
+def lauf(heute, datenordner="data"):
+    datenordner = Path(datenordner)
     firmen = lade_unternehmen(datenordner / "companies.csv")
-    bestand = lade(datenordner / "jobs.json")
-    bericht = {"stand": heute, "firmen": []}
-    for f in firmen:
-        if f["aktiv"] != "ja":
-            continue
-        bestand, zeile = _firma(bestand, f, heute)
-        bericht["firmen"].append(zeile)
-    speichere(datenordner / "jobs.json", bestand)
+    db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
+    bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in firmen if f["aktiv"] == "ja"]}
     _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
-    aktiv = {f["name"] for f in firmen if f["aktiv"] == "ja"}
-    offen = sorted((s for s in bestand.values() if s["status"] == "offen" and s["unternehmen"] in aktiv), key=lambda s: s["id"])
-    offen.sort(key=lambda s: s["erstmals_gesehen"], reverse=True)  # stabil: id bleibt Nebenschluessel
-    daten = {"stand": heute,
-             "unternehmen": [{k: v for k, v in f.items() if k != "notiz"} for f in firmen],
-             "stellen": offen}
-    _schreibe_text(seitenordner / "daten.json", json.dumps(daten, ensure_ascii=False, indent=None))
+    db.speichere_lauf(bericht)
     return bericht
 
 

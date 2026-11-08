@@ -37,3 +37,32 @@ def ist_relevant(titel: str, ort_text: str, remote: bool) -> tuple[bool, str]:
     if remote and (not ort_text.strip() or _REMOTE_RE.search(ort_text)):
         return True, ""
     return False, "Ausland"
+
+
+_LEAD_RE = re.compile(r"(?<!\w)(head of|lead|principal|staff|director|vp|vice president|chief|leiter|leitung)(?!\w)", re.IGNORECASE)
+_SENIOR_RE = re.compile(r"(?<!\w)(senior|sr\.)(?!\w)", re.IGNORECASE)
+_JUNIOR_RE = re.compile(r"(?<!\w)(junior|jr\.|trainee|graduate|entry|berufseinsteiger)(?!\w)", re.IGNORECASE)
+
+
+def erfahrungslevel(titel: str) -> str:
+    for level, rx in (("Lead", _LEAD_RE), ("Senior", _SENIOR_RE), ("Junior", _JUNIOR_RE)):
+        if rx.search(titel):
+            return level
+    return "Mid"
+
+
+# Englische/umlautfreie Schreibweisen -> deutsche Schreibweise
+_STADT_NAME = {"munich": "München", "muenchen": "München", "cologne": "Köln", "koeln": "Köln",
+               "nuremberg": "Nürnberg", "nuernberg": "Nürnberg", "duesseldorf": "Düsseldorf",
+               "hanover": "Hannover", "muenster": "Münster"}
+_STADT_RE = re.compile(r"\b(" + "|".join(_STAEDTE) + r")\b", re.IGNORECASE)
+
+
+def deutsche_staedte(ort_text: str) -> list[str]:
+    ergebnis = []
+    for m in _STADT_RE.finditer(ort_text):
+        s = m.group(1)
+        s = _STADT_NAME.get(s.lower(), s[0].upper() + s[1:])
+        if s not in ergebnis:
+            ergebnis.append(s)
+    return ergebnis
