@@ -1,0 +1,120 @@
+/* Hallmark · shape: app screen · genre: editorial · theme: Specimen (deal 3/3, seed private-job-search-tool-2f1d·ffaf64ab·2026-11-08·r0), display: a system serif stack in place of Bodoni Moda · redesign: tokens only
+ * nav: kept, a sticky top bar with the wordmark and five destinations · signature: the job list read like a newspaper's index, serif headlines over a quiet sans meta line, hairlines between · states: loading kept as the pending button, empty, error, full · specimen: oat paper, square 1px rules, one ink-blue signal
+ * axes: light/text-serif/cool · posture: restrained · modes: light+dark · contrast: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S3 R5 V4 · weakest: S, a serif head on oat paper fits any reading site; the ink blue held to "gemerkt" and the main action, the firm colour on the name and four meanings in colour keep it this tool */
+/* Hallmark · variant: editorial · every visual decision of this variant lives in this file; globals.css holds structure and reads only these tokens */
+
+:root {
+  color-scheme: light dark;
+
+  /* Abstände: großzügiger als utilitär, damit Zeilen und Abschnitte atmen */
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 20px; --space-lg: 32px; --space-xl: 48px; --space-2xl: 72px; --space-3xl: 112px; --space-4xl: 160px;
+
+  /* Schrift: Serife des Systems für Überschriften, Systemschrift für alles Bedienbare. Skala 1.2 ab 17px.
+     Keine Webschrift: Turbopack verwirft ein @import von außen, und Google Fonts schickte die IP jedes Besuchers an Google */
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: ui-serif, "Iowan Old Style", "Sitka Heading", Charter, "Bitstream Charter", Georgia, "Noto Serif", serif;
+  --text-xs: 0.75rem; --text-sm: 0.885rem; --text-md: 1.0625rem; --text-lg: 1.275rem; --text-xl: 1.53rem; --text-2xl: 1.836rem;
+  --text-display: 2.2rem; --text-section: var(--text-xl); --text-title: var(--text-lg);
+  --weight-regular: 400; --weight-strong: 600; --weight-display: 600;
+  --leading-body: 1.55; --leading-head: 1.15; --leading-prose: 1.7;
+  --tracking-display: -0.01em;
+
+  /* Formen: eckig, Haarlinien */
+  --radius-control: 0; --radius-card: 0; --radius-chip: 0; --radius-mark: 0; --rule-hair: 1px;
+  --control-h: 40px;
+  --container: 1200px; --gutter: var(--space-xl); --sidebar: 280px;
+
+  /* Flächen: flach, Karten liegen auf dem Papier und sind nur durch eine Haarlinie gefasst */
+  --karte-flaeche: var(--color-paper);
+  --karte-rand: var(--rule-hair) solid var(--color-rule);
+  --karte-schatten: none;
+  --karte-innen: var(--space-lg);
+  --leiste-flaeche: var(--color-paper-2);
+  --fokus-ring: 2px solid var(--color-focus);
+
+  /* Bewegung: nur Zustand */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --dur-micro: 120ms; --dur-short: 200ms;
+  --z-sticky-nav: 300;
+
+  /* Firmenfarbe aus firmenFarbe(): Anteil der Firmenfarbe in der Mischung mit der Tinte, damit jeder Farbton AA erreicht */
+  --firma-anteil: 50%;
+
+  /* Farben, hell. Anker: Tintenblau 262, nur für Hauptaktion, Fokus und "gemerkt" */
+  --color-paper: oklch(96.5% 0.014 82);
+  --color-surface: oklch(98.5% 0.008 82);
+  --color-paper-2: oklch(93.5% 0.018 80);
+  --color-ink: oklch(19% 0.012 60);
+  --color-ink-2: oklch(30% 0.014 60);
+  --color-muted: oklch(46% 0.014 65);
+  --color-rule: oklch(82% 0.016 75);
+  --color-field-edge: oklch(55% 0.018 70);
+  --color-link: oklch(42% 0.16 262);
+  --color-accent: oklch(43% 0.16 262);
+  --color-accent-hover: oklch(37% 0.14 262);
+  --color-accent-ink: oklch(97% 0.012 82);
+  --color-focus: oklch(47% 0.18 262);
+  --color-gemerkt: oklch(92% 0.035 262);
+  --color-gemerkt-ink: oklch(37% 0.13 262);
+  --color-laeuft: oklch(92.5% 0.04 155);
+  --color-laeuft-ink: oklch(37% 0.08 155);
+  --color-neu: oklch(89% 0.08 75);
+  --color-neu-ink: oklch(38% 0.09 55);
+  --color-chip: oklch(91.5% 0.014 75);
+  --color-chip-ink: oklch(28% 0.014 60);
+  --color-mark: oklch(89% 0.13 98);
+  --color-mark-ink: oklch(19% 0.012 60);
+  --color-error-ink: oklch(48% 0.17 27);
+  --color-error-bg: oklch(94.5% 0.025 27);
+  --color-info-ink: oklch(37% 0.13 262);
+  --color-info-bg: oklch(92% 0.035 262);
+  --color-hinweis-ink: oklch(37% 0.07 75);
+  --color-hinweis-bg: oklch(93% 0.055 92);
+}
+
+/* Dunkel nur am Bildschirm: Druck nutzt so immer die hellen Token oben, auch bei dunklem Systemthema. Farbtöne bleiben, nur Helligkeit und Sättigung wandern */
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: oklch(17.5% 0.01 82);
+    --color-surface: oklch(20.5% 0.011 82);
+    --color-paper-2: oklch(23% 0.012 80);
+    --color-ink: oklch(93% 0.012 60);
+    --color-ink-2: oklch(84% 0.012 60);
+    --color-muted: oklch(72% 0.014 65);
+    --color-rule: oklch(33% 0.014 75);
+    --color-field-edge: oklch(60% 0.016 70);
+    --color-link: oklch(78% 0.11 262);
+    --color-accent: oklch(74% 0.12 262);
+    --color-accent-hover: oklch(80% 0.1 262);
+    --color-accent-ink: oklch(18% 0.03 262);
+    --color-focus: oklch(78% 0.11 262);
+    --color-gemerkt: oklch(31% 0.07 262);
+    --color-gemerkt-ink: oklch(88% 0.05 262);
+    --color-laeuft: oklch(30% 0.05 155);
+    --color-laeuft-ink: oklch(88% 0.08 155);
+    --color-neu: oklch(33% 0.06 75);
+    --color-neu-ink: oklch(90% 0.07 75);
+    --color-chip: oklch(28% 0.012 75);
+    --color-chip-ink: oklch(90% 0.012 60);
+    --color-mark: oklch(46% 0.09 98);
+    --color-mark-ink: oklch(97% 0.01 60);
+    --color-error-ink: oklch(80% 0.11 27);
+    --color-error-bg: oklch(29% 0.06 27);
+    --color-info-ink: oklch(88% 0.05 262);
+    --color-info-bg: oklch(31% 0.07 262);
+    --color-hinweis-ink: oklch(90% 0.08 75);
+    --color-hinweis-bg: oklch(31% 0.05 92);
+  }
+}
+
+/* Touch: größere Bedienelemente */
+@media (pointer: coarse) { :root { --control-h: 44px; } }
+@media (max-width: 40rem) { :root { --gutter: var(--space-md); --karte-innen: var(--space-md); } }
+
+/* Druck: helles Papier, dunkle Tinte, keine Rahmen */
+@media print {
+  :root {
+    --color-paper: oklch(99.5% 0.003 82); --color-surface: oklch(99.5% 0.003 82); --color-ink: oklch(15% 0.01 60);
+    --karte-rand: 0 solid transparent; --karte-innen: 0;
+  }
+}
