@@ -307,7 +307,6 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 
 **Offene Entscheidungen:**
 - SMTP-Zugang für Mails an Freunde (Phase 2)
-- Bundesagentur für Arbeit als zweite Quelle? Ohne eine zweite Quelle bringen Dubletten-Abgleich, Karriereseiten-Abgleich und Gehaltsbenchmark wenig.
 - Nutzen Freunde auch die Jobsuche oder nur den Tracker?
 - Nur Telegram oder zusätzlich Teams?
 

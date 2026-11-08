@@ -31,3 +31,4 @@
 | 2026-11-08 | Dokumente werden direkt vom Browser in Storage hochgeladen | So läuft nichts durch die Vercel-Funktionen (Größenlimit) und es braucht keinen Zwischenschritt. |
 | 2026-11-08 | Export als eine CSV-Tabelle mit klickbaren Links (Wunsch des Nutzers), ohne ZIP | Excel öffnet die CSV direkt; Kontakte und Interviews stehen in Spalten der Bewerbung. Kein Fremdpaket nötig (CLAUDE.md Abschnitt 10). |
 | 2026-11-08 | Täglicher Lauf läuft weiter täglich (kurz pausiert, dann wieder an) | Kostet nichts und hält Supabase wach; ohne Aktivität pausiert Supabase Free nach ca. 7 Tagen. |
+| 2026-11-08 | **Keine** Bundesagentur für Arbeit als Quelle | Es gibt keine offizielle Schnittstelle, die Nutzungsbedingungen sind unklar (Regel: nur legal abrufen). |
