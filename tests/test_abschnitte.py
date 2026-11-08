@@ -39,3 +39,12 @@ def test_land():
     assert land("Wien; Zürich") == "Österreich"
     assert land("Zürich; Berlin") == "Deutschland"
     assert land("Remote - Europe") == "" and land("") == ""
+
+
+def test_ungeschlossenes_strong_leckt_nicht():
+    assert abschnitte("<p><strong>Titel<p>Text A<p>Text B") == [{"titel": "Titel", "punkte": ["Text A", "Text B"]}]
+
+
+def test_fetter_listenpunkt_ist_punkt():
+    assert abschnitte("<h3>Skills</h3><ul><li><strong>Python</strong></li><li>SQL</li></ul>") == [
+        {"titel": "Skills", "punkte": ["Python", "SQL"]}]

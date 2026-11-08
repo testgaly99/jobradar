@@ -28,7 +28,8 @@ class _Parser(HTMLParser):
             self.ignoriert += 1
         elif tag in _BLOCK:
             self._leeren()
-            self.art = "h" if tag in _UEBERSCHRIFT else "p"
+            self.art = "h" if tag in _UEBERSCHRIFT else "li" if tag == "li" else "p"
+            self.fett = 0  # ein nie geschlossenes <b>/<strong> soll nicht in den naechsten Block lecken
         elif tag in _FETT:
             self.fett += 1
 
