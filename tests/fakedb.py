@@ -37,6 +37,8 @@ class FakeDB:
             rows = [z for z in self.t["jobs"].values() if z["unternehmen"] == params["unternehmen"][3:]]
             rows.sort(key=lambda z: z["id"])
             return rows[params["offset"]:params["offset"] + params["limit"]]
+        elif method == "GET" and pfad == "companies":
+            return list(self.t["companies"].values())
         elif method == "GET" and pfad == "applications":
             ids = _in(params["job_id"])
             return [{"job_id": a} for a in self.t["applications"] if a in ids]
