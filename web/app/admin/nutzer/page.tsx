@@ -65,7 +65,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
               <td>
                 {istAdmin(z.email, process.env.ADMIN_EMAIL) || z.id === n.id ? "Admin" : (
                   <details className="menue">
-                    <summary aria-label="Aktionen">…</summary>
+                    <summary aria-label={`Aktionen für ${z.email}`}>…</summary>
                     <LoeschForm
                       action={nutzerEntfernen.bind(null, z.id)}
                       frage={`${z.name || z.email} entfernen? Bitte die Person vorher, ihre Daten zu exportieren. Alle Bewerbungen und Dateien werden endgültig gelöscht.`}

@@ -165,3 +165,28 @@ def test_admin_einblicke_nicht_fuer_authenticated(users):
     assert r.status_code in (401, 403), f"authenticated darf admin_einblicke nicht aufrufen: {r.status_code} {r.text}"
     r = requests.post(f"{URL}/rest/v1/rpc/admin_einblicke", headers=_h(SERVICE), json={}, timeout=30)
     assert r.status_code == 200 and "aktiv_7" in r.json()
+
+
+def test_wichtige_punkte_rls(users):
+    (a_id, a_tok), (b_id, b_tok) = users
+    ha, hb = _h(ANON, a_tok), _h(ANON, b_tok)
+    rest = f"{URL}/rest/v1/wichtige_punkte"
+    prefer = {"Prefer": "return=representation"}
+    r = requests.get(f"{rest}?limit=1", headers=_h(SERVICE), timeout=30)
+    if r.status_code == 404 or "PGRST205" in r.text or "42P01" in r.text:
+        pytest.skip("Migration 005 noch nicht angewendet (wichtige_punkte fehlt)")
+    try:
+        r = requests.post(rest, headers={**ha, **prefer}, json={"begriff": "Homeoffice"}, timeout=30)
+        assert r.status_code == 201, r.text
+        pid = r.json()[0]["id"]
+        assert requests.get(rest, headers=hb, timeout=30).json() == []
+        r = requests.post(rest, headers=hb, json={"owner_id": a_id, "begriff": "Fremd"}, timeout=30)
+        assert 400 <= r.status_code < 500, r.text
+        r = requests.delete(f"{rest}?id=eq.{pid}", headers={**hb, **prefer}, timeout=30)
+        assert r.json() == []
+        r = requests.get(f"{rest}?id=eq.{pid}", headers=ha, timeout=30)
+        assert len(r.json()) == 1
+        r = requests.post(rest, headers=ha, json={"begriff": " homeoffice "}, timeout=30)  # Duplikat trotz Gross/Klein/Leerraum
+        assert r.status_code == 409, r.text
+    finally:
+        _warn("wichtige_punkte", _retry(lambda: requests.delete(f"{rest}?owner_id=eq.{a_id}", headers=_h(SERVICE), timeout=30)))

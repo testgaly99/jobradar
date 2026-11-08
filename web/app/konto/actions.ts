@@ -43,6 +43,7 @@ export async function begriffHinzufuegen(formData: FormData) {
   if ((count ?? 0) >= MAX_BEGRIFFE) zurueck(`Du kannst höchstens ${MAX_BEGRIFFE} Begriffe speichern.`);
   const { error } = await sb.from("wichtige_punkte").insert({ begriff });
   if (error?.code === "23505") zurueck("Diesen Begriff hast du schon.");
+  if (error?.message.includes("wichtige_punkte_limit")) zurueck(`Du kannst höchstens ${MAX_BEGRIFFE} Begriffe speichern.`);
   if (error) zurueck("Speichern fehlgeschlagen. Bitte später erneut versuchen.");
   revalidatePath("/konto");
 }

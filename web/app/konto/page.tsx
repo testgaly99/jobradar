@@ -33,7 +33,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
       <h2>Meine Bewerbungen nach Status</h2>
       <ul>{zahlen.map(([s, c]) => <li key={s}>{STATUS_LABEL[s]}: {c}</li>)}</ul>
       <h2>Was mir bei einer Stelle wichtig ist</h2>
-      {punkteFehler ? <p className="gedaempft">Verfügbar nach Migration 005</p> : (
+      {punkteFehler ? <p className="gedaempft">{["42P01", "PGRST205"].includes(punkteFehler.code) ? "Verfügbar nach Migration 005" : "Die Begriffe konnten gerade nicht geladen werden."}</p> : (
         <>
           {punkte?.length ? (
             <ul className="chips">

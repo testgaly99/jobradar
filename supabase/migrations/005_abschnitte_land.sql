@@ -37,9 +37,10 @@ language sql stable security definer set search_path = '' as $$
                             from (select owner_id, count(*) n from public.applications group by owner_id) p), '[]'::jsonb),
     'aktiv_7', (select count(*) from auth.users where last_sign_in_at > now() - interval '7 days'),
     'aktiv_30', (select count(*) from auth.users where last_sign_in_at > now() - interval '30 days'),
-    'bewerbungen_pro_woche', coalesce((select jsonb_agg(jsonb_build_object('woche', w.wo, 'anzahl', w.n) order by w.wo)
-                            from (select date_trunc('week', erstellt_am)::date wo, count(*) n from public.applications
-                                  where erstellt_am >= date_trunc('week', now()) - interval '7 weeks' group by 1) w), '[]'::jsonb)
+    'bewerbungen_pro_woche', (select jsonb_agg(jsonb_build_object('woche', g.wo, 'anzahl', coalesce(c.n, 0)) order by g.wo)
+                            from (select generate_series(date_trunc('week', now())::date - 49, date_trunc('week', now())::date, 7) wo) g
+                            left join (select date_trunc('week', erstellt_am)::date wo, count(*) n from public.applications
+                                       where erstellt_am >= date_trunc('week', now()) - interval '7 weeks' group by 1) c on c.wo = g.wo)
   );
 $$;
 revoke execute on function public.admin_einblicke() from public, anon, authenticated;
@@ -52,7 +53,22 @@ create table if not exists public.wichtige_punkte (
   begriff text not null check (length(trim(begriff)) between 2 and 60),
   erstellt_am timestamptz not null default now()
 );
-create unique index if not exists wichtige_punkte_eindeutig on public.wichtige_punkte (owner_id, lower(begriff));
+drop index if exists public.wichtige_punkte_eindeutig;
+create unique index if not exists wichtige_punkte_eindeutig_v2 on public.wichtige_punkte (owner_id, lower(trim(begriff)));
+
+-- Obergrenze 50 pro Nutzer, auch bei direktem API-Zugriff. Unter Parallelität (Sperre pro Nutzer) abgesichert.
+create or replace function public.wichtige_punkte_limit() returns trigger
+language plpgsql security invoker set search_path = '' as $$
+begin
+  perform pg_advisory_xact_lock(hashtextextended(new.owner_id::text, 0));
+  if (select count(*) from public.wichtige_punkte where owner_id = new.owner_id) >= 50 then
+    raise exception 'wichtige_punkte_limit' using errcode = 'P0001', hint = 'LIMIT_50';
+  end if;
+  return new;
+end $$;
+drop trigger if exists wichtige_punkte_limit on public.wichtige_punkte;
+create trigger wichtige_punkte_limit before insert on public.wichtige_punkte
+  for each row execute function public.wichtige_punkte_limit();
 alter table public.wichtige_punkte enable row level security;
 revoke all on public.wichtige_punkte from anon;
 grant select, insert, delete on public.wichtige_punkte to authenticated;
