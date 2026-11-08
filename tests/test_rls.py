@@ -31,11 +31,11 @@ def _h(key, token=None):
 
 
 def _retry(fn, versuche=5, pause=3):
-    """Cleanup ueberlebt kurze Netzabbrueche: nur bei ConnectionError wiederholen."""
+    """Cleanup ueberlebt kurze Netzabbrueche: bei Netzfehlern (RequestException) wiederholen."""
     for i in range(versuche):
         try:
             return fn()
-        except requests.ConnectionError:
+        except requests.RequestException:
             if i == versuche - 1:
                 raise
             time.sleep(pause)
@@ -75,11 +75,17 @@ def users():
     finally:
         # Datei zuerst (Nutzer-Loeschung kann an Storage-Objekten scheitern), dann Nutzer
         if ids:
-            _warn("Datei", _retry(lambda: requests.delete(f"{URL}/storage/v1/object/dokumente/{ids[0]}/test.txt",
-                                                            headers=_h(SERVICE), timeout=30)))
+            try:
+                _warn("Datei", _retry(lambda: requests.delete(f"{URL}/storage/v1/object/dokumente/{ids[0]}/test.txt",
+                                                                headers=_h(SERVICE), timeout=30)))
+            except Exception as e:  # jeder Schritt einzeln, damit Nutzer B trotzdem geloescht wird
+                print("WARNUNG Cleanup Datei:", e)
         for uid in ids:
-            _warn("Nutzer", _retry(lambda: requests.delete(f"{URL}/auth/v1/admin/users/{uid}",
-                                                            headers=_h(SERVICE), timeout=30)))
+            try:
+                _warn("Nutzer", _retry(lambda: requests.delete(f"{URL}/auth/v1/admin/users/{uid}",
+                                                                headers=_h(SERVICE), timeout=30)))
+            except Exception as e:
+                print("WARNUNG Cleanup Nutzer:", e)
 
 
 def test_rls_isolation(users):

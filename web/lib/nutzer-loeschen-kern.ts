@@ -1,8 +1,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Ohne "server-only", damit ein Node-Skript es testen kann. Erst Dateien, dann Nutzer
-// (Supabase verweigert deleteUser bei vorhandenen Storage-Objekten). Zeilen gehen per cascade.
+// Ohne "server-only", damit ein Node-Skript es testen kann. Reihenfolge: Bewerbungen (cascade auf Kontakte,
+// Interviews, Verlauf), Dokument-Zeilen, Dateien, Nutzer. Bewerbungen zuerst, weil deren FK auf documents
+// RESTRICT ist; Zeilen vor Dateien, damit ein Abbruch nur verwaiste Dateien hinterlässt (Retry räumt auf).
 export async function loescheNutzerMit(sb: SupabaseClient, uid: string): Promise<void> {
+  for (const t of ["applications", "documents"]) {
+    const { error: e } = await sb.from(t).delete().eq("owner_id", uid);
+    if (e) throw new Error("Die Daten konnten nicht gelöscht werden.");
+  }
   const namen: string[] = [];
   // Erst alles einsammeln, dann entfernen: so verschiebt das Löschen keine Seiten.
   for (let offset = 0; ; offset += 100) {

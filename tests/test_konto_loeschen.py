@@ -52,6 +52,11 @@ def test_konto_loeschen_komplett():
                               ("documents", {"art": "cv", "name": "cv.pdf"})]:
             r = requests.post(f"{rest}/{tabelle}", headers=h, json={"owner_id": uid, **body}, timeout=30)
             assert r.status_code == 201, r.text
+            if tabelle == "documents":
+                dok_id = r.json()[0]["id"]
+        # Bewerbung verweist aufs Dokument (RESTRICT-FK erst nach Migration 004 wirklich aktiv)
+        r = requests.patch(f"{rest}/applications?id=eq.{app_id}", headers=h, json={"cv_dokument_id": dok_id}, timeout=30)
+        assert r.status_code == 200, r.text
 
         def hoch(i):
             return requests.post(f"{URL}/storage/v1/object/dokumente/{uid}/d{i:03}.txt", timeout=60,

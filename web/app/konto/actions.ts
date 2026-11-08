@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { bestaetigt } from "@/lib/bestaetigung";
+import { selbstLoeschenErlaubt } from "@/lib/nutzerliste";
 import { loescheNutzer } from "@/lib/nutzer-loeschen";
 
 function zurueck(m: string): never {
@@ -12,13 +13,15 @@ function zurueck(m: string): never {
 export async function kontoLoeschen(formData: FormData) {
   const n = await aktuellerNutzer();
   if (!n) redirect("/login");
-  if (n.admin) zurueck("Das Admin-Konto kann nicht gelöscht werden.");
+  const verboten = selbstLoeschenErlaubt({ istAdmin: n.admin, adminEnv: process.env.ADMIN_EMAIL });
+  if (verboten) zurueck(verboten);
   if (!bestaetigt(String(formData.get("bestaetigung") ?? ""))) zurueck("Bitte tippe LÖSCHEN ein, um das Konto zu löschen.");
   let fehler = "";
   try {
     await loescheNutzer(n.id);
   } catch (e) {
-    fehler = e instanceof Error ? e.message : "Das Konto konnte nicht gelöscht werden.";
+    console.error("kontoLoeschen:", e);
+    fehler = "Löschen fehlgeschlagen. Bitte später erneut versuchen.";
   }
   if (fehler) zurueck(fehler);
   await (await createClient()).auth.signOut().catch(() => {}); // Nutzer ist weg; Cookie trotzdem räumen

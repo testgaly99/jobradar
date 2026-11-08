@@ -15,6 +15,11 @@ export function nutzerZeilen(users: U[]) {
     }));
 }
 
+export function selbstLoeschenErlaubt(p: { istAdmin: boolean; adminEnv?: string }): string | null {
+  if (!p.adminEnv?.trim()) return "Konto löschen ist gerade nicht möglich. Bitte den Betreiber kontaktieren.";
+  return p.istAdmin ? "Das Admin-Konto kann nicht gelöscht werden." : null;
+}
+
 export function entfernenErlaubt(p: { zielId: string; zielEmail?: string | null; eigeneId: string; adminEnv?: string }): string | null {
   if (!p.zielEmail) return "Nutzer konnte nicht geprüft werden. Es wurde nichts gelöscht."; // fail closed
   return p.zielId === p.eigeneId || istAdmin(p.zielEmail, p.adminEnv) ? "Das Admin-Konto kann nicht gelöscht werden." : null;

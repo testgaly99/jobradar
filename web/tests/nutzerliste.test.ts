@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { nutzerZeilen, entfernenErlaubt } from "../lib/nutzerliste.ts";
+import { nutzerZeilen, entfernenErlaubt, selbstLoeschenErlaubt } from "../lib/nutzerliste.ts";
 
 test("nutzerZeilen: Name, Datum, Sortierung", () => {
   const z = nutzerZeilen([
@@ -20,4 +20,11 @@ test("entfernenErlaubt", () => {
   assert.match(entfernenErlaubt({ ...b, zielEmail: "ADMIN@x.de" })!, /Admin-Konto/);
   assert.equal(entfernenErlaubt(b), null);
   for (const zielEmail of [undefined, null, ""]) assert.match(entfernenErlaubt({ ...b, zielEmail })!, /nichts gelöscht/);
+});
+
+test("selbstLoeschenErlaubt: ohne/leere ADMIN_EMAIL gesperrt, Admin gesperrt, sonst erlaubt", () => {
+  assert.match(selbstLoeschenErlaubt({ istAdmin: false })!, /nicht möglich/);
+  assert.match(selbstLoeschenErlaubt({ istAdmin: false, adminEnv: "  " })!, /nicht möglich/);
+  assert.equal(selbstLoeschenErlaubt({ istAdmin: true, adminEnv: "a@x.de" }), "Das Admin-Konto kann nicht gelöscht werden.");
+  assert.equal(selbstLoeschenErlaubt({ istAdmin: false, adminEnv: "a@x.de" }), null);
 });
