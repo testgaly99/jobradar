@@ -344,7 +344,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
    - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
 4. **Scraper für alle Zielfirmen:** rund 1000 Firmen, Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern.
 5. **KI-Auswertung und Filter:** Extraktion über den Abo-Token, alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
-6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (Anforderungen, die mein CV abdeckt, fett; nicht abgedeckte rot) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
+6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (Anforderungen, die mein CV abdeckt, fett; nicht abgedeckte rot) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Dafür das günstigste Modell (Haiku), um das Abo-Kontingent zu schonen; ein größeres Modell nur, wenn Stichproben zeigen, dass Haiku zu oft danebenliegt. Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
 
 **Backlog (noch keiner Phase zugeordnet):**
 - **Mail-Paket:**

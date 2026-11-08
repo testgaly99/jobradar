@@ -44,3 +44,4 @@
 | 2026-11-08 | Reiter „Dokumente“ ausgeblendet; „Dokumente klären“ und „Bewerbungsformular neu definieren“ in den Backlog | Ohne Bewerben über die Website bringen Dokumente wenig. Das Formular will der Nutzer später gemeinsam neu festlegen. |
 | 2026-11-08 | Admin-Einblicke nur als Zahlen ohne Inhalte (letzte Anmeldung, Anzahl Bewerbungen, aktive Nutzer) | Datenschutz: keine Firmennamen, Notizen oder Klickverfolgung. |
 | 2026-11-08 | „Wichtige Punkte“ markieren kommt in Phase 2b (Textvergleich). CV-Abgleich (fett/rot) und CV-Empfehlung kommen in Phase 6, per KI über den Abo-Token | Wortvergleich mit einem Lebenslauf würde oft falsch rot markieren; Bedeutungen erkennt nur ein Sprachmodell. |
+| 2026-11-08 | CV-Abgleich (Phase 6) mit dem günstigsten Modell (Haiku) | Schont das Abo-Kontingent. Ein größeres Modell nur, wenn Stichproben zu viele Fehler zeigen. |
