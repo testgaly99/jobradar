@@ -20,7 +20,8 @@ Stand: 2026-11-08
 - In Git ist für dieses Repo die Identität testgaly99 eingetragen.
 
 ## Offene To-dos für den Nutzer
-1. Migrationen `002`, `003`, `004` im Supabase SQL Editor ausführen (siehe README „Datenbank einrichten“).
+1. Migrationen `002`, `003`, `004` im Supabase SQL Editor ausführen, in dieser Reihenfolge (siehe README „Datenbank einrichten“). Ohne 002 fehlen die Zahlen an den Filtern. Ohne 003 sind doppelte Bewerbungen möglich. Ohne 004 lässt sich ein verwendeter Lebenslauf löschen.
+1a. Klicktest der neuen Seiten (nach Punkt 1): Bewerbung aus einer Stelle, aus einem Link und manuell anlegen; Status ändern; Verlauf und Kanban ansehen; ein Dokument hochladen; den Export öffnen. Auffälligkeiten mit Bildschirmfoto melden.
 2. Neue Registrierungen abschalten (Supabase → Authentication → Sign In / Providers → „Allow new users to sign up“ aus), sobald dein Konto existiert.
 3. Secret Key rotieren: Er war einmal im Chat sichtbar. Supabase → API Keys → neuen Secret key anlegen → in `.env` und im GitHub-Secret `SUPABASE_SERVICE_KEY` eintragen → alten löschen.
 4. Vercel einrichten (README „Vercel einrichten“), danach die Vercel-Adresse in Supabase → Authentication → URL Configuration eintragen.
