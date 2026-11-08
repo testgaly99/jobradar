@@ -177,6 +177,18 @@
   - Merken, dann „Ich habe mich beworben“: genau 1 Bewerbung mit Status beworben und einem Verlaufseintrag.
   - Danach aufräumen, mit try/finally.
 - [ ] `npm test`, `npx tsc --noEmit`, `npm run build`
+- [ ] **Markierung der wichtigen Punkte** (Tabelle aus Task 4, darum Task 3 **nach** Task 4 ausführen, oder vorher mit leerer Liste und Rückfall, wenn die Tabelle fehlt):
+  - Reiner Helfer `markiere(text: string, begriffe: string[]): Array<{text: string, treffer: boolean}>`
+    - Groß- und Kleinschreibung egal, Umlaute normal
+    - erkennt nur ganze Wortanfänge, also findet „Python“ in „Python-Kenntnisse“, aber „Java“ nicht in „JavaScript“
+    - Ergebnis als Segmente, die als `<mark>`-**Elemente** gerendert werden, nie über HTML-Strings
+  - Oben auf der Detailseite: „N deiner wichtigen Punkte kommen vor“.
+  - Tests:
+    - Treffer am Anfang, in der Mitte und am Ende
+    - kein Treffer innerhalb eines Wortes
+    - mehrere Begriffe
+    - Sonderzeichen im Begriff wie `C++` und `(`
+    - leere Begriffsliste
 - [ ] Commit `Detailseite pro Stelle, gegliederte Anzeige`
 
 ### Task 4: Navigation, Konto und Admin-Einblicke
@@ -218,6 +230,15 @@
   - Google-Erkennung über `app_metadata.provider`
   - Live: `authenticated` erhält bei `rpc('admin_einblicke')` einen Fehler. Dieser Live-Test läuft erst nach Migration 005, vorher `skip`.
 - [ ] `npm test`, `npx tsc --noEmit`, `npm run build`, `py -m pytest -q`
+- [ ] **Wichtige Punkte (Nutzerwunsch 2026-11-08):**
+  - Neue Tabelle `public.wichtige_punkte` in Migration 005:
+    - Spalten `id uuid pk`, `owner_id uuid not null default auth.uid() references auth.users on delete cascade`, `begriff text not null check (length(trim(begriff)) between 2 and 60)`, `erstellt_am`
+    - eindeutig pro (owner_id, lower(begriff))
+    - RLS: nur eigene Zeilen
+    - `anon` revoked
+  - Die Konto-Seite bekommt den Bereich „Was mir bei einer Stelle wichtig ist“: Liste plus Feld „Begriff hinzufügen“ plus Entfernen.
+  - Die Server-Actions prüfen die Sitzung. Höchstens 50 Begriffe pro Nutzer.
+  - Den Löschen-Kern `loescheNutzerMit` nicht vergessen: Die Tabelle hängt per Cascade an auth.users, das passt. Prüfen.
 - [ ] Commit `Konto und Admin-Einblicke, Dokumente aus der Navigation`
 
 ### Task 5: Design mit Hallmark
