@@ -30,4 +30,4 @@
 | 2026-11-08 | Löschschutz über Fremdschlüssel mit `restrict` | Die Datenbank selbst verhindert, dass ein benutzter Lebenslauf oder ein benutztes Anschreiben versehentlich gelöscht wird. |
 | 2026-11-08 | Dokumente werden direkt vom Browser in Storage hochgeladen | So läuft nichts durch die Vercel-Funktionen (Größenlimit) und es braucht keinen Zwischenschritt. |
 | 2026-11-08 | Export als eine CSV-Tabelle mit klickbaren Links (Wunsch des Nutzers), ohne ZIP | Excel öffnet die CSV direkt; Kontakte und Interviews stehen in Spalten der Bewerbung. Kein Fremdpaket nötig (CLAUDE.md Abschnitt 10). |
-| 2026-11-08 | Täglicher Lauf **pausiert** (nur noch per Knopf), bis alle Phasen fertig sind | Wunsch des Nutzers: erst die fertige Website. Folge: Supabase Free pausiert das Projekt nach ca. 7 Tagen ohne Aktivität; dann im Supabase-Dashboard „Restore project“ klicken (Daten bleiben erhalten). |
+| 2026-11-08 | Täglicher Lauf läuft weiter täglich (kurz pausiert, dann wieder an) | Kostet nichts und hält Supabase wach; ohne Aktivität pausiert Supabase Free nach ca. 7 Tagen. |

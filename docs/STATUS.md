@@ -3,7 +3,7 @@
 Stand: 2026-11-08
 
 ## Was funktioniert (Phase 1, Code fertig)
-- „Täglicher Lauf“ (GitHub Actions) ist **pausiert** bis zum Ende aller Phasen und startet nur per Knopf. Er ruft die Stellen von 4 Firmen ab (Helsing, The Exploration Company, Taktile, telli), schreibt sie in Supabase und legt `data/bericht.md` ab.
+- Täglicher Lauf per GitHub Actions („Täglicher Lauf“, 04:00 UTC): ruft die Stellen von 4 Firmen ab (Helsing, The Exploration Company, Taktile, telli), schreibt sie in Supabase und legt `data/bericht.md` ab.
 - Neue Website in `web/` (Next.js): Login, Stellenliste mit Filtern, Bewerbungs-Tracker, Link einfügen, Dokumente, Export.
 - Die alten Stellen aus `data/jobs.json` sind nach Supabase umgezogen (`scraper/umzug.py`, einmalig, 221 Stellen mit dem echten Erstdatum). Die alte Seite (`site/`) und GitHub Pages im Workflow sind entfernt.
 - Backup-Repo `jobradar-privat` ist auf GitHub (privat, Stand c51c373, Sichtbarkeit geprüft) mit täglichem `pg_dump`; ohne das Secret `SUPABASE_DB_URL` läuft es noch nicht.
@@ -11,7 +11,6 @@ Stand: 2026-11-08
 - Tests: `py -m pytest` und `npm test` in `web/`.
 
 ## Bekannte Probleme
-- Weil der tägliche Lauf pausiert ist, kann Supabase das Projekt nach ca. 7 Tagen ohne Aktivität pausieren. Abhilfe: Supabase → Projekt → „Restore project“, oder den Lauf per Knopf starten.
 - 9 der 13 Firmen in `data/companies.csv` sind noch nicht angebunden (`aktiv=nein`).
 - Der Backup-Workflow ist noch nie gelaufen (Secret `SUPABASE_DB_URL` fehlt).
 
