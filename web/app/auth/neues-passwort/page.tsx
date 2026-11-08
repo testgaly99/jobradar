@@ -27,7 +27,7 @@ export default function NeuesPasswort() {
       <h1>Neues Passwort</h1>
       {sitzung === null ? null : !sitzung ? (
         <p role="alert" className="meldung fehler">
-          Link abgelaufen – bitte erneut anfordern. <a href="/login">Zur Anmeldung</a>
+          Link abgelaufen. Bitte erneut anfordern. <a href="/login">Zur Anmeldung</a>
         </p>
       ) : fertig ? (
         <p role="status" className="meldung info">Passwort geändert. <a href="/">Weiter zu Jobradar</a></p>

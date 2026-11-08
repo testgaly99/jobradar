@@ -29,19 +29,23 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
   const summe = wochen.reduce((s, w) => s + w.anzahl, 0);
   const max = Math.max(1, ...wochen.map((w) => w.anzahl));
   return (
-    <div className="karte">
+    <div className="stapel">
       <h1>Nutzer</h1>
       {e ? (
         <>
-          <p>Aktiv in 7 Tagen: <strong>{e.aktiv_7}</strong> · Aktiv in 30 Tagen: <strong>{e.aktiv_30}</strong> · Bewerbungen der letzten 8 Wochen: <strong>{summe}</strong></p>
-          <table>
+          <dl className="zahlen">
+            <div><dt>Aktiv in 7 Tagen</dt><dd>{e.aktiv_7}</dd></div>
+            <div><dt>Aktiv in 30 Tagen</dt><dd>{e.aktiv_30}</dd></div>
+            <div><dt>Bewerbungen der letzten 8 Wochen</dt><dd>{summe}</dd></div>
+          </dl>
+          <table className="balkentabelle">
             <caption className="gedaempft klein">Bewerbungen pro Woche (Wochenbeginn)</caption>
             <tbody>
               {wochen.map((w) => (
                 <tr key={w.woche}>
                   <th scope="row">{w.woche.split("-").reverse().join(".")}</th>
                   <td><div className="balken" style={{ width: `${(w.anzahl / max) * 100}%` }} /></td>
-                  <td>{w.anzahl}</td>
+                  <td className="num">{w.anzahl}</td>
                 </tr>
               ))}
             </tbody>
@@ -52,32 +56,34 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
       )}
       <p>Neue Freunde: In der Google Cloud Console als Testnutzer eintragen, dann den Link zur Website schicken.</p>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
-      <table>
-        <thead><tr><th>Name</th><th>E-Mail</th><th>dabei seit</th><th>letzte Anmeldung</th>{e && <th>Bewerbungen</th>}<th></th></tr></thead>
-        <tbody>
-          {zeilen.map((z) => (
-            <tr key={z.id}>
-              <td>{z.name}</td>
-              <td>{z.email}</td>
-              <td>{z.dabeiSeit}</td>
-              <td>{z.letzteAnmeldung}</td>
-              {e && <td>{proNutzer.get(z.id) ?? 0}</td>}
-              <td>
-                {istAdmin(z.email, process.env.ADMIN_EMAIL) || z.id === n.id ? "Admin" : (
-                  <details className="menue">
-                    <summary aria-label={`Aktionen für ${z.email}`}>…</summary>
-                    <LoeschForm
-                      action={nutzerEntfernen.bind(null, z.id)}
-                      frage={`${z.name || z.email} entfernen? Bitte die Person vorher, ihre Daten zu exportieren. Alle Bewerbungen und Dateien werden endgültig gelöscht.`}
-                      text="Entfernen"
-                    />
-                  </details>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="tabelle-rahmen">
+        <table className="tabelle">
+          <thead><tr><th>Name</th><th>E-Mail</th><th>Dabei seit</th><th>Letzte Anmeldung</th>{e && <th>Bewerbungen</th>}<th></th></tr></thead>
+          <tbody>
+            {zeilen.map((z) => (
+              <tr key={z.id}>
+                <td>{z.name}</td>
+                <td>{z.email}</td>
+                <td>{z.dabeiSeit}</td>
+                <td>{z.letzteAnmeldung}</td>
+                {e && <td className="num">{proNutzer.get(z.id) ?? 0}</td>}
+                <td>
+                  {istAdmin(z.email, process.env.ADMIN_EMAIL) || z.id === n.id ? "Admin" : (
+                    <details className="menue">
+                      <summary aria-label={`Aktionen für ${z.email}`}>…</summary>
+                      <LoeschForm
+                        action={nutzerEntfernen.bind(null, z.id)}
+                        frage={`${z.name || z.email} entfernen? Bitte die Person vorher, ihre Daten zu exportieren. Alle Bewerbungen und Dateien werden endgültig gelöscht.`}
+                        text="Entfernen"
+                      />
+                    </details>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

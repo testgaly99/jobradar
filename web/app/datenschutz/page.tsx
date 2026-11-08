@@ -2,7 +2,7 @@ export const metadata = { title: "Datenschutz – Jobradar" };
 
 export default function Seite() {
   return (
-    <div className="karte">
+    <div className="karte prosa">
       <h1>Datenschutz</h1>
       <h2>Verantwortlich</h2>
       <p>Mark Galysh, markgaly99@gmail.com. Jobradar ist ein privates, nicht-kommerzielles Projekt für Freunde.</p>

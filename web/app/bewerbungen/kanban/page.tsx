@@ -21,7 +21,7 @@ export default async function Seite() {
           const spalte = karten.filter((k) => k.status === s);
           return (
             <section key={s} className="spalte" aria-label={STATUS_LABEL[s]}>
-              <h2>{STATUS_LABEL[s]} <span className="chip">{spalte.length}</span></h2>
+              <h2>{STATUS_LABEL[s]} <span className="chip num">{spalte.length}</span></h2>
               {spalte.map((k) => (
                 <article key={k.id} className="karte kanbankarte">
                   <h3><Link href={`/bewerbungen/${k.id}`}>{k.firma || "(ohne Firma)"}</Link></h3>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./stil/utilitaer.css"; // Variante: nur diese Zeile tauschen
 import Link from "next/link";
 import Kopf from "./kopf";
 
@@ -14,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Kopf />
         <main className="seite">{children}</main>
-        <footer className="seite"><Link href="/datenschutz">Datenschutz</Link></footer>
+        <footer className="seite fuss"><Link href="/datenschutz">Datenschutz</Link></footer>
       </body>
     </html>
   );

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { levelText } from "@/lib/filter";
+import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
 import { merken, beworben } from "../actions";
 import { SendeKnopf } from "../../bewerbungen/knoepfe";
@@ -41,10 +42,10 @@ export default async function Seite({ params, searchParams }: { params: Promise<
 
   return (
     <>
-      <p><Link href="/stellen">← Alle Stellen</Link></p>
+      <p><Link href="/stellen">Alle Stellen</Link></p>
       <h1>{j.titel}</h1>
+      <p className="firma" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>{j.unternehmen}</p>
       <p className="chips">
-        <span className="chip">{j.unternehmen}</span>
         {gr && <span className="chip">{gr} Mitarbeitende</span>}
         {bekannt(j.ort) && <span className="chip">{j.ort}</span>}
         {bekannt(j.arbeitsmodell) && <span className="chip">{j.arbeitsmodell}</span>}
@@ -65,9 +66,9 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <form action={beworben.bind(null, j.id)}><SendeKnopf text="Ich habe mich beworben" klasse="knopf knopf-schmal" /></form>
         )}
       </div>
-      {begriffe.length > 0 && <p className="meldung info">{n} deiner wichtigen Punkte kommen vor</p>}
+      {begriffe.length > 0 && <p className="meldung hinweis">{n} deiner wichtigen Punkte kommen vor</p>}
       <section className="karte">
-        <Abschnitte abschnitte={abschnitte} text={j.text} begriffe={begriffe} />
+        <Abschnitte abschnitte={abschnitte} text={j.text} begriffe={begriffe} ebene={2} />
       </section>
     </>
   );

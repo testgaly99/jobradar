@@ -50,7 +50,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   const link = sicher(row.link as string | null);
   const dokOptionen = (art: string) => (
     <>
-      <option value="">– keins –</option>
+      <option value="">keins</option>
       {docs.filter((d) => d.art === art).map((d) => (
         <option key={d.id} value={d.id}>{d.name || "Dokument"}{d.version_datum ? ` (${datumDe(d.version_datum)})` : ""}</option>
       ))}
@@ -59,10 +59,10 @@ export default async function Seite({ params, searchParams }: { params: Promise<
 
   return (
     <>
-      <p className="kein-druck"><Link href="/bewerbungen">← Alle Bewerbungen</Link></p>
+      <p className="kein-druck"><Link href="/bewerbungen">Alle Bewerbungen</Link></p>
       <h1>{v(row.firma) || "(ohne Firma)"}: {v(row.titel)}</h1>
       <p className="chips kein-druck">
-        <span className="chip">{STATUS_LABEL[row.status as Status]}</span>
+        <span className="chip" data-status={v(row.status)}>{STATUS_LABEL[row.status as Status]}</span>
         {row.ergebnis && <span className="chip">{ERGEBNIS_LABEL[row.ergebnis as string]}</span>}
         {link && <a href={link} target="_blank" rel="noopener noreferrer">Anzeige öffnen</a>}
       </p>
@@ -71,7 +71,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       {/* Nur im Druck sichtbar: Stelle als Text, der Snapshot folgt darunter */}
       <section className="nur-druck">
         <p><strong>{v(row.firma)}</strong>: {v(row.titel)}</p>
-        <p>{[row.standort, row.praesenzmodell, row.quelle, row.link].filter(Boolean).join(" · ")}</p>
+        <p>{[row.standort, row.praesenzmodell, row.quelle, row.link].filter(Boolean).join(", ")}</p>
         {row.anforderungen && <pre className="snapshot">{v(row.anforderungen)}</pre>}
       </section>
 
@@ -141,7 +141,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <h2>Ergebnis</h2>
           <label>Ergebnis
             <select name="ergebnis" defaultValue={v(row.ergebnis)}>
-              <option value="">– offen –</option>
+              <option value="">offen</option>
               {Object.entries(ERGEBNIS_LABEL).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
             </select>
           </label>
@@ -155,7 +155,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <h2>Einschätzung</h2>
           <label>Interesse
             <select name="interesse" defaultValue={v(row.interesse)}>
-              <option value="">– keine Angabe –</option>
+              <option value="">keine Angabe</option>
               {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
             </select>
           </label>
@@ -174,7 +174,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
             <li key={p.id}>
               <div>
                 <strong>{p.name}</strong> {p.art && <span className="chip">{KONTAKT_ART_LABEL[p.art]}</span>}
-                <p className="klein">{[p.rolle, p.firma, p.email, p.telefon, p.linkedin].filter(Boolean).join(" · ")}</p>
+                <p className="klein">{[p.rolle, p.firma, p.email, p.telefon, p.linkedin].filter(Boolean).join(", ")}</p>
               </div>
               <LoeschForm action={eintragLoeschen.bind(null, id, "contacts", p.id)} frage="Person löschen?" />
             </li>

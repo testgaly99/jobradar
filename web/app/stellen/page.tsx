@@ -53,8 +53,16 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   return (
     <>
       {veraltet && letzterLauf && (
-        <p className="meldung fehler" role="alert">Letzter Lauf am {datumDe(letzterLauf)} – automatischen Abruf prüfen</p>
+        <p className="meldung fehler" role="alert">Letzter Lauf am {datumDe(letzterLauf)}. Automatischen Abruf prüfen.</p>
       )}
+      <div className="seitenkopf">
+        <h1>Stellen</h1>
+        <p className="gedaempft">
+          <span className="num">{gesamt}</span> Treffer{letzterLauf && `, Stand ${datumDe(letzterLauf)}`}
+        </p>
+      </div>
+      {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+      {ergebnis.error && ergebnis.error.code !== "PGRST103" && <p className="meldung fehler">Stellen konnten nicht geladen werden.</p>}
       <div className="stellen-layout">
         <aside className="filterleiste">
           <FilterBlock titel={aktiv ? `Filter (${aktiv} aktiv)` : "Filter"}>
@@ -109,13 +117,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
         </aside>
 
         <section aria-label="Stellen">
-          <h1>Stellen</h1>
-          {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
-          <p className="gedaempft">
-            {gesamt} Treffer{letzterLauf && ` · Stand ${datumDe(letzterLauf)}`}
-          </p>
-          {ergebnis.error && ergebnis.error.code !== "PGRST103" && <p className="meldung fehler">Stellen konnten nicht geladen werden.</p>}
-          {(!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="karte">Keine Stellen für diese Auswahl.</p>}
+          {(!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
           <ul className="stellenliste">
             {jobs.map((j) => {
               const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;
@@ -126,18 +128,24 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               const branchen = (j.companies?.kategorie ?? []).filter((k) => k !== AUSGEBLENDET_BRANCHE);
               const st = status.get(j.id);
               return (
-                <li key={j.id} className="karte stelle" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
-                  <h2><Link href={"/stellen/" + encodeURIComponent(j.id)}>{j.titel}</Link></h2>
-                  <p className="firma" style={{ color: firmenFarbe(j.unternehmen) }}>{j.unternehmen}</p>
-                  <p className="gedaempft">{[ort, bekannt(j.abteilung)].filter(Boolean).join(" · ")}</p>
-                  <p className="chips">
-                    {neu && <span className="chip chip-neu" title="Seit höchstens 3 Tagen online">Neu</span>}
-                    {chips.map((c) => <span key={c} className="chip">{c}</span>)}
-                  </p>
-                  {!!branchen.length && <p className="gedaempft klein">{branchen.join(", ")}</p>}
-                  {j.erstmals_gesehen && <p className="gedaempft klein">Online seit: {datumDe(j.erstmals_gesehen)}</p>}
+                <li key={j.id} className="stelle" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
+                  <div className="stelle-text">
+                    <h2><Link href={"/stellen/" + encodeURIComponent(j.id)}>{j.titel}</Link></h2>
+                    <p className="meta">
+                      <span className="firma">{j.unternehmen}</span>
+                      {[ort, bekannt(j.abteilung)].filter(Boolean).map((t) => <span key={t} className="gedaempft">{t}</span>)}
+                    </p>
+                    <p className="chips">
+                      {neu && <span className="chip chip-neu" title="Seit höchstens 3 Tagen online">Neu</span>}
+                      {chips.map((c) => <span key={c} className="chip">{c}</span>)}
+                    </p>
+                    <p className="meta gedaempft klein">
+                      {!!branchen.length && <span>{branchen.join(", ")}</span>}
+                      {j.erstmals_gesehen && <span>Online seit: {datumDe(j.erstmals_gesehen)}</span>}
+                    </p>
+                  </div>
                   {st ? (
-                    <button className="knopf knopf-rand knopf-schmal" type="button" disabled>{st === "gemerkt" ? "Gemerkt ✓" : "Beworben"}</button>
+                    <button className={"knopf knopf-zustand knopf-schmal" + (st === "gemerkt" ? " ist-gemerkt" : "")} type="button" disabled>{st === "gemerkt" ? "Gemerkt ✓" : "Beworben"}</button>
                   ) : (
                     <form action={merken.bind(null, j.id)}>
                       <SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" />
