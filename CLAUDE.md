@@ -75,7 +75,7 @@ Wichtigste Filter, in dieser Reihenfolge:
 ### 4.1 Filter der Jobsuche
 - **Unternehmen**
   - Mitarbeiterzahl als frei wählbare Spanne
-  - Kategorie
+  - Branche (in der Oberfläche „Branche“, intern `kategorie`)
   - Rolle im Markt
   - Kundenbranche (bei Beratungen)
   - Eigentümerstruktur
@@ -87,7 +87,7 @@ Wichtigste Filter, in dieser Reihenfolge:
   - Seniority, abgeleitet aus den Anforderungen der Anzeige
   - Jahre Berufserfahrung
   - Personalverantwortung
-  - Funktion bzw. Bereich
+  - Funktion (in der Oberfläche „Funktion“, intern `abteilung`/Bereich)
   - geforderter Abschluss
   - Vertriebsanteil
   - Ausschlusswörter in Titel und Text
@@ -318,6 +318,27 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
    - Datenschutzerklärung
    - Datentrennung testen
    - Als letzter Schritt meine offenen To-dos aus `docs/STATUS.md`, darunter Vercel und die Migrationen.
+2b. **Website-Überarbeitung (geklärt 2026-11-08, nach meinem Klicktest), vor dem Einladen von Freunden:**
+   - **Stellenliste:**
+     - Größe aufsteigend sortiert, mit „Mitarbeitende“.
+     - Filter „Branche“ (statt Kategorie) und „Funktion“ (statt Bereich).
+     - Neuer Filter „Land“ (Deutschland, Österreich, Schweiz, Remote; die Daten kommen mit Phase 4).
+     - Erfahrungslevel mit Jahren: Junior 0–2, Mid 2–5, Senior 5–8, Lead 8+ (aus dem Titel abgeleitet).
+     - „Online seit“ statt „erstmals gesehen“, als Filter mit Feldern Heute, 3 Tage, 7 Tage, 30 Tage. Das Abzeichen „Neu“ gilt nur bis 3 Tage, mit Erklärung.
+     - Suche standardmäßig nur im Titel, Volltext zuschaltbar.
+     - Städte bereinigt (kein „Munich, Germany, Germany“ oder „Berlin Office“). Bei Stadtfilter nur diese Stadt, sonst erste Stadt plus „+N weitere“.
+     - Kein Firmen-Werbetext. „Startup / Venture-finanziert“ wird ausgeblendet, bis echte Finanzierungsdaten da sind (Phase 4).
+   - **Merken und Detailseite:**
+     - Knopf „Merken“ an jeder Stelle (Status „gemerkt“).
+     - Klick auf eine Stelle öffnet eine eigene Detailseite mit Aufgaben, Anforderungen und Benefits als Stichpunkte, ohne KI aus den Zwischenüberschriften zerlegt, dazu „Original-Anzeige öffnen“ und „Ich habe mich beworben“.
+     - Dieselbe Gliederung ersetzt den Fließtext-Snapshot in Bewerbungen.
+   - **Navigation:** Reiter „Dokumente“ entfällt, der Export zieht nach „Konto“.
+   - **Konto:** Name, E-Mail, Anmeldeart, dabei seit, Bewerbungen nach Status, Export. „Konto löschen“ klein unten.
+   - **Admin „Nutzer“:**
+     - Übersichtlicher, „Entfernen“ im „…“-Menü.
+     - Name nur bei Google-Konten.
+     - Einblicke nur als Zahlen ohne Inhalte: pro Nutzer letzte Anmeldung und Anzahl Bewerbungen, gesamt aktive Nutzer 7/30 Tage und Bewerbungen pro Woche. Die Datenschutzerklärung nennt das.
+   - **Design:** mit dem Skill Hallmark.
 3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung.
    - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
 4. **Scraper für alle Zielfirmen:** rund 1000 Firmen, Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern.
@@ -331,6 +352,13 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
   - Google-App veröffentlichen, damit „Link teilen, jeder kommt rein“ ohne Testnutzer klappt
   - dabei entscheiden: neue Nutzer sofort drin oder erst nach Freigabe?
   - spätestens nötig, wenn es Richtung 20 Nutzer geht
+- **Dokumente klären:** Wozu dienen hochgeladene Dokumente, wenn man sich nicht über die Website bewirbt? Bis dahin ist der Reiter ausgeblendet (Entscheidung 2026-11-08).
+- **Bewerbungsformular neu definieren:**
+  - welche Felder es gibt,
+  - was automatisch aus der Stelle übernommen wird,
+  - welche Felder erst in späteren Bewerbungsphasen erscheinen,
+  - kein manuelles Abtippen bekannter Stellen.
+  - Eigene Fragerunde in einer späteren Phase.
 - **Login für Freunde:** E-Mail und Passwort zusätzlich zu Google (braucht das Mail-Paket).
 - **E-Mail-Registrierung absichern:** Der Knopf „Registrieren“ (E-Mail und Passwort) ist bis zum Mail-Paket bewusst offen (Entscheidung 2026-11-08). Dann: sperren (Hook, der neue E-Mail-Registrierungen ablehnt) oder mit Bestätigungsmail absichern.
 
