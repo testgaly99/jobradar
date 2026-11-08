@@ -1,5 +1,6 @@
 """RLS-Test gegen das echte Supabase-Projekt. Start: py -m pytest -m supabase"""
 import secrets
+import time
 from pathlib import Path
 
 import pytest
@@ -27,6 +28,17 @@ ANON = ENV.get("SUPABASE_ANON_KEY", "")
 
 def _h(key, token=None):
     return {"apikey": key, "Authorization": f"Bearer {token or key}"}
+
+
+def _retry(fn, versuche=5, pause=3):
+    """Cleanup ueberlebt kurze Netzabbrueche: nur bei ConnectionError wiederholen."""
+    for i in range(versuche):
+        try:
+            return fn()
+        except requests.ConnectionError:
+            if i == versuche - 1:
+                raise
+            time.sleep(pause)
 
 
 def _warn(what, r):
@@ -63,11 +75,11 @@ def users():
     finally:
         # Datei zuerst (Nutzer-Loeschung kann an Storage-Objekten scheitern), dann Nutzer
         if ids:
-            _warn("Datei", requests.delete(f"{URL}/storage/v1/object/dokumente/{ids[0]}/test.txt",
-                                            headers=_h(SERVICE), timeout=30))
+            _warn("Datei", _retry(lambda: requests.delete(f"{URL}/storage/v1/object/dokumente/{ids[0]}/test.txt",
+                                                            headers=_h(SERVICE), timeout=30)))
         for uid in ids:
-            _warn("Nutzer", requests.delete(f"{URL}/auth/v1/admin/users/{uid}",
-                                            headers=_h(SERVICE), timeout=30))
+            _warn("Nutzer", _retry(lambda: requests.delete(f"{URL}/auth/v1/admin/users/{uid}",
+                                                            headers=_h(SERVICE), timeout=30)))
 
 
 def test_rls_isolation(users):

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Link from "next/link";
 import Kopf from "./kopf";
 
 export const metadata: Metadata = {
@@ -13,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Kopf />
         <main className="seite">{children}</main>
-        <footer className="seite"><a href="/datenschutz">Datenschutz</a></footer>
+        <footer className="seite"><Link href="/datenschutz">Datenschutz</Link></footer>
       </body>
     </html>
   );

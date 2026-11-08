@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 import requests
 
-from tests.test_rls import ENV, SERVICE, URL, _h, _warn
+from tests.test_rls import ENV, SERVICE, URL, _h, _retry, _warn
 
 pytestmark = pytest.mark.supabase
 ROOT = Path(__file__).resolve().parent.parent
@@ -73,12 +73,12 @@ def test_konto_loeschen_komplett():
     finally:
         if uid:
             try:
-                for o in _liste(uid):
-                    _warn("Datei", requests.delete(f"{URL}/storage/v1/object/dokumente/{uid}/{o['name']}",
-                                                   headers=_h(SERVICE), timeout=30))
+                for o in _retry(lambda: _liste(uid)):
+                    _warn("Datei", _retry(lambda: requests.delete(f"{URL}/storage/v1/object/dokumente/{uid}/{o['name']}",
+                                                                   headers=_h(SERVICE), timeout=30)))
             except Exception as e:  # Cleanup darf die eigentliche Meldung nicht verdecken
                 print("WARNUNG Cleanup Dateien:", e)
             try:
-                _warn("Nutzer", requests.delete(f"{URL}/auth/v1/admin/users/{uid}", headers=_h(SERVICE), timeout=30))
+                _warn("Nutzer", _retry(lambda: requests.delete(f"{URL}/auth/v1/admin/users/{uid}", headers=_h(SERVICE), timeout=30)))
             except Exception as e:
                 print("WARNUNG Cleanup Nutzer:", e)

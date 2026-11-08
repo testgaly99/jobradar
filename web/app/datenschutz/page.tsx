@@ -15,12 +15,12 @@ export default function Seite() {
       <ul>
         <li>Supabase (Server in Frankfurt, EU) für Datenbank und Dateien</li>
         <li>Vercel für die Website</li>
-        <li>Ein tägliches Backup der Datenbank in einem privaten GitHub-Repo. Dateien sind darin nicht enthalten.</li>
+        <li>Ein tägliches Backup der Datenbank in einem privaten GitHub-Repo. Es enthält auch die Liste der Konten mit Name und E-Mail. Dateien sind darin nicht enthalten.</li>
       </ul>
       <h2>Wer es sieht</h2>
       <p>Nur du. Auch der Betreiber sieht deine Bewerbungen nicht über die Website. Technisch hat er als Datenbank-Inhaber Zugriff.</p>
       <h2>Löschen</h2>
-      <p>Jederzeit unter „Konto“. Alles wird sofort entfernt. Aus dem Backup verschwindet es mit dem nächsten täglichen Lauf, die Git-Historie des privaten Backups behält ältere Stände.</p>
+      <p>Jederzeit unter „Konto“. Alles wird sofort entfernt. Ausgenommen ist nur das Konto des Betreibers. Aus dem Backup verschwindet es mit dem nächsten täglichen Lauf, die Git-Historie des privaten Backups behält ältere Stände.</p>
       <h2>Sonstiges</h2>
       <p>Keine Werbung, kein Tracking, keine Weitergabe.</p>
       <p>Stand: 2026-11-08</p>

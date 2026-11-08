@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { fehlerText } from "@/lib/fehler";
@@ -104,7 +105,7 @@ export default function Login() {
           </>
         )}
       </p>
-      <p><a href="/datenschutz">Datenschutz</a></p>
+      <p><Link href="/datenschutz">Datenschutz</Link></p>
     </div>
   );
 }
