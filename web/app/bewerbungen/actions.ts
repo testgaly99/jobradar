@@ -2,10 +2,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { analysiereLink, firmaPasst, normFirma, normTitel, slugAusFirma } from "@/lib/link-import";
+import { anlegenAusJob, type JobZeile } from "@/lib/bewerbung-anlegen";
 import { holeStelle, sucheTitel, type Stelle } from "@/lib/ats-abruf";
 
 type Ergebnis = { brauchtEingabe: true } | { fehler: string };
-type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; jobId?: string | null };
+type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; job?: JobZeile | null };
 
 export async function bewerbungAusLink(url: string, firma?: string, titel?: string): Promise<Ergebnis> {
   let u: URL;
@@ -29,9 +30,9 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   const ausStelle = async (s: Stelle, typ: string, boardId: string): Promise<Ziel> => {
     const { data: fz } = await sb.from("companies").select("name").eq("ats_typ", typ).eq("ats_id", boardId).limit(1).maybeSingle();
     const job = fz
-      ? (await sb.from("jobs").select("id,unternehmen,titel,ort,text").eq("id", `${fz.name}:${s.extId}`).limit(1).maybeSingle()).data
+      ? (await sb.from("jobs").select("id,unternehmen,titel,url,ort,arbeitsmodell,text").eq("id", `${fz.name}:${s.extId}`).limit(1).maybeSingle()).data
       : null;
-    if (job) return { firma: job.unternehmen ?? firma, titel: job.titel, ort: job.ort, link, quelle: a.quelle, text: job.text, jobId: job.id };
+    if (job) return { firma: job.unternehmen ?? firma, link, quelle: a.quelle, job };
     return { firma, titel: s.titel, ort: s.ort, link, quelle: a.quelle, text: s.text };
   };
 
@@ -45,11 +46,11 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   if (!ziel && firma && titel) {
     const erstes = normFirma(firma).split(" ")[0].replace(/[\\%_]/g, "");
     const { data: kand } = erstes
-      ? await sb.from("jobs").select("id,unternehmen,titel,ort,text").eq("sichtbar", true).ilike("unternehmen", `%${erstes}%`).limit(500)
+      ? await sb.from("jobs").select("id,unternehmen,titel,url,ort,arbeitsmodell,text").eq("sichtbar", true).ilike("unternehmen", `%${erstes}%`).limit(500)
       : { data: null };
     const t = normTitel(titel);
     const job = kand?.find((j) => j.unternehmen && j.titel && firmaPasst(j.unternehmen, firma!) && normTitel(j.titel) === t);
-    if (job) ziel = { firma: job.unternehmen!, titel: job.titel, ort: job.ort, link, quelle: a.quelle, text: job.text, jobId: job.id };
+    if (job) ziel = { link, quelle: a.quelle, job };
   }
 
   // Schritt 3: Boards unter dem Firmennamen als Slug prüfen.
@@ -69,18 +70,15 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
     ziel = { firma, titel, link, quelle: a.quelle };
   }
 
-  if (ziel.jobId) {
-    const dup = await vorhandenZu("job_id", ziel.jobId);
-    if (dup) redirect(`/bewerbungen/${dup}`);
+  if (ziel.job) {
+    const r = await anlegenAusJob(sb, ziel.job, { quelle: ziel.quelle });
+    if ("fehler" in r) return { fehler: "Bewerbung konnte nicht angelegt werden." };
+    redirect(`/bewerbungen/${r.id}`);
   }
   const { data, error } = await sb.from("applications").insert({
-    job_id: ziel.jobId ?? null, firma: ziel.firma ?? null, titel: ziel.titel ?? null, link: ziel.link, quelle: ziel.quelle,
+    firma: ziel.firma ?? null, titel: ziel.titel ?? null, link: ziel.link, quelle: ziel.quelle,
     standort: ziel.ort ?? null, snapshot_text: ziel.text ?? null, status: "gemerkt",
   }).select("id").single();
-  if (error?.code === "23505" && ziel.jobId) {
-    const dup = await vorhandenZu("job_id", ziel.jobId);
-    if (dup) redirect(`/bewerbungen/${dup}`);
-  }
   if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
   redirect(`/bewerbungen/${data.id}`);
 }

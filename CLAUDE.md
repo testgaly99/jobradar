@@ -224,7 +224,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 - **Datentrennung** auf Datenbankebene (Row Level Security). Getestet wird, dass Person A die Daten von Person B nicht sieht.
 - **Gemeinsam genutzt** werden Firmendaten und gescrapte Stellen. Setzt jemand eine Firma auf seine Zielliste, erweitert das den Scraper für alle. Niemand sieht, wer sie verfolgt.
 - **Rollen:** Ich bin Admin (Einladungen, Scraper-Quellen, Firmendaten). Alle anderen sind normale Nutzer.
-- **Export und Löschen:** Bewerbungen als Excel, Dokumente als ZIP, dazu Konto löschen. Auf der Seite steht eine kurze Datenschutzerklärung.
+- **Export und Löschen:** Bewerbungen als eine CSV-Tabelle mit klickbaren Links (Dokumente nur mit Namen), dazu Konto löschen. Auf der Seite steht eine kurze Datenschutzerklärung.
 
 ### 4.7 Gmail und Google Kalender
 - Der Zugriff ist **nur lesend**. Termine ändert die Website nur, wenn sie sie selbst angelegt hat.

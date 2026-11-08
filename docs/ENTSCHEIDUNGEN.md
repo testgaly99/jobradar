@@ -27,6 +27,6 @@
 | 2026-11-08 | Die alten Stellen kommen per Skript (`scraper/umzug.py`) nach Supabase, nicht von Hand | Einmalig und wiederholbar: Das echte Erstdatum bleibt erhalten, ein zweiter Lauf ändert nichts. |
 | 2026-11-08 | Backup per `pg_dump` in einem `postgres:17`-Container über den Session pooler | Der Runner hat ein älteres `pg_dump`. Ein neueres kann ältere Server sichern. Der Pooler ist nötig, weil GitHub-Runner kein IPv6 haben und der direkte Host nur IPv6 kann. |
 | 2026-11-08 | GitHub Pages abgeschaltet, die alte Seite gelöscht | Die neue Website auf Vercel ersetzt sie. Der Verlauf liegt in Git. |
-| 2026-11-08 | Löschschutz über Fremdschlüssel mit `restrict` | Die Datenbank selbst verhindert, dass ein Dokument oder eine Stelle mit Bewerbung versehentlich gelöscht wird. |
+| 2026-11-08 | Löschschutz über Fremdschlüssel mit `restrict` | Die Datenbank selbst verhindert, dass ein benutzter Lebenslauf oder ein benutztes Anschreiben versehentlich gelöscht wird. |
 | 2026-11-08 | Dokumente werden direkt vom Browser in Storage hochgeladen | So läuft nichts durch die Vercel-Funktionen (Größenlimit) und es braucht keinen Zwischenschritt. |
 | 2026-11-08 | Export als eine CSV-Tabelle mit klickbaren Links (Wunsch des Nutzers), ohne ZIP | Excel öffnet die CSV direkt; Kontakte und Interviews stehen in Spalten der Bewerbung. Kein Fremdpaket nötig (CLAUDE.md Abschnitt 10). |

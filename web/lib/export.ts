@@ -7,8 +7,8 @@ export class Roh { text: string; constructor(text: string) { this.text = text; }
 
 export function csvFeld(wert: unknown): string {
   let s = wert instanceof Roh ? wert.text : wert == null ? "" : Array.isArray(wert) ? wert.join(", ") : typeof wert === "object" ? JSON.stringify(wert) : String(wert);
-  // CSV-Injection: Excel würde sonst eine Formel ausführen. Nur Texte; Zahlen wie -1 bleiben.
-  if (typeof wert === "string" && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  // CSV-Injection: Excel würde sonst eine Formel ausführen. Auch für Listen (Tags); Zahlen wie -1 bleiben.
+  if (!(wert instanceof Roh) && typeof wert !== "number" && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
   return /[;"\r\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
 }
 
@@ -23,8 +23,9 @@ export function linkFeld(wert: string | null): unknown {
   const s = wert.trim();
   try {
     const u = new URL(s);
-    if ((u.protocol === "http:" || u.protocol === "https:") && s.length <= 255 && !/[\r\n\t]/.test(s))
-      return new Roh(`=HYPERLINK("${s.replaceAll('"', '""')}")`);
+    const h = u.href; // normalisiert: Leerraum und Steuerzeichen am Rand sind schon entfernt
+    if ((u.protocol === "http:" || u.protocol === "https:") && h.length <= 255 && !/[\x00-\x1f\x7f]/.test(h))
+      return new Roh(`=HYPERLINK("${h.replaceAll('"', '""')}")`);
   } catch { /* kein gültiger Link: als Text */ }
   return wert;
 }

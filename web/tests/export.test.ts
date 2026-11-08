@@ -32,7 +32,7 @@ test("csvDatei: BOM, Kopfzeile, CRLF, Semikolon", () => {
 
 test("Link: http(s) wird HYPERLINK-Formel", () => {
   assert.equal(csvFeld(linkFeld("https://example.com/job?id=1")), '"=HYPERLINK(""https://example.com/job?id=1"")"');
-  assert.equal(csvFeld(linkFeld("http://a.de")), '"=HYPERLINK(""http://a.de"")"');
+  assert.equal(csvFeld(linkFeld("http://a.de")), '"=HYPERLINK(""http://a.de/"")"');
 });
 
 test("Link: javascript:, =cmd, ungültig bleiben geschützter Text", () => {
@@ -43,9 +43,19 @@ test("Link: javascript:, =cmd, ungültig bleiben geschützter Text", () => {
   assert.equal(csvFeld(linkFeld("ftp://x.de/a")), "ftp://x.de/a");
 });
 
-test("Link: Anführungszeichen in der URL verdoppelt", () => {
+test("Formel-Schutz gilt auch für Listen", () => {
+  assert.equal(csvFeld(["=cmd|' /C calc'!A0", "x"]), "'=cmd|' /C calc'!A0, x");
+  assert.equal(csvFeld(-1), "-1");
+});
+
+test("Link: Steuerzeichen landen nicht in der Formel", () => {
+  const f = linkFeld("\u0001https://x.de");
+  assert.ok(typeof f === "string" || !/[\x00-\x1f]/.test((f as { text: string }).text));
+});
+
+test("Link: Anführungszeichen in der URL werden kodiert", () => {
   const f = linkFeld('https://x.de/a"b') as { text: string };
-  assert.equal(f.text, '=HYPERLINK("https://x.de/a""b")');
+  assert.equal(f.text, '=HYPERLINK("https://x.de/a%22b")');
 });
 
 test("Link: über 255 Zeichen als Klartext", () => {

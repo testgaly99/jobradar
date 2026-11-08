@@ -62,7 +62,7 @@ Die Dateien in `supabase/migrations/` bauen die Tabellen und den Zugriffsschutz 
 
 ## Backup und Wiederherstellung
 
-Eine tägliche Kopie aller Daten liegt im privaten Repo `jobradar-privat` (*warum privat:* die Kopie enthält deine persönlichen Daten, dieses Repo ist öffentlich). Einrichtung und Wiederherstellung stehen in dessen `README.md`. Dokumente (PDFs) sind nicht im Backup: Behalte die Originale bei dir oder nutze den Export-Knopf.
+Eine tägliche Kopie aller Daten liegt im privaten Repo `jobradar-privat` (*warum privat:* die Kopie enthält deine persönlichen Daten, dieses Repo ist öffentlich). Einrichtung und Wiederherstellung stehen in dessen `README.md`. Dokumente (PDFs) sind nicht im Backup: Behalte die Originale deiner Dokumente bei dir: Weder Export noch Backup enthalten die Dateien selbst, nur ihre Namen.
 
 ## Lokal starten
 

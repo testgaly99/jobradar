@@ -24,7 +24,9 @@ const sicherLink = (u: string | null) => (u && /^https?:\/\//i.test(u) ? u : nul
 const datumDe = (iso: string) => iso.split("-").reverse().join(".");
 
 export default async function Seite({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const f = leseFilter(await searchParams);
+  const sp = await searchParams;
+  const f = leseFilter(sp);
+  const fehler = typeof sp.fehler === "string" ? sp.fehler : null;
   const sb = await createClient();
   const [ergebnis, lauf, fac] = await Promise.all([
     stellenAbfrage(sb, f),
@@ -86,6 +88,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
 
         <section aria-label="Stellen">
           <h1>Stellen</h1>
+          {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
           <p className="gedaempft">
             {gesamt} Treffer{letzterLauf && ` · Stand ${datumDe(letzterLauf)}`}
           </p>
