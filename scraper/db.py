@@ -37,6 +37,24 @@ def _upsert(tabelle, zeilen, konflikt):
              headers={"Prefer": "resolution=merge-duplicates,return=minimal"})
 
 
+_spalten = None  # None = noch nicht geprueft (run.lauf setzt es pro Lauf zurueck)
+
+
+def _spalten_da():
+    """Einmal pro Lauf: gibt es abschnitte/land schon (Migration 005)? PostgREST antwortet sonst mit 400."""
+    global _spalten
+    if _spalten is None:
+        try:
+            _req("GET", "jobs", params={"select": "abschnitte,land", "limit": 0})
+            _spalten = True
+        except RuntimeError as e:
+            if ": 400 " not in str(e):
+                raise
+            _spalten = False
+            print("Hinweis: Spalten abschnitte/land fehlen (Migration 005 offen), werden nicht geschrieben.")
+    return _spalten
+
+
 def _in(werte):
     return "in.(" + ",".join('"' + w.replace('"', '\\"') + '"' for w in werte) + ")"
 
@@ -71,7 +89,7 @@ def sync_companies(firmen):
 def schreibe(firma, neue, heute):
     """Gibt (Anzahl neuer, Anzahl geschlossener Stellen) zurueck."""
     alt = _bestand(firma)
-    zeilen = []
+    zeilen, neue_spalten = [], _spalten_da()
     for n in neue:
         id_ = f"{firma}:{n['ext_id']}"
         zeilen.append({
@@ -81,6 +99,7 @@ def schreibe(firma, neue, heute):
             "text_hash": hashlib.sha256(n["text"].encode("utf-8")).hexdigest(),
             "erstmals_gesehen": alt[id_]["erstmals_gesehen"] if id_ in alt else heute,
             "zuletzt_gesehen": heute, "status": "offen", "sichtbar": True,
+            **({"abschnitte": n.get("abschnitte"), "land": n.get("land", "")} if neue_spalten else {}),
         })
     _upsert("jobs", zeilen, "id")
     gesehen = {z["id"] for z in zeilen}

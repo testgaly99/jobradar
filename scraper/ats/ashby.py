@@ -1,5 +1,6 @@
 """Ashby: öffentliche Posting-API."""
 from scraper import http
+from scraper.abschnitte import abschnitte
 
 _MODELL = {"Remote": "Remote", "Hybrid": "Hybrid", "OnSite": "Vor Ort"}
 _VERTRAG = {"FullTime": "Vollzeit", "PartTime": "Teilzeit", "Contract": "Befristet", "Temporary": "Befristet"}
@@ -22,6 +23,7 @@ def hole_stellen(ats_id: str) -> list[dict]:
             "url": j["jobUrl"],
             "beschreibung_kurz": text[:300],
             "text": text,
+            "abschnitte": abschnitte(j.get("descriptionHtml") or ""),
             "abteilung": (j.get("department") or "").strip(),
             "arbeitsmodell": _MODELL.get(j.get("workplaceType"), ""),
             "vertragsart": _VERTRAG.get(j.get("employmentType"), ""),

@@ -20,7 +20,7 @@ def test_fixture(monkeypatch):
     assert len(stellen) == 3
     for s in stellen:
         assert set(s) == {"ext_id", "titel", "ort", "remote", "url", "beschreibung_kurz", "text",
-                          "abteilung", "arbeitsmodell", "vertragsart"}
+                          "abteilung", "arbeitsmodell", "vertragsart", "abschnitte"}
         assert isinstance(s["ext_id"], str) and s["url"].startswith("http")
         assert 0 < len(s["beschreibung_kurz"]) <= 300
         assert "<" not in s["text"] and s["text"].startswith(s["beschreibung_kurz"])
@@ -46,3 +46,15 @@ def test_arbeitsmodell(monkeypatch):
                              for i, o in enumerate(["Remote - EU", "Berlin (Hybrid)", "Berlin"])]}
     monkeypatch.setattr(http, "hole", lambda u: A())
     assert [s["arbeitsmodell"] for s in greenhouse.hole_stellen("x")] == ["Remote", "Hybrid", ""]
+
+
+def test_abschnitte(monkeypatch):
+    class A:
+        def json(self):
+            return {"jobs": [{"id": 1, "title": "T", "absolute_url": "http://x", "location": {"name": "Berlin"},
+                              "content": "&lt;h3&gt;Aufgaben&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;A &amp;amp; B&lt;/li&gt;&lt;/ul&gt;"}]}
+    monkeypatch.setattr(http, "hole", lambda u: A())
+    assert greenhouse.hole_stellen("x")[0]["abschnitte"] == [{"titel": "Aufgaben", "punkte": ["A & B"]}]
+    monkeypatch.setattr(http, "hole", lambda u: Antwort())
+    for s in greenhouse.hole_stellen("helsing"):
+        assert s["abschnitte"] and all(a["titel"] and a["punkte"] for a in s["abschnitte"])
