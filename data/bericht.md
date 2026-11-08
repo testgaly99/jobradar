@@ -1,4 +1,4 @@
-# Lauf vom 2026-11-07
+# Lauf vom 2026-11-08
 
 | Unternehmen | gefunden | gefiltert | neu | geschlossen | Fehler |
 |---|---|---|---|---|---|
