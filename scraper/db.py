@@ -41,17 +41,17 @@ _spalten = None  # None = noch nicht geprueft (run.lauf setzt es pro Lauf zuruec
 
 
 def _spalten_da():
-    """Einmal pro Lauf: gibt es abschnitte/land schon (Migration 005)? PostgREST antwortet sonst mit 400."""
+    """Einmal pro Lauf: gibt es abschnitte/land/steckbrief schon (Migration 005)? PostgREST antwortet sonst mit 400."""
     global _spalten
     if _spalten is None:
         try:
-            _req("GET", "jobs", params={"select": "abschnitte,land", "limit": 0})
+            _req("GET", "jobs", params={"select": "abschnitte,land,steckbrief", "limit": 0})
             _spalten = True
         except RuntimeError as e:
             if ": 400 " not in str(e):
                 raise
             _spalten = False
-            print("Hinweis: Spalten abschnitte/land fehlen (Migration 005 offen), werden nicht geschrieben.")
+            print("Hinweis: Spalten abschnitte/land/steckbrief fehlen (Migration 005 offen), werden nicht geschrieben.")
     return _spalten
 
 
@@ -99,7 +99,8 @@ def schreibe(firma, neue, heute):
             "text_hash": hashlib.sha256(n["text"].encode("utf-8")).hexdigest(),
             "erstmals_gesehen": alt[id_]["erstmals_gesehen"] if id_ in alt else heute,
             "zuletzt_gesehen": heute, "status": "offen", "sichtbar": True,
-            **({"abschnitte": n.get("abschnitte"), "land": n.get("land", "")} if neue_spalten else {}),
+            **({"abschnitte": n.get("abschnitte"), "land": n.get("land", ""),
+                                                  "steckbrief": n.get("steckbrief")} if neue_spalten else {}),
         })
     _upsert("jobs", zeilen, "id")
     gesehen = {z["id"] for z in zeilen}

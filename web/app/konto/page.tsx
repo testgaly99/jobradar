@@ -3,7 +3,8 @@ import { aktuellerNutzer } from "@/lib/nutzer";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 import { selbstLoeschenErlaubt, nutzerZeilen } from "@/lib/nutzerliste";
 import { STATUS, STATUS_LABEL } from "@/lib/bewerbung";
-import { begriffHinzufuegen, begriffEntfernen, kontoLoeschen } from "./actions";
+import { FELDER, FELD_TITEL, waehleFelder } from "@/lib/steckbrief";
+import { begriffHinzufuegen, felderSpeichern, begriffEntfernen, kontoLoeschen } from "./actions";
 
 export default async function Seite({ searchParams }: { searchParams: Promise<{ fehler?: string }> }) {
   const { fehler } = await searchParams;
@@ -18,6 +19,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
     return [s, count ?? 0] as const;
   }));
   const { data: punkte, error: punkteFehler } = await sb.from("wichtige_punkte").select("id,begriff").order("erstellt_am");
+  const fz = await sb.from("listen_felder").select("felder").maybeSingle();
+  const gewaehlt = waehleFelder(fz.error ? null : fz.data?.felder);
   return (
     <div className="karte">
       <h1>Konto</h1>
@@ -54,6 +57,24 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
               <SendeKnopf text="Hinzufügen" klasse="knopf knopf-rand knopf-schmal" />
             </form>
           </>
+        )}
+      </section>
+      <section className="abschnitt">
+        <h2>Kurz<wbr />beschreibung in der Stellenliste</h2>
+        {fz.error && !["42P01", "PGRST205"].includes(fz.error.code) ? <p className="gedaempft">Die Auswahl konnte gerade nicht geladen werden.</p> : (
+          <form action={felderSpeichern} className="formular">
+            <fieldset className="felderwahl">
+              <legend>Welche Angaben stehen unter jeder Stelle?</legend>
+              {FELDER.map((f) => (
+                <label key={f} className="option">
+                  <input type="checkbox" name="felder" value={f} defaultChecked={gewaehlt.includes(f)} />
+                  <span>{FELD_TITEL[f]}</span>
+                </label>
+              ))}
+            </fieldset>
+            {fz.error && <p className="gedaempft klein">Speichern geht erst nach Migration 005. Bis dahin gilt die Standardauswahl.</p>}
+            <SendeKnopf text="Auswahl speichern" klasse="knopf knopf-rand knopf-schmal" />
+          </form>
         )}
       </section>
       <section className="abschnitt">

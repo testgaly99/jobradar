@@ -42,9 +42,9 @@ class FakeDB:
             key = params["on_conflict"]
             for z in json:
                 if self.ohne_spalten:
-                    assert not {"abschnitte", "land"} & set(z)
+                    assert not {"abschnitte", "land", "steckbrief"} & set(z)
                 self.t[pfad].setdefault(z[key], {}).update(z)  # merge wie PostgREST
-        elif method == "GET" and pfad == "jobs" and params.get("select") == "abschnitte,land":
+        elif method == "GET" and pfad == "jobs" and params.get("select") == "abschnitte,land,steckbrief":
             self.pruefungen += 1
             if self.ohne_spalten:
                 raise RuntimeError("Supabase GET jobs: 400 column jobs.abschnitte does not exist")

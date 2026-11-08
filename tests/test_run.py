@@ -57,6 +57,7 @@ def test_stelle_hat_neue_felder_und_bericht(aufbau):
     s = t["jobs"]["A:1"]
     assert (s["erfahrungslevel"], s["staedte"]) == ("Senior", ["München", "Berlin"])
     assert s["land"] == "Deutschland"
+    assert s["steckbrief"]["erfahrung_jahre"] is None and s["steckbrief"]["sprachen"] == []
     run.ADAPTER["a"] = lambda _: [stelle("2")]
     f = run.lauf("2026-11-07", d)["firmen"][0]
     assert (f["gefunden"], f["gefiltert"], f["neu"], f["geschlossen"]) == (1, 0, 0, 1)

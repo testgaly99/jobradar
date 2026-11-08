@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { firmenFarbe } from "@/lib/farbe";
 import { AUSGEBLENDET_BRANCHE, GROESSEN_REIHENFOLGE, GRUPPEN, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
+import { kurzzeile, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { merken } from "./actions";
 import FilterBlock from "./filterblock";
@@ -45,9 +46,18 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.seit ? 1 : 0);
   // Eine Abfrage für alle angezeigten Stellen: welche sind schon gemerkt oder beworben? (RLS liefert nur eigene Zeilen)
   const status = new Map<string, string>();
+  const steckbriefe = new Map<string, unknown>();
+  // Steckbrief-Spalte und Felder-Tabelle gibt es erst nach Migration 005: Fehler ergibt leeren Steckbrief bzw. Standardfelder.
+  const felderZeile = await sb.from("listen_felder").select("felder").maybeSingle();
+  const felder = waehleFelder(felderZeile.error ? null : felderZeile.data?.felder);
   if (jobs.length) {
-    const { data } = await sb.from("applications").select("job_id,status").in("job_id", jobs.map((j) => j.id));
-    for (const a of data ?? []) status.set(a.job_id, a.status);
+    const ids = jobs.map((j) => j.id);
+    const [apps, sbr] = await Promise.all([
+      sb.from("applications").select("job_id,status").in("job_id", ids),
+      sb.from("jobs").select("id,steckbrief").in("id", ids),
+    ]);
+    for (const a of apps.data ?? []) status.set(a.job_id, a.status);
+    for (const s of sbr.error ? [] : (sbr.data ?? [])) steckbriefe.set(s.id, s.steckbrief);
   }
 
   return (
@@ -122,10 +132,12 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
             {jobs.map((j) => {
               const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;
               const neu = !!(j.erstmals_gesehen && istNeu(j.erstmals_gesehen, jetzt));
-              const gr = bekannt(j.companies?.groesse_klasse ?? null);
-              const lv = bekannt(j.erfahrungslevel);
-              const chips = [...new Set([gr && (gr + " Mitarbeitende"), lv && levelText(lv), bekannt(j.arbeitsmodell), bekannt(j.vertragsart), j.remote ? "Remote" : null].filter(Boolean) as string[])];
-              const branchen = (j.companies?.kategorie ?? []).filter((k) => k !== AUSGEBLENDET_BRANCHE);
+              const kurz = kurzzeile({
+                groesse: j.companies?.groesse_klasse ?? null, level: j.erfahrungslevel,
+                modell: bekannt(j.arbeitsmodell) ?? (j.remote ? "Remote" : null), vertrag: j.vertragsart, ort,
+                erstmalsGesehen: j.erstmals_gesehen, steckbrief: leseSteckbrief(steckbriefe.get(j.id)),
+                branchen: (j.companies?.kategorie ?? []).filter((k) => k !== AUSGEBLENDET_BRANCHE),
+              }, felder);
               const st = status.get(j.id);
               return (
                 <li key={j.id} className="stelle" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
@@ -133,16 +145,14 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                     <h2><Link href={"/stellen/" + encodeURIComponent(j.id)}>{j.titel}</Link></h2>
                     <p className="meta">
                       <span className="firma">{j.unternehmen}</span>
-                      {[ort, bekannt(j.abteilung)].filter(Boolean).map((t) => <span key={t} className="gedaempft">{t}</span>)}
-                    </p>
-                    <p className="chips">
+                      {bekannt(j.abteilung) && <span className="gedaempft">{j.abteilung}</span>}
                       {neu && <span className="chip chip-neu" title="Seit höchstens 3 Tagen online">Neu</span>}
-                      {chips.map((c) => <span key={c} className="chip">{c}</span>)}
                     </p>
-                    <p className="meta gedaempft klein">
-                      {!!branchen.length && <span>{branchen.join(", ")}</span>}
-                      {j.erstmals_gesehen && <span>Online seit: {datumDe(j.erstmals_gesehen)}</span>}
-                    </p>
+                    {kurz.length > 0 && (
+                      <ul className="kurz" aria-label="Kurzbeschreibung">
+                        {kurz.map((e) => <li key={e.feld}>{e.text}</li>)}
+                      </ul>
+                    )}
                   </div>
                   {st ? (
                     <button className={"knopf knopf-zustand knopf-schmal" + (st === "gemerkt" ? " ist-gemerkt" : "")} type="button" disabled>{st === "gemerkt" ? "Gemerkt ✓" : "Beworben"}</button>

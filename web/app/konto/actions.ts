@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { bestaetigt } from "@/lib/bestaetigung";
 import { selbstLoeschenErlaubt, begriffPruefen } from "@/lib/nutzerliste";
+import { FELDER } from "@/lib/steckbrief";
 import { loescheNutzer } from "@/lib/nutzer-loeschen";
 
 function zurueck(m: string): never {
@@ -54,5 +55,17 @@ export async function begriffEntfernen(id: string) {
   if (!istUuid(id)) zurueck("Ungültige ID.");
   const { error } = await (await createClient()).from("wichtige_punkte").delete().eq("id", id);
   if (error) zurueck("Entfernen fehlgeschlagen. Bitte später erneut versuchen.");
+  revalidatePath("/konto");
+}
+
+export async function felderSpeichern(formData: FormData) {
+  const n = await aktuellerNutzer();
+  if (!n) redirect("/login");
+  // Nur erlaubte Namen, in fester Reihenfolge; alles andere aus dem Formular wird verworfen.
+  const gewaehlt = formData.getAll("felder").map(String);
+  const felder = FELDER.filter((f) => gewaehlt.includes(f));
+  const { error } = await (await createClient()).from("listen_felder").upsert({ owner_id: n.id, felder }, { onConflict: "owner_id" });
+  if (error) zurueck(["42P01", "PGRST205"].includes(error.code ?? "") ? "Die Kurzbeschreibung ist erst nach Migration 005 einstellbar." : "Speichern fehlgeschlagen. Bitte später erneut versuchen.");
+  revalidatePath("/stellen");
   revalidatePath("/konto");
 }

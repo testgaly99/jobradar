@@ -9,6 +9,7 @@ from pathlib import Path
 from scraper.ats import ADAPTER
 from scraper import db
 from scraper.companies import lade_unternehmen
+from scraper.steckbrief import steckbrief
 from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant, land
 
 
@@ -40,7 +41,8 @@ def _firma(f, heute):
             ok, grund = ist_relevant(s["titel"], s["ort"], s["remote"])
             if ok:
                 behalten.append({**s, "erfahrungslevel": erfahrungslevel(s["titel"]),
-                                 "staedte": deutsche_staedte(s["ort"]), "land": land(s["ort"])})
+                                 "staedte": deutsche_staedte(s["ort"]), "land": land(s["ort"]),
+                                 "steckbrief": steckbrief(s.get("abschnitte"), s["text"])})
             else:
                 gruende[grund] += 1
         neu, geschlossen = db.schreibe(name, behalten, heute)

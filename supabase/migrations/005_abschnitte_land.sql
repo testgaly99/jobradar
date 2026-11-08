@@ -89,3 +89,20 @@ begin
 end $$;
 revoke execute on function public.snapshot_nachruesten() from public, anon, authenticated;
 grant execute on function public.snapshot_nachruesten() to service_role;
+
+-- ---------- Steckbrief (regelbasiert aus der Anzeige) und einstellbare Kurzbeschreibung ----------
+alter table public.jobs add column if not exists steckbrief jsonb;
+
+create table if not exists public.listen_felder (
+  owner_id uuid primary key default auth.uid() references auth.users on delete cascade,
+  felder text[] not null
+);
+alter table public.listen_felder drop constraint if exists listen_felder_namen;
+alter table public.listen_felder add constraint listen_felder_namen check (
+  felder <@ array['groesse','level','modell','vertrag','ort','online_seit','erfahrung','gehalt','sprachen','sicherheit','branche']::text[]);
+alter table public.listen_felder enable row level security;
+revoke all on public.listen_felder from anon;
+grant select, insert, update on public.listen_felder to authenticated;
+drop policy if exists listen_felder_eigene on public.listen_felder;
+create policy listen_felder_eigene on public.listen_felder for all to authenticated
+  using (owner_id = (select auth.uid())) with check (owner_id = (select auth.uid()));

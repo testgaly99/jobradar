@@ -1,15 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { levelText } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE } from "@/lib/filter";
+import { FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
 import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
 import { merken, beworben } from "../actions";
 import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
 
-const bekannt = (s: string | null) => (s && s.toLowerCase() !== "unbekannt" ? s : null);
-const datumDe = (iso: string) => iso.slice(0, 10).split("-").reverse().join(".");
 const sicher = (u: string | null) => (u && /^https?:\/\//i.test(u) ? u : null);
 // Job-ids sind "<firma>:<ext>"
 const ID_FORM = /^[^:\s]{1,100}:[^\s]{1,200}$/;
@@ -22,12 +21,13 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   if (!ID_FORM.test(id)) notFound();
   const sb = await createClient();
   const { data: j } = await sb.from("jobs")
-    .select("id,unternehmen,titel,url,ort,arbeitsmodell,text,erfahrungslevel,erstmals_gesehen,companies(groesse_klasse)")
+    .select("id,unternehmen,titel,url,ort,arbeitsmodell,vertragsart,text,erfahrungslevel,erstmals_gesehen,companies(groesse_klasse,kategorie)")
     .eq("id", id).maybeSingle();
   if (!j) notFound();
   // Alles Folgende toleriert fehlende Migration 005: Fehler ergibt leere Daten statt Absturz.
-  const [ab, wp, app] = await Promise.all([
+  const [ab, sbr, wp, app] = await Promise.all([
     sb.from("jobs").select("abschnitte").eq("id", id).maybeSingle(),
+    sb.from("jobs").select("steckbrief").eq("id", id).maybeSingle(),
     sb.from("wichtige_punkte").select("begriff"),
     sb.from("applications").select("id,status").eq("job_id", id).limit(1).maybeSingle(),
   ]);
@@ -35,9 +35,12 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   const begriffe = wp.error ? [] : (wp.data ?? []).map((p: { begriff: string }) => p.begriff);
   const alleText = abschnitte ? abschnitte.flatMap((a) => [a.titel, ...a.punkte]).join("\n") : (j.text ?? "");
   const n = zaehleTreffer(alleText, begriffe);
-  const co = j.companies as unknown as { groesse_klasse: string | null } | null;
-  const gr = bekannt(co?.groesse_klasse ?? null);
-  const lv = bekannt(j.erfahrungslevel);
+  const co = j.companies as unknown as { groesse_klasse: string | null; kategorie: string[] | null } | null;
+  const eintraege = kurzzeile({
+    groesse: co?.groesse_klasse ?? null, level: j.erfahrungslevel, modell: j.arbeitsmodell, vertrag: j.vertragsart, ort: j.ort,
+    erstmalsGesehen: j.erstmals_gesehen, branchen: (co?.kategorie ?? []).filter((k) => k !== AUSGEBLENDET_BRANCHE),
+    steckbrief: leseSteckbrief(sbr.error ? null : sbr.data?.steckbrief),
+  }, [...FELDER]);
   const link = sicher(j.url);
 
   return (
@@ -45,13 +48,12 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       <p><Link href="/stellen">Alle Stellen</Link></p>
       <h1>{j.titel}</h1>
       <p className="firma" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>{j.unternehmen}</p>
-      <p className="chips">
-        {gr && <span className="chip">{gr} Mitarbeitende</span>}
-        {bekannt(j.ort) && <span className="chip">{j.ort}</span>}
-        {bekannt(j.arbeitsmodell) && <span className="chip">{j.arbeitsmodell}</span>}
-        {lv && <span className="chip">{levelText(lv)}</span>}
-        {j.erstmals_gesehen && <span className="chip">Online seit: {datumDe(j.erstmals_gesehen)}</span>}
-      </p>
+      {eintraege.length > 0 && (
+        <section className="steckbrief karte" aria-labelledby="steckbrief-titel">
+          <h2 id="steckbrief-titel">Steckbrief</h2>
+          <dl>{eintraege.map((e) => <div key={e.feld}><dt>{FELD_TITEL[e.feld]}</dt><dd>{e.text}</dd></div>)}</dl>
+        </section>
+      )}
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
       <div className="knopfreihe">
         {app.data ? (
@@ -67,9 +69,10 @@ export default async function Seite({ params, searchParams }: { params: Promise<
         )}
       </div>
       {begriffe.length > 0 && <p className="meldung hinweis">{n} deiner wichtigen Punkte kommen vor</p>}
-      <section className="karte">
+      <details className="karte">
+        <summary>Ganze Anzeige lesen</summary>
         <Abschnitte abschnitte={abschnitte} text={j.text} begriffe={begriffe} ebene={2} />
-      </section>
+      </details>
     </>
   );
 }

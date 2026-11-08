@@ -144,7 +144,8 @@ def test_spalten_fehlen_wird_uebersprungen(fake, capsys):
 
 def test_spalten_da_werden_geschrieben(fake):
     db._spalten = None
-    db.schreibe("acme", [job("1", abschnitte=[{"titel": "A", "punkte": ["x"]}], land="Deutschland")], "2026-11-01")
+    db.schreibe("acme", [job("1", abschnitte=[{"titel": "A", "punkte": ["x"]}], land="Deutschland", steckbrief={"erfahrung_jahre": 3})], "2026-11-01")
+    assert fake.t["jobs"]["acme:1"]["steckbrief"] == {"erfahrung_jahre": 3}
     assert fake.t["jobs"]["acme:1"]["abschnitte"] == [{"titel": "A", "punkte": ["x"]}]
     assert fake.t["jobs"]["acme:1"]["land"] == "Deutschland"
 
