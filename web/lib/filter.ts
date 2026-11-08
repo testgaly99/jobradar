@@ -83,3 +83,6 @@ export function suchBedingung(q: string, volltext: boolean): string {
 }
 
 export const AUSGEBLENDET_BRANCHE = "Startup / Venture-finanziert";
+
+// Ohne Land-Facette (Migration 005 fehlt) gibt es keine Spalte jobs.land: Land-Filter wird ignoriert.
+export const landNurMitFacette = (f: Filter, hatLand: boolean): Filter => (hatLand ? f : { ...f, land: [] });

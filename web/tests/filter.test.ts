@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, stadtAnzeige, suchBedingung } from "../lib/filter.ts";
+import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, stadtAnzeige, suchBedingung, landNurMitFacette } from "../lib/filter.ts";
 
 test("leerer Filter gibt /stellen", () => {
   const f = leseFilter({});
@@ -81,4 +81,10 @@ test("Suche nur im Titel, mit volltext auch im Text", () => {
   assert.equal(suchBedingung("x", true), 'titel.ilike."%x%",text.ilike."%x%"');
   assert.equal(leseFilter({ volltext: "1" }).volltext, true);
   assert.equal(leseFilter({}).volltext, false);
+});
+
+test("Land-Filter wird ohne Facette ignoriert", () => {
+  const f = leseFilter({ land: "Österreich" });
+  assert.deepEqual(landNurMitFacette(f, false).land, []);
+  assert.deepEqual(landNurMitFacette(f, true).land, ["Österreich"]);
 });

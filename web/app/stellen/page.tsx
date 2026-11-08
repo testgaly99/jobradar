@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { firmenFarbe } from "@/lib/farbe";
-import { AUSGEBLENDET_BRANCHE, GROESSEN_REIHENFOLGE, GRUPPEN, filterZuUrl, heuteLokal, istNeu, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, GROESSEN_REIHENFOLGE, GRUPPEN, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { merken } from "./actions";
 import FilterBlock from "./filterblock";
@@ -24,20 +24,22 @@ const datumDe = (iso: string) => iso.split("-").reverse().join(".");
 
 export default async function Seite({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
-  const f = leseFilter(sp);
+  const roh = leseFilter(sp);
   const fehler = typeof sp.fehler === "string" ? sp.fehler : null;
   const sb = await createClient();
-  const [ergebnis, lauf, fac] = await Promise.all([
+  // Facetten zuerst: ohne Migration 005 fehlt "land", dann wird ein ?land= ignoriert statt die Abfrage zu sprengen.
+  const fac = await sb.rpc("facetten"); // fehlt die Funktion noch (002_facetten.sql), gibt es Filter ohne Zahlen
+  const fa: Facetten = fac.error ? {} : (fac.data ?? {});
+  const f = landNurMitFacette(roh, !!fa.land);
+  const [ergebnis, lauf] = await Promise.all([
     stellenAbfrage(sb, f),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
-    sb.rpc("facetten"), // fehlt die Funktion noch (002_facetten.sql), gibt es Filter ohne Zahlen
   ]);
   const jobs = (ergebnis.data ?? []) as unknown as Job[];
   const gesamt = ergebnis.count ?? 0;
   const letzterLauf: string | null = lauf.data?.datum ?? null;
   const veraltet = letzterLauf !== null && letzterLauf < tagePlus(heuteLokal(), -2);
   const jetzt = new Date();
-  const fa: Facetten = fac.error ? {} : (fac.data ?? {});
   const hatZahlen = !fac.error;
   const seiten = Math.max(1, Math.ceil(gesamt / PRO_SEITE));
   const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.seit ? 1 : 0);
@@ -95,7 +97,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       {namen.map((n) => (
                         <label key={n} className="option">
                           <input type="checkbox" name={g} value={n} defaultChecked={f[g].includes(n)} />
-                          <span>{n}{werte[n] !== undefined && ` (${werte[n]})`}</span>
+                          <span>{g === "level" ? levelText(n) : g === "groesse" ? n + " Mitarbeitende" : n}{werte[n] !== undefined && ` (${werte[n]})`}</span>
                         </label>
                       ))}
                     </div>
@@ -120,7 +122,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               const neu = !!(j.erstmals_gesehen && istNeu(j.erstmals_gesehen, jetzt));
               const gr = bekannt(j.companies?.groesse_klasse ?? null);
               const lv = bekannt(j.erfahrungslevel);
-              const chips = [gr && (gr + " Mitarbeitende"), lv && levelText(lv), bekannt(j.arbeitsmodell), bekannt(j.vertragsart)].filter(Boolean) as string[];
+              const chips = [...new Set([gr && (gr + " Mitarbeitende"), lv && levelText(lv), bekannt(j.arbeitsmodell), bekannt(j.vertragsart), j.remote ? "Remote" : null].filter(Boolean) as string[])];
               const branchen = (j.companies?.kategorie ?? []).filter((k) => k !== AUSGEBLENDET_BRANCHE);
               const st = status.get(j.id);
               return (
