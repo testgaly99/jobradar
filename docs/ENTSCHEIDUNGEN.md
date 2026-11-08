@@ -29,4 +29,4 @@
 | 2026-11-08 | GitHub Pages abgeschaltet, die alte Seite gelöscht | Die neue Website auf Vercel ersetzt sie. Der Verlauf liegt in Git. |
 | 2026-11-08 | Löschschutz über Fremdschlüssel mit `restrict` | Die Datenbank selbst verhindert, dass ein Dokument oder eine Stelle mit Bewerbung versehentlich gelöscht wird. |
 | 2026-11-08 | Dokumente werden direkt vom Browser in Storage hochgeladen | So läuft nichts durch die Vercel-Funktionen (Größenlimit) und es braucht keinen Zwischenschritt. |
-| 2026-11-08 | CSV und ZIP für den Export ohne Bibliothek | Wenige Zeilen eigener Code ersetzen ein Fremdpaket (CLAUDE.md Abschnitt 10). |
+| 2026-11-08 | Export als eine CSV-Tabelle mit klickbaren Links (Wunsch des Nutzers), ohne ZIP | Excel öffnet die CSV direkt; Kontakte und Interviews stehen in Spalten der Bewerbung. Kein Fremdpaket nötig (CLAUDE.md Abschnitt 10). |

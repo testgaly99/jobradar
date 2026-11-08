@@ -32,7 +32,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
         </ul>
       )}
       <h2>Meine Daten</h2>
-      <p><a className="knopf knopf-rand knopf-schmal" href="/export">Meine Daten exportieren</a></p>
+      <p><a className="knopf knopf-rand knopf-schmal" href="/export">Bewerbungen als Excel-Tabelle (CSV) herunterladen</a></p>
     </div>
   );
 }

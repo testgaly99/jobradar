@@ -1,35 +1,35 @@
 import { createClient } from "@/lib/supabase/server";
-import { csvDatei, SPALTEN } from "@/lib/export";
-import { zip } from "@/lib/zip";
-
-const TABELLEN = [
-  ["bewerbungen", "applications"],
-  ["kontakte", "contacts"],
-  ["interviews", "interviews"],
-  ["verlauf", "application_events"],
-] as const;
+import { bewerbungenCsv } from "@/lib/export";
 
 export async function GET() {
   const sb = await createClient();
   const { data: c } = await sb.auth.getClaims();
   if (!c?.claims) return new Response("Nicht angemeldet", { status: 401 });
 
-  const dateien = [];
-  for (const [datei, tabelle] of TABELLEN) {
+  // PostgREST kappt bei 1000 Zeilen: seitenweise holen, stabil nach id sortiert.
+  const alle = async (tabelle: string, spalten: string) => {
     const zeilen: Record<string, unknown>[] = [];
-    // PostgREST kappt bei 1000 Zeilen: seitenweise holen, stabil nach id sortiert.
     for (let von = 0; ; von += 1000) {
-      const { data, error } = await sb.from(tabelle).select("*").order("id").range(von, von + 999);
-      if (error) return new Response("Export fehlgeschlagen", { status: 500 });
-      zeilen.push(...data);
-      if (data.length < 1000) break;
+      const { data, error } = await sb.from(tabelle).select(spalten).order("id").range(von, von + 999);
+      if (error) throw error;
+      zeilen.push(...(data as unknown as Record<string, unknown>[]));
+      if (data.length < 1000) return zeilen;
     }
-    dateien.push({ name: `${datei}.csv`, data: csvDatei(SPALTEN[tabelle], zeilen) });
+  };
+  try {
+    const csv = bewerbungenCsv(
+      await alle("applications", "*"),
+      await alle("contacts", "application_id,name,rolle,email,telefon"),
+      await alle("interviews", "application_id,datum,format,teilnehmer"),
+      await alle("documents", "id,name"),
+    );
+    return new Response(csv, {
+      headers: {
+        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Disposition": `attachment; filename="jobradar-bewerbungen-${new Date().toISOString().slice(0, 10)}.csv"`,
+      },
+    });
+  } catch {
+    return new Response("Export fehlgeschlagen", { status: 500 });
   }
-  return new Response(new Uint8Array(zip(dateien)), {
-    headers: {
-      "Content-Type": "application/zip",
-      "Content-Disposition": `attachment; filename="jobradar-export-${new Date().toISOString().slice(0, 10)}.zip"`,
-    },
-  });
 }

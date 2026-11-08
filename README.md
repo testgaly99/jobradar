@@ -21,7 +21,7 @@ Klicke auf „Bewerbung anlegen“ und füge den Link einer Stellenanzeige ein. 
 ## Dokumente und Export
 
 - Unter „Dokumente“ lädst du PDFs hoch. Sie liegen in Supabase Storage.
-- Der Export-Knopf lädt deine Bewerbungen als CSV oder ZIP herunter. *Warum:* So hast du jederzeit eine eigene Kopie, ohne ein Programm zu brauchen.
+- Der Export-Knopf lädt alle deine Bewerbungen als eine CSV-Tabelle herunter, mit Kontakten und Interviews in der jeweiligen Zeile und klickbaren Links. Excel öffnet sie direkt. *Warum:* So hast du jederzeit eine eigene Kopie, ohne ein Programm zu brauchen.
 
 ## Der tägliche Lauf
 

@@ -1,8 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { crc32 } from "node:zlib";
-import { csvDatei, csvFeld, dateiname, SPALTEN } from "../lib/export.ts";
-import { zip } from "../lib/zip.ts";
+import { bewerbungenCsv, csvDatei, csvFeld, dateiname, interviewText, kontaktText, linkFeld } from "../lib/export.ts";
 
 test("csvFeld: Quoting", () => {
   assert.equal(csvFeld("a"), "a");
@@ -12,12 +10,14 @@ test("csvFeld: Quoting", () => {
   assert.equal(csvFeld("x\ry"), '"x\ry"');
 });
 
-test("csvFeld: null, Zahl, Array", () => {
+test("csvFeld: null, Zahl, Array, Objekt", () => {
   assert.equal(csvFeld(null), "");
   assert.equal(csvFeld(undefined), "");
   assert.equal(csvFeld(4), "4");
+  assert.equal(csvFeld(-1), "-1");
   assert.equal(csvFeld(["a", "b"]), "a, b");
   assert.equal(csvFeld(true), "true");
+  assert.equal(csvFeld({ a: 1 }), '"{""a"":1}"');
 });
 
 test("csvFeld: Formel-Schutz", () => {
@@ -27,8 +27,65 @@ test("csvFeld: Formel-Schutz", () => {
 });
 
 test("csvDatei: BOM, Kopfzeile, CRLF, Semikolon", () => {
-  const t = csvDatei(["a", "b"], [{ a: "1", b: null }, { a: "x;y", b: 2 }]);
-  assert.equal(t, "\uFEFFa;b\r\n1;\r\n\"x;y\";2\r\n");
+  assert.equal(csvDatei(["a", "b"], [["1", null], ["x;y", 2]]), "\uFEFFa;b\r\n1;\r\n\"x;y\";2\r\n");
+});
+
+test("Link: http(s) wird HYPERLINK-Formel", () => {
+  assert.equal(csvFeld(linkFeld("https://example.com/job?id=1")), '"=HYPERLINK(""https://example.com/job?id=1"")"');
+  assert.equal(csvFeld(linkFeld("http://a.de")), '"=HYPERLINK(""http://a.de"")"');
+});
+
+test("Link: javascript:, =cmd, ungültig bleiben geschützter Text", () => {
+  assert.equal(csvFeld(linkFeld("javascript:alert(1)")), "javascript:alert(1)");
+  assert.equal(csvFeld(linkFeld("=cmd|' /C calc'!A0")), "'=cmd|' /C calc'!A0");
+  assert.equal(csvFeld(linkFeld("keine url")), "keine url");
+  assert.equal(csvFeld(linkFeld(null)), "");
+  assert.equal(csvFeld(linkFeld("ftp://x.de/a")), "ftp://x.de/a");
+});
+
+test("Link: Anführungszeichen in der URL verdoppelt", () => {
+  const f = linkFeld('https://x.de/a"b') as { text: string };
+  assert.equal(f.text, '=HYPERLINK("https://x.de/a""b")');
+});
+
+test("Link: über 255 Zeichen als Klartext", () => {
+  const lang = "https://x.de/" + "a".repeat(250);
+  assert.equal(linkFeld(lang), lang);
+  assert.notEqual(linkFeld("https://x.de/" + "a".repeat(200)), "https://x.de/" + "a".repeat(200));
+});
+
+test("Kontakte und Interviews: Text je Eintrag", () => {
+  assert.equal(kontaktText({ name: "Anna", rolle: "HR", email: "a@x.de", telefon: "123" }), "Anna (HR), a@x.de, 123");
+  assert.equal(kontaktText({ name: "Bob", rolle: null, email: null, telefon: "5" }), "Bob, 5");
+  assert.equal(interviewText({ datum: "2026-11-08T09:30:00Z", format: "Video", teilnehmer: "Chef" }), "08.11.2026 10:30 Video – Chef");
+  assert.equal(interviewText({ datum: "2026-07-01T10:00:00Z", format: null, teilnehmer: null }), "01.07.2026 12:00");
+});
+
+test("bewerbungenCsv: eine Zeile, Status deutsch, Aggregation, Dokumentnamen", () => {
+  const t = bewerbungenCsv(
+    [{ id: "a1", firma: "ACME", titel: "PM", status: "im_gespraech", link: "https://acme.de/j", cv_dokument_id: "d1", beworben_am: "2026-11-08", ergebnis: "absage", tags: ["x", "y"] }],
+    [{ application_id: "a1", name: "Anna", rolle: "HR" }, { application_id: "a1", name: "Bob", email: "b@x.de" }, { application_id: "zz", name: "Fremd" }],
+    [{ application_id: "a1", datum: "2026-11-09T09:00:00Z", format: "Video", teilnehmer: "Chef" }, { application_id: "a1", datum: "2026-11-08T09:00:00Z", format: "Tel", teilnehmer: null }],
+    [{ id: "d1", name: "CV v3" }],
+  );
+  const z = t.split("\r\n");
+  assert.equal(z.length, 3); // Kopf, 1 Zeile, Rest leer
+  assert.ok(z[0].startsWith("\uFEFFFirma;Titel;Status;Link;Standort;"));
+  assert.ok(z[0].endsWith(";Kontakte;Interviews"));
+  assert.ok(z[1].startsWith('ACME;PM;Im Gespräch;"=HYPERLINK(""https://acme.de/j"")";'));
+  assert.ok(z[1].includes(";CV v3;"));
+  assert.ok(z[1].includes(";08.11.2026;"));
+  assert.ok(z[1].includes(";Absage;"));
+  assert.ok(z[1].includes(";x, y;"));
+  assert.ok(z[1].endsWith(";Anna (HR) | Bob, b@x.de;08.11.2026 10:00 Tel | 09.11.2026 10:00 Video – Chef"));
+  assert.ok(!z[1].includes("Fremd"));
+  assert.equal(z[1].split(";").length >= 37, true);
+});
+
+test("leerer Export: Kopfzeile bleibt", () => {
+  const t = bewerbungenCsv([], [], [], []);
+  assert.ok(t.startsWith("\uFEFFFirma;Titel;Status;Link;Standort;"));
+  assert.equal(t.split("\r\n").length, 2);
 });
 
 test("dateiname bereinigen", () => {
@@ -36,48 +93,4 @@ test("dateiname bereinigen", () => {
   assert.equal(dateiname("../../etc/passwd"), ".._.._etc_passwd");
   assert.equal(dateiname("a".repeat(300) + ".pdf").length, 100);
   assert.equal(dateiname(""), "datei");
-});
-
-// Minimaler ZIP-Leser: Central Directory -> lokale Header.
-test("zip: Round-Trip", () => {
-  const dateien = [{ name: "bewerbungen.csv", data: Buffer.from("\uFEFFä;b\r\n") }, { name: "k.csv", data: "x" }];
-  const z = zip(dateien);
-  const ende = z.length - 22;
-  assert.equal(z.readUInt32LE(ende), 0x06054b50);
-  assert.equal(z.readUInt16LE(ende + 10), 2);
-  let p = z.readUInt32LE(ende + 16);
-  dateien.forEach((d) => {
-    const daten = Buffer.from(d.data);
-    assert.equal(z.readUInt32LE(p), 0x02014b50);
-    assert.equal(z.readUInt16LE(p + 8) & 0x800, 0x800);
-    const crc = z.readUInt32LE(p + 16), gr = z.readUInt32LE(p + 20);
-    assert.equal(crc, crc32(daten));
-    assert.equal(gr, daten.length);
-    assert.equal(z.readUInt32LE(p + 24), daten.length);
-    const nl = z.readUInt16LE(p + 28), lokal = z.readUInt32LE(p + 42);
-    assert.equal(z.toString("utf8", p + 46, p + 46 + nl), d.name);
-    assert.equal(z.readUInt32LE(lokal), 0x04034b50);
-    assert.equal(z.readUInt32LE(lokal + 14), crc);
-    const ln = z.readUInt16LE(lokal + 26), le = z.readUInt16LE(lokal + 28);
-    assert.equal(z.toString("utf8", lokal + 30, lokal + 30 + ln), d.name);
-    assert.deepEqual(z.subarray(lokal + 30 + ln + le, lokal + 30 + ln + le + gr), daten);
-    p += 46 + nl;
-  });
-});
-
-test("leere Tabelle: Kopfzeile bleibt", () => {
-  assert.equal(csvDatei(SPALTEN.contacts, []), "\uFEFFid;owner_id;application_id;firma;name;rolle;email;telefon;linkedin;art\r\n");
-});
-
-test("csvFeld: Zahl bleibt, Objekt als JSON", () => {
-  assert.equal(csvFeld(-1), "-1");
-  assert.equal(csvFeld({ a: 1 }), '"{""a"":1}"');
-});
-
-test("zip: DOS-Datum gesetzt, lokal und zentral gleich", () => {
-  const z = zip([{ name: "a", data: "x" }]);
-  const zd = z.readUInt32LE(z.length - 6);
-  assert.ok(z.readUInt16LE(12) >> 9 >= 46);
-  assert.equal(z.readUInt16LE(12), z.readUInt16LE(zd + 14));
-  assert.equal(z.readUInt16LE(10), z.readUInt16LE(zd + 12));
 });
