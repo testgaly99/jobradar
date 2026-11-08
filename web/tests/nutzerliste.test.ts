@@ -19,4 +19,5 @@ test("entfernenErlaubt", () => {
   assert.match(entfernenErlaubt({ ...b, zielId: "e" })!, /Admin-Konto/);
   assert.match(entfernenErlaubt({ ...b, zielEmail: "ADMIN@x.de" })!, /Admin-Konto/);
   assert.equal(entfernenErlaubt(b), null);
+  for (const zielEmail of [undefined, null, ""]) assert.match(entfernenErlaubt({ ...b, zielEmail })!, /nichts gelöscht/);
 });

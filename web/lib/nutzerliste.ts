@@ -16,5 +16,6 @@ export function nutzerZeilen(users: U[]) {
 }
 
 export function entfernenErlaubt(p: { zielId: string; zielEmail?: string | null; eigeneId: string; adminEnv?: string }): string | null {
+  if (!p.zielEmail) return "Nutzer konnte nicht geprüft werden. Es wurde nichts gelöscht."; // fail closed
   return p.zielId === p.eigeneId || istAdmin(p.zielEmail, p.adminEnv) ? "Das Admin-Konto kann nicht gelöscht werden." : null;
 }
