@@ -21,7 +21,7 @@ Stand: 2026-11-08
 - In Git ist für dieses Repo die Identität testgaly99 eingetragen.
 
 ## Offene To-dos für den Nutzer (Schlussliste Phase 2)
-1. Migrationen `002`, `003`, `004` im Supabase SQL Editor ausführen, in dieser Reihenfolge (siehe README „Datenbank einrichten“). Ohne 002 fehlen die Zahlen an den Filtern. Ohne 003 sind doppelte Bewerbungen möglich. Ohne 004 lässt sich ein verwendeter Lebenslauf löschen.
+1. ~~Migrationen `002`, `003`, `004` ausführen~~ **Erledigt 2026-11-08**, von Claude geprüft: Filter-Zahlen, Schutz vor doppelten Bewerbungen und Löschschutz für verwendete Dokumente wirken; der Lösch-Test besteht.
 2. Klicktest der Seiten: Bewerbung aus einer Stelle, aus einem Link und manuell anlegen; Status ändern; Verlauf und Kanban ansehen; ein Dokument hochladen; den Export öffnen; Admin-Seite „Nutzer“ ansehen. Danach einmal mit dem zweiten Konto `ichqwer16@gmail.com` (kein Admin) anmelden und prüfen, was ein Freund sieht. Auffälligkeiten mit Bildschirmfoto melden.
 3. Secret Key rotieren: Er war einmal im Chat sichtbar. Supabase → API Keys → neuen Secret key anlegen → in `.env`, `web/.env.local` und im GitHub-Secret `SUPABASE_SERVICE_KEY` eintragen → alten löschen.
 4. Vercel einrichten (README „Vercel einrichten“), dabei auch die Server-Variablen `SUPABASE_SERVICE_KEY` und `ADMIN_EMAIL=markgaly99@gmail.com` eintragen (ohne `NEXT_PUBLIC_`).
