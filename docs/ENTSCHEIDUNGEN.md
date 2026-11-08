@@ -43,3 +43,4 @@
 | 2026-11-08 | Website-Überarbeitung (Phase 2b) nach dem Klicktest des Nutzers, vor dem Einladen von Freunden. Inhalt siehe CLAUDE.md Abschnitt 6, Punkt 2b. | Rückmeldung aus dem Klicktest: unklare Begriffe, fehlende Detailseite und Merken-Funktion, schwache Suche. |
 | 2026-11-08 | Reiter „Dokumente“ ausgeblendet; „Dokumente klären“ und „Bewerbungsformular neu definieren“ in den Backlog | Ohne Bewerben über die Website bringen Dokumente wenig. Das Formular will der Nutzer später gemeinsam neu festlegen. |
 | 2026-11-08 | Admin-Einblicke nur als Zahlen ohne Inhalte (letzte Anmeldung, Anzahl Bewerbungen, aktive Nutzer) | Datenschutz: keine Firmennamen, Notizen oder Klickverfolgung. |
+| 2026-11-08 | „Wichtige Punkte“ markieren kommt in Phase 2b (Textvergleich). CV-Abgleich (fett/rot) und CV-Empfehlung kommen in Phase 6, per KI über den Abo-Token | Wortvergleich mit einem Lebenslauf würde oft falsch rot markieren; Bedeutungen erkennt nur ein Sprachmodell. |
