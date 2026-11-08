@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Suspense } from "react";
 import Kopf from "./kopf";
 
 export const metadata: Metadata = {
@@ -12,7 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="de">
       <body>
-        <Suspense><Kopf /></Suspense>
+        <Kopf />
         <main className="seite">{children}</main>
       </body>
     </html>
