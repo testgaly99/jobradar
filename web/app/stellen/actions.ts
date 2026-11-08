@@ -1,10 +1,12 @@
 "use server";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { anlegenAusJob } from "@/lib/bewerbung-anlegen";
 import { fehlerText } from "@/lib/fehler";
 
-export async function bewerbungAusStelle(jobId: string) {
+// Merkt die Stelle (Status gemerkt) und bleibt auf der Liste. Doppelklick legt dank anlegenAusJob keine zweite Bewerbung an.
+export async function merken(jobId: string) {
   const sb = await createClient();
   const { data: claims } = await sb.auth.getClaims();
   if (!claims?.claims) redirect("/login");
@@ -13,5 +15,5 @@ export async function bewerbungAusStelle(jobId: string) {
   if (!job) redirect("/stellen");
   const r = await anlegenAusJob(sb, job);
   if ("fehler" in r) redirect(`/stellen?fehler=${encodeURIComponent(fehlerText({}))}`);
-  redirect(`/bewerbungen/${r.id}`);
+  revalidatePath("/stellen");
 }

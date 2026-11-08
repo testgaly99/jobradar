@@ -158,6 +158,8 @@ h2 { font-size: 1.1rem; margin: 0; }
 .filteraktionen { display: grid; gap: 0.5rem; }
 .filteraktionen .knopf { text-decoration: none; }
 .gruppe { border-top: 1px solid var(--rand); }
+fieldset.gruppe { border-width: 1px 0 0; border-style: solid; border-color: var(--rand); margin: 0; padding: 0.4rem 0 0; min-width: 0; }
+fieldset.gruppe legend { font-weight: 600; padding: 0 0.3rem 0 0; }
 .optionen { display: grid; gap: 0.1rem; padding-bottom: 0.5rem; }
 .filterform label.option { display: flex; align-items: center; gap: 0.6rem; font-weight: 400; min-height: 36px; }
 .option input { width: 1.2rem; height: 1.2rem; flex: none; }

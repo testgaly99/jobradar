@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { leseFilter, filterZuUrl, escapeIlike, tagePlus } from "../lib/filter.ts";
+import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, stadtAnzeige, suchBedingung } from "../lib/filter.ts";
 
 test("leerer Filter gibt /stellen", () => {
   const f = leseFilter({});
@@ -10,7 +10,7 @@ test("leerer Filter gibt /stellen", () => {
 });
 
 test("Rundreise mit Mehrfachwerten, Stichwort, Datum, Seite", () => {
-  const url = "/stellen?level=Senior&level=Lead&stadt=Berlin&stadt=Remote&q=data+engineer&neu=2026-11-01&seite=3";
+  const url = "/stellen?level=Senior&level=Lead&stadt=Berlin&stadt=Remote&q=data+engineer&volltext=1&seit=7&seite=3";
   const f = leseFilter(Object.fromEntries([...new Set(new URL(url, "http://x").searchParams.keys())]
     .map((k) => [k, new URL(url, "http://x").searchParams.getAll(k)])));
   assert.deepEqual(f.level, ["Senior", "Lead"]);
@@ -20,10 +20,10 @@ test("Rundreise mit Mehrfachwerten, Stichwort, Datum, Seite", () => {
 });
 
 test("Einzelwert, Muell und Duplikate werden bereinigt", () => {
-  const f = leseFilter({ firma: "SAP", stadt: ["A", "A", " ", ""], neu: "gestern", seite: "-4" });
+  const f = leseFilter({ firma: "SAP", stadt: ["A", "A", " ", ""], seit: "gestern", seite: "-4" });
   assert.deepEqual(f.firma, ["SAP"]);
   assert.deepEqual(f.stadt, ["A"]);
-  assert.equal(f.neu, "");
+  assert.equal(f.seit, "");
   assert.equal(f.seite, 1);
 });
 
@@ -40,4 +40,45 @@ test("escapeIlike maskiert %, _, Komma, Klammern, Anfuehrungszeichen", () => {
 
 test("tagePlus ueber Monatsgrenze", () => {
   assert.equal(tagePlus("2026-11-01", -2), "2026-10-30");
+});
+
+const JETZT = new Date(2026, 10, 8, 12);
+
+test("levelText fuer alle Stufen", () => {
+  assert.equal(levelText("Junior"), "Junior (0–2 Jahre)");
+  assert.equal(levelText("Mid"), "Mid (2–5 Jahre)");
+  assert.equal(levelText("Senior"), "Senior (5–8 Jahre)");
+  assert.equal(levelText("Lead"), "Lead (8+ Jahre)");
+});
+
+test("onlineSeitGrenze fuer alle Werte", () => {
+  assert.equal(onlineSeitGrenze("heute", JETZT), "2026-11-08");
+  assert.equal(onlineSeitGrenze("3", JETZT), "2026-11-05");
+  assert.equal(onlineSeitGrenze("7", JETZT), "2026-11-01");
+  assert.equal(onlineSeitGrenze("30", JETZT), "2026-10-09");
+});
+
+test("istNeu an der Grenze von 3 Tagen", () => {
+  assert.equal(istNeu("2026-11-05", JETZT), true);
+  assert.equal(istNeu("2026-11-04", JETZT), false);
+  assert.equal(istNeu("2026-11-08", JETZT), true);
+});
+
+test("stadtAnzeige mit und ohne Filter", () => {
+  assert.equal(stadtAnzeige(["Berlin", "Hamburg", "Köln"], []), "Berlin +2 weitere");
+  assert.equal(stadtAnzeige(["Berlin"], []), "Berlin");
+  assert.equal(stadtAnzeige(["Berlin", "Hamburg"], ["Hamburg"]), "Hamburg");
+  assert.equal(stadtAnzeige(["Berlin", "Hamburg"], ["München"]), "Berlin +1 weitere");
+  assert.equal(stadtAnzeige([], []), "");
+});
+
+test("Groessen-Reihenfolge", () => {
+  assert.deepEqual(GROESSEN_REIHENFOLGE, ["<50", "50–249", "250–999", "1.000+"]);
+});
+
+test("Suche nur im Titel, mit volltext auch im Text", () => {
+  assert.equal(suchBedingung("x", false), 'titel.ilike."%x%"');
+  assert.equal(suchBedingung("x", true), 'titel.ilike."%x%",text.ilike."%x%"');
+  assert.equal(leseFilter({ volltext: "1" }).volltext, true);
+  assert.equal(leseFilter({}).volltext, false);
 });
