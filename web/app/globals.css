@@ -125,7 +125,7 @@ h2 { font-size: 1.1rem; margin: 0; }
 /* Formulare */
 .formular { display: grid; gap: 0.9rem; }
 .formular label { display: grid; gap: 0.25rem; font-weight: 600; }
-.formular input {
+.formular input, .formular select, .formular textarea {
   min-height: 44px;
   padding: 0.5rem 0.7rem;
   border: 1px solid var(--gedaempft);
@@ -171,3 +171,47 @@ h2 { font-size: 1.1rem; margin: 0; }
 .knopf-schmal { width: auto; }
 .seiten { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin: 1.25rem 0; }
 .seiten .knopf { width: auto; text-decoration: none; }
+
+/* Bewerbungen */
+.formular textarea { resize: vertical; }
+.block { margin: 0 0 1rem; }
+.unternav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 1rem; }
+.unternav a { padding: 0.5rem 1rem; min-height: 44px; display: inline-flex; align-items: center; border: 1px solid var(--rand); border-radius: 999px; color: var(--text); text-decoration: none; font-weight: 600; background: var(--flaeche); }
+.unternav a[aria-current="page"] { background: var(--primaer); color: var(--primaer-text); border-color: var(--primaer); }
+.filterform select { min-height: 44px; padding: 0.5rem 0.7rem; border: 1px solid var(--gedaempft); border-radius: 10px; background: var(--bg); color: var(--text); font: inherit; }
+.statuswahl { border: 1px solid var(--rand); border-radius: 10px; display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0.5rem 0.75rem; margin: 0; }
+.statuswahl legend { font-weight: 700; padding: 0 0.3rem; }
+.filterreihe { display: grid; gap: 0.75rem; }
+@media (min-width: 700px) { .filterreihe { grid-template-columns: 1fr 1fr; } .aktionsreihe { grid-template-columns: auto auto; justify-content: start; } }
+.tabelle-rahmen { overflow-x: auto; background: var(--flaeche); border-radius: var(--radius); box-shadow: var(--schatten); }
+.tabelle { border-collapse: collapse; width: 100%; min-width: 720px; }
+.tabelle th, .tabelle td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--rand); vertical-align: top; }
+.tabelle th a { color: var(--text); text-decoration: none; }
+.tabelle th a:hover { text-decoration: underline; }
+.kanban { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: flex-start; }
+.spalte { flex: 0 0 270px; display: grid; gap: 0.75rem; }
+.spalte > h2 { display: flex; align-items: center; gap: 0.5rem; }
+.kanbankarte { padding: 0.9rem; }
+.kanbankarte h3 { margin: 0 0 0.25rem; font-size: 1rem; }
+.kanbankarte p { margin: 0 0 0.4rem; }
+.statusform { display: grid; gap: 0.5rem; }
+.statusform label { display: grid; gap: 0.2rem; font-weight: 600; }
+.statusform select { min-height: 44px; border: 1px solid var(--gedaempft); border-radius: 10px; background: var(--bg); color: var(--text); font: inherit; padding: 0 0.5rem; }
+.detail { display: grid; gap: 1rem; margin-bottom: 1rem; }
+@media (min-width: 900px) { .detail { grid-template-columns: 1fr 1fr; align-items: start; } }
+.detail h2, .block h2 { margin-bottom: 0.25rem; }
+.eintraege { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: 0.5rem; }
+.eintraege li { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--rand); }
+.eintraege p { margin: 0.2rem 0 0; }
+.umbruch { white-space: pre-wrap; }
+.kopfzeile { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.snapshot { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; margin: 0.5rem 0 0; }
+.knopf-gefahr { width: auto; background: transparent; color: var(--fehler-text); border-color: var(--fehler-text); }
+.nur-druck { display: none; }
+.linkform { max-width: 40rem; }
+@media print {
+  .kopf, .kein-druck, button, form { display: none !important; }
+  .nur-druck { display: block; }
+  body { background: #fff; color: #000; }
+  .karte { box-shadow: none; border: 0; padding: 0; }
+}

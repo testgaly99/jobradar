@@ -17,6 +17,10 @@ export async function bewerbungAusStelle(jobId: string) {
     job_id: jobId, firma: job.unternehmen, titel: job.titel, link: job.url, quelle,
     standort: job.ort, praesenzmodell: job.arbeitsmodell, snapshot_text: job.text, status: "gemerkt",
   }).select("id").single();
+  if (error?.code === "23505") { // Doppelklick: die Bewerbung existiert schon
+    const { data: dup } = await sb.from("applications").select("id").eq("job_id", jobId).limit(1).maybeSingle();
+    if (dup) redirect(`/bewerbungen/${dup.id}`);
+  }
   if (error || !data) throw new Error("Bewerbung konnte nicht angelegt werden.");
   redirect(`/bewerbungen/${data.id}`);
 }

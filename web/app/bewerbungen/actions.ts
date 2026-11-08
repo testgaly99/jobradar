@@ -77,6 +77,10 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
     job_id: ziel.jobId ?? null, firma: ziel.firma ?? null, titel: ziel.titel ?? null, link: ziel.link, quelle: ziel.quelle,
     standort: ziel.ort ?? null, snapshot_text: ziel.text ?? null, status: "gemerkt",
   }).select("id").single();
+  if (error?.code === "23505" && ziel.jobId) {
+    const dup = await vorhandenZu("job_id", ziel.jobId);
+    if (dup) redirect(`/bewerbungen/${dup}`);
+  }
   if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
   redirect(`/bewerbungen/${data.id}`);
 }

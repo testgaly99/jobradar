@@ -5,6 +5,7 @@ import { GRUPPEN, filterZuUrl, heuteLokal, leseFilter, tagePlus, type Gruppe } f
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { bewerbungAusStelle } from "./actions";
 import FilterBlock from "./filterblock";
+import { SendeKnopf } from "../bewerbungen/knoepfe";
 
 const TITEL: Record<Gruppe, string> = {
   groesse: "Größe", kategorie: "Kategorie", level: "Erfahrungslevel", modell: "Arbeitsmodell",
@@ -112,7 +113,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   {j.erstmals_gesehen && <p className="gedaempft klein">Erstmals gesehen: {datumDe(j.erstmals_gesehen)}</p>}
                   {j.beschreibung_kurz && <p>{j.beschreibung_kurz}</p>}
                   <form action={bewerbungAusStelle.bind(null, j.id)}>
-                    <button className="knopf knopf-rand knopf-schmal" type="submit">Bewerbung anlegen</button>
+                    <SendeKnopf text="Bewerbung anlegen" klasse="knopf knopf-rand knopf-schmal" />
                   </form>
                 </li>
               );
