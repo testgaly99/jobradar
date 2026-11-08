@@ -332,6 +332,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
   - dabei entscheiden: neue Nutzer sofort drin oder erst nach Freigabe?
   - spätestens nötig, wenn es Richtung 20 Nutzer geht
 - **Login für Freunde:** E-Mail und Passwort zusätzlich zu Google (braucht das Mail-Paket).
+- **E-Mail-Registrierung absichern:** Der Knopf „Registrieren“ (E-Mail und Passwort) ist bis zum Mail-Paket bewusst offen (Entscheidung 2026-11-08). Dann: sperren (Hook, der neue E-Mail-Registrierungen ablehnt) oder mit Bestätigungsmail absichern.
 
 ---
 

@@ -38,3 +38,4 @@
 | 2026-11-08 | Vorlagen, Textbausteine und Anlagen kommen in ein eigenes späteres Paket. Benachrichtigungen: Telegram, später Google Kalender, kein Teams. | Wunsch des Nutzers. |
 | 2026-11-08 | Die offenen To-dos des Nutzers (Migrationen, Klicktest, Vercel usw.) sind der letzte Schritt von Phase 2. | Für das Bauen werden sie nicht gebraucht, erst für den Live-Test mit Freunden. |
 | 2026-11-08 | Das Admin-Konto lässt sich nie löschen, weder selbst noch über die Admin-Seite | Wunsch des Nutzers. Es endet erst, wenn Website und Datenbank entfernt werden. |
+| 2026-11-08 | Registrierung per E-Mail und Passwort bleibt **offen**, bis das Mail-Paket kommt | Entscheidung des Nutzers. Risiko bewusst getragen: Wer den Link kennt, kann ein Konto anlegen, sieht aber nur Stellen und einen eigenen leeren Tracker (RLS). Der Admin sieht neue Konten auf „Nutzer“ und kann sie entfernen. |
