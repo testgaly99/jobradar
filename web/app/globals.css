@@ -1,0 +1,142 @@
+:root {
+  --bg: #f4f5fb;
+  --flaeche: #ffffff;
+  --text: #1b1f2a;
+  --gedaempft: #4b5565;
+  --rand: #c9cfdb;
+  --primaer: #4338ca;
+  --primaer-text: #ffffff;
+  --fokus: #4338ca;
+  --chip-bg: #e6e8f8;
+  --chip-text: #2b2f8f;
+  --fehler-bg: #fde8e8;
+  --fehler-text: #9b1c1c;
+  --info-bg: #e3f4ea;
+  --info-text: #14532d;
+  --schatten: 0 1px 3px rgba(20, 25, 50, 0.12), 0 4px 14px rgba(20, 25, 50, 0.06);
+  --radius: 14px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11131b;
+    --flaeche: #1b1f2b;
+    --text: #e8eaf1;
+    --gedaempft: #a6b0c2;
+    --rand: #3a4152;
+    --primaer: #a5b4fc;
+    --primaer-text: #11131b;
+    --fokus: #c7d2fe;
+    --chip-bg: #2a2f55;
+    --chip-text: #d6dcff;
+    --fehler-bg: #3b1a1a;
+    --fehler-text: #fecaca;
+    --info-bg: #15321f;
+    --info-text: #bbf7d0;
+    --schatten: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+a { color: var(--primaer); }
+h1 { font-size: 1.5rem; margin: 0 0 0.75rem; }
+h2 { font-size: 1.1rem; margin: 0; }
+.gedaempft { color: var(--gedaempft); }
+
+:focus-visible {
+  outline: 3px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.seite { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+
+/* Kopfzeile: auf dem Handy umbrechen die Links unter das Logo */
+.kopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--flaeche);
+  border-bottom: 1px solid var(--rand);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.logo { font-weight: 700; font-size: 1.2rem; color: var(--text); text-decoration: none; }
+.nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1rem; }
+.nav a { padding: 0.4rem 0.2rem; color: var(--text); font-weight: 500; }
+.nav form { margin: 0; }
+
+/* Karten */
+.karte {
+  background: var(--flaeche);
+  border-radius: var(--radius);
+  box-shadow: var(--schatten);
+  padding: 1.25rem;
+  border-left: 5px solid var(--akzent, var(--primaer)); /* --akzent kommt aus firmenFarbe() */
+}
+.schmal { max-width: 26rem; margin: 2rem auto; }
+
+/* Chips: immer mit Text, nie nur Farbe */
+.chip {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Knöpfe */
+.knopf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--primaer);
+  border-radius: 10px;
+  background: var(--primaer);
+  color: var(--primaer-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.knopf:disabled { opacity: 0.6; cursor: wait; }
+.knopf-rand { background: transparent; color: var(--text); border-color: var(--rand); }
+.knopf-leise { width: auto; background: transparent; color: var(--text); border-color: var(--rand); min-height: 36px; }
+.link { background: none; border: 0; padding: 0.4rem 0; font: inherit; color: var(--primaer); text-decoration: underline; cursor: pointer; }
+
+/* Formulare */
+.formular { display: grid; gap: 0.9rem; }
+.formular label { display: grid; gap: 0.25rem; font-weight: 600; }
+.formular input {
+  min-height: 44px;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--gedaempft);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+.wechsel { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; margin: 1rem 0 0; }
+.trenner { text-align: center; color: var(--gedaempft); margin: 1rem 0; }
+.meldung { margin: 0; padding: 0.6rem 0.8rem; border-radius: 10px; }
+.fehler { background: var(--fehler-bg); color: var(--fehler-text); }
+.info { background: var(--info-bg); color: var(--info-text); }
+.info a { color: inherit; }
