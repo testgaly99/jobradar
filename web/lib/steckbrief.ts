@@ -8,7 +8,7 @@ export const FELD_TITEL: Record<Feld, string> = {
   online_seit: "Online seit", erfahrung: "Geforderte Erfahrung", gehalt: "Gehalt", sprachen: "Sprachen",
   sicherheit: "Sicherheitsüberprüfung", branche: "Branche",
 };
-export const STANDARD_FELDER: Feld[] = ["groesse", "level", "modell", "ort", "online_seit", "erfahrung", "gehalt"];
+export const STANDARD_FELDER: Feld[] = ["groesse", "level", "modell", "vertrag", "ort", "online_seit", "erfahrung", "gehalt", "branche"];
 
 // Gespeicherte Auswahl (text[] aus listen_felder): ohne Zeile Standard, unbekannte Namen fallen weg, Reihenfolge ist fest.
 export function waehleFelder(gespeichert: unknown): Feld[] {
@@ -57,6 +57,12 @@ export function gehaltText(g: Gehalt): string {
   const spanne = g.min === g.max ? tausender(g.min) : `${tausender(g.min)}–${tausender(g.max)}`;
   return `${spanne} ${w} / ${g.zeitraum}`;
 }
+
+// Arbeitsmodell plus "Remote", wenn die Stelle remote ist und das Modell das nicht schon sagt.
+export const modellText = (modell: string | null, remote: boolean | null): string | null => {
+  const m = modell && modell.toLowerCase() !== "unbekannt" ? modell : null;
+  return [m, remote && m !== "Remote" ? "Remote" : null].filter(Boolean).join(", ") || null;
+};
 
 export const datumDe = (iso: string) => iso.slice(0, 10).split("-").reverse().join(".");
 const bekannt = (s: string | null | undefined) => (s && s.toLowerCase() !== "unbekannt" ? s : null);

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { waehleFelder, STANDARD_FELDER, kurzzeile, gehaltText, leseSteckbrief, LEERER_STECKBRIEF, type KurzDaten } from "../lib/steckbrief.ts";
+import { waehleFelder, STANDARD_FELDER, kurzzeile, modellText, gehaltText, leseSteckbrief, LEERER_STECKBRIEF, type KurzDaten } from "../lib/steckbrief.ts";
 
 test("ohne Zeile gilt der Standard, Sprachen sind aus", () => {
   assert.deepEqual(waehleFelder(null), STANDARD_FELDER);
@@ -38,4 +38,16 @@ test("Steckbrief aus kaputtem jsonb wird leer statt Absturz", () => {
   assert.deepEqual(leseSteckbrief("x"), LEERER_STECKBRIEF);
   const s = leseSteckbrief({ erfahrung_jahre: "3", sprachen: [1, { sprache: "Deutsch" }], gehalt: { min: 9, max: 1, waehrung: "USD", zeitraum: "Jahr" } });
   assert.deepEqual(s, LEERER_STECKBRIEF);
+});
+
+test("Standard enthält Vertrag und Branche", () => {
+  assert.ok(STANDARD_FELDER.includes("vertrag") && STANDARD_FELDER.includes("branche"));
+});
+
+test("Modell und Remote erscheinen beide, ohne Doppelung", () => {
+  assert.equal(modellText("Hybrid", true), "Hybrid, Remote");
+  assert.equal(modellText("Remote", true), "Remote");
+  assert.equal(modellText("unbekannt", true), "Remote");
+  assert.equal(modellText("Hybrid", false), "Hybrid");
+  assert.equal(modellText(null, null), null);
 });

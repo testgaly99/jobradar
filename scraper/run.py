@@ -40,9 +40,14 @@ def _firma(f, heute):
         for s in stellen:
             ok, grund = ist_relevant(s["titel"], s["ort"], s["remote"])
             if ok:
+                try:
+                    sbr = steckbrief(s.get("abschnitte"), s["text"])
+                except Exception as e:  # eine Anzeige darf nie die ganze Firma kippen
+                    print(f"Hinweis: Steckbrief fehlgeschlagen ({name}): {type(e).__name__}: {e}")
+                    sbr = None
                 behalten.append({**s, "erfahrungslevel": erfahrungslevel(s["titel"]),
                                  "staedte": deutsche_staedte(s["ort"]), "land": land(s["ort"]),
-                                 "steckbrief": steckbrief(s.get("abschnitte"), s["text"])})
+                                 "steckbrief": sbr})
             else:
                 gruende[grund] += 1
         neu, geschlossen = db.schreibe(name, behalten, heute)

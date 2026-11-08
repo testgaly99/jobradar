@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { firmenFarbe } from "@/lib/farbe";
 import { AUSGEBLENDET_BRANCHE, GROESSEN_REIHENFOLGE, GRUPPEN, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
-import { kurzzeile, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
+import { kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { merken } from "./actions";
 import FilterBlock from "./filterblock";
@@ -134,7 +134,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               const neu = !!(j.erstmals_gesehen && istNeu(j.erstmals_gesehen, jetzt));
               const kurz = kurzzeile({
                 groesse: j.companies?.groesse_klasse ?? null, level: j.erfahrungslevel,
-                modell: bekannt(j.arbeitsmodell) ?? (j.remote ? "Remote" : null), vertrag: j.vertragsart, ort,
+                modell: modellText(j.arbeitsmodell, j.remote), vertrag: j.vertragsart, ort,
                 erstmalsGesehen: j.erstmals_gesehen, steckbrief: leseSteckbrief(steckbriefe.get(j.id)),
                 branchen: (j.companies?.kategorie ?? []).filter((k) => k !== AUSGEBLENDET_BRANCHE),
               }, felder);

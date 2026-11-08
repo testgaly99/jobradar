@@ -8,7 +8,7 @@ def sb(text, abschnitte=None):
 def test_erfahrung():
     assert sb("We want 3+ years of experience in sales")["erfahrung_jahre"] == 3
     assert sb("mindestens 5 Jahre Berufserfahrung")["erfahrung_jahre"] == 5
-    assert sb("5–7 years")["erfahrung_jahre"] == 5
+    assert sb("5–7 years of experience")["erfahrung_jahre"] == 5
     assert sb("Join us, we are great")["erfahrung_jahre"] is None
     assert sb("Founded 10 years ago. You have 4 years of experience.")["erfahrung_jahre"] == 4
 
@@ -40,3 +40,23 @@ def test_sicherheit():
 
 def test_abschnitte_zaehlen_mit():
     assert sb("", [{"titel": "Profil", "punkte": ["3+ years of experience"]}])["erfahrung_jahre"] == 3
+
+
+def test_erfahrung_ohne_bezug_ist_none():
+    for t in ("for the past 12 years we grew", "3 years contract", "within 2 years", "5–7 years"):
+        assert sb(t)["erfahrung_jahre"] is None
+
+
+def test_gehalt_kaputte_zahlen_und_falsche_treffer():
+    assert sb("01.09.2026 – 30.09.2026 EUR")["gehalt"] is None
+    assert sb("1.2.3 - 4.5.6 EUR")["gehalt"] is None
+    for t in ("€50.000–100.000 Budget", "EUR 1.000-2.000 sign-on bonus", "€5.000 per year bonus"):
+        assert sb(t)["gehalt"] is None
+
+
+def test_lange_anzeige_ist_schnell():
+    import time
+    t = ("1 2 3 4 5 " * 5000)[:50000]
+    start = time.perf_counter()
+    sb(t)
+    assert time.perf_counter() - start < 1

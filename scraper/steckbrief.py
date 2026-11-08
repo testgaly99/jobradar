@@ -17,12 +17,11 @@ _SICHER = re.compile(r"security clearance|sicherheits(?:ü|ue)berpr(?:ü|ue)fung
 
 
 def _erfahrung(t):
-    treffer = list(_JAHRE.finditer(t))
-    # Bevorzugt Treffer mit "experience/Erfahrung" in der Naehe (nicht "10 years ago")
-    for m in treffer:
+    # Nur Treffer mit "experience/Erfahrung" in der Naehe ("3 years contract", "within 2 years" zaehlen nicht)
+    for m in _JAHRE.finditer(t):
         if _BEZUG.search(t[max(0, m.start() - 60):m.end() + 60]):
             return int(m.group(1))
-    return int(treffer[0].group(1)) if treffer else None
+    return None
 
 
 def _sprachen(t):
@@ -42,10 +41,21 @@ def _sprachen(t):
 
 
 def _betrag(s, k):
-    if k:
-        return round(float(s.replace(",", ".")) * 1000)
-    s = re.sub(r"[.,](?=\d{3}(?!\d))", "", s)
-    return round(float(s.replace(",", ".")))
+    """None bei unlesbaren Zahlen wie "1.2.3" oder "01.09.2026"."""
+    try:
+        if k:
+            return round(float(s.replace(",", ".")) * 1000)
+        s = re.sub(r"[.,](?=\d{3}(?!\d))", "", s)
+        return round(float(s.replace(",", ".")))
+    except ValueError:
+        return None
+
+
+_KEIN_GEHALT = re.compile(r"bonus|budget|sign-on|signing|relocation|umzug|zuschuss|per diem", re.I)
+
+
+def _kein_gehalt(t, m):
+    return bool(_KEIN_GEHALT.search(t[max(0, m.start() - 30):m.end() + 30]))
 
 
 def _waehrung(*w):
@@ -66,13 +76,13 @@ def _gehalt(t):
         a, b = m[2], m[6]
         k = bool(m[3] or m[7])  # "70-85k": k gilt fuer beide
         lo, hi = _betrag(a, k), _betrag(b, k)
-        if lo > hi or lo < 1000:
+        if lo is None or hi is None or lo > hi or lo < 1000 or _kein_gehalt(t, m):
             continue
         return {"min": lo, "max": hi, "waehrung": w, "zeitraum": _zeitraum(t[m.end():m.end() + 25])}
     for m in _EINZEL.finditer(t):
         w = _waehrung(m[1], m[3])
         wert = _betrag(m[2], False)
-        if w and wert >= 1000:
+        if w and wert is not None and wert >= 1000 and not _kein_gehalt(t, m):
             return {"min": wert, "max": wert, "waehrung": w, "zeitraum": _zeitraum(m[4])}
     return None
 

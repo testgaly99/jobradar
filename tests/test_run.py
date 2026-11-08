@@ -88,3 +88,12 @@ def test_inaktive_firma_wird_nicht_abgerufen(aufbau):
     bericht = run.lauf("2026-11-06", d)
     assert [f["name"] for f in bericht["firmen"]] == ["A"] and "B:1" not in t["jobs"]
     assert t["companies"]["B"]["aktiv"] is False
+
+
+def test_steckbrief_fehler_kippt_firma_nicht(aufbau, monkeypatch):
+    def kaputt(*a):
+        raise ValueError("x")
+    monkeypatch.setattr(run, "steckbrief", kaputt)
+    d, t = aufbau([firma("A", "a")], {"a": lambda _: [stelle("1")]})
+    assert run.lauf("2026-11-07", d)["firmen"][0]["fehler"] == ""
+    assert t["jobs"]["A:1"]["steckbrief"] is None

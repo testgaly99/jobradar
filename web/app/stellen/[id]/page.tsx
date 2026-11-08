@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AUSGEBLENDET_BRANCHE } from "@/lib/filter";
-import { FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
+import { modellText, FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
 import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
 import { merken, beworben } from "../actions";
@@ -21,7 +21,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   if (!ID_FORM.test(id)) notFound();
   const sb = await createClient();
   const { data: j } = await sb.from("jobs")
-    .select("id,unternehmen,titel,url,ort,arbeitsmodell,vertragsart,text,erfahrungslevel,erstmals_gesehen,companies(groesse_klasse,kategorie)")
+    .select("id,unternehmen,titel,url,ort,remote,arbeitsmodell,vertragsart,text,erfahrungslevel,erstmals_gesehen,companies(groesse_klasse,kategorie)")
     .eq("id", id).maybeSingle();
   if (!j) notFound();
   // Alles Folgende toleriert fehlende Migration 005: Fehler ergibt leere Daten statt Absturz.
@@ -37,7 +37,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   const n = zaehleTreffer(alleText, begriffe);
   const co = j.companies as unknown as { groesse_klasse: string | null; kategorie: string[] | null } | null;
   const eintraege = kurzzeile({
-    groesse: co?.groesse_klasse ?? null, level: j.erfahrungslevel, modell: j.arbeitsmodell, vertrag: j.vertragsart, ort: j.ort,
+    groesse: co?.groesse_klasse ?? null, level: j.erfahrungslevel, modell: modellText(j.arbeitsmodell, j.remote), vertrag: j.vertragsart, ort: j.ort,
     erstmalsGesehen: j.erstmals_gesehen, branchen: (co?.kategorie ?? []).filter((k) => k !== AUSGEBLENDET_BRANCHE),
     steckbrief: leseSteckbrief(sbr.error ? null : sbr.data?.steckbrief),
   }, [...FELDER]);
