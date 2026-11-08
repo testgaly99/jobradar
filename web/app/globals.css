@@ -267,7 +267,7 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 .tabelle thead th a { color: inherit; text-decoration: none; }
 .tabelle thead th a:hover { text-decoration: underline; }
 /* Auf dem Handy bleibt die erste Spalte (Firma, der Link zur Bewerbung) beim seitlichen Scrollen stehen */
-.tabelle tr > :first-child { position: sticky; left: 0; background: var(--karte-flaeche); }
+@media (max-width: 60rem) { .tabelle tr > :first-child { position: sticky; left: 0; background: var(--karte-flaeche); } }
 
 /* Kanban */
 .kanban { display: flex; gap: var(--space-md); overflow-x: auto; padding-bottom: var(--space-md); align-items: flex-start; }

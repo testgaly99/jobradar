@@ -71,8 +71,9 @@
   --color-hinweis-bg: oklch(94% 0.05 90);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-mode]) {
+/* Dunkel nur am Bildschirm: Druck nutzt so immer die hellen Token oben, auch bei dunklem Systemthema */
+@media screen and (prefers-color-scheme: dark) {
+  :root {
     --color-paper: oklch(16.5% 0.012 170);
     --color-surface: oklch(20.5% 0.013 170);
     --color-paper-2: oklch(23.5% 0.014 170);
