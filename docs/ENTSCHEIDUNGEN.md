@@ -37,3 +37,4 @@
 | 2026-11-08 | Admin-Seite „Nutzer“, Konto löschen (Export wird empfohlen, Bestätigung mit „LÖSCHEN“) und Datenschutzerklärung (Kontakt Mark Galysh). Der Service-Key liegt dafür nur serverseitig bei Vercel. | Nutzer auflisten und löschen geht nur mit Admin-Rechten. Der Browser bekommt den Key nie. |
 | 2026-11-08 | Vorlagen, Textbausteine und Anlagen kommen in ein eigenes späteres Paket. Benachrichtigungen: Telegram, später Google Kalender, kein Teams. | Wunsch des Nutzers. |
 | 2026-11-08 | Die offenen To-dos des Nutzers (Migrationen, Klicktest, Vercel usw.) sind der letzte Schritt von Phase 2. | Für das Bauen werden sie nicht gebraucht, erst für den Live-Test mit Freunden. |
+| 2026-11-08 | Das Admin-Konto lässt sich nie löschen, weder selbst noch über die Admin-Seite | Wunsch des Nutzers. Es endet erst, wenn Website und Datenbank entfernt werden. |

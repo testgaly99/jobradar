@@ -234,7 +234,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Später verwalte ich als Admin auch Scraper-Quellen und Firmendaten. Alle anderen sind normale Nutzer.
 - **Export und Löschen:**
   - Bewerbungen lassen sich als eine CSV-Tabelle mit klickbaren Links exportieren (Dokumente nur mit Namen).
-  - **Konto löschen** kann jeder selbst. Die Seite empfiehlt dabei ausdrücklich den Export und bietet ihn direkt daneben an.
+  - **Konto löschen** kann jeder selbst, außer dem Admin: Mein Konto lässt sich nie löschen. Es endet erst, wenn Website und Datenbank entfernt werden. Die Seite empfiehlt dabei ausdrücklich den Export und bietet ihn direkt daneben an.
   - Zum Bestätigen wird „LÖSCHEN“ eingetippt. Danach sind alle Daten und Dateien sofort und endgültig entfernt.
 - **Datenschutzerklärung:** eine kurze Seite. Kontakt: Mark Galysh, markgaly99@gmail.com.
 - **Domain-Wechsel:** Die Adresse der Website steht nie im Code, nur in den Einstellungen von Vercel, Supabase und Google.
