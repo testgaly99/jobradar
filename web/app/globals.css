@@ -225,3 +225,12 @@ a.knopf { text-decoration: none; display: inline-flex; align-items: center; just
 .menue summary { cursor: pointer; padding: 0 0.5rem; color: var(--gedaempft); }
 .chips { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .chips li { display: flex; align-items: center; gap: 0.25rem; background: var(--chip-bg); color: var(--chip-text); border-radius: 999px; padding: 0.15rem 0.5rem 0.15rem 0.75rem; }
+
+/* Detailseite der Stelle */
+.anzeige h3 { margin: 1.25rem 0 0.4rem; }
+.anzeige ul { margin: 0; padding-left: 1.25rem; }
+.anzeige p { margin: 0 0 0.6rem; overflow-wrap: anywhere; }
+.anzeige li { overflow-wrap: anywhere; }
+mark { background: #fde68a; color: #111; padding: 0 0.15em; border-radius: 3px; }
+.knopfreihe { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 1rem 0; }
+.knopfreihe form { margin: 0; }

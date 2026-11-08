@@ -7,6 +7,8 @@ import {
 import {
   abschnittSpeichern, bewerbungLoeschen, eintragLoeschen, interviewAnlegen, notizAnlegen, personAnlegen,
 } from "../detail-actions";
+import Abschnitte from "../../abschnitte";
+import { leseAbschnitte } from "@/lib/anzeige";
 import { DruckKnopf, LoeschForm, SendeKnopf } from "../knoepfe";
 
 type Row = Record<string, string | number | string[] | null>;
@@ -253,8 +255,8 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <h2>Snapshot der Anzeige</h2>
           <DruckKnopf />
         </div>
-        {row.snapshot_text
-          ? <pre className="snapshot">{v(row.snapshot_text)}</pre>
+        {row.snapshot_text || (a as { snapshot_abschnitte?: unknown }).snapshot_abschnitte
+          ? <Abschnitte abschnitte={leseAbschnitte((a as { snapshot_abschnitte?: unknown }).snapshot_abschnitte)} text={v(row.snapshot_text)} />
           : <p className="gedaempft">Kein Snapshot gespeichert.</p>}
       </section>
 
