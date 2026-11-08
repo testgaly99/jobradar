@@ -110,7 +110,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <label>Anschreiben
             <select name="anschreiben_dokument_id" defaultValue={v(row.anschreiben_dokument_id)}>{dokOptionen("anschreiben")}</select>
           </label>
-          {docs.length === 0 && <p className="gedaempft klein">Noch keine Dokumente. Der Upload kommt später.</p>}
+          {docs.length === 0 && <p className="gedaempft klein">Noch keine Dokumente. <a href="/dokumente">Jetzt hochladen</a>.</p>}
           <SendeKnopf text="Bewerbung speichern" />
         </form>
 

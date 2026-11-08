@@ -215,3 +215,5 @@ h2 { font-size: 1.1rem; margin: 0; }
   body { background: #fff; color: #000; }
   .karte { box-shadow: none; border: 0; padding: 0; }
 }
+.eintraege li > div:last-child { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+a.knopf { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
