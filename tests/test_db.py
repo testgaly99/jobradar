@@ -95,3 +95,39 @@ def test_batches(fake, monkeypatch):
     monkeypatch.setattr(db, "_req", lambda *a, **k: aufrufe.append(k.get("json")) or fake(*a, **k))
     db.schreibe("acme", [job(str(i)) for i in range(5)], "2026-11-08")
     assert [len(a) for a in aufrufe if isinstance(a, list)] == [2, 2, 1]
+
+
+def test_paging_liest_alle_und_schliesst_nichts(fake, monkeypatch):
+    jobs = [job(str(i)) for i in range(5)]
+    db.schreibe("acme", jobs, "2026-11-07")
+    monkeypatch.setattr(db, "SEITE", 2)
+    assert len(db.lade_offene("acme")) == 5
+    assert db.schreibe("acme", jobs, "2026-11-08") == (0, 0)
+    assert {z["status"] for z in fake.t["jobs"].values()} == {"offen"}
+
+
+def test_fehlgeschlagener_upsert_schliesst_nichts(fake, monkeypatch):
+    db.schreibe("acme", [job("1"), job("2")], "2026-11-07")
+    aufrufe = []
+
+    def kaputt(method, pfad, **kw):
+        aufrufe.append(method)
+        if method == "POST":
+            raise RuntimeError("Supabase POST jobs: 500")
+        return fake(method, pfad, **kw)
+    monkeypatch.setattr(db, "_req", kaputt)
+    with pytest.raises(RuntimeError):
+        db.schreibe("acme", [job("3")], "2026-11-08")
+    assert "PATCH" not in aufrufe
+    assert {z["status"] for z in fake.t["jobs"].values()} == {"offen"}
+
+
+def test_bewerbungspruefung_in_chunks(fake, monkeypatch):
+    # Ids mit Komma und Anfuehrungszeichen pruefen das Quoting mit
+    db.schreibe("acme", [job(i) for i in ("1", "2", "3", 'a,"b', "5")], "2026-11-07")
+    fake.t["applications"].append('acme:a,"b')
+    monkeypatch.setattr(db, "CHUNK", 2)
+    assert db.schreibe("acme", [], "2026-11-08") == (0, 5)
+    for i, z in fake.t["jobs"].items():
+        assert (z["text"], z["sichtbar"]) == (("Text", True) if i == 'acme:a,"b' else (None, False))
+        assert z["status"] == "geschlossen"

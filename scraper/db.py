@@ -7,6 +7,7 @@ import requests
 
 BATCH = 500
 SEITE = 1000
+CHUNK = 40  # ids pro in.(...)-Abfrage, haelt die URL kurz
 
 
 def _lade_env(pfad=Path(__file__).parent.parent / ".env"):
@@ -85,14 +86,14 @@ def schreibe(firma, neue, heute):
     gesehen = {z["id"] for z in zeilen}
     fehlend = [i for i, z in alt.items() if z["status"] == "offen" and i not in gesehen]
     mit_bewerbung = set()
-    for i in range(0, len(fehlend), 100):
-        r = _req("GET", "applications", params={"select": "job_id", "job_id": _in(fehlend[i:i + 100])})
+    for i in range(0, len(fehlend), CHUNK):
+        r = _req("GET", "applications", params={"select": "job_id", "job_id": _in(fehlend[i:i + CHUNK])})
         mit_bewerbung |= {a["job_id"] for a in r}
     for liste, patch in (([i for i in fehlend if i not in mit_bewerbung],
                           {"status": "geschlossen", "text": None, "sichtbar": False}),
                          ([i for i in fehlend if i in mit_bewerbung], {"status": "geschlossen"})):
-        for i in range(0, len(liste), 100):
-            _req("PATCH", "jobs", params={"id": _in(liste[i:i + 100])}, json=patch)
+        for i in range(0, len(liste), CHUNK):
+            _req("PATCH", "jobs", params={"id": _in(liste[i:i + CHUNK])}, json=patch)
     return sum(1 for i in gesehen if i not in alt), len(fehlend)
 
 

@@ -2,7 +2,22 @@
 
 
 def _in(p):
-    return [x.strip('"') for x in p[4:-1].split(",")]
+    """Dekodiert genau das Format von db._in: in.("a","b\"c")."""
+    assert p.startswith("in.(") and p.endswith(")")
+    s, werte, i = p[4:-1], [], 0
+    while i < len(s):
+        assert s[i] == '"'
+        i, w = i + 1, ""
+        while s[i] != '"':
+            if s[i] == "\\":
+                i += 1
+            w, i = w + s[i], i + 1
+        werte.append(w)
+        i += 1
+        if i < len(s):
+            assert s[i] == ","
+            i += 1
+    return werte
 
 
 class FakeDB:
