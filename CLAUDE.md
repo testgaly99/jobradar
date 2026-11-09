@@ -23,6 +23,10 @@ Claude Code liest diese Datei zu Beginn jeder Sitzung. Sie ist die **einzige Que
 Eine eigene Website zur Jobsuche, die besser filtert als Stepstone, Indeed, LinkedIn oder Glassdoor.
 - Die Stellen kommen direkt von den **offiziellen Karriereseiten** ausgewählter Zielunternehmen. Ausbauziel sind rund 1000 Firmen.
 - Dazu kommt ein **persönlicher Bewerbungs-Tracker**.
+- **Nur Stellen, die ein Studium voraussetzen** (Entscheidung 2026-11-09). Andere Stellen werden gar nicht gespeichert.
+  - Stufe 1, sofort per Regeln: Titel eindeutig nicht-akademischer Berufe fliegen beim Abrufen raus (z. B. Warenverräumer, Reinigungskraft, Filialleitung, Mechatroniker, Fahrer).
+  - Stufe 2, mit dem Groq-Paket: Groq stuft jede Anzeige ein: Studium „ja“, „nein“ oder „unklar“ und Tätigkeit „anspruchsvoll“ oder „einfach“. Gespeichert wird bei „ja“ und „unklar“.
+  - **Ausnahme Prestige-Arbeitgeber** (z. B. Magnificent 7): Dort bleiben auch Stellen ohne Studium, wenn die Tätigkeit anspruchsvoll ist (z. B. Program Manager bei Google). Einfache Tätigkeiten fliegen auch dort raus. Welche Firmen als Prestige gelten, kommt aus den Ranking-Listen (Phase 4) oder wird von Hand markiert.
 - Freunde bekommen später eigene Konten.
 
 Wichtigste Filter, in dieser Reihenfolge:
@@ -90,7 +94,7 @@ Wichtigste Filter, in dieser Reihenfolge:
   - Jahre Berufserfahrung
   - Personalverantwortung
   - Funktion (in der Oberfläche „Funktion“, intern `abteilung`/Bereich)
-  - geforderter Abschluss
+  - geforderter Abschluss (harte Regel, siehe Abschnitt 2)
   - Vertriebsanteil
   - Ausschlusswörter in Titel und Text
   - Später: fachliche Tags
