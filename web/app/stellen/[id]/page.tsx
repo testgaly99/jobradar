@@ -5,7 +5,7 @@ import { AUSGEBLENDET_BRANCHE } from "@/lib/filter";
 import { modellText, FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
 import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
-import { merken, beworben } from "../actions";
+import { merken, beworben, entmerken, bewerbungZuruecknehmen } from "../actions";
 import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
 
@@ -56,10 +56,22 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       )}
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
       <div className="knopfreihe">
-        {app.data ? (
-          <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>
-            {app.data.status === "gemerkt" ? "Gemerkt ✓ (zur Bewerbung)" : "Zur Bewerbung"}
-          </Link>
+        {app.data?.status === "gemerkt" ? (
+          <>
+            <form action={entmerken.bind(null, j.id)}>
+              <SendeKnopf text="Gemerkt ✓" klasse="knopf knopf-zustand knopf-schmal ist-gemerkt" gedrueckt title="Klicken, um nicht mehr zu merken" />
+            </form>
+            <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Zur Bewerbung</Link>
+          </>
+        ) : app.data?.status === "beworben" ? (
+          <>
+            <form action={bewerbungZuruecknehmen.bind(null, j.id)}>
+              <SendeKnopf text="Beworben ✓" klasse="knopf knopf-zustand knopf-schmal" gedrueckt title="Klicken, um zurückzunehmen" />
+            </form>
+            <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Zur Bewerbung</Link>
+          </>
+        ) : app.data ? (
+          <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Zur Bewerbung</Link>
         ) : (
           <form action={merken.bind(null, j.id)}><SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" /></form>
         )}

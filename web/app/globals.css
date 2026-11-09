@@ -148,6 +148,10 @@ a:active { color: var(--color-ink); }
 /* "Gemerkt" und "Beworben" in der Liste: ein Zustand, kein Knopf zum Drücken */
 .knopf-zustand:disabled { opacity: 1; cursor: not-allowed; background: var(--color-laeuft); color: var(--color-laeuft-ink); border-color: transparent; }
 .knopf-zustand.ist-gemerkt:disabled { background: var(--color-gemerkt); color: var(--color-gemerkt-ink); }
+/* Gedrückte Schalter (Gemerkt ✓ / Beworben ✓): klickbar, gleiche Farben wie der Zustand */
+.knopf-zustand[aria-pressed="true"] { background: var(--color-laeuft); color: var(--color-laeuft-ink); border-color: transparent; }
+.knopf-zustand.ist-gemerkt[aria-pressed="true"] { background: var(--color-gemerkt); color: var(--color-gemerkt-ink); }
+.knopf-zustand[aria-pressed="true"]:hover { filter: brightness(0.95); }
 .link {
   min-height: var(--control-h);
   padding: 0;

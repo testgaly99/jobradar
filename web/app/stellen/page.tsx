@@ -4,7 +4,7 @@ import { firmenFarbe } from "@/lib/farbe";
 import { AUSGEBLENDET_BRANCHE, GROESSEN_REIHENFOLGE, GRUPPEN, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
 import { kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
-import { merken } from "./actions";
+import { merken, entmerken, bewerbungZuruecknehmen } from "./actions";
 import FilterBlock from "./filterblock";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 
@@ -154,8 +154,16 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       </ul>
                     )}
                   </div>
-                  {st ? (
-                    <button className={"knopf knopf-zustand knopf-schmal" + (st === "gemerkt" ? " ist-gemerkt" : "")} type="button" disabled>{st === "gemerkt" ? "Gemerkt ✓" : "Beworben"}</button>
+                  {st === "gemerkt" ? (
+                    <form action={entmerken.bind(null, j.id)}>
+                      <SendeKnopf text="Gemerkt ✓" klasse="knopf knopf-zustand knopf-schmal ist-gemerkt" gedrueckt title="Klicken, um nicht mehr zu merken" />
+                    </form>
+                  ) : st === "beworben" ? (
+                    <form action={bewerbungZuruecknehmen.bind(null, j.id)}>
+                      <SendeKnopf text="Beworben ✓" klasse="knopf knopf-zustand knopf-schmal" gedrueckt title="Klicken, um zurückzunehmen" />
+                    </form>
+                  ) : st ? (
+                    <button className="knopf knopf-zustand knopf-schmal" type="button" disabled>Beworben</button>
                   ) : (
                     <form action={merken.bind(null, j.id)}>
                       <SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" />
