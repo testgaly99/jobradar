@@ -341,7 +341,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
      - Übersichtlicher, „Entfernen“ im „…“-Menü.
      - Name nur bei Google-Konten.
      - Einblicke nur als Zahlen ohne Inhalte: pro Nutzer letzte Anmeldung und Anzahl Bewerbungen, gesamt aktive Nutzer 7/30 Tage und Bewerbungen pro Woche. Die Datenschutzerklärung nennt das.
-   - **Design:** mit dem Skill Hallmark.
+   - **Design:** mit dem Skill Hallmark, Variante „utilitär“ (`web/app/stil/utilitaer.css`). Das Aussehen steckt nur in dieser Datei, `globals.css` hat nur den Aufbau.
    - **Steckbrief statt Textwand (ohne KI):**
      - Der Scraper zieht per Regeln heraus: Erfahrung in Jahren, Sprachen, Gehalt (falls angegeben), Sicherheitsüberprüfung.
      - Die Detailseite zeigt oben den Steckbrief, die gegliederte Anzeige eingeklappt darunter.
