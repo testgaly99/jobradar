@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { analysiereLink, firmaPasst, normFirma, normTitel, slugAusFirma } from "@/lib/link-import";
 import { anlegenAusJob, type JobZeile } from "@/lib/bewerbung-anlegen";
 import { holeStelle, sucheTitel, type Stelle } from "@/lib/ats-abruf";
-import { MAX_TEXT } from "@/lib/uebernahme";
+import { textZuLang } from "@/lib/uebernahme";
 
 type Ergebnis = { brauchtEingabe: true } | { fehler: string };
 type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; job?: JobZeile | null };
@@ -14,8 +14,8 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   let u: URL;
   try { u = new URL(url.trim()); } catch { return { fehler: "Das ist kein gültiger Link." }; }
   if (u.protocol !== "http:" && u.protocol !== "https:") return { fehler: "Nur http- und https-Links sind möglich." };
-  text = text?.trim();
-  if (text && text.length > MAX_TEXT) return { fehler: "Der Anzeigentext ist zu lang (höchstens 50.000 Zeichen)." };
+  text = text?.replace(/\r\n/g, "\n").trim();
+  if (text && textZuLang(text)) return { fehler: "Der Anzeigentext ist zu lang (höchstens 50.000 Zeichen)." };
   const sb = await createClient();
   const { data: claims } = await sb.auth.getClaims();
   if (!claims?.claims) return { fehler: "Bitte melde dich an." };

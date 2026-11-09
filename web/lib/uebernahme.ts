@@ -19,6 +19,14 @@ export function pruefeUebernahme(x: unknown): Uebernahme | null {
   return r as Uebernahme;
 }
 
+// Liest die Daten aus dem #-Anker der Übernahme-Seite. Kaputter Anker ergibt null.
+export function leseAnker(hash: string): Uebernahme | null {
+  try { return pruefeUebernahme(JSON.parse(decodeURIComponent(hash.replace(/^#/, "")))); } catch { return null; }
+}
+
+// Für die Längenprüfung zählt ein Zeilenumbruch einmal, egal ob \r\n (Formular) oder \n.
+export const textZuLang = (s: string) => s.replace(/\r\n/g, "\n").trim().length > MAX_TEXT;
+
 // Adresse der Website aus der Anfrage (lokal http://localhost:3000, bei Vercel https://…). Nur http(s), sonst null.
 export function seitenUrsprung(host: string | null, proto: string | null): string | null {
   if (!host) return null;
@@ -30,10 +38,11 @@ export function seitenUrsprung(host: string | null, proto: string | null): strin
   } catch { return null; }
 }
 
-// Läuft im Browser auf der Stellenseite. Öffnet zuerst den Tab (sonst blockt der Pop-up-Blocker), liest dann
+// Läuft im Browser auf der Stellenseite. Öffnet zuerst einen leeren Tab (sonst blockt der Pop-up-Blocker), liest dann
 // JSON-LD JobPosting → LinkedIn-Elemente → og:title → document.title „Titel | Firma | LinkedIn“; Markierung = Anzeigentext.
-// Schickt die Daten per postMessage nur an die eigene Website, wiederholt bis zur Bestätigung (ca. 10 s) oder auf „bereit“.
-const CODE = `(function(){var O=__O__,w=window.open(O+"/bewerbungen/uebernehmen");if(!w){alert("Jobradar: Bitte Pop-ups für diese Seite erlauben.");return}
+// Übergabe im #-Anker der Adresse: Der Anker geht an keinen Server, und eine Cross-Origin-Opener-Policy der Seite stört nicht.
+const MAX_ANKER = 100_000; // Adresslänge, die alle gängigen Browser sicher verarbeiten; sonst wird der Text gekürzt.
+const CODE = `(function(){var O=__O__,w=window.open("about:blank");if(!w){alert("Jobradar: Bitte Pop-ups für diese Seite erlauben.");return}
 var d=document,D={url:location.href,titel:"",firma:"",ort:"",text:""},j={},
 t=function(){for(var i=0;i<arguments.length;i++){var e=d.querySelector(arguments[i]),v=e&&e.innerText.trim();if(v)return v}return""},
 z=function(h){return h?new DOMParser().parseFromString(h,"text/html").body.textContent.trim():""};
@@ -42,8 +51,8 @@ var h=j.hiringOrganization,a=[].concat(j.jobLocation)[0];D.titel=j.title||"";D.f
 if(/linkedin\\./.test(location.hostname)){var P=".job-details-jobs-unified-top-card__";D.titel=D.titel||t(P+"job-title",".top-card-layout__title","h1");D.firma=D.firma||t(P+"company-name a",".topcard__org-name-link");D.ort=D.ort||t(P+"primary-description-container",P+"tertiary-description-container",".topcard__flavor--bullet").split("·")[0].trim();D.text=D.text||t("#job-details",".jobs-description__content",".show-more-less-html__markup")}
 var g=d.querySelector('meta[property="og:title"]'),p=d.title.replace(/^\\(\\d+\\)\\s*/,"").split(" | ");D.titel=D.titel||g&&g.content||"";if(p.length>2){D.titel=D.titel||p[0];D.firma=D.firma||p[1]}
 var s=String(getSelection()).trim();if(s)D.text=s;for(var k in D)D[k]=String(D[k]||"").trim().slice(0,k=="text"?${MAX_TEXT}:k=="url"?2000:300);
-var n=0,S=function(){try{w.postMessage(D,O)}catch(e){}},I=setInterval(function(){++n>40||w.closed?clearInterval(I):S()},250);
-addEventListener("message",function m(e){if(e.source!==w)return;if(e.data=="jobradar-bereit")S();if(e.data=="jobradar-ok"){clearInterval(I);removeEventListener("message",m)}})})()`;
+for(var J;(J=encodeURIComponent(JSON.stringify(D))).length>${MAX_ANKER};)D.text=D.text.slice(0,D.text.length*.9|0);
+w.opener=null;w.location=O+"/bewerbungen/uebernehmen#"+J})()`;
 
 export const lesezeichenCode = (ursprung: string) => CODE.replace("__O__", () => JSON.stringify(ursprung)).replace(/\n/g, "");
 export const lesezeichen = (ursprung: string) => "javascript:" + encodeURIComponent(lesezeichenCode(ursprung));
