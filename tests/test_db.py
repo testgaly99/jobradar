@@ -3,7 +3,7 @@ import hashlib
 import pytest
 
 from scraper import db
-from tests.fakedb import FakeDB
+from tests.fakedb import FakeDB, _in as fake_in
 
 
 @pytest.fixture
@@ -181,3 +181,14 @@ def test_snapshot_nachruesten_anderer_fehler_bricht_nicht(monkeypatch, capsys):
     monkeypatch.setattr(db, "_req", kaputt)
     db.snapshot_nachruesten()
     assert "fehlgeschlagen" in capsys.readouterr().out
+
+
+def test_unveraendert_wird_in_paketen_gepatcht(fake, monkeypatch):
+    ids = [str(i) for i in range(5)]
+    db.schreibe("A", [job(i) for i in ids], "2026-11-07")
+    monkeypatch.setattr(db, "CHUNK", 2)
+    patches = []
+    monkeypatch.setattr(db, "_req", lambda m, p, **k: (m == "PATCH" and patches.append(k["params"]["id"])) or fake(m, p, **k))
+    assert db.schreibe("A", [], "2026-11-08", unveraendert=ids) == (0, 0)
+    assert len(patches) == 3 and all(len(fake_in(p)) <= 2 for p in patches)
+    assert {z["zuletzt_gesehen"] for z in fake.t["jobs"].values()} == {"2026-11-08"}
