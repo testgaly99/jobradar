@@ -5,9 +5,6 @@ import { selbstLoeschenErlaubt, nutzerZeilen } from "@/lib/nutzerliste";
 import { STATUS, STATUS_LABEL } from "@/lib/bewerbung";
 import { FELDER, FELD_TITEL, waehleFelder } from "@/lib/steckbrief";
 import { begriffHinzufuegen, felderSpeichern, begriffEntfernen, kontoLoeschen } from "./actions";
-import { headers } from "next/headers";
-import { lesezeichen, seitenUrsprung } from "@/lib/uebernahme";
-import { Lesezeichen } from "./lesezeichen";
 
 export default async function Seite({ searchParams }: { searchParams: Promise<{ fehler?: string }> }) {
   const { fehler } = await searchParams;
@@ -24,8 +21,6 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
   const { data: punkte, error: punkteFehler } = await sb.from("wichtige_punkte").select("id,begriff").order("erstellt_am");
   const fz = await sb.from("listen_felder").select("felder").maybeSingle();
   const gewaehlt = waehleFelder(fz.error ? null : fz.data?.felder);
-  const h = await headers();
-  const ursprung = seitenUrsprung(h.get("x-forwarded-host") ?? h.get("host"), h.get("x-forwarded-proto"));
   return (
     <div className="karte">
       <h1>Konto</h1>
@@ -81,12 +76,6 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
             <SendeKnopf text="Auswahl speichern" klasse="knopf knopf-rand knopf-schmal" />
           </form>
         )}
-      </section>
-      <section className="abschnitt">
-        <h2>Stellen von LinkedIn &amp; Co. übernehmen</h2>
-        {ursprung ? <p><Lesezeichen href={lesezeichen(ursprung)} /></p> : <p className="gedaempft">Der Knopf ist gerade nicht verfügbar.</p>}
-        <p>Zieh den Knopf „Zu Jobradar“ mit der Maus in deine Lesezeichenleiste. Öffne eine Stellenanzeige, z. B. auf LinkedIn, und klicke dort auf das Lesezeichen. Jobradar öffnet sich in einem neuen Tab mit den Angaben: prüfen, bei Bedarf ändern und „Bewerbung anlegen“ klicken.</p>
-        <p className="klein gedaempft">Am Handy geht das nicht. Kopiere dort den Text der Anzeige und füge ihn unter „Bewerbungen“ beim Link ins Feld „Anzeigentext“ ein.</p>
       </section>
       <section className="abschnitt">
         <h2>Meine Daten exportieren</h2>

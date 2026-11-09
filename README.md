@@ -29,13 +29,7 @@ Klicke auf „Bewerbung anlegen“ und füge den Link einer Stellenanzeige ein. 
 
 Ins Feld „Anzeigentext (optional)“ kannst du den Text der Anzeige einfügen, z. B. am Handy. Er wird mit der Bewerbung gespeichert (höchstens 50.000 Zeichen). Das geht auch unter „Manuell anlegen“.
 
-**Am PC geht es bequemer mit dem Lesezeichen-Knopf** (ein Lesezeichen, das statt einer Adresse ein kleines Programm enthält). Du findest ihn auf der Seite „Konto“ unter „Stellen von LinkedIn & Co. übernehmen“:
-
-1. Zieh den Knopf „Zu Jobradar“ mit der Maus in die Lesezeichenleiste (einblenden mit Strg+Umschalt+B).
-2. Öffne eine Stellenanzeige, z. B. auf LinkedIn, und klicke auf das Lesezeichen „Zu Jobradar“.
-3. Jobradar öffnet sich in einem neuen Tab mit Link, Firma, Titel, Ort und Anzeigentext. Prüfe die Angaben und klicke auf „Bewerbung anlegen“.
-
-*Warum so:* Der Knopf liest die Seite in deinem eigenen Browser, so wie du sie siehst. Kein Server von Jobradar ruft LinkedIn ab. Gespeichert wird erst nach deinem Klick, denn jede fremde Seite könnte die Übernahme-Seite öffnen und ihr Daten schicken. Hast du Text markiert, gilt nur die Markierung als Anzeigentext.
+**LinkedIn:** Dort darf Jobradar die Anzeige nicht selbst abrufen. Drücke auf der LinkedIn-Anzeige Strg+A (alles markieren) und Strg+C (kopieren). Füge in Jobradar den Link ein und den kopierten Text in das Feld „Anzeigentext (optional)“. Trage Firma und Titel ein, wenn danach gefragt wird.
 
 ## Dokumente und Export
 

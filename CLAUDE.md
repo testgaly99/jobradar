@@ -170,7 +170,6 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Ist nichts erkennbar, gibt es zwei Felder für Firma und Titel.
   - LinkedIn-Links aus Sammlung oder Suche (`currentJobId`) werden zu `linkedin.com/jobs/view/<nummer>/` vereinheitlicht, damit die Dublettenprüfung greift.
   - Optional lässt sich der Anzeigentext einfügen (z. B. am Handy); er landet in `snapshot_text`, falls es keinen Text aus Stellenliste oder ATS gibt.
-- **Lesezeichen-Knopf** (Bookmarklet, ein Lesezeichen mit JavaScript statt Adresse) am PC, zu finden auf der Konto-Seite. Er liest die Anzeige **im Browser des Nutzers** (JSON-LD `JobPosting`, LinkedIn-Elemente, `og:title`, Seitentitel; markierter Text gilt als Anzeigentext) und öffnet `/bewerbungen/uebernehmen#<daten>`. Die Daten stehen im Anker (`#`-Teil der Adresse), der an keinen Server geht; `postMessage` scheidet aus, weil eine Cross-Origin-Opener-Policy der Stellenseite die Verbindung trennen kann. Die Seite prüft den Anker mit `pruefeUebernahme()`, entfernt ihn und zeigt nur ein vorausgefülltes Formular; gespeichert wird erst per Klick. Auch hier ruft **kein Server von Jobradar** LinkedIn & Co. ab (`GESPERRT` bleibt).
 - **Manuell**, z. B. bei Empfehlung, Headhunter oder nachgetragenen Bewerbungen.
 - **Stelle:**
   - Firma, verknüpft mit den Firmendaten

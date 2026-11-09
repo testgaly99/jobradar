@@ -10,7 +10,7 @@ type Ergebnis = { brauchtEingabe: true } | { fehler: string };
 type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; job?: JobZeile | null };
 
 // text: eingefügter Anzeigentext, nur wenn es keinen Text aus Stellenliste oder ATS gibt. Es wird nichts abgerufen, was GESPERRT ist.
-export async function bewerbungAusLink(url: string, firma?: string, titel?: string, text?: string, ort?: string): Promise<Ergebnis> {
+export async function bewerbungAusLink(url: string, firma?: string, titel?: string, text?: string): Promise<Ergebnis> {
   let u: URL;
   try { u = new URL(url.trim()); } catch { return { fehler: "Das ist kein gültiger Link." }; }
   if (u.protocol !== "http:" && u.protocol !== "https:") return { fehler: "Nur http- und https-Links sind möglich." };
@@ -81,7 +81,7 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   }
   const { data, error } = await sb.from("applications").insert({
     firma: ziel.firma ?? null, titel: ziel.titel ?? null, link: ziel.link, quelle: ziel.quelle,
-    standort: ziel.ort || ort?.trim() || null, snapshot_text: ziel.text || text || null, status: "gemerkt",
+    standort: ziel.ort || null, snapshot_text: ziel.text || text || null, status: "gemerkt",
   }).select("id").single();
   if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
   redirect(`/bewerbungen/${data.id}`);
