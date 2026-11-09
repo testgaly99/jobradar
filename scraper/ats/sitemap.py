@@ -11,6 +11,8 @@ from datetime import date
 from html import unescape
 from urllib.parse import unquote, urlsplit
 
+import requests
+
 from scraper import http
 from scraper.abschnitte import abschnitte, text_aus_html
 from scraper.filter import _TITEL_RE
@@ -19,6 +21,7 @@ _LD = re.compile(r"<script[^>]*application/ld\+json[^>]*>(.*?)</script>", re.S |
 # dm: die JSON-LD-description ist nur ein Anrisstext, Aufgaben/Profil stehen im Seiten-HTML
 _DM_TEXT = re.compile(r'data-testid="job-detail-description"[^>]*>(.*?)<[^>]*\bdata-testid=', re.S)
 _TEXTFELDER = ("description", "responsibilities", "qualifications", "skills", "jobBenefits")
+_MAX_FEHLSERIE = 5  # so viele Detailseiten in Folge nicht erreichbar: Firma abbrechen statt je bis zu 30 s warten
 _VERTRAG = (("TEMPORARY", "Befristet"), ("CONTRACTOR", "Befristet"), ("FULL_TIME", "Vollzeit"), ("PART_TIME", "Teilzeit"))
 
 
@@ -105,7 +108,7 @@ def _stelle(url, ext_id, heute):
 def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[dict]:
     sitemap, _, filter_ = ats_id.partition("#")  # das Fragment wird nie abgerufen
     heute = date.today().isoformat()
-    stellen, gesehen, zaehler = [], set(), Counter()
+    stellen, gesehen, zaehler, fehlserie = [], set(), Counter(), 0
     for url in _urls(sitemap):  # Fehler der Sitemap selbst kippen die Firma
         ext_id = _ext_id(url)
         if filter_ not in url or ext_id in gesehen:
@@ -114,6 +117,8 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
         if _vorgefiltert(url):
             zaehler["vorgefiltert"] += 1
             continue
+        # shortcut: eine bekannte Stelle, deren validThrough abläuft, bleibt offen, solange sie in der Sitemap steht;
+        # Upgrade: bekannte Stellen alle N Tage neu laden
         if ext_id in bekannte:
             zaehler["unverändert"] += 1
             stellen.append({"ext_id": ext_id, "unveraendert": True})
@@ -122,7 +127,13 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
             s = _stelle(url, ext_id, heute)
         except Exception as e:  # eine Anzeige darf nie die ganze Firma kippen
             zaehler[f"übersprungen ({type(e).__name__})"] += 1
+            # nur Abruffehler zählen zur Serie; eine erreichbare Seite ohne JobPosting setzt sie zurück
+            fehlserie = fehlserie + 1 if isinstance(e, (requests.RequestException, http.VerbotenDurchRobots)) else 0
+            if fehlserie >= _MAX_FEHLSERIE:
+                raise RuntimeError(f"{urlsplit(url).netloc}: {fehlserie} Detailseiten in Folge nicht erreichbar, "
+                                   f"zuletzt {type(e).__name__}: {e}") from e
             continue
+        fehlserie = 0
         if s is None:
             zaehler["abgelaufen"] += 1
         else:

@@ -64,11 +64,16 @@ def test_vorfilter_spart_abruf(monkeypatch):
     assert FILIALE not in abgerufen
 
 
+def _sitemap(*urls):
+    return ('<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            + "".join(f"<url><loc>{u}</loc></url>" for u in urls) + "</urlset>")
+
+
 def test_vorfilter_umlaute(monkeypatch):
     verkaeufer = "https://www.dm-jobs.de/job/verkaeufer-in-teilzeit/12345/"
+    schueler = "https://www.dm-jobs.de/job/schuelerpraktikum-dm-markt-w-m-d-in-76131-karlsruhe/355/"
     controller = "https://www.dm-jobs.de/job/controller-in/678/"
-    xml = ('<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-           f"<url><loc>{verkaeufer}</loc></url><url><loc>{controller}</loc></url></urlset>")
+    xml = _sitemap(verkaeufer, schueler, controller)
     abgerufen = _fake(monkeypatch, {SITEMAP: xml, controller: _lies("sitemap_porsche.html")})
     assert len(sitemap.hole_stellen(ATS_ID)) == 1
     assert abgerufen == [SITEMAP, controller]
@@ -163,3 +168,22 @@ def test_ext_id_form(monkeypatch):
     for i in ids:
         assert re.fullmatch(r"[A-Za-z0-9._~-]{1,200}", i), i
     assert len(ids[-2]) == 32 and len(ids[-1]) == 32  # zu lang bzw. leer -> sha256
+
+
+def _job(i):
+    return f"https://www.dm-jobs.de/job/data-engineer-{i}/{i}/"
+
+
+def test_abbruch_nach_5_fehlseiten_in_folge(monkeypatch):
+    urls = [_job(i) for i in range(6)]
+    abgerufen = _fake(monkeypatch, {SITEMAP: _sitemap(*urls), urls[5]: _lies("sitemap_porsche.html")})
+    with pytest.raises(RuntimeError, match="www.dm-jobs.de"):
+        sitemap.hole_stellen(ATS_ID)
+    assert abgerufen == [SITEMAP] + urls[:5]  # die 6. Seite wird nicht mehr versucht
+
+
+def test_einzelne_fehlseiten_kein_abbruch(monkeypatch):
+    urls = [_job(i) for i in range(10)]
+    gut = {urls[4]: _lies("sitemap_porsche.html"), urls[9]: _lies("sitemap_dm.html")}
+    _fake(monkeypatch, {SITEMAP: _sitemap(*urls), **gut})  # 4 Fehler, Treffer, 4 Fehler, Treffer
+    assert [s["url"] for s in sitemap.hole_stellen(ATS_ID)] == [urls[4], urls[9]]
