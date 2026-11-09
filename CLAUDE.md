@@ -36,7 +36,9 @@ Wichtigste Filter, in dieser Reihenfolge:
 
 1. **Kostenlos.** Keine Dienste, die Geld kosten oder eine Kreditkarte verlangen, ohne meine ausdrückliche Zustimmung. Grenzen von Gratis-Tarifen nennst du mir, bevor wir uns festlegen.
 2. **Keine API-Kosten für KI.**
-   - KI im laufenden Betrieb ist erlaubt, aber **nur** über meinen Claude-Abo-Token (`claude setup-token`, in GitHub Actions als Secret `CLAUDE_CODE_OAUTH_TOKEN`).
+   - KI im laufenden Betrieb ist erlaubt, nur auf zwei Wegen (Stand 2026-11-09):
+     - **Öffentliche Stellenanzeigen zusammenfassen:** Groq im Gratis-Tarif (großes Llama-Modell), Secret `GROQ_API_KEY`. An Groq gehen **nur Anzeigentexte**, nie persönliche Daten. Ist das Tageslimit erreicht, folgt der Rest am nächsten Tag. Kein Ausweichen auf Claude.
+     - **Alles mit persönlichen Daten** (Lebenslauf-Abgleich, CV-Empfehlung, Anschreiben): nur über meinen Claude-Abo-Token (`claude setup-token`, in GitHub Actions als Secret `CLAUDE_CODE_OAUTH_TOKEN`).
    - Es gibt keine Ausweichlösung. GitHub Models wurde am 30.07.2026 abgeschaltet.
    - Ist das Kontingent erschöpft, wird der Rest in der nächsten Nacht ausgewertet.
    - **Nie ein kostenpflichtiger API-Schlüssel.**
