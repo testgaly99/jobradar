@@ -1,4 +1,6 @@
 """HTML einer Stellenanzeige -> [{"titel": str, "punkte": [str]}]. Nur Text, nie HTML (Standardbibliothek)."""
+import re
+from html import unescape
 from html.parser import HTMLParser
 
 _UEBERSCHRIFT = {"h1", "h2", "h3", "h4"}
@@ -67,3 +69,7 @@ def abschnitte(html: str) -> list[dict]:
                 liste.append({"titel": "Über die Stelle", "punkte": []})
             liste[-1]["punkte"].append(text)
     return [a for a in liste if a["punkte"]]
+
+
+def text_aus_html(html: str) -> str:
+    return " ".join(unescape(re.sub(r"<[^>]+>", " ", html)).split())

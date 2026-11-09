@@ -48,3 +48,8 @@ def test_ungeschlossenes_strong_leckt_nicht():
 def test_fetter_listenpunkt_ist_punkt():
     assert abschnitte("<h3>Skills</h3><ul><li><strong>Python</strong></li><li>SQL</li></ul>") == [
         {"titel": "Skills", "punkte": ["Python", "SQL"]}]
+
+
+def test_text_aus_html():
+    from scraper.abschnitte import text_aus_html
+    assert text_aus_html("<p>Sales &amp;  Growth</p>\n<ul><li>A</li></ul>") == "Sales & Growth A"

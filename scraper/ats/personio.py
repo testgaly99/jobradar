@@ -1,10 +1,8 @@
 """Personio: öffentlicher XML-Feed (liefert alle Daten in einer Anfrage)."""
-import html
-import re
 import xml.etree.ElementTree as ET
 
 from scraper import http
-from scraper.abschnitte import abschnitte
+from scraper.abschnitte import abschnitte, text_aus_html
 
 _SCHEDULE = {"full-time": "Vollzeit", "part-time": "Teilzeit"}
 
@@ -18,7 +16,7 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
         orte = [o for o in orte if o]
         roh = "".join(f"<h3>{d.findtext('name') or ''}</h3>{d.findtext('value') or ''}"
                       for d in p.iter("jobDescription"))
-        text = " ".join(html.unescape(re.sub(r"<[^>]+>", " ", roh)).split())
+        text = text_aus_html(roh)
         vertrag = "Befristet" if p.findtext("employmentType") == "temporary" else _SCHEDULE.get(p.findtext("schedule"), "")
         stellen.append({
             "ext_id": id_,
