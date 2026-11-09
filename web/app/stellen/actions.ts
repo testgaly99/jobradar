@@ -50,7 +50,7 @@ export async function entmerken(jobId: string) {
   if (!claims?.claims) redirect("/login");
   const { data: a } = await sb.from("applications").select("id,status").eq("job_id", jobId).limit(1).maybeSingle();
   if (a && darfEntmerken(a.status)) {
-    const { error } = await sb.from("applications").delete().eq("id", a.id);
+    const { error } = await sb.from("applications").delete().eq("id", a.id).eq("status", "gemerkt");
     if (error) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Das Merken konnte nicht zurückgenommen werden. Bitte erneut versuchen.")}`);
   }
   revalidatePath("/stellen");
@@ -64,7 +64,7 @@ export async function bewerbungZuruecknehmen(jobId: string) {
   if (!claims?.claims) redirect("/login");
   const { data: a } = await sb.from("applications").select("id,status").eq("job_id", jobId).limit(1).maybeSingle();
   if (a && darfZuruecknehmen(a.status)) {
-    const { error } = await sb.from("applications").update({ status: "gemerkt", beworben_am: null }).eq("id", a.id);
+    const { error } = await sb.from("applications").update({ status: "gemerkt", beworben_am: null }).eq("id", a.id).eq("status", "beworben");
     if (error) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Der Status konnte nicht gespeichert werden. Bitte erneut versuchen.")}`);
   }
   revalidatePath("/stellen");

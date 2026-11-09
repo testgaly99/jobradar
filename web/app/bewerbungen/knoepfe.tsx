@@ -40,7 +40,7 @@ export function LinkFormular() {
   return (
     <form action={aktion} className="formular linkform">
       <label>Link einfügen
-        <input type="url" required value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
+        <input type="url" required value={url} onChange={(e) => { setUrl(e.target.value); setFirma(""); setTitel(""); }} placeholder="https://…" />
       </label>
       {brauchtEingabe && (
         <>
