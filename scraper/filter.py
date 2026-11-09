@@ -5,7 +5,7 @@ _TITEL_WOERTER = (
     "Ausbildung", "Duales Studium", r"Dual(?:e[rsn]?)?(?![- ]?use\b)", r"\w*Praktikum", "Intern", "Internship", "Working Student",
     "Bachelorarbeit", "Masterarbeit", "Abschlussarbeit", "Thesis", "Filiale",
     "Unsolicited Application", "Open Application", "Spontaneous Application",
-    r"\w*Fahrer(?:in(?:nen)?)?",  # LKW-Fahrer, Auslieferungsfahrerin; nicht "Fahrerassistenzsysteme"
+    r"\w*Fahrer(?:in(?:nen)?)?(?!-\w)",  # LKW-Fahrer, Auslieferungsfahrerin; nicht "Fahrerassistenzsysteme", "Fahrer-Assistenzsysteme"
 )
 # Stämme mit weiblicher/Pluralform (Werkstudentin, Aushilfen, Azubis); \w* nur hier, sonst träfe es "International"
 # Nicht "Initiativ" als Stamm: träfe "Initiative". Komposita (Schülerpraktikum, -praktikant) nur bei Praktikum,

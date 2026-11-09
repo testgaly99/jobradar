@@ -30,6 +30,8 @@ from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant
     ("Mechatronik-Ingenieur (m/w/d)", "Berlin", False),
     ("Fahrerassistenzsysteme Entwickler (m/w/d)", "Berlin", False),
     ("Entwickler Fahrerassistenzsysteme (ADAS)", "Berlin", False),
+    ("Fahrer-Assistenzsysteme Entwickler (m/w/d)", "Berlin", False),
+    ("Fahrer-Fahrzeug-Interaktion Ingenieur", "Berlin", False),
     ("Service Techniker (m/w/d)", "Berlin", False),
     ("Nachwuchsführungskraft (w/m/d)", "Berlin", False),
     ("Elektronikentwickler Hardware", "Berlin", False),
@@ -66,7 +68,7 @@ def test_werkstudent():
     "Reinigungskräfte gesucht", "Stellvertretender Filialleiter (w/m/d)", "stellv. Filialleitung", "Filialleiterin",
     "Servicekraft für die Cafeteria im Geldmuseum", "Kfz-Mechatroniker (m/w/d)", "Mechatronikerin",
     "Elektroniker für Betriebstechnik (m/w/d)", "Industrieelektronikerin", "Servicemonteur (m/w/d)", "Monteurin",
-    "Lagerist (m/w/d)", "Fachlageristin", "LKW-Fahrer (m/w/d)", "Auslieferungsfahrer", "Fahrer/in", "Fahrerin Shuttle",
+    "Lagerist (m/w/d)", "Fachlageristin", "LKW-Fahrer (m/w/d)", "Auslieferungsfahrer", "Fahrer/in", "Fahrerin Shuttle", "Fahrer (m/w/d)",
     "Schülerjob dm-Markt (w/m/d)",
 ])
 def test_stellenart_raus(titel):
