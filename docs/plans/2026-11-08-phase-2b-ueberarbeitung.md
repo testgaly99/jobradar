@@ -294,3 +294,37 @@
 - [ ] `docs/STATUS.md`: neues Nutzer-To-do „Migration 005 ausführen“ **vor** dem Klicktest. Der Klicktest wird um die neuen Punkte ergänzt.
 - [ ] Die Checkliste (Artifact) aktualisiert der Controller selbst.
 - [ ] Commit `Doku für Phase 2b`
+
+### Task 8: Fixes aus dem Klicktest (nach Task 6)
+
+**Wunsch des Nutzers vom 2026-11-09:** „Gemerkt und Beworben sind verschiedene Kategorien. Bei beworben nur ausblenden, nie entfernen. Bei gemerkt wirklich entfernen.“
+
+**Files:** `web/app/stellen/actions.ts`, `web/app/stellen/page.tsx`, `web/app/stellen/[id]/page.tsx`, `web/app/bewerbungen/knoepfe.tsx`, Tests in `web/tests/`.
+
+- [ ] **Merken als Schalter.** Neue Server-Action `entmerken(jobId)`: Sitzung zuerst prüfen. Die eigene Bewerbung zur Stelle suchen. Nur wenn ihr Status `gemerkt` ist, wird sie gelöscht; Kontakte, Interviews und Verlauf fallen per `on delete cascade` mit weg (so gewollt, keine Rückfrage). Bei jedem anderen Status passiert nichts. Danach `revalidatePath` wie bei `merken`.
+  - Stellenliste: „Gemerkt ✓“ ist ein echter Knopf (`aria-pressed="true"`, `title="Klicken, um nicht mehr zu merken"`), der `entmerken` aufruft.
+  - Detailseite: Bei Status `gemerkt` stehen der Schalter „Gemerkt ✓“ und der Link „Zur Bewerbung“ nebeneinander.
+- [ ] **Beworben zurücknehmen, nie löschen.** Neue Server-Action `bewerbungZuruecknehmen(jobId)`: Nur bei Status `beworben` wird der Status auf `gemerkt` zurückgesetzt und `beworben_am` geleert. Die Bewerbung samt allen Einträgen bleibt erhalten, der Trigger schreibt den Wechsel in den Verlauf. Bei späteren Status (z. B. im Gespräch) passiert nichts, die ändert man in der Bewerbung selbst. Ein Fehler beim Update führt wie bei `beworben` zu einem Redirect mit `?fehler=`.
+  - Stellenliste und Detailseite: Bei Status `beworben` steht der Schalter „Beworben ✓“ (`aria-pressed="true"`, `title="Klicken, um zurückzunehmen"`). Bei späteren Status bleibt die Anzeige wie bisher, nicht klickbar.
+- [ ] **Link-Formular hängt nicht mehr.** Nach der Meldung „Aus dem Link ist nichts erkennbar“ sind Firma und Titel Pflichtfelder. Bisher blockierten sie das Absenden eines neuen Links. Neu gelten die Felder nur für den Link, für den gefragt wurde: Ändert der Nutzer den Link, verschwinden die Felder und die Meldung, und der Knopf heißt wieder „Anlegen“.
+- [ ] Tests für die reine Logik (welcher Status was erlaubt), `npm test`, `npm run build`.
+- [ ] Commit `Klicktest: Merken und Beworben umschaltbar, Link-Formular`
+
+### Task 9: Stellen von LinkedIn und Co. übernehmen (nach Task 8)
+
+**Wunsch des Nutzers vom 2026-11-09:** Ein LinkedIn-Link wurde nicht erkannt („sehr schlecht“). Die Regel bleibt: Kein Server von Jobradar ruft LinkedIn, Stepstone o. Ä. ab (`GESPERRT` in `web/lib/ats-abruf.ts` bleibt). Der Nutzer wählte beide Wege: Lesezeichen-Knopf am PC und Text einfügen fürs Handy.
+
+**Files:** neu `web/lib/uebernahme.ts` + Test, neu `web/app/bewerbungen/uebernehmen/page.tsx` (+ Client-Teil), `web/app/bewerbungen/actions.ts`, `web/app/bewerbungen/knoepfe.tsx`, `web/app/bewerbungen/neu/page.tsx` + `detail-actions.ts`, `web/app/konto/page.tsx`, `web/lib/link-import.ts`.
+
+- [ ] **Text einfügen.** Link-Formular und „Manuell anlegen“ bekommen ein optionales Feld „Anzeigentext (optional)“ (`<textarea>`). Der Text wird in `applications.snapshot_text` gespeichert. Höchstens 50.000 Zeichen, sonst Meldung. Keine KI jetzt; die Auswertung per Groq kommt mit der Groq-Probe.
+- [ ] **LinkedIn-Links vereinheitlichen.** `analysiereLink` macht aus `linkedin.com/jobs/collections/…?currentJobId=<n>` und `…/jobs/search/…?currentJobId=<n>` die Form `https://www.linkedin.com/jobs/view/<n>/`. So erkennt die Dublettenprüfung dieselbe Stelle wieder. Test dazu.
+- [ ] **Lesezeichen-Knopf (Bookmarklet, ein Lesezeichen mit JavaScript statt Adresse).**
+  - Läuft im Browser des Nutzers auf der Seite, die er gerade ansieht. Es liest: Adresse, Titel, Firma, Ort und Anzeigentext.
+  - Reihenfolge der Quellen: JSON-LD `JobPosting` → LinkedIn-Elemente (Titel im `h1`, Firma im Firmenlink der Top-Card, Text aus `#job-details` bzw. `.jobs-description__content`) → `og:title` → `document.title` im Muster „Titel | Firma | LinkedIn“. Hat der Nutzer Text markiert, gilt die Markierung als Anzeigentext.
+  - Dann öffnet es `<jobradar-adresse>/bewerbungen/uebernehmen` in einem neuen Tab und schickt die Daten per `postMessage`, wiederholt, bis die Seite den Empfang bestätigt (höchstens ca. 10 s).
+  - Die Seite `/bewerbungen/uebernehmen` (nur mit Anmeldung, wie alle Seiten) nimmt nur Nachrichten an, deren Form `pruefeUebernahme()` aus `web/lib/uebernahme.ts` besteht: nur Strings, Längen begrenzt, URL nur http/https. Sie zeigt ein **vorausgefülltes, änderbares** Formular. **Nichts wird ohne Klick auf „Bewerbung anlegen“ gespeichert**, denn jede fremde Seite könnte diese Seite öffnen und ihr Daten schicken.
+  - Gespeichert wird über `bewerbungAusLink(url, firma, titel, text)`: Die Dublettenprüfung greift, und es wird nichts abgerufen.
+  - Konto-Seite, neuer Abschnitt „Stellen von LinkedIn & Co. übernehmen“: der Knopf als ziehbarer Link, gebaut mit der aktuellen Adresse der Website, also lokal und später bei Vercel jeweils richtig. Dazu drei Sätze Anleitung: in die Lesezeichenleiste ziehen, auf der Anzeige klicken, prüfen und anlegen. Hinweis: am Handy stattdessen den Text einfügen.
+- [ ] Tests: `pruefeUebernahme` (gültig, zu lang, falsche Typen, `javascript:`-URL) und die LinkedIn-Vereinheitlichung. Dazu `npm test` und `npm run build`. Das Lesezeichen selbst kann nur der Nutzer auf LinkedIn testen; das kommt in die Checkliste.
+- [ ] Doku: README-Abschnitt „Link einfügen“ ergänzen, CLAUDE.md Abschnitt zur Link-Erkennung um den Lesezeichen-Weg ergänzen, eine Zeile in `docs/ENTSCHEIDUNGEN.md`.
+- [ ] Commit `LinkedIn und Co.: Lesezeichen-Knopf und Text einfügen`
