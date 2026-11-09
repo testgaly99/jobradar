@@ -86,3 +86,6 @@ export const AUSGEBLENDET_BRANCHE = "Startup / Venture-finanziert";
 
 // Ohne Land-Facette (Migration 005 fehlt) gibt es keine Spalte jobs.land: Land-Filter wird ignoriert.
 export const landNurMitFacette = (f: Filter, hatLand: boolean): Filter => (hatLand ? f : { ...f, land: [] });
+
+// Job-ids sind "<firma>:<ext>"; Firmenname darf Leerzeichen enthalten.
+export const ID_FORM = /^[^:]{1,100}:\S{1,200}$/;

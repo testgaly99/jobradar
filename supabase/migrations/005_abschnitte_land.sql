@@ -38,7 +38,7 @@ language sql stable security definer set search_path = '' as $$
     'aktiv_7', (select count(*) from auth.users where last_sign_in_at > now() - interval '7 days'),
     'aktiv_30', (select count(*) from auth.users where last_sign_in_at > now() - interval '30 days'),
     'bewerbungen_pro_woche', (select jsonb_agg(jsonb_build_object('woche', g.wo, 'anzahl', coalesce(c.n, 0)) order by g.wo)
-                            from (select generate_series(date_trunc('week', now())::date - 49, date_trunc('week', now())::date, 7) wo) g
+                            from (select generate_series(date_trunc('week', now()) - interval '7 weeks', date_trunc('week', now()), interval '1 week')::date wo) g
                             left join (select date_trunc('week', erstellt_am)::date wo, count(*) n from public.applications
                                        where erstellt_am >= date_trunc('week', now()) - interval '7 weeks' group by 1) c on c.wo = g.wo)
   );

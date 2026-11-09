@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { AUSGEBLENDET_BRANCHE } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, ID_FORM } from "@/lib/filter";
 import { modellText, FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
 import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
@@ -10,8 +10,6 @@ import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
 
 const sicher = (u: string | null) => (u && /^https?:\/\//i.test(u) ? u : null);
-// Job-ids sind "<firma>:<ext>"
-const ID_FORM = /^[^:\s]{1,100}:[^\s]{1,200}$/;
 
 export default async function Seite({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ fehler?: string }> }) {
   const { id: roh } = await params;

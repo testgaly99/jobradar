@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, stadtAnzeige, suchBedingung, landNurMitFacette } from "../lib/filter.ts";
+import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, stadtAnzeige, suchBedingung, landNurMitFacette, ID_FORM } from "../lib/filter.ts";
 
 test("leerer Filter gibt /stellen", () => {
   const f = leseFilter({});
@@ -87,4 +87,11 @@ test("Land-Filter wird ohne Facette ignoriert", () => {
   const f = leseFilter({ land: "Österreich" });
   assert.deepEqual(landNurMitFacette(f, false).land, []);
   assert.deepEqual(landNurMitFacette(f, true).land, ["Österreich"]);
+});
+
+test("ID_FORM: Firma mit Leerzeichen ok, ohne Doppelpunkt oder mit Leerzeichen in ext nicht", () => {
+  assert.ok(ID_FORM.test("The Exploration Company:abc-123"));
+  assert.ok(ID_FORM.test("Helsing:x"));
+  assert.ok(!ID_FORM.test("kein-doppelpunkt"));
+  assert.ok(!ID_FORM.test("a:b c"));
 });
