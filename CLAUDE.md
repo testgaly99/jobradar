@@ -21,18 +21,19 @@ Claude Code liest diese Datei zu Beginn jeder Sitzung. Sie ist die **einzige Que
 ## 2. Ziel
 
 Eine eigene Website zur Jobsuche, die besser filtert als Stepstone, Indeed, LinkedIn oder Glassdoor.
-- Die Stellen kommen direkt von den **offiziellen Karriereseiten** ausgewählter Zielunternehmen. Ausbauziel sind rund 1000 Firmen.
+- Die Stellen kommen direkt von den **offiziellen Karriereseiten** der Firmen, die auf ausgewählten **seriösen Ranking-Listen** stehen (Abschnitt 4.8). Nur diese Firmen, keine eigene Zusatzliste (Entscheidung 2026-11-09). Ausbauziel sind rund 1000 Firmen.
 - Dazu kommt ein **persönlicher Bewerbungs-Tracker**.
 - **Nur Stellen, die ein Studium voraussetzen** (Entscheidung 2026-11-09). Andere Stellen werden gar nicht gespeichert.
   - Stufe 1, sofort per Regeln: Titel eindeutig nicht-akademischer Berufe fliegen beim Abrufen raus (z. B. Warenverräumer, Reinigungskraft, Filialleitung, Mechatroniker, Fahrer).
   - Stufe 2, mit dem Groq-Paket: Groq stuft jede Anzeige ein: Studium „ja“, „nein“ oder „unklar“ und Tätigkeit „anspruchsvoll“ oder „einfach“. Gespeichert wird bei „ja“ und „unklar“.
-  - **Ausnahme Prestige-Arbeitgeber** (z. B. Magnificent 7): Dort bleiben auch Stellen ohne Studium, wenn die Tätigkeit anspruchsvoll ist (z. B. Program Manager bei Google). Einfache Tätigkeiten fliegen auch dort raus. Welche Firmen als Prestige gelten, kommt aus den Ranking-Listen (Phase 4) oder wird von Hand markiert.
+  - **Ausnahme Prestige-Arbeitgeber** (z. B. Magnificent 7): Dort bleiben auch Stellen ohne Studium, wenn die Tätigkeit anspruchsvoll ist (z. B. Program Manager bei Google). Einfache Tätigkeiten fliegen auch dort raus. Welche Firmen als Prestige gelten, bestimmen die Prestige-Listen unter den Ranking-Listen (Abschnitt 4.8).
 - Freunde bekommen später eigene Konten.
 
 Wichtigste Filter, in dieser Reihenfolge:
-1. Unternehmensgröße
-2. Kategorie des Unternehmens
-3. alle weiteren Filter (Abschnitt 4.1)
+1. Liste (aus welchem Ranking die Firma stammt)
+2. Unternehmensgröße
+3. Kategorie des Unternehmens
+4. alle weiteren Filter (Abschnitt 4.1)
 
 ---
 
@@ -87,7 +88,7 @@ Wichtigste Filter, in dieser Reihenfolge:
   - Eigentümerstruktur
   - Unternehmensalter
   - Mindestwert der Arbeitgeberbewertung. Diesen Wert pflege ich selbst pro Firma, weil kununu und Glassdoor das Auslesen verbieten.
-  - Zielfirmenliste
+  - Liste: das Ranking, aus dem die Firma stammt (erster Filter)
   - Später: Gesellschaft vs. Gruppe, feinere Finanzbranche
 - **Rolle**
   - Seniority, abgeleitet aus den Anforderungen der Anzeige
@@ -235,7 +236,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Erst mit eigener Domain wird die App veröffentlicht. Dann kann sich jeder mit dem Link anmelden (siehe Backlog).
 - **Größe:** zuerst 1–5 Freunde, perspektivisch bis 20.
 - **Datentrennung** auf Datenbankebene (Row Level Security). Getestet wird, dass Person A die Daten von Person B nicht sieht. Das gilt auch für mich als Admin.
-- **Gemeinsam genutzt** werden Firmendaten und gescrapte Stellen. Freunde sehen die Stellenliste und ihren eigenen Tracker. Setzt jemand eine Firma auf seine Zielliste, erweitert das den Scraper für alle. Niemand sieht, wer sie verfolgt.
+- **Gemeinsam genutzt** werden Firmendaten und gescrapte Stellen. Freunde sehen die Stellenliste und ihren eigenen Tracker.
 - **Rollen:**
   - Ich bin Admin. Auf der Seite „Nutzer“ sehe ich alle angemeldeten Nutzer mit Name, E-Mail und „dabei seit“.
   - „Entfernen“ löscht nach Bestätigung Konto und Daten. Vorher erscheint der Hinweis, die Person solle zuerst exportieren.
@@ -267,12 +268,12 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Der neue Status wird nur **vorgeschlagen**. Ich bestätige ihn mit einem Klick.
   - Der Mailverlauf wird an die Bewerbung gehängt.
 
-### 4.8 Monatliche Unternehmensübersichten
-- Einmal im Monat werden aus offiziellen und erlaubten Quellen Kandidaten für meine Zielliste gesammelt:
-  - Top-Startups und Finanzierungsrunden
-  - Unternehmen nach Größe
-  - beliebteste und beste Arbeitgeber nach Kategorie
-- Das Ergebnis ist eine **Vorschlagsliste**. Ich entscheide, welche Firma aufgenommen wird.
+### 4.8 Ranking-Listen (Herzstück der Firmenauswahl, Entscheidung 2026-11-09)
+- **Welche Listen:** echte, seriöse Rankings deutscher oder internationaler Herausgeber (Magazine wie WirtschaftsWoche, Institute), etwa Top-Arbeitgeber, Mitarbeiterzufriedenheit, beliebteste Arbeitgeber, Top-Startups, vielversprechendste Startups, Gehalt oder Prestige. Das sind nur Ideen: Die Listen werden in einem eigenen Recherche-Schritt anhand **realer** Rankings festgelegt (Name, Herausgeber, Rhythmus, Umfang, frei lesbar?). Der Katalog liegt dann in `docs/`.
+- **Alle 4 Wochen** prüft ein Lauf, ob es neue Ausgaben gibt. Firmen auf einer Liste werden **automatisch** aufgenommen und angebunden. Fällt eine Firma von allen Listen, verschwinden ihre Stellen beim nächsten Check; Bewerbungen bleiben immer erhalten.
+- **Nur Listen-Firmen.** Bis die Listen live sind, bleiben die heutigen Firmen aus `data/companies.csv`; danach bleibt nur, wer auf einer Liste steht.
+- In der Stellenliste ist **„Liste“ der erste Filter**. Jede Firma zeigt, auf welchen Listen sie steht.
+- Die Prestige-Listen bestimmen die Ausnahme beim Studiums-Filter (Abschnitt 2).
 
 ---
 
@@ -310,6 +311,8 @@ Tabellen im Zielbild:
 ## 6. Phasen
 
 Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung und einem eigenen Plan (Abschnitt 7).
+
+**Reihenfolge ab 2026-11-09:** 2b abschließen → Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`, freigegeben) → Groq-Paket (Zusammenfassungen, Studium ja/nein, Firma/Titel aus eingefügtem Text) → Phase 4 → Phase 3 → Phase 5 → Phase 6. Das Paket „Firmen anbinden“ (8 weitere Firmen, Plan `docs/plans/2026-11-09-firmen-anbinden.md`) läuft parallel.
 
 0. **Erledigt:** Scraper-Grundlage mit 4 Firmen, statische Website und täglicher Lauf (Version 1, 2026-11-07).
 1. **Erledigt (Code, 2026-11-08): Tracker und neue Website für mich allein:**
@@ -357,7 +360,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
    - **Gegliederte Snapshots für alle:** Jede Bewerbung bekommt die gegliederte Anzeige, auch bestehende. Der tägliche Lauf rüstet fehlende Snapshots automatisch nach, solange die Stelle noch online ist.
 3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung.
    - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
-4. **Scraper für alle Zielfirmen:** rund 1000 Firmen, Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern.
+4. **Ranking-Listen und Scraper für alle Listen-Firmen:** Listen anhand realer Rankings festlegen (Recherche läuft seit 2026-11-09), Listen in der Datenbank, 4-Wochen-Check, Filter „Liste“, automatische Erkennung des Bewerbermanagement-Systems und Anbindung (rund 1000 Firmen), Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern. Offen: TK (Stellen nur per „Mehr laden“, bräuchte Playwright).
 5. **KI-Auswertung und Filter:** Extraktion aus Anzeigen per Groq (Gratis-Tarif), alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
 6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (Anforderungen, die mein CV abdeckt, fett; nicht abgedeckte rot) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token; dazu „Wichtige Punkte“ nach Bedeutung statt nach Wortanfang, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Dafür das günstigste Modell (Haiku), um das Abo-Kontingent zu schonen; ein größeres Modell nur, wenn Stichproben zeigen, dass Haiku zu oft danebenliegt. Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
 
