@@ -142,7 +142,7 @@ Wichtigste Filter, in dieser Reihenfolge:
 - **Per Regex, ohne KI:** Befristung, Urlaubstage, Gehaltszahlen, Schlagwörter wie „Remote“.
 - **Per KI:** Seniority, Präsenztage, normalisiertes Gehalt, Vermittler, Personalverantwortung, Abschluss, Vertriebsanteil, Remote-Gebiet, Workation, variable Vergütung, Ghost-Job-Ampel.
 - **Ablauf:** ein nächtlicher Batch-Lauf, nur für neue oder geänderte Stellen. Das Ergebnis ist JSON pro Stelle, gespeichert unter einem Hash des Anzeigentexts.
-- **Modell:** nur Claude über den Abo-Token.
+- **Modell:** Groq im Gratis-Tarif (nur öffentliche Anzeigentexte, Entscheidung 2026-11-09).
 - **Passungs-Score und Skill-Lücken** laufen nur über Claude, damit mein CV nicht bei weiteren Anbietern landet.
 
 ### 4.3 Selbstreparatur
@@ -283,7 +283,8 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 |---|---|---|
 | Datenbank, Login, Dateien | Supabase, Region Frankfurt | Pausiert nach ca. 1 Woche ohne Datenbank-Aktivität. Der tägliche Scraper-Lauf schreibt in die Datenbank und hält sie wach. Limits: 500 MB Datenbank, 1 GB Dateien, 50 MB pro Datei, 2 Projekte. |
 | Scraper und Hintergrundjobs | Python, zeitgesteuert per GitHub Actions (Digest, Alarme, Briefings, Gmail-Abgleich, Erinnerungen) | Im öffentlichen Repo unbegrenzt gratis. Abschaltung nach 60 Tagen ohne Aktivität; der tägliche Commit verhindert sie. |
-| KI-Auswertung und Reparatur | Claude Code Action mit Abo-Token | Der Verbrauch zählt gegen das Abo-Kontingent. |
+| KI-Auswertung der Anzeigen | Groq Gratis-Tarif (Llama 70B) | Etwa 1.000 Anfragen pro Tag; Rest am nächsten Tag. Nur öffentliche Texte. |
+| KI mit persönlichen Daten und Reparatur | Claude Code Action mit Abo-Token | Der Verbrauch zählt gegen das Abo-Kontingent. |
 | Website | Next.js auf Vercel (Hobby) | Nur private, nicht-kommerzielle Nutzung. Zeitgesteuerte Jobs laufen deshalb über GitHub Actions statt über Vercel. |
 | Benachrichtigung | Telegram-Bot, später zusätzlich Google Kalender (kein Teams). E-Mail erst mit dem Mail-Paket. | – |
 
