@@ -4,10 +4,13 @@ import re
 _TITEL_WOERTER = (
     "Ausbildung", "Duales Studium", r"Dual(?:e[rsn]?)?(?![- ]?use\b)", "Praktikum", "Intern", "Internship", "Working Student",
     "Bachelorarbeit", "Masterarbeit", "Abschlussarbeit", "Thesis", "Filiale",
+    "Unsolicited Application", "Open Application", "Spontaneous Application",
 )
 # Stämme mit weiblicher/Pluralform (Werkstudentin, Aushilfen, Azubis); \w* nur hier, sonst träfe es "International"
+# Nicht "Initiativ" als Stamm: träfe "Initiative"
 _TITEL_STAEMME = (
     "Azubi", "Auszubildende", "Praktikant", "Werkstudent", "Minijob", "Aushilfe", "Verkäufer", "Kassierer",
+    "Initiativbewerbung",
 )
 _TITEL_RE = re.compile(
     r"\b(" + "|".join(_TITEL_WOERTER) + "|" + "|".join(s + r"\w*" for s in _TITEL_STAEMME) + r")\b",

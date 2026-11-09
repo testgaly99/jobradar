@@ -20,6 +20,7 @@ from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant
     ("Dualität Engineer", "Berlin", False),
     ("Dual-Use Systems Engineer", "Munich", False),
     ("Dual Use Program Manager", "Berlin", False),
+    ("Projektleiter Initiative Digitalisierung", "Berlin", False),
 ])
 def test_bleibt(titel, ort, remote):
     assert ist_relevant(titel, ort, remote) == (True, "")
@@ -45,6 +46,8 @@ def test_werkstudent():
     "Verkäufer (m/w/d) Filiale Köln", "Ausbildung zum Fachinformatiker", "Praktikum Marketing",
     "Werkstudentin Marketing (w/m/d)", "Praktikantin HR", "Verkäuferin (m/w/d)", "Kassiererin", "Aushilfen gesucht", "Azubis",
     "Intern Data", "Summer Internship", "Duales Studium BWL", "Dualer Student", "Masterarbeit KI", "Working Student Ops",
+    "Initiativbewerbung", "Initiativbewerbungen Studierende", "Unsolicited Application", "Open Application (m/f/d)",
+    "Spontaneous Application",
 ])
 def test_stellenart_raus(titel):
     ok, grund = ist_relevant(titel, "Berlin", False)
