@@ -6,9 +6,18 @@ jobradar holt jeden Tag die offenen Stellen von ausgewählten Unternehmen und ze
 
 ## Was die Website kann
 
-- **Stellen:** Alle offenen Stellen der Firmen aus `data/companies.csv`, mit Filtern.
+- **Stellen:** Alle offenen Stellen der Firmen aus `data/companies.csv`, mit Filtern und Suche. Jede Stelle hat eine Detailseite mit Steckbrief und der ganzen Anzeige.
 - **Bewerbungen:** Du legst Bewerbungen aus einer Stelle an, per Link oder von Hand, und setzt den Stand (gemerkt, beworben, Gespräch …).
 - **Dokumente:** Lebenslauf und Anschreiben hochladen, jede Bewerbung merkt sich die benutzte Version.
+- **Konto:** Deine Daten, deine Bewerbungen nach Stand, „Wichtige Punkte“ und Einstellungen für die Stellenliste.
+
+## Stellenliste und Detailseite
+
+- **Begriffe:** *Branche* ist die Art der Firma (z. B. Tech). *Funktion* ist die Rolle der Stelle (z. B. Engineering). *Online seit* filtert nach dem Tag, an dem die Stelle zum ersten Mal bei uns aufgetaucht ist. „Neu“ steht an Stellen, die höchstens 3 Tage alt sind. Die Größe ist nach Mitarbeitenden sortiert, das Level nennt die Jahre (z. B. „Junior (0–2 Jahre)“). Den Land-Filter gibt es erst nach Migration 005.
+- **Merken:** Der Knopf „Merken“ legt aus einer Stelle direkt eine Bewerbung im Stand „gemerkt“ an, in der Liste und auf der Detailseite.
+- **Steckbrief:** Oben auf der Detailseite stehen Erfahrung, Gehalt, Sprachen und Sicherheitsüberprüfung. Sie werden mit festen Regeln aus dem Anzeigentext gelesen, ohne KI, und können daher auch mal fehlen. Darunter folgt „Ganze Anzeige lesen“ in Abschnitten, dazu „Original-Anzeige“ und „Ich habe mich beworben“.
+- **Kurzbeschreibung:** Die Zeile unter jeder Stelle in der Liste zeigt Angaben aus dem Steckbrief. Unter „Konto“ setzt du Häkchen, welche Angaben das sind (Sprachen sind standardmäßig aus).
+- **Wichtige Punkte:** Unter „Konto“ trägst du bis zu 50 Begriffe ein. Sie werden in allen Anzeigen gelb markiert (ganze Wörter und Wortanfänge). *Warum:* So siehst du Dinge, die dir wichtig sind, sofort. Bei Bewerbungen bleibt die Anzeige gegliedert als Kopie erhalten, auch wenn die Stelle schließt.
 
 ## Login
 
@@ -52,12 +61,12 @@ Die Liste steht in `data/companies.csv` (eine Tabelle als Textdatei). Bearbeite 
 | `aktiv` | `ja` = wird abgerufen, `nein` = übersprungen |
 | `notiz` | Freitext |
 
-## Datenbank einrichten (Migrationen 001–004)
+## Datenbank einrichten (Migrationen 001–005)
 
-Die Dateien in `supabase/migrations/` bauen die Tabellen und den Zugriffsschutz auf: `001_schema.sql` (Tabellen und Schutz), `002_facetten.sql` (Filterwerte), `003_bewerbung_eindeutig.sql` (keine doppelten Bewerbungen), `004_dokumente.sql` (Dokumente und Storage).
+Die Dateien in `supabase/migrations/` bauen die Tabellen und den Zugriffsschutz auf: `001_schema.sql` (Tabellen und Schutz), `002_facetten.sql` (Filterwerte), `003_bewerbung_eindeutig.sql` (keine doppelten Bewerbungen), `004_dokumente.sql` (Dokumente und Storage), `005_abschnitte_land.sql` (gegliederte Anzeige, Steckbrief, Land, Wichtige Punkte, Listen-Einstellungen, Admin-Kennzahlen). Ohne 005 fehlen diese Teile.
 
 1. Öffne Supabase → dein Projekt → „SQL Editor“.
-2. Öffne die Datei auf deinem Rechner, kopiere den ganzen Inhalt, füge ihn ein und klicke „Run“. Immer in der Reihenfolge 001, 002, 003, 004.
+2. Öffne die Datei auf deinem Rechner, kopiere den ganzen Inhalt, füge ihn ein und klicke „Run“. Immer in der Reihenfolge 001, 002, 003, 004, 005.
 3. Erfolg: unten steht „Success“. Die Dateien lassen sich ohne Schaden mehrfach ausführen.
 
 ## Backup und Wiederherstellung
