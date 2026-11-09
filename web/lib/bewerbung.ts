@@ -20,7 +20,7 @@ const STELLE: Record<string, Typ> = { firma: "text", titel: "text", link: "url",
 
 // Allowlist je Abschnitt: nur diese Spalten dürfen geschrieben werden.
 export const FELDER: Record<Abschnitt, Record<string, Typ>> = {
-  neu: { ...STELLE, status: "status" },
+  neu: { ...STELLE, status: "status", snapshot_text: "text" },
   stelle: STELLE,
   bewerbung: { beworben_am: "datum", bewerbungsweg: "text", referenznummer: "text", portal_hinweis: "text", cv_dokument_id: "uuid", anschreiben_dokument_id: "uuid" },
   gehalt: { gehalt_spanne_anzeige: "text", gehalt_wunsch: "text", angebot_fix: "text", angebot_variabel: "text", angebot_urlaub: "text", angebot_benefits: "text", gehalt_aktuell_vergleich: "text" },

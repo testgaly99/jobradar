@@ -36,6 +36,15 @@ test("LinkedIn nur mit Nummer, trk oder currentJobId: nichts erkennbar", () => {
   }
 });
 
+test("LinkedIn-Links werden zu .../jobs/view/<nummer>/ vereinheitlicht", () => {
+  const ziel = "https://www.linkedin.com/jobs/view/3912345678/";
+  for (const u of ["https://www.linkedin.com/jobs/collections/recommended/?currentJobId=3912345678&trk=x",
+    "https://www.linkedin.com/jobs/search/?keywords=data&currentJobId=3912345678", "https://de.linkedin.com/jobs/view/3912345678?trk=public_jobs",
+    "https://www.linkedin.com/jobs/view/senior-data-engineer-at-acme-gmbh-3912345678?trk=x"]) assert.equal(analysiereLink(u).link, ziel, u);
+  for (const u of ["https://www.linkedin.com/jobs/collections/recommended/", "https://www.linkedin.com/jobs/search/?currentJobId=abc",
+    "https://lnkd.in/abc123", "https://www.linkedin.com/in/someone/"]) assert.equal(analysiereLink(u).link, undefined, u);
+});
+
 test("Stepstone und sonstige Domains", () => {
   const s = analysiereLink("https://www.stepstone.de/stellenangebote--Softwareentwickler-Berlin-Siemens--1234567-inline.html");
   assert.equal(s.titel, "Softwareentwickler");

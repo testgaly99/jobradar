@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { istStatus, istUuid, parseAbschnitt, type Abschnitt } from "@/lib/bewerbung";
+import { MAX_TEXT } from "@/lib/uebernahme";
 
 // Jede Aktion prüft zuerst die Sitzung und die Form der id. RLS beschränkt alles auf eigene Zeilen.
 async function start(id?: string) {
@@ -18,7 +19,9 @@ const DB_FEHLER = "Das hat leider nicht geklappt. Bitte versuche es erneut.";
 
 export async function bewerbungManuell(f: FormData) {
   const sb = await start();
-  const r = parseAbschnitt("neu", f);
+  const r = String(f.get("snapshot_text") ?? "").trim().length > MAX_TEXT
+    ? { fehler: "Der Anzeigentext ist zu lang (höchstens 50.000 Zeichen)." }
+    : parseAbschnitt("neu", f);
   if ("fehler" in r) redirect(`/bewerbungen/neu?fehler=${encodeURIComponent(r.fehler)}`);
   const { data, error } = await sb.from("applications").insert({ ...r.daten, status: r.daten.status ?? "gemerkt" }).select("id").single();
   if (error || !data) redirect(`/bewerbungen/neu?fehler=${encodeURIComponent(DB_FEHLER)}`);

@@ -4,19 +4,23 @@ import { createClient } from "@/lib/supabase/server";
 import { analysiereLink, firmaPasst, normFirma, normTitel, slugAusFirma } from "@/lib/link-import";
 import { anlegenAusJob, type JobZeile } from "@/lib/bewerbung-anlegen";
 import { holeStelle, sucheTitel, type Stelle } from "@/lib/ats-abruf";
+import { MAX_TEXT } from "@/lib/uebernahme";
 
 type Ergebnis = { brauchtEingabe: true } | { fehler: string };
 type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; job?: JobZeile | null };
 
-export async function bewerbungAusLink(url: string, firma?: string, titel?: string): Promise<Ergebnis> {
+// text: eingefügter Anzeigentext, nur wenn es keinen Text aus Stellenliste oder ATS gibt. Es wird nichts abgerufen, was GESPERRT ist.
+export async function bewerbungAusLink(url: string, firma?: string, titel?: string, text?: string, ort?: string): Promise<Ergebnis> {
   let u: URL;
   try { u = new URL(url.trim()); } catch { return { fehler: "Das ist kein gültiger Link." }; }
   if (u.protocol !== "http:" && u.protocol !== "https:") return { fehler: "Nur http- und https-Links sind möglich." };
-  const link = u.toString();
+  text = text?.trim();
+  if (text && text.length > MAX_TEXT) return { fehler: "Der Anzeigentext ist zu lang (höchstens 50.000 Zeichen)." };
   const sb = await createClient();
   const { data: claims } = await sb.auth.getClaims();
   if (!claims?.claims) return { fehler: "Bitte melde dich an." };
-  const a = analysiereLink(link);
+  const a = analysiereLink(u.toString());
+  const link = a.link ?? u.toString();
   firma = firma?.trim() || a.firma;
   titel = titel?.trim() || a.titel;
 
@@ -71,13 +75,13 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   }
 
   if (ziel.job) {
-    const r = await anlegenAusJob(sb, ziel.job, { quelle: ziel.quelle });
+    const r = await anlegenAusJob(sb, ziel.job, { quelle: ziel.quelle, text });
     if ("fehler" in r) return { fehler: "Bewerbung konnte nicht angelegt werden." };
     redirect(`/bewerbungen/${r.id}`);
   }
   const { data, error } = await sb.from("applications").insert({
     firma: ziel.firma ?? null, titel: ziel.titel ?? null, link: ziel.link, quelle: ziel.quelle,
-    standort: ziel.ort ?? null, snapshot_text: ziel.text ?? null, status: "gemerkt",
+    standort: ziel.ort || ort?.trim() || null, snapshot_text: ziel.text || text || null, status: "gemerkt",
   }).select("id").single();
   if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
   redirect(`/bewerbungen/${data.id}`);

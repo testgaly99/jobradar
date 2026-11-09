@@ -168,6 +168,9 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Bei Links auf Karriereseiten bzw. das ATS fragt der Code die offizielle Schnittstelle ab.
   - Bei Links von LinkedIn, Stepstone o. Ä. liest der Code nur Titel und Firma aus dem Link selbst. Die Seite wird **nicht** geöffnet. Danach sucht er die Stelle in der eigenen Stellenliste und in den gängigen ATS der Firma.
   - Ist nichts erkennbar, gibt es zwei Felder für Firma und Titel.
+  - LinkedIn-Links aus Sammlung oder Suche (`currentJobId`) werden zu `linkedin.com/jobs/view/<nummer>/` vereinheitlicht, damit die Dublettenprüfung greift.
+  - Optional lässt sich der Anzeigentext einfügen (z. B. am Handy); er landet in `snapshot_text`, falls es keinen Text aus Stellenliste oder ATS gibt.
+- **Lesezeichen-Knopf** (Bookmarklet, ein Lesezeichen mit JavaScript statt Adresse) am PC, zu finden auf der Konto-Seite. Er liest die Anzeige **im Browser des Nutzers** (JSON-LD `JobPosting`, LinkedIn-Elemente, `og:title`, Seitentitel; markierter Text gilt als Anzeigentext) und schickt sie per `postMessage` an `/bewerbungen/uebernehmen`. Die Seite prüft jede Nachricht mit `pruefeUebernahme()` und zeigt nur ein vorausgefülltes Formular; gespeichert wird erst per Klick. Auch hier ruft **kein Server von Jobradar** LinkedIn & Co. ab (`GESPERRT` bleibt).
 - **Manuell**, z. B. bei Empfehlung, Headhunter oder nachgetragenen Bewerbungen.
 - **Stelle:**
   - Firma, verknüpft mit den Firmendaten

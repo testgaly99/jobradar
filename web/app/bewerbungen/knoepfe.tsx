@@ -2,6 +2,7 @@
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { bewerbungAusLink } from "./actions";
+import { MAX_TEXT } from "@/lib/uebernahme";
 
 // Absende-Knopf: sperrt sich, solange das Formular läuft.
 export function SendeKnopf({ text, klasse = "knopf", warte = "Bitte warten …", gedrueckt, title }: { text: string; klasse?: string; warte?: string; gedrueckt?: boolean; title?: string }) {
@@ -28,9 +29,10 @@ export function LinkFormular() {
   const [url, setUrl] = useState("");
   const [firma, setFirma] = useState("");
   const [titel, setTitel] = useState("");
+  const [text, setText] = useState("");
   const [zustand, aktion] = useActionState<Zustand, FormData>(
     async () => {
-      const r = await bewerbungAusLink(url, firma, titel);
+      const r = await bewerbungAusLink(url, firma, titel, text);
       return r && "brauchtEingabe" in r ? { brauchtEingabe: true as const, fuer: url } : r;
     },
     null,
@@ -53,6 +55,9 @@ export function LinkFormular() {
           </label>
         </>
       )}
+      <label>Anzeigentext (optional)
+        <textarea value={text} onChange={(e) => setText(e.target.value)} maxLength={MAX_TEXT} rows={4} placeholder="Am Handy: Text der Anzeige kopieren und hier einfügen" />
+      </label>
       {zustand && "fehler" in zustand && <p className="meldung fehler" role="alert">{zustand.fehler}</p>}
       <SendeKnopf text={brauchtEingabe ? "Bewerbung anlegen" : "Anlegen"} />
     </form>
