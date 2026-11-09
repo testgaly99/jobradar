@@ -18,6 +18,8 @@ concurrency:
 jobs:
   lauf:
     runs-on: ubuntu-latest
+    # Der erste Lauf mit dm und Porsche lädt mehrere tausend Seiten mit 1 Anfrage pro Sekunde.
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

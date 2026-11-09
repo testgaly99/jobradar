@@ -56,8 +56,8 @@ Die Liste steht in `data/companies.csv` (eine Tabelle als Textdatei). Bearbeite 
 |---|---|
 | `name` | Name des Unternehmens |
 | `careers_url` | Link zur Karriereseite |
-| `ats_typ` | Bewerbungssystem: `greenhouse` oder `ashby`. Alles andere: `aktiv` auf `nein` setzen und Claude um einen Adapter bitten. |
-| `ats_id` | Letzter Teil der Stellenseiten-Adresse, z. B. `helsing` bei `boards.greenhouse.io/helsing` |
+| `ats_typ` | Bewerbungssystem: `greenhouse`, `ashby`, `personio`, `recruitee` oder `sitemap`. Alles andere: `aktiv` auf `nein` setzen und Claude um einen Adapter bitten. |
+| `ats_id` | Letzter Teil der Stellenseiten-Adresse, z. B. `helsing` bei `boards.greenhouse.io/helsing`. Bei `personio` der Teil vor `.jobs.personio.de` (z. B. `platoapp`), bei `recruitee` die ganze Adresse der Karriereseite ohne `https://` (z. B. `career.quantum-systems.com`), bei `sitemap` die Adresse der Sitemap, optional mit `#` und dem Pfad der Stellenseiten (z. B. `https://jobs.neura-robotics.com/sitemap.xml#/offer/`). `sitemap` ist für Firmen mit eigener Karriereseite ohne ATS: der Abruf liest die Sitemap und dann jede Stellenseite einzeln. |
 | `groesse_klasse` | `<50`, `50–249`, `250–999` oder `1.000+` |
 | `mitarbeitende_ca` | Ungefähre Zahl der Mitarbeitenden |
 | `kategorie` | Kategorien aus `data/kategorien.md`, getrennt durch `;` |
