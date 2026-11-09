@@ -21,7 +21,7 @@ _LD = re.compile(r"<script[^>]*application/ld\+json[^>]*>(.*?)</script>", re.S |
 # dm: die JSON-LD-description ist nur ein Anrisstext, Aufgaben/Profil stehen im Seiten-HTML
 _DM_TEXT = re.compile(r'data-testid="job-detail-description"[^>]*>(.*?)<[^>]*\bdata-testid=', re.S)
 _TEXTFELDER = ("description", "responsibilities", "qualifications", "skills", "jobBenefits")
-_MAX_FEHLSERIE = 5  # so viele Detailseiten in Folge nicht erreichbar: Firma abbrechen statt je bis zu 30 s warten
+_MAX_FEHLSERIE = 5  # so viele Ausfälle in Folge (siehe _ausfall): Firma abbrechen statt je bis zu 30 s warten
 _VERTRAG = (("TEMPORARY", "Befristet"), ("CONTRACTOR", "Befristet"), ("FULL_TIME", "Vollzeit"), ("PART_TIME", "Teilzeit"))
 
 
@@ -34,7 +34,9 @@ def _ext_id(url):
 
 def _urls(sitemap, index_aufloesen=True):
     wurzel = ET.fromstring(http.hole(sitemap).content)
-    urls = [loc.text.strip() for loc in wurzel.findall(".//{*}loc") if loc.text]
+    # nur <url>/<sitemap>-Einträge, nicht image:loc/video:loc der Erweiterungen
+    locs = wurzel.findall("{*}url/{*}loc") + wurzel.findall("{*}sitemap/{*}loc")
+    urls = [loc.text.strip() for loc in locs if loc.text]
     if index_aufloesen and wurzel.tag.endswith("sitemapindex"):
         return [u for teil in urls for u in _urls(teil, False)]
     return urls
@@ -73,27 +75,55 @@ def _liste(x):
     return x if isinstance(x, list) else [x] if x else []
 
 
-def _stelle(url, ext_id, heute):
-    seite = http.hole(url).text
+def _ausfall(e):
+    """Host fällt aus (Zeitüberschreitung, keine Verbindung, 5xx, 429). 404/410 und robots.txt zählen nicht."""
+    if isinstance(e, (requests.ConnectionError, requests.Timeout)):
+        return True
+    antwort = e.response if isinstance(e, requests.HTTPError) else None
+    return antwort is not None and (antwort.status_code >= 500 or antwort.status_code == 429)
+
+
+def _seitentext(antwort):
+    # ohne charset im Header nähme requests ISO-8859-1; Stellenseiten sind in der Praxis UTF-8
+    if "charset" in antwort.headers.get("content-type", "").lower():
+        return antwort.text
+    return antwort.content.decode("utf-8", "replace")
+
+
+def _ort(jp):
+    standorte = _liste(jp.get("jobLocation"))
+    orte, laender = [], []
+    for o in standorte:
+        a = o.get("address") if isinstance(o, dict) else o
+        if isinstance(a, dict):
+            orte.append(a.get("addressLocality"))
+            laender.append(a.get("addressCountry"))
+        else:
+            orte.append(a)  # schema.org erlaubt Text statt Place/PostalAddress
+    if not standorte:  # nur als Ersatz, z. B. dm-Remote-Stellen ohne jobLocation
+        laender = _liste(jp.get("applicantLocationRequirements"))
+    teile = orte + [l.get("name") if isinstance(l, dict) else l for l in laender]
+    return ", ".join(dict.fromkeys(str(t).strip() for t in teile if t))
+
+
+def _stelle(seite, url, ext_id, heute):
     jp = _jobposting(seite)
     ablauf = str(jp.get("validThrough") or "")[:10]
     if re.fullmatch(r"\d{4}-\d{2}-\d{2}", ablauf) and ablauf < heute:
         return None
     # Porsche/Bundesbank liefern das HTML entity-escaped, Neura hat wörtliche "\n"
-    roh = "".join(t if "<" in t else unescape(t) for k in _TEXTFELDER if isinstance(t := jp.get(k), str))
+    felder = [jp[k] for k in _TEXTFELDER if isinstance(jp.get(k), str)]
+    roh = "\n".join(t if "<" in t else unescape(t) for t in felder)
     if m := _DM_TEXT.search(seite):
-        roh += m.group(1)
+        roh += "\n" + m.group(1)
     roh = roh.replace("\\n", "\n")
     text = text_aus_html(roh)
-    adressen = [o.get("address") or {} for o in _liste(jp.get("jobLocation"))]
-    laender = [a.get("addressCountry") for a in adressen] + _liste(jp.get("applicantLocationRequirements"))
-    teile = [a.get("addressLocality") for a in adressen] + [l.get("name") if isinstance(l, dict) else l for l in laender]
     remote = jp.get("jobLocationType") == "TELECOMMUTE"
     typen = _liste(jp.get("employmentType"))
     return {
         "ext_id": ext_id,
         "titel": unescape(jp["title"]).strip(),
-        "ort": ", ".join(dict.fromkeys(str(t).strip() for t in teile if t)),
+        "ort": _ort(jp),
         "remote": remote,
         "url": url,
         "beschreibung_kurz": text[:300],
@@ -124,16 +154,17 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
             stellen.append({"ext_id": ext_id, "unveraendert": True})
             continue
         try:
-            s = _stelle(url, ext_id, heute)
+            seite = _seitentext(http.hole(url))
+            fehlserie = 0  # Seite geladen: der Host lebt
+            s = _stelle(seite, url, ext_id, heute)
         except Exception as e:  # eine Anzeige darf nie die ganze Firma kippen
             zaehler[f"übersprungen ({type(e).__name__})"] += 1
-            # nur Abruffehler zählen zur Serie; eine erreichbare Seite ohne JobPosting setzt sie zurück
-            fehlserie = fehlserie + 1 if isinstance(e, (requests.RequestException, http.VerbotenDurchRobots)) else 0
-            if fehlserie >= _MAX_FEHLSERIE:
-                raise RuntimeError(f"{urlsplit(url).netloc}: {fehlserie} Detailseiten in Folge nicht erreichbar, "
-                                   f"zuletzt {type(e).__name__}: {e}") from e
+            if _ausfall(e):
+                fehlserie += 1
+                if fehlserie >= _MAX_FEHLSERIE:
+                    raise RuntimeError(f"{urlsplit(url).netloc}: {fehlserie} Detailseiten in Folge nicht erreichbar, "
+                                       f"zuletzt {type(e).__name__}: {e}") from e
             continue
-        fehlserie = 0
         if s is None:
             zaehler["abgelaufen"] += 1
         else:

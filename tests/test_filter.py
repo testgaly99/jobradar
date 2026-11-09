@@ -25,6 +25,14 @@ from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant
     ("Ingenieur für praktische Anwendungen", "Berlin", False),
     ("Ausbildungsleiter (m/w/d)", "Berlin", False),
     ("Praktikumsbetreuer HR", "Berlin", False),
+    ("Data Engineer", "Berlin", False),
+    ("Elektrotechnik-Ingenieur (m/w/d)", "Berlin", False),
+    ("Mechatronik-Ingenieur (m/w/d)", "Berlin", False),
+    ("Fahrerassistenzsysteme Entwickler (m/w/d)", "Berlin", False),
+    ("Entwickler Fahrerassistenzsysteme (ADAS)", "Berlin", False),
+    ("Service Techniker (m/w/d)", "Berlin", False),
+    ("Nachwuchsführungskraft (w/m/d)", "Berlin", False),
+    ("Elektronikentwickler Hardware", "Berlin", False),
 ])
 def test_bleibt(titel, ort, remote):
     assert ist_relevant(titel, ort, remote) == (True, "")
@@ -53,6 +61,13 @@ def test_werkstudent():
     "Initiativbewerbung", "Initiativbewerbungen Studierende", "Unsolicited Application", "Open Application (m/f/d)",
     "Spontaneous Application", "Schülerpraktikum dm-Markt (w/m/d) in Berlin", "Pflichtpraktikum Marketing",
     "Schülerpraktikant (m/w/d)", "Schülerpraktikantin IT",
+    # nicht-akademische Berufe (der Nutzer will nur Stellen mit Studium)
+    "Warenverräumer (w/m/d) 6 Std./Wo. in 59065 Hamm", "Warenverräumerin", "Reinigungskraft (w/m/d) 10 Std./Wo.",
+    "Reinigungskräfte gesucht", "Stellvertretender Filialleiter (w/m/d)", "stellv. Filialleitung", "Filialleiterin",
+    "Servicekraft für die Cafeteria im Geldmuseum", "Kfz-Mechatroniker (m/w/d)", "Mechatronikerin",
+    "Elektroniker für Betriebstechnik (m/w/d)", "Industrieelektronikerin", "Servicemonteur (m/w/d)", "Monteurin",
+    "Lagerist (m/w/d)", "Fachlageristin", "LKW-Fahrer (m/w/d)", "Auslieferungsfahrer", "Fahrer/in", "Fahrerin Shuttle",
+    "Schülerjob dm-Markt (w/m/d)",
 ])
 def test_stellenart_raus(titel):
     ok, grund = ist_relevant(titel, "Berlin", False)

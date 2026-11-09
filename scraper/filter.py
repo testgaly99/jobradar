@@ -5,6 +5,7 @@ _TITEL_WOERTER = (
     "Ausbildung", "Duales Studium", r"Dual(?:e[rsn]?)?(?![- ]?use\b)", r"\w*Praktikum", "Intern", "Internship", "Working Student",
     "Bachelorarbeit", "Masterarbeit", "Abschlussarbeit", "Thesis", "Filiale",
     "Unsolicited Application", "Open Application", "Spontaneous Application",
+    r"\w*Fahrer(?:in(?:nen)?)?",  # LKW-Fahrer, Auslieferungsfahrerin; nicht "Fahrerassistenzsysteme"
 )
 # Stämme mit weiblicher/Pluralform (Werkstudentin, Aushilfen, Azubis); \w* nur hier, sonst träfe es "International"
 # Nicht "Initiativ" als Stamm: träfe "Initiative". Komposita (Schülerpraktikum, -praktikant) nur bei Praktikum,
@@ -12,6 +13,9 @@ _TITEL_WOERTER = (
 _TITEL_STAEMME = (
     "Azubi", "Auszubildende", r"\w*Praktikant", "Werkstudent", "Minijob", "Aushilfe", "Verkäufer", "Kassierer",
     "Initiativbewerbung",
+    # nicht-akademische Berufe: der Nutzer will nur Stellen mit Studium
+    "Warenverräumer", "Reinigungskr[aä]ft", "Filialleit", "Servicekr[aä]ft", r"\w*Mechatroniker", r"\w*Elektroniker",
+    r"\w*Monteur", r"\w*Lagerist", "Schülerjob",
 )
 _TITEL_RE = re.compile(
     r"\b(" + "|".join(_TITEL_WOERTER) + "|" + "|".join(s + r"\w*" for s in _TITEL_STAEMME) + r")\b",
