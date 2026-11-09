@@ -36,6 +36,19 @@ def test_bleibt_offen(fake):
     assert (s["erstmals_gesehen"], s["zuletzt_gesehen"]) == ("2026-11-07", "2026-11-08")
 
 
+def test_unveraendert_bleibt_offen(fake):
+    db.schreibe("A", [job("1")], "2026-11-07")
+    assert db.schreibe("A", [], "2026-11-08", unveraendert=["1"]) == (0, 0)
+    s = fake.t["jobs"]["A:1"]
+    assert (s["status"], s["zuletzt_gesehen"], s["text"]) == ("offen", "2026-11-08", "Text")
+
+
+def test_unveraendert_fehlt_wird_geschlossen(fake):
+    db.schreibe("A", [job("1"), job("2")], "2026-11-07")
+    assert db.schreibe("A", [], "2026-11-08", unveraendert=["1"]) == (0, 1)
+    assert fake.t["jobs"]["A:1"]["status"] == "offen" and fake.t["jobs"]["A:2"]["status"] == "geschlossen"
+
+
 def test_fehlt_ohne_bewerbung(fake):
     db.schreibe("acme", [job("1")], "2026-11-07")
     assert db.schreibe("acme", [], "2026-11-08") == (0, 1)

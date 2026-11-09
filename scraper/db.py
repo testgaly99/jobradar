@@ -86,8 +86,8 @@ def sync_companies(firmen):
     } for f in firmen], "name")
 
 
-def schreibe(firma, neue, heute):
-    """Gibt (Anzahl neuer, Anzahl geschlossener Stellen) zurueck."""
+def schreibe(firma, neue, heute, unveraendert=()):
+    """Gibt (Anzahl neuer, Anzahl geschlossener Stellen) zurueck. `unveraendert`: ext_ids, nur zuletzt_gesehen wird gesetzt."""
     alt = _bestand(firma)
     zeilen, neue_spalten = [], _spalten_da()
     for n in neue:
@@ -104,7 +104,11 @@ def schreibe(firma, neue, heute):
         })
     _upsert("jobs", zeilen, "id")
     gesehen = {z["id"] for z in zeilen}
-    fehlend = [i for i, z in alt.items() if z["status"] == "offen" and i not in gesehen]
+    unv = [i for i in (f"{firma}:{e}" for e in unveraendert) if i in alt]
+    for i in range(0, len(unv), CHUNK):
+        _req("PATCH", "jobs", params={"id": _in(unv[i:i + CHUNK])}, json={"zuletzt_gesehen": heute})
+    gesehen_alle = gesehen | set(unv)
+    fehlend = [i for i, z in alt.items() if z["status"] == "offen" and i not in gesehen_alle]
     mit_bewerbung = set()
     for i in range(0, len(fehlend), CHUNK):
         r = _req("GET", "applications", params={"select": "job_id", "job_id": _in(fehlend[i:i + CHUNK])})

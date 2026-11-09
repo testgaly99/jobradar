@@ -6,7 +6,7 @@ from scraper import http
 from scraper.abschnitte import abschnitte
 
 
-def hole_stellen(ats_id: str) -> list[dict]:
+def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[dict]:  # bekannte: ignoriert
     daten = http.hole(f"https://boards-api.greenhouse.io/v1/boards/{ats_id}/jobs?content=true").json()
     stellen = []
     for j in daten["jobs"]:

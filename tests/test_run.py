@@ -28,9 +28,9 @@ def aufbau(tmp_path, monkeypatch):
 
 
 def test_fehler_bricht_nicht_ab(aufbau):
-    def a(_):
+    def a(_, **k):
         raise RuntimeError("kaputt")
-    d, t = aufbau([firma("A", "a"), firma("B", "b")], {"a": a, "b": lambda _: [stelle("1")]})
+    d, t = aufbau([firma("A", "a"), firma("B", "b")], {"a": a, "b": lambda _, **k: [stelle("1")]})
     bericht = run.lauf("2026-11-07", d)
     assert "B:1" in t["jobs"] and set(t["companies"]) == {"A", "B"}
     fa, fb = bericht["firmen"]
@@ -40,10 +40,10 @@ def test_fehler_bricht_nicht_ab(aufbau):
 
 
 def test_fehler_schliesst_nichts(aufbau):
-    d, t = aufbau([firma("A", "a")], {"a": lambda _: [stelle("1")]})
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1")]})
     run.lauf("2026-11-06", d)
 
-    def kaputt(_):
+    def kaputt(_, **k):
         raise RuntimeError("x")
     run.ADAPTER["a"] = kaputt
     run.lauf("2026-11-07", d)
@@ -51,14 +51,14 @@ def test_fehler_schliesst_nichts(aufbau):
 
 
 def test_stelle_hat_neue_felder_und_bericht(aufbau):
-    d, t = aufbau([firma("A", "a")], {"a": lambda _: [
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [
         stelle("1", "Senior Engineer", "Munich; Berlin"), stelle("2"), stelle("3", "Werkstudent Foo")]})
     run.lauf("2026-11-06", d)
     s = t["jobs"]["A:1"]
     assert (s["erfahrungslevel"], s["staedte"]) == ("Senior", ["München", "Berlin"])
     assert s["land"] == "Deutschland"
     assert s["steckbrief"]["erfahrung_jahre"] is None and s["steckbrief"]["sprachen"] == []
-    run.ADAPTER["a"] = lambda _: [stelle("2")]
+    run.ADAPTER["a"] = lambda _, **k: [stelle("2")]
     f = run.lauf("2026-11-07", d)["firmen"][0]
     assert (f["gefunden"], f["gefiltert"], f["neu"], f["geschlossen"]) == (1, 0, 0, 1)
     assert t["jobs"]["A:1"]["status"] == "geschlossen" and "A:3" not in t["jobs"]
@@ -72,10 +72,10 @@ def test_unbekannter_adapter_ist_fehler(aufbau):
 
 def test_filterfehler_bricht_nicht_ab(aufbau):
     d, t = aufbau([firma("A", "a"), firma("B", "b")],
-                  {"a": lambda _: [stelle("1")], "b": lambda _: [stelle("1")]})
+                  {"a": lambda _, **k: [stelle("1")], "b": lambda _, **k: [stelle("1")]})
     run.lauf("2026-11-06", d)
-    run.ADAPTER["a"] = lambda _: [{"ext_id": "2", "ort": "Berlin", "remote": False}]  # titel fehlt
-    run.ADAPTER["b"] = lambda _: [stelle("1"), stelle("9")]
+    run.ADAPTER["a"] = lambda _, **k: [{"ext_id": "2", "ort": "Berlin", "remote": False}]  # titel fehlt
+    run.ADAPTER["b"] = lambda _, **k: [stelle("1"), stelle("9")]
     bericht = run.lauf("2026-11-07", d)
     assert "KeyError" in bericht["firmen"][0]["fehler"]
     assert t["jobs"]["A:1"]["status"] == "offen" and "A:2" not in t["jobs"]
@@ -84,7 +84,7 @@ def test_filterfehler_bricht_nicht_ab(aufbau):
 
 def test_inaktive_firma_wird_nicht_abgerufen(aufbau):
     d, t = aufbau([firma("A", "a"), firma("B", "b", aktiv="nein")],
-                  {"a": lambda _: [stelle("1")], "b": lambda _: [stelle("1")]})
+                  {"a": lambda _, **k: [stelle("1")], "b": lambda _, **k: [stelle("1")]})
     bericht = run.lauf("2026-11-06", d)
     assert [f["name"] for f in bericht["firmen"]] == ["A"] and "B:1" not in t["jobs"]
     assert t["companies"]["B"]["aktiv"] is False
@@ -94,6 +94,24 @@ def test_steckbrief_fehler_kippt_firma_nicht(aufbau, monkeypatch):
     def kaputt(*a):
         raise ValueError("x")
     monkeypatch.setattr(run, "steckbrief", kaputt)
-    d, t = aufbau([firma("A", "a")], {"a": lambda _: [stelle("1")]})
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1")]})
     assert run.lauf("2026-11-07", d)["firmen"][0]["fehler"] == ""
     assert t["jobs"]["A:1"]["steckbrief"] is None
+
+
+def test_firma_reicht_bekannte_durch(aufbau, monkeypatch):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1")]})
+    run.lauf("2026-11-06", d)
+    gesehen = []
+
+    def adapter(_, bekannte=frozenset()):
+        gesehen.append(bekannte)
+        return [{"ext_id": "1", "unveraendert": True}, stelle("2")]
+    run.ADAPTER["a"] = adapter
+    geprueft = []
+    orig = run.ist_relevant
+    monkeypatch.setattr(run, "ist_relevant", lambda *a: geprueft.append(a[0]) or orig(*a))
+    f = run.lauf("2026-11-07", d)["firmen"][0]
+    assert gesehen == [frozenset({"1"})] and len(geprueft) == 1
+    assert (f["gefunden"], f["neu"], f["geschlossen"], f["fehler"]) == (2, 1, 0, "")
+    assert t["jobs"]["A:1"]["zuletzt_gesehen"] == "2026-11-07" and "A:2" in t["jobs"]
