@@ -345,13 +345,13 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
      - Der Scraper zieht per Regeln heraus: Erfahrung in Jahren, Sprachen, Gehalt (falls angegeben), Sicherheitsüberprüfung.
      - Die Detailseite zeigt oben den Steckbrief, die gegliederte Anzeige eingeklappt darunter.
      - In der Stellenliste steht eine Kurzbeschreibung. Welche Felder sie zeigt, stellt jeder Nutzer auf der Konto-Seite selbst ein.
-     - „Kurz gesagt“, Top-3-Anforderungen und „Auffällig“ brauchen KI und bleiben in Phase 5.
+     - „Kurz gesagt“, Top-3-Anforderungen und „Auffällig“ brauchen KI: per Groq, nach einer Probe mit 20 Anzeigen (eigenes Paket direkt nach 2b).
    - **Wichtige Punkte:** Auf der Konto-Seite pflege ich Begriffe, die mir bei einer Stelle wichtig sind. Kommen sie in einem Stichpunkt der Anzeige vor, werden sie auf der Detailseite hervorgehoben. Reiner Textvergleich, ohne KI: Ein Begriff trifft ganze Wörter und Wortanfänge („Team“ trifft „Teamfähigkeit“). Übergangslösung; in Phase 6 kommt der Abgleich nach Bedeutung per KI dazu.
    - **Gegliederte Snapshots für alle:** Jede Bewerbung bekommt die gegliederte Anzeige, auch bestehende. Der tägliche Lauf rüstet fehlende Snapshots automatisch nach, solange die Stelle noch online ist.
 3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung.
    - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
 4. **Scraper für alle Zielfirmen:** rund 1000 Firmen, Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern.
-5. **KI-Auswertung und Filter:** Extraktion über den Abo-Token, alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
+5. **KI-Auswertung und Filter:** Extraktion aus Anzeigen per Groq (Gratis-Tarif), alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
 6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (Anforderungen, die mein CV abdeckt, fett; nicht abgedeckte rot) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token; dazu „Wichtige Punkte“ nach Bedeutung statt nach Wortanfang, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Dafür das günstigste Modell (Haiku), um das Abo-Kontingent zu schonen; ein größeres Modell nur, wenn Stichproben zeigen, dass Haiku zu oft danebenliegt. Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
 
 **Backlog (noch keiner Phase zugeordnet):**
