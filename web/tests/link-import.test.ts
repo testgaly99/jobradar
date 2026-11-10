@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { analysiereLink, normFirma, normTitel, firmaPasst, slugAusFirma, htmlZuText } from "../lib/link-import.ts";
+import { analysiereLink, normFirma, normTitel, firmaPasst, slugAusFirma, htmlZuText, hostOhneWww } from "../lib/link-import.ts";
 import { pruefeAbrufHost } from "../lib/ats-abruf.ts";
 
 test("Greenhouse-Links", () => {
@@ -75,4 +75,15 @@ test("Abruf-Allowlist und Sperrliste", () => {
 
 test("Stepstone mit kaputter Prozent-Kodierung wirft nicht", () => {
   assert.doesNotThrow(() => analysiereLink("https://www.stepstone.de/stellenangebote--%E0%A4%A--1-inline.html"));
+});
+
+test("hostOhneWww", () => {
+  assert.equal(hostOhneWww("https://www.helsing.ai/de/jobs/1"), "helsing.ai");
+  assert.equal(hostOhneWww("https://Jobs.Helsing.ai/x"), "jobs.helsing.ai");
+  assert.equal(hostOhneWww("kaputt"), "");
+});
+
+test("Helsing-Link liefert Job-Nummer ohne Board-Kennung", () => {
+  const a = analysiereLink("https://helsing.ai/de/jobs/4782354101?gh_jid=4782354101");
+  assert.deepEqual(a.ats, { typ: "greenhouse", id: null, jobId: "4782354101" });
 });

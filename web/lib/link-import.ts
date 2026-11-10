@@ -60,3 +60,7 @@ export function htmlZuText(h: string): string {
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
   return e(e(h).replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
 }
+
+export function hostOhneWww(url: string): string {
+  try { return new URL(url).hostname.toLowerCase().replace(/^www\./, ""); } catch { return ""; }
+}
