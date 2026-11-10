@@ -30,7 +30,7 @@ Stand: 2026-11-09
 6. Die Vercel-Adresse in Supabase → Authentication → URL Configuration eintragen (Site URL und Redirect URLs).
 7. Im Repo `jobradar-privat` das Secret `SUPABASE_DB_URL` (Session-Pooler-URI) setzen und den Workflow „Backup“ einmal von Hand starten. Warum: ohne das Secret kann das Backup die Datenbank nicht erreichen.
 8. GitHub Pages abschalten: Repo → Settings → Pages → Source auf „None“ bzw. die Seite entfernen.
-9. Den ersten Freund als Google-Testnutzer eintragen (README „Freunde einladen“).
+9. ~~Den ersten Freund als Google-Testnutzer eintragen~~ **Verschoben 2026-11-10:** Vorerst nutzt nur Mark Jobradar; steht im Backlog unter „Live gehen“.
 10. Groq-Konto für einen späteren Test von KI-Zusammenfassungen öffentlicher Anzeigen: Auf groq.com ein kostenloses Konto anlegen, einen API-Key erstellen und ihn selbst als `GROQ_API_KEY=...` in `jobradar/.env` eintragen. Nie in den Chat und nie ins Repo. Warum: Ein Key im Chat oder Repo wäre einsehbar und müsste getauscht werden. Erfolg: Die Zeile steht in `.env`; sag Claude nur „Key ist eingetragen“, nicht den Key.
 
 ## Nächster Schritt

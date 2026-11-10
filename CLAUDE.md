@@ -367,6 +367,9 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (Anforderungen, die mein CV abdeckt, fett; nicht abgedeckte rot) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token; dazu „Wichtige Punkte“ nach Bedeutung statt nach Wortanfang, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Dafür das günstigste Modell (Haiku), um das Abo-Kontingent zu schonen; ein größeres Modell nur, wenn Stichproben zeigen, dass Haiku zu oft danebenliegt. Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
 
 **Backlog (noch keiner Phase zugeordnet):**
+- **Live gehen (Freunde oder öffentlich), Entscheidung 2026-11-10:** Vorerst nutze nur ich Jobradar. Vor dem Einladen von Freunden oder einer Veröffentlichung:
+  - Erlaubnis-E-Mails an die Ranking-Herausgeber schicken (7 nötig, 1 optional; Vorlage und Empfänger in `docs/ranking-legal.md`, Abschnitt 5). Nur Listen mit schriftlicher Zusage dürfen dann gezeigt werden.
+  - Den ersten Freund als Google-Testnutzer eintragen (README „Freunde einladen“), dazu das Mail-Paket prüfen.
 - **Mail-Paket:**
   - eigene Domain
   - Mail-Dienst, z. B. Resend (gratis)
