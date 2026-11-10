@@ -328,3 +328,15 @@
 - [ ] Tests: `pruefeUebernahme` (gültig, zu lang, falsche Typen, `javascript:`-URL) und die LinkedIn-Vereinheitlichung. Dazu `npm test` und `npm run build`. Das Lesezeichen selbst kann nur der Nutzer auf LinkedIn testen; das kommt in die Checkliste.
 - [ ] Doku: README-Abschnitt „Link einfügen“ ergänzen, CLAUDE.md Abschnitt zur Link-Erkennung um den Lesezeichen-Weg ergänzen, eine Zeile in `docs/ENTSCHEIDUNGEN.md`.
 - [ ] Commit `LinkedIn und Co.: Lesezeichen-Knopf und Text einfügen`
+
+### Task 10: Fehler aus dem Klicktest vom 2026-11-10 (nach Task 9)
+
+**Wunsch des Nutzers (Klicktest, Teil 1):** Erfahrungslevel falsch sortiert; „Neu“ steht an jeder Stelle; „Beworben am“ füllt sich nicht; Kästen im Bewerbungsformular sollen einklappbar sein.
+
+**Files:** `web/lib/filter.ts`, `web/app/stellen/page.tsx`, `web/app/bewerbungen/detail-actions.ts`, `web/app/bewerbungen/[id]/page.tsx`, `web/app/globals.css`, Tests in `web/tests/`.
+
+- [ ] **Erfahrungslevel in fester Reihenfolge.** Neue Konstante `LEVEL_REIHENFOLGE = ["Junior", "Mid", "Senior", "Lead"]` in `web/lib/filter.ts`. Die Facette „level“ sortiert danach (wie `groesse` nach `GROESSEN_REIHENFOLGE`), unbekannte Werte ans Ende. Test.
+- [ ] **„Neu“ nur für wirklich neue Stellen.** Ursache: Alle 218 Stellen des ersten Laufs tragen `erstmals_gesehen = 2026-11-07`, weil es davor keine Daten gab. `istNeu(erstmals, jetzt, ersterLauf)` gibt `false`, wenn `erstmals <= ersterLauf`. `ersterLauf` ist das kleinste `datum` in `laeufe` (eine Abfrage pro Seitenaufruf, parallel zu den vorhandenen). Fehlt die Tabelle oder ist sie leer, gilt wie bisher nur die 3-Tage-Regel. `shortcut:` Kommentar: Echte Veröffentlichungsdaten aus dem ATS (Ashby `publishedAt`, Greenhouse `first_published`, Recruitee `published_at`, JSON-LD `datePosted`) kommen mit Phase 4 als Spalte `veroeffentlicht_am`. Test.
+- [ ] **„Beworben am“ bei jedem Wechsel auf „beworben“.** In `statusWechseln` (detail-actions.ts): Wird der Status `beworben` und ist `beworben_am` leer, wird `beworben_am = heuteLokal()` im selben Update gesetzt (Bedingung im Schreibbefehl: `.is("beworben_am", null)` nur für den Datumsteil, zwei Updates sind erlaubt, falls PostgREST keine bedingte Spalte kann). Gleiche Regel bleibt in `beworben()` (stellen/actions.ts). Test der reinen Regel (Funktion `beworbenPatch(status, beworbenAm, heute)` in `web/lib/bewerbung.ts`).
+- [ ] **Kästen einklappbar.** Jeder Abschnitt der Bewerbungsseite (`<section className="karte">` mit `<h2>`) wird ein `<details className="karte" open>` mit `<summary><h2>…</h2></summary>`. Standard: offen. Der Browser merkt sich nichts, das ist bewusst (kein JavaScript). Druckansicht: alle offen (CSS `@media print { details { display: block } summary { … } }` prüfen, dass der Inhalt gedruckt wird).
+- [ ] `npm test`, `npm run build`. Commit `Klicktest 2: Level-Reihenfolge, Neu, Beworben am, Kästen einklappbar`
