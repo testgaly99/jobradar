@@ -33,5 +33,8 @@ Stand: 2026-11-09
 9. ~~Den ersten Freund als Google-Testnutzer eintragen~~ **Verschoben 2026-11-10:** Vorerst nutzt nur Mark Jobradar; steht im Backlog unter „Live gehen“.
 10. Groq-Konto für einen späteren Test von KI-Zusammenfassungen öffentlicher Anzeigen: Auf groq.com ein kostenloses Konto anlegen, einen API-Key erstellen und ihn selbst als `GROQ_API_KEY=...` in `jobradar/.env` eintragen. Nie in den Chat und nie ins Repo. Warum: Ein Key im Chat oder Repo wäre einsehbar und müsste getauscht werden. Erfolg: Die Zeile steht in `.env`; sag Claude nur „Key ist eingetragen“, nicht den Key.
 
+## Offene To-dos für spätere Phasen
+- **Phase 3 (Gmail):** Erinnerungs-Mail an den Admin (`ADMIN_EMAIL`) einrichten, sobald die jährlichen Hand-Quellen der Rankings (trendence, Universum, LinkedIn) fällig sind. Bis dahin erinnert ein GitHub-Issue (Entscheidung 2026-11-10, CLAUDE.md 4.8).
+
 ## Nächster Schritt
 Die Liste oben abarbeiten, dann Phase 2 abschließen und nach `main` mergen.
