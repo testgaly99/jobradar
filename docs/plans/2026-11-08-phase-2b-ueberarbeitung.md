@@ -340,3 +340,14 @@
 - [ ] **„Beworben am“ bei jedem Wechsel auf „beworben“.** In `statusWechseln` (detail-actions.ts): Wird der Status `beworben` und ist `beworben_am` leer, wird `beworben_am = heuteLokal()` im selben Update gesetzt (Bedingung im Schreibbefehl: `.is("beworben_am", null)` nur für den Datumsteil, zwei Updates sind erlaubt, falls PostgREST keine bedingte Spalte kann). Gleiche Regel bleibt in `beworben()` (stellen/actions.ts). Test der reinen Regel (Funktion `beworbenPatch(status, beworbenAm, heute)` in `web/lib/bewerbung.ts`).
 - [ ] **Kästen einklappbar.** Jeder Abschnitt der Bewerbungsseite (`<section className="karte">` mit `<h2>`) wird ein `<details className="karte" open>` mit `<summary><h2>…</h2></summary>`. Standard: offen. Der Browser merkt sich nichts, das ist bewusst (kein JavaScript). Druckansicht: alle offen (CSS `@media print { details { display: block } summary { … } }` prüfen, dass der Inhalt gedruckt wird).
 - [ ] `npm test`, `npm run build`. Commit `Klicktest 2: Level-Reihenfolge, Neu, Beworben am, Kästen einklappbar`
+
+### Task 11: Link mit Job-Nummer, aber ohne Board-Kennung (nach Task 10)
+
+**Wunsch des Nutzers (Klicktest 2026-11-10):** Ein Helsing-Link `https://helsing.ai/de/jobs/4782354101?gh_jid=4782354101` wurde nicht erkannt. Ursache: `analysiereLink` liefert für `gh_jid` ein ATS mit `id: null`, und Schritt 1 in `bewerbungAusLink` läuft nur mit `id`. Firma und Titel sind leer, also endet es bei „nichts erkennbar“.
+
+**Files:** `web/app/bewerbungen/actions.ts`, `web/lib/link-import.ts` (nur falls nötig), `web/tests/link-import.test.ts` bzw. neuer Test für die reine Logik.
+
+- [ ] **Schritt 1b: Job-Nummer in der eigenen Stellenliste suchen.** Direkt nach Schritt 1, wenn `!ziel && a.ats?.jobId`: Suche in `jobs` nach `id` mit Endung `:<jobId>` (PostgREST `like`, Muster `%:<jobId>`, `jobId` vorher auf `^[A-Za-z0-9._-]{1,200}$` geprüft, sonst überspringen) und `sichtbar = true`, `limit 2`. Genau **ein** Treffer → `ziel = { link, quelle: a.quelle, job }` wie in Schritt 2. Mehrere Treffer (zwei Firmen mit gleicher Nummer) → kein Ziel, weiter wie bisher.
+- [ ] **Schritt 1c: Board-Kennung über die Firmentabelle.** Wenn weiterhin `!ziel && a.ats && !a.ats.id`: Firma suchen, deren `careers_url` denselben Host hat wie der Link (Host ohne `www.`), `ats_typ === a.ats.typ`; mit deren `ats_id` Schritt 1 ausführen (`holeStelle`). So klappt es auch für Stellen, die noch nicht in der Liste sind (z. B. gerade erst online).
+- [ ] Reine Hilfsfunktion `hostOhneWww(url: string): string` in `web/lib/link-import.ts` mit Test. Test für die Reihenfolge der Schritte mit einem Fake-Client, falls das Test-Setup das ohne großen Umbau zulässt; sonst nur die Hilfsfunktion testen und die Schritte im Bericht beschreiben.
+- [ ] `npm test`, `npm run build`. Commit `Link-Import: Job-Nummer in Stellenliste und Firmen-Board suchen`
