@@ -64,7 +64,16 @@ Jobradars eigene Stärke bleibt: Die Stellen kommen selbst von den Karriereseite
    - Unter 5 Bewerbungen steht statt Prozenten „Noch zu wenig Daten“.
 10. **Flüssige Übergänge (Q44):** weiche Übergänge bei Hover, Fokus, Aufklappen, Seitenfenster und Kartenbewegung. Mit `prefers-reduced-motion: reduce` ohne Bewegung.
 
-## Nicht-Ziele
+## Ergänzungen aus dem Klicktest vom 2026-11-10 (Nutzerwünsche)
+
+11. **Filter ohne Knopf, ohne Neuladen.** In der Stellenliste und in den Bewerbungen wirkt jeder Klick auf einen Filter sofort. Der Knopf „Filtern“ entfällt. Mehrere Filter lassen sich nacheinander setzen, ohne dass die Seite sichtbar neu lädt (Client-Navigation mit `useTransition`, die Liste bleibt stehen und zeigt nur einen dezenten Ladezustand). Die Filter bleiben in der Adresse, damit Links und „Zurück“ funktionieren.
+12. **Suche mit Knopf.** Das Suchfeld bekommt einen Knopf „Suchen“ (und Enter). Live-Suche beim Tippen nur, wenn sie ohne spürbaren Mehraufwand geht (Entprellung 300 ms); sonst bleibt der Knopf.
+13. **Sortieren in der Stellenliste.** Auswahl „Sortieren nach“: Online seit (neueste zuerst, Standard), Firma A–Z, Titel A–Z, Größe. Die Wahl steht in der Adresse.
+14. **Kanban nutzt die ganze Breite** unter der Navigation (keine schmale Spaltenbox); Spalten teilen sich den Platz, unter 900 px Breite horizontales Scrollen.
+15. **Statuswechsel ohne „Ändern“.** Neben dem Ziehen wirkt auch eine Auswahl auf der Karte sofort (Fallback für Tastatur und Touch).
+16. **Begriffe im Board:** Die Spalte „Abgeschlossen“ gibt es nicht mehr (siehe Ziel 3, Archiv). Beim Archivieren wird das Ergebnis gewählt: **Zusage, Absage, Abgebrochen, Angebot abgelehnt**. „Abgebrochen“ ersetzt überall die Anzeige „Zurückgezogen“.
+17. **Kästen einklappbar** in der Bewerbung (kommt schon mit 2b, Task 10).
+
 
 Diese Funktionen hat der Nutzer abgelehnt oder vertagt:
 - mehrere Boards (Q33)
