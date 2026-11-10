@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, stadtAnzeige, suchBedingung, landNurMitFacette, ID_FORM } from "../lib/filter.ts";
+import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, facettenSortieren, LEVEL_REIHENFOLGE, stadtAnzeige, suchBedingung, landNurMitFacette, ID_FORM } from "../lib/filter.ts";
 
 test("leerer Filter gibt /stellen", () => {
   const f = leseFilter({});
@@ -94,4 +94,17 @@ test("ID_FORM: Firma mit Leerzeichen ok, ohne Doppelpunkt oder mit Leerzeichen i
   assert.ok(ID_FORM.test("Helsing:x"));
   assert.ok(!ID_FORM.test("kein-doppelpunkt"));
   assert.ok(!ID_FORM.test("a:b c"));
+});
+
+test("Level-Facette in fester Reihenfolge, Unbekanntes ans Ende", () => {
+  assert.deepEqual(LEVEL_REIHENFOLGE, ["Junior", "Mid", "Senior", "Lead"]);
+  assert.deepEqual(facettenSortieren("level", ["Senior", "Praktikum", "Lead", "Junior", "Mid"]), ["Junior", "Mid", "Senior", "Lead", "Praktikum"]);
+  assert.deepEqual(facettenSortieren("groesse", ["1.000+", "<50"]), ["<50", "1.000+"]);
+  assert.deepEqual(facettenSortieren("stadt", ["Wien", "Berlin"]), ["Berlin", "Wien"]);
+});
+
+test("istNeu: Stellen des ersten Laufs sind nie neu", () => {
+  assert.equal(istNeu("2026-11-07", JETZT, "2026-11-07"), false);
+  assert.equal(istNeu("2026-11-08", JETZT, "2026-11-07"), true);
+  assert.equal(istNeu("2026-11-07", JETZT, null), true);
 });

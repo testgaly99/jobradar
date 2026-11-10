@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { firmenFarbe } from "@/lib/farbe";
-import { AUSGEBLENDET_BRANCHE, GROESSEN_REIHENFOLGE, GRUPPEN, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
 import { kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { merken, entmerken, bewerbungZuruecknehmen } from "./actions";
@@ -32,10 +32,12 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const fac = await sb.rpc("facetten"); // fehlt die Funktion noch (002_facetten.sql), gibt es Filter ohne Zahlen
   const fa: Facetten = fac.error ? {} : (fac.data ?? {});
   const f = landNurMitFacette(roh, !!fa.land);
-  const [ergebnis, lauf] = await Promise.all([
+  const [ergebnis, lauf, erster] = await Promise.all([
     stellenAbfrage(sb, f),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
+    sb.from("laeufe").select("datum").order("datum", { ascending: true }).limit(1).maybeSingle(), // fehlt die Tabelle: nur 3-Tage-Regel
   ]);
+  const ersterLauf: string | null = erster.data?.datum ?? null;
   const jobs = (ergebnis.data ?? []) as unknown as Job[];
   const gesamt = ergebnis.count ?? 0;
   const letzterLauf: string | null = lauf.data?.datum ?? null;
@@ -103,10 +105,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               {GRUPPEN.map((g) => {
                 const werte = fa[g] ?? {};
                 // Gewählte Werte bleiben sichtbar, auch wenn sie in den Zahlen fehlen
-                const rang = (n: string) => { const i = GROESSEN_REIHENFOLGE.indexOf(n); return i < 0 ? 99 : i; };
-                const namen = [...new Set([...Object.keys(werte), ...f[g]])]
+                const namen = facettenSortieren(g, [...new Set([...Object.keys(werte), ...f[g]])]
                   .filter((n) => !(g === "kategorie" && n === AUSGEBLENDET_BRANCHE))
-                  .sort((a, b) => (g === "groesse" ? rang(a) - rang(b) : 0) || a.localeCompare(b, "de"));
+                );
                 if (!namen.length) return null;
                 return (
                   <details key={g} className="gruppe" open={g === "groesse" || g === "kategorie" || f[g].length > 0}>
@@ -131,7 +132,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
           <ul className="stellenliste">
             {jobs.map((j) => {
               const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;
-              const neu = !!(j.erstmals_gesehen && istNeu(j.erstmals_gesehen, jetzt));
+              const neu = !!(j.erstmals_gesehen && istNeu(j.erstmals_gesehen, jetzt, ersterLauf));
               const kurz = kurzzeile({
                 groesse: j.companies?.groesse_klasse ?? null, level: j.erfahrungslevel,
                 modell: modellText(j.arbeitsmodell, j.remote), vertrag: j.vertragsart, ort,

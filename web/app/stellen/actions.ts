@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { beworbenPatch } from "@/lib/bewerbung";
 import { anlegenAusJob } from "@/lib/bewerbung-anlegen";
 import { fehlerText } from "@/lib/fehler";
 import { heuteLokal } from "@/lib/filter";
@@ -34,7 +35,7 @@ export async function beworben(jobId: string) {
   // Nur von "gemerkt" aus vorwärts; ein späterer Status (z. B. im Gespräch) wird nicht zurückgesetzt.
   const patch: Record<string, string> = {};
   if (a?.status === "gemerkt") patch.status = "beworben";
-  if (a && !a.beworben_am) patch.beworben_am = heuteLokal();
+  if (a) Object.assign(patch, beworbenPatch("beworben", a.beworben_am, heuteLokal()));
   if (Object.keys(patch).length) {
     const { error } = await sb.from("applications").update(patch).eq("id", r.id);
     if (error) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Der Status konnte nicht gespeichert werden. Bitte erneut versuchen.")}`);

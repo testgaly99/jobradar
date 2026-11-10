@@ -2,7 +2,8 @@
 import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { istStatus, istUuid, parseAbschnitt, type Abschnitt } from "@/lib/bewerbung";
+import { beworbenPatch, istStatus, istUuid, parseAbschnitt, type Abschnitt } from "@/lib/bewerbung";
+import { heuteLokal } from "@/lib/filter";
 import { textZuLang } from "@/lib/uebernahme";
 
 // Jede Aktion prüft zuerst die Sitzung und die Form der id. RLS beschränkt alles auf eigene Zeilen.
@@ -44,7 +45,9 @@ export async function statusWechseln(id: string, f: FormData) {
   const sb = await start(id);
   const status = f.get("status");
   if (!istStatus(status)) notFound();
-  const { data, error } = await sb.from("applications").update({ status }).eq("id", id).select("id");
+  const { data: alt } = await sb.from("applications").select("beworben_am").eq("id", id).maybeSingle();
+  if (!alt) notFound();
+  const { data, error } = await sb.from("applications").update({ status, ...beworbenPatch(status, alt.beworben_am, heuteLokal()) }).eq("id", id).select("id");
   if (error || !data?.length) notFound();
   revalidatePath("/bewerbungen/kanban");
   redirect("/bewerbungen/kanban");

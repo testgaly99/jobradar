@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { STATUS, STATUS_LABEL, istUuid, parseAbschnitt, leseTabelle, tabelleZuUrl, escapeLike, berlinZuIso } from "../lib/bewerbung.ts";
+import { STATUS, STATUS_LABEL, istUuid, parseAbschnitt, leseTabelle, tabelleZuUrl, escapeLike, berlinZuIso, beworbenPatch } from "../lib/bewerbung.ts";
 
 const fd = (o: Record<string, string>) => ({ get: (k: string) => (k in o ? o[k] : null) });
 
@@ -90,4 +90,11 @@ test("Interview-Zeit wird als ISO gespeichert, leer wird null", () => {
   assert.equal("daten" in a && a.daten.datum, "2026-11-08T09:00:00.000Z");
   assert.equal("daten" in b && b.daten.datum, null);
   assert.ok("fehler" in parseAbschnitt("interview", fd({ datum: "2026-11-08T25:00" })));
+});
+
+test("beworbenPatch setzt das Datum nur bei beworben und leerem Datum", () => {
+  assert.deepEqual(beworbenPatch("beworben", null, "2026-11-10"), { beworben_am: "2026-11-10" });
+  assert.deepEqual(beworbenPatch("beworben", "", "2026-11-10"), { beworben_am: "2026-11-10" });
+  assert.deepEqual(beworbenPatch("beworben", "2026-11-01", "2026-11-10"), {});
+  assert.deepEqual(beworbenPatch("gemerkt", null, "2026-11-10"), {});
 });

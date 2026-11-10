@@ -131,3 +131,7 @@ export function berlinZuIso(lokal: string): string | null {
   t = wand - berlinOffsetMs(t); // Offset am Zielzeitpunkt erneut prüfen (Sommerzeitwechsel)
   return new Date(t).toISOString();
 }
+
+// Wechsel auf "beworben" setzt das Datum, falls es noch leer ist (ein vorhandenes Datum bleibt).
+export const beworbenPatch = (status: string, beworbenAm: string | null | undefined, heute: string): { beworben_am?: string } =>
+  status === "beworben" && !beworbenAm ? { beworben_am: heute } : {};

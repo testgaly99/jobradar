@@ -53,6 +53,15 @@ export function heuteLokal(): string {
 // Größenklassen in fester Reihenfolge (alphabetisch wäre "1.000+" vor "<50").
 export const GROESSEN_REIHENFOLGE = ["<50", "50–249", "250–999", "1.000+"];
 
+export const LEVEL_REIHENFOLGE = ["Junior", "Mid", "Senior", "Lead"];
+
+// Facettenwerte: Größe und Level in fester Reihenfolge (Unbekanntes ans Ende), sonst alphabetisch.
+export function facettenSortieren(g: Gruppe, namen: string[]): string[] {
+  const reihe = g === "groesse" ? GROESSEN_REIHENFOLGE : g === "level" ? LEVEL_REIHENFOLGE : [];
+  const rang = (n: string) => { const i = reihe.indexOf(n); return i < 0 ? 99 : i; };
+  return [...namen].sort((a, b) => rang(a) - rang(b) || a.localeCompare(b, "de"));
+}
+
 const LEVEL: Record<string, string> = {
   Junior: "Junior (0–2 Jahre)", Mid: "Mid (2–5 Jahre)", Senior: "Senior (5–8 Jahre)", Lead: "Lead (8+ Jahre)",
 };
@@ -66,7 +75,11 @@ export function onlineSeitGrenze(wahl: Seit, jetzt: Date): string {
 }
 
 // "Neu" = seit höchstens 3 Tagen online.
-export const istNeu = (erstmals: string, jetzt: Date): boolean => erstmals >= tagePlus(lokal(jetzt), -3);
+// shortcut: echte Veröffentlichungsdaten aus dem ATS (Ashby publishedAt, Greenhouse first_published, Recruitee published_at,
+// JSON-LD datePosted) kommen mit Phase 4 als Spalte veroeffentlicht_am; bis dahin gilt "erstmals gesehen".
+// Stellen des allerersten Laufs tragen nur dessen Datum, sind also nicht wirklich neu.
+export const istNeu = (erstmals: string, jetzt: Date, ersterLauf: string | null = null): boolean =>
+  erstmals >= tagePlus(lokal(jetzt), -3) && !(ersterLauf && erstmals <= ersterLauf);
 
 // Anzeige der Stadt: bei Filter die gefilterte Stadt der Stelle, sonst erste Stadt plus Anzahl der übrigen.
 export function stadtAnzeige(staedte: string[], gefiltert: string[]): string {

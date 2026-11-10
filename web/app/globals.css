@@ -213,6 +213,10 @@ input[type="checkbox"], input[type="radio"] { width: 1.1rem; height: 1.1rem; mar
   .filterleiste { position: sticky; top: calc(var(--control-h) + var(--space-xl)); max-height: calc(100dvh - var(--control-h) - var(--space-2xl)); overflow-y: auto; }
 }
 .filterblock > summary, .gruppe > summary { display: flex; align-items: center; min-height: var(--control-h); cursor: pointer; font-weight: var(--weight-strong); }
+/* Einklappbare Kästen der Bewerbungsseite: h2 steht in der summary */
+details.karte > summary { cursor: pointer; min-height: var(--control-h); display: flex; align-items: center; border-radius: var(--radius-control); }
+details.karte > summary h2 { margin: 0; }
+details.karte[open] > summary { margin-bottom: var(--space-md); }
 .filterblock[open] > summary { margin-bottom: var(--space-xs); }
 .filterform { display: grid; gap: var(--space-md); padding-bottom: var(--space-md); }
 .filteraktionen { display: grid; gap: var(--space-xs); }
@@ -345,6 +349,8 @@ mark { background: var(--color-mark); color: var(--color-mark-ink); padding: 0 v
 @media print {
   .kopf, .fuss, .kein-druck, button, form { display: none !important; }
   .nur-druck { display: block; }
+  details.karte > summary { margin-bottom: var(--space-md); }
+  details.karte::details-content { content-visibility: visible; display: block; } /* auch zugeklappte Kästen drucken */
 }
 
 /* Weniger Bewegung */
