@@ -274,7 +274,11 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 - **Nur Listen-Firmen.** Bis die Listen live sind, bleiben die heutigen Firmen aus `data/companies.csv`; danach bleibt nur, wer auf einer Liste steht.
 - In der Stellenliste ist **„Liste“ der erste Filter**. Bei jeder Firma steht immer, **welchen Rang sie in welchem Ranking** hat (z. B. „stern Beste Arbeitgeber 2026: Platz 12“). Nach **jedem einzelnen Ranking** kann man filtern und sortieren (Entscheidung 2026-11-10).
 - Startup-Listen dürfen europäisch oder amerikanisch sein, Gehaltslisten dürfen nur Tech abdecken. Bedingung: Die Firma bietet Stellen in Deutschland an.
-- **Rechtlich wasserdicht, ohne Ausnahme (Entscheidung 2026-11-10):** Eine Liste wird nur genutzt, wenn der Herausgeber die Weiterverwendung ausdrücklich erlaubt (Lizenz, Nutzungsbedingungen, offene Lizenz wie CC) oder schriftlich zugestimmt hat. „Unklar“, „nur robots.txt erlaubt es“ oder „sind ja nur Fakten“ reicht nicht. Lässt sich für eine Liste kein solcher Weg finden, wird sie weggelassen. Auch Herunterladen von Hand ersetzt die Erlaubnis nicht. Der Katalog: `docs/ranking-katalog.md`, die rechtliche Prüfung: `docs/ranking-legal.md`.
+- **Vorerst nur Eigennutzung (Entscheidung 2026-11-10):** Genutzt wird alles, was für den privaten Gebrauch erlaubt ist:
+  - automatisch: Listen unter offener Lizenz (Wikipedia: DAX, Unicorns) und Listen ohne Nutzungsverbot und ohne maschinenlesbaren Vorbehalt gegen automatisches Auswerten (§ 44b UrhG: Great Place to Work, kununu Top 15; kununu-AGB vor Nutzung prüfen);
+  - einmal im Jahr von Hand: Listen, deren Bedingungen private Kopien ausdrücklich erlauben (trendence Top 50: Datei lädt Mark herunter, Claude liest sie ein);
+  - nicht, auch nicht privat: Listen mit ausdrücklichem Verbot oder Bot-Sperre (Statista mit stern/Forbes/FT/FOCUS, Levels.fyi, LinkedIn, ZEIT, Sifted, Universum, Top Employers). Für sie gibt es höchstens einen Link zur Ranking-Seite.
+- **Für Freunde oder öffentlich (Backlog „Live gehen“):** Eine Liste wird nur genutzt, wenn der Herausgeber die Weiterverwendung ausdrücklich erlaubt (Lizenz, Nutzungsbedingungen, offene Lizenz wie CC) oder schriftlich zugestimmt hat. „Unklar“, „nur robots.txt erlaubt es“ oder „sind ja nur Fakten“ reicht nicht. Lässt sich für eine Liste kein solcher Weg finden, wird sie weggelassen. Auch Herunterladen von Hand ersetzt die Erlaubnis nicht. Der Katalog: `docs/ranking-katalog.md`, die rechtliche Prüfung: `docs/ranking-legal.md`.
 - Die Prestige-Listen bestimmen die Ausnahme beim Studiums-Filter (Abschnitt 2).
 
 ---
