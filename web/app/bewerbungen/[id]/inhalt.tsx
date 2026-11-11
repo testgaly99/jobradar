@@ -45,6 +45,17 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   const personen = (pe.data ?? []) as Person[];
   const interviews = (iv.data ?? []) as Interview[];
   const docs = (dok.data ?? []) as (Dok & { art: string | null })[];
+  // B1: Kästen mit Inhalt sind offen, leere zugeklappt (eine Zeile statt eines leeren Formulars)
+  const hat = (...felder: string[]) => felder.some((f) => { const x = row[f]; return x !== null && x !== undefined && x !== "" && !(Array.isArray(x) && x.length === 0); });
+  const interesse = typeof row.interesse === "number" ? row.interesse : null;
+  const blick: [string, React.ReactNode][] = [
+    ...(row.naechster_schritt ? [["Nächster Schritt", `${v(row.naechster_schritt)}${row.naechster_schritt_faellig ? ` (bis ${datumDe(v(row.naechster_schritt_faellig))})` : ""}`] as [string, React.ReactNode]] : []),
+    ...(row.beworben_am ? [["Beworben am", datumDe(v(row.beworben_am))] as [string, React.ReactNode]] : []),
+    ...(interesse ? [["Interesse", <span key="i" className="sterne" role="img" aria-label={`${interesse} von 5`}>{"★".repeat(interesse)}{"☆".repeat(5 - interesse)}</span>] as [string, React.ReactNode]] : []),
+    ...(row.gehalt_spanne_anzeige ? [["Gehalt laut Anzeige", v(row.gehalt_spanne_anzeige)] as [string, React.ReactNode]] : []),
+    ...(personen.length ? [["Personen", String(personen.length)] as [string, React.ReactNode]] : []),
+    ...(interviews.length ? [["Interviews", String(interviews.length)] as [string, React.ReactNode]] : []),
+  ];
   const speichern = (ab: Abschnitt) => abschnittSpeichern.bind(null, id, ab);
   const link = sicher(row.link as string | null);
   const dokOptionen = (art: string) => (
@@ -66,6 +77,12 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         {link && <a href={link} target="_blank" rel="noopener noreferrer">Anzeige öffnen</a>}
       </p>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+      {blick.length > 0 && (
+        <section className="steckbrief karte kein-druck" aria-labelledby="blick-titel">
+          <h2 id="blick-titel">Auf einen Blick</h2>
+          <dl>{blick.map(([t, w]) => <div key={t}><dt>{t}</dt><dd>{w}</dd></div>)}</dl>
+        </section>
+      )}
 
       {/* Nur im Druck sichtbar: Stelle als Text, der Snapshot folgt darunter */}
       <section className="nur-druck">
@@ -75,7 +92,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
       </section>
 
       <div className="detail">
-        <details className="karte kein-druck" open>
+        <details className="karte kein-druck">
           <summary><h2>Stelle</h2></summary>
           <form action={speichern("stelle")} className="formular">
           <Text a={row} name="firma" label="Firma (Pflicht)" />
@@ -103,7 +120,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         </form>
         </details>
 
-        <details className="karte kein-druck" open>
+        <details className="karte kein-druck" open={hat("beworben_am", "bewerbungsweg", "referenznummer", "portal_hinweis", "cv_dokument_id", "anschreiben_dokument_id")}>
           <summary><h2>Bewerbung</h2></summary>
           <form action={speichern("bewerbung")} className="formular">
           <Text a={row} name="beworben_am" label="Beworben am" type="date" />
@@ -122,7 +139,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         </form>
         </details>
 
-        <details className="karte kein-druck" open>
+        <details className="karte kein-druck" open={hat("gehalt_spanne_anzeige", "gehalt_wunsch", "angebot_fix", "angebot_variabel", "angebot_urlaub", "angebot_benefits", "gehalt_aktuell_vergleich")}>
           <summary><h2>Gehalt</h2></summary>
           <form action={speichern("gehalt")} className="formular">
           <Text a={row} name="gehalt_spanne_anzeige" label="Spanne laut Anzeige" />
@@ -136,7 +153,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         </form>
         </details>
 
-        <details className="karte kein-druck" open>
+        <details className="karte kein-druck" open={hat("starttermin", "kuendigungsfrist", "referenzen")}>
           <summary><h2>Rahmen</h2></summary>
           <form action={speichern("rahmen")} className="formular">
           <Text a={row} name="starttermin" label="Starttermin" type="date" />
@@ -146,7 +163,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         </form>
         </details>
 
-        <details className="karte kein-druck" open>
+        <details className="karte kein-druck" open={hat("ergebnis", "absagegrund", "feedback", "rueckzug_grund")}>
           <summary><h2>Ergebnis</h2></summary>
           <form action={speichern("ergebnis")} className="formular">
           <label>Ergebnis
@@ -162,7 +179,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         </form>
         </details>
 
-        <details className="karte kein-druck" open>
+        <details className="karte kein-druck" open={hat("interesse", "tags", "notizen")}>
           <summary><h2>Einschätzung</h2></summary>
           <form action={speichern("einschaetzung")} className="formular">
           <label>Interesse
@@ -180,7 +197,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         </details>
       </div>
 
-      <details className="karte block kein-druck" open>
+      <details className="karte block kein-druck" open={personen.length > 0}>
         <summary><h2>Personen</h2></summary>
         <ul className="eintraege">
           {personen.map((p) => (
@@ -194,8 +211,9 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           ))}
           {personen.length === 0 && <li className="gedaempft">Noch keine Personen.</li>}
         </ul>
+        <details className="hinzufuegen">
+        <summary className="knopf knopf-rand knopf-schmal">+ Person hinzufügen</summary>
         <form action={personAnlegen.bind(null, id)} className="formular">
-          <h3>Person hinzufügen</h3>
           <label>Name (Pflicht)<input name="name" required /></label>
           <label>Art
             <select name="art" defaultValue="ansprechpartner">
@@ -209,9 +227,10 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           <label>LinkedIn<input name="linkedin" /></label>
           <SendeKnopf text="Person speichern" />
         </form>
+        </details>
       </details>
 
-      <details className="karte block kein-druck" open>
+      <details className="karte block kein-druck" open={interviews.length > 0}>
         <summary><h2>Interviews und Aufgaben</h2></summary>
         <ul className="eintraege">
           {interviews.map((i) => (
@@ -229,8 +248,9 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           ))}
           {interviews.length === 0 && <li className="gedaempft">Noch keine Interviews.</li>}
         </ul>
+        <details className="hinzufuegen">
+        <summary className="knopf knopf-rand knopf-schmal">+ Interview hinzufügen</summary>
         <form action={interviewAnlegen.bind(null, id)} className="formular">
-          <h3>Interview hinzufügen</h3>
           <label>Datum und Uhrzeit<input name="datum" type="datetime-local" /></label>
           <label>Format<input name="format" placeholder="z. B. Video oder vor Ort…" /></label>
           <label>Teilnehmer<input name="teilnehmer" /></label>
@@ -241,6 +261,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           <label>Frist der Aufgabe<input name="aufgabe_frist" type="date" /></label>
           <SendeKnopf text="Interview speichern" />
         </form>
+        </details>
       </details>
 
       <details className="karte block kein-druck" open>
@@ -263,7 +284,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         </form>
       </details>
 
-      <details className="karte block" open>
+      <details className="karte block">
         <summary><h2>Snapshot der Anzeige</h2></summary>
         <div className="kopfzeile"><DruckKnopf /></div>
         {row.snapshot_text || (a as { snapshot_abschnitte?: unknown }).snapshot_abschnitte

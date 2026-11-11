@@ -365,6 +365,10 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 .detail { display: grid; gap: var(--space-md); }
 .bewerbung-seite { max-width: 52rem; }
 .bewerbung-seite > * + * { margin-top: var(--space-md); }
+/* B1: „+ Person/Interview hinzufügen“ als Knopf; das Formular erscheint erst nach dem Klick */
+.hinzufuegen > summary { list-style: none; width: auto; }
+.hinzufuegen > summary::-webkit-details-marker { display: none; }
+.hinzufuegen[open] > summary { margin-bottom: var(--space-md); }
 .eintraege { list-style: none; padding: 0; display: grid; }
 .eintraege li { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-sm); padding-block: var(--space-sm); border-bottom: var(--rule-hair) solid var(--color-rule); }
 .eintraege li > div:first-child { min-width: 0; overflow-wrap: anywhere; }
