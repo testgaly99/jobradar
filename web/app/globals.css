@@ -331,7 +331,7 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 @keyframes karte-ankunft { from { opacity: 0.4; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 .karte-schwebt { cursor: grabbing; box-shadow: var(--karte-schatten-zieht); transform: rotate(var(--karte-schwebt-drehung)); }
 .kanbankarte > * + * { margin-top: var(--space-xs); }
-.kanbankarte h3 { font-size: var(--text-md); min-width: 0; overflow-wrap: anywhere; flex: 1; }
+.kanbankarte h3 { font-size: var(--text-md); min-width: 0; overflow-wrap: break-word; flex: 1; } /* B8: erst an Leerzeichen umbrechen, Wörter nur wenn nötig */
 .karte-kopf { display: flex; align-items: center; gap: var(--space-xs); }
 /* B7: ⋯-Menü der Karte; die Auswahl klappt als kleine Fläche unter dem Knopf auf */
 .karte-fuss { display: flex; align-items: center; gap: var(--space-2xs); }
