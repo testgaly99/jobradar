@@ -335,7 +335,7 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 .runde .menue summary { min-width: auto; min-height: 2rem; list-style: none; }
 .runde .menue[open] > button { position: absolute; z-index: 1; top: 100%; left: 0; white-space: nowrap; background: var(--karte-flaeche); border: var(--karte-rand); }
 .runde .knopf-leise { min-height: 2rem; padding-inline: var(--space-xs); }
-.kommentar { display: block; width: 100%; padding: var(--space-3xs) var(--space-2xs); border: 0; border-radius: var(--radius-mark); background: transparent; color: inherit; font: inherit; font-size: var(--text-sm); text-align: left; cursor: text; transition: background-color var(--uebergang); }
+.kommentar { display: block; width: 100%; min-height: 2rem; /* A9: Trefffläche */ padding: var(--space-3xs) var(--space-2xs); border: 0; border-radius: var(--radius-mark); background: transparent; color: inherit; font: inherit; font-size: var(--text-sm); text-align: left; cursor: text; transition: background-color var(--uebergang); }
 .kommentar:hover { background: var(--color-paper-2); }
 .kommentar-feld { width: 100%; font-size: var(--text-sm); }
 .karte-status { display: grid; gap: var(--space-3xs); }
