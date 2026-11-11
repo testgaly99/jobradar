@@ -6,7 +6,7 @@ export const STATUS_LABEL: Record<Status, string> = {
   im_gespraech: "Im Gespräch", angebot: "Angebot", abgeschlossen: "Abgeschlossen",
 };
 export const ERGEBNIS_LABEL: Record<string, string> = {
-  zusage: "Zusage", absage: "Absage", zurueckgezogen: "Zurückgezogen", angebot_abgelehnt: "Angebot abgelehnt",
+  zusage: "Zusage", absage: "Absage", zurueckgezogen: "Abgebrochen", angebot_abgelehnt: "Angebot abgelehnt",
 };
 export const KONTAKT_ART_LABEL: Record<string, string> = {
   ansprechpartner: "Ansprechpartner", eigener_kontakt: "Eigener Kontakt", empfehlungsgeber: "Empfehlungsgeber",
