@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { GROESSEN_REIHENFOLGE, onlineSeitGrenze, suchBedingung, type Filter } from "./filter";
+import { GROESSEN_REIHENFOLGE, ausschlussBedingungen, ausschlussWoerter, onlineSeitGrenze, suchBedingung, type Filter } from "./filter";
 
 // Postgres-Array-Literal mit Anführungszeichen, damit Kommas in Werten ("Luft- & Raumfahrt, Verteidigung") nicht trennen.
 const arr = (l: string[]) => `{${l.map((s) => `"${s.replace(/[\\"]/g, "\\$&")}"`).join(",")}}`;
@@ -27,6 +27,7 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   }
   if (f.land.length) q = q.in("land", f.land); // Spalte erst nach Migration 005; ohne sie gibt es in der Oberfläche keinen Land-Filter
   if (f.q) q = q.or(suchBedingung(f.q, f.volltext));
+  for (const b of ausschlussBedingungen(ausschlussWoerter(f.ohne), f.volltext)) q = q.or(b);
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
   const von = (f.seite - 1) * PRO_SEITE;
   const o = f.sort === "firma" ? q.order("unternehmen").order("id")

@@ -47,7 +47,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const jetzt = new Date();
   const hatZahlen = !fac.error;
   const seiten = Math.max(1, Math.ceil(gesamt / PRO_SEITE));
-  const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.seit ? 1 : 0);
+  const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.ohne ? 1 : 0) + (f.seit ? 1 : 0);
   // Eine Abfrage für alle angezeigten Stellen: welche sind schon gemerkt oder beworben? (RLS liefert nur eigene Zeilen)
   const status = new Map<string, { status: string; id: string }>();
   const steckbriefe = new Map<string, unknown>();
@@ -87,6 +87,13 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 </label>
                 <button className="knopf" type="submit">Suchen</button>
               </div>
+              <details className="gruppe ausschluss" open={!!f.ohne}>
+                <summary>Wörter ausschließen{f.ohne && " (aktiv)"}</summary>
+                <label>Stellen ohne diese Wörter
+                  <input type="search" name="ohne" defaultValue={f.ohne} placeholder="z. B. Praktikum, Sales" />
+                </label>
+                <p className="gedaempft klein">Mehrere durch Komma trennen. Gilt für den Titel, mit Häkchen unten auch für den Anzeigentext. Enter oder „Suchen“ wendet an.</p>
+              </details>
               <label className="option">
                 <input type="checkbox" name="volltext" value="1" defaultChecked={f.volltext} />
                 <span>Auch im Anzeigentext suchen</span>
