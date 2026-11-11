@@ -1,13 +1,13 @@
-# Lauf vom 2026-11-08
+# Lauf vom 2026-11-11
 
 | Unternehmen | gefunden | gefiltert | neu | geschlossen | Fehler |
 |---|---|---|---|---|---|
-| Helsing | 160 | 43 | 0 | 0 |  |
-| The Exploration Company | 124 | 44 | 0 | 0 |  |
+| Helsing | 166 | 54 | 0 | 0 |  |
+| The Exploration Company | 126 | 46 | 0 | 0 |  |
 | Taktile | 36 | 22 | 0 | 0 |  |
-| telli | 17 | 7 | 0 | 0 |  |
+| telli | 15 | 6 | 0 | 0 |  |
 
-- Helsing gefiltert: Ausland: 41, Stellenart: intern: 2
-- The Exploration Company gefiltert: Ausland: 37, Stellenart: internship: 5, Stellenart: intern: 2
+- Helsing gefiltert: Ausland: 52, Stellenart: intern: 2
+- The Exploration Company gefiltert: Ausland: 38, Stellenart: internship: 5, Stellenart: intern: 3
 - Taktile gefiltert: Ausland: 19, Stellenart: intern: 2, Stellenart: internship: 1
-- telli gefiltert: Stellenart: internship: 5, Ausland: 2
+- telli gefiltert: Stellenart: internship: 4, Ausland: 2
