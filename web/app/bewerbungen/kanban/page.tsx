@@ -1,46 +1,34 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { STATUS, STATUS_LABEL, type Status } from "@/lib/bewerbung";
-import { statusWechseln } from "../detail-actions";
-import { SendeKnopf } from "../knoepfe";
+import { leseTabelle } from "@/lib/bewerbung";
+import { ladeKarten } from "@/lib/tracker-daten";
 import UnterNav from "../unternav";
+import Board from "./board";
 
-type Karte = { id: string; firma: string | null; titel: string | null; status: Status; interesse: number | null };
+type SP = Record<string, string | string[] | undefined>;
 
-export default async function Seite() {
+export default async function Seite({ searchParams }: { searchParams: Promise<SP> }) {
+  const sp = await searchParams;
+  const archiv = sp.archiv === "1";
   const sb = await createClient();
-  const { data, error } = await sb.from("applications").select("id,firma,titel,status,interesse").order("geaendert_am", { ascending: false }).limit(500);
-  const karten = (data ?? []) as Karte[];
+  const { karten, ohneSpalten, fehler } = await ladeKarten(sb, { ...leseTabelle(sp), archiv });
+  // Schalter behält die übrigen Filter in der Adresse.
+  const umschalten = new URLSearchParams();
+  for (const [k, v] of Object.entries(sp)) if (k !== "archiv" && v !== undefined) [v].flat().forEach((w) => umschalten.append(k, w));
+  if (!archiv) umschalten.set("archiv", "1");
+  const q = umschalten.toString();
   return (
-    <>
+    <div className="kanban-bereich">
       <h1>Bewerbungen</h1>
       <UnterNav aktiv="kanban" />
-      {error && <p className="meldung fehler">Bewerbungen konnten nicht geladen werden.</p>}
-      <div className="kanban" role="region" aria-label="Kanban-Ansicht" tabIndex={0}>
-        {STATUS.map((s) => {
-          const spalte = karten.filter((k) => k.status === s);
-          return (
-            <section key={s} className="spalte" aria-label={STATUS_LABEL[s]}>
-              <h2>{STATUS_LABEL[s]} <span className="chip num">{spalte.length}</span></h2>
-              {spalte.map((k) => (
-                <article key={k.id} className="karte kanbankarte">
-                  <h3><Link href={`/bewerbungen/${k.id}`}>{k.firma || "(ohne Firma)"}</Link></h3>
-                  <p>{k.titel}</p>
-                  {k.interesse && <p className="gedaempft klein">Interesse {k.interesse} von 5</p>}
-                  <form action={statusWechseln.bind(null, k.id)} className="statusform">
-                    <label>Status
-                      <select name="status" defaultValue={k.status}>
-                        {STATUS.map((o) => <option key={o} value={o}>{STATUS_LABEL[o]}</option>)}
-                      </select>
-                    </label>
-                    <SendeKnopf text="Ändern" klasse="knopf knopf-rand" />
-                  </form>
-                </article>
-              ))}
-            </section>
-          );
-        })}
-      </div>
-    </>
+      <p className="board-schalter">
+        <Link href={q ? `/bewerbungen/kanban?${q}` : "/bewerbungen/kanban"} className="knopf knopf-rand knopf-schmal">
+          {archiv ? "Archiv ausblenden" : "Archiv anzeigen"}
+        </Link>
+      </p>
+      {fehler
+        ? <p className="meldung fehler" role="alert">Bewerbungen konnten nicht geladen werden.</p>
+        : <Board karten={karten} ohneSpalten={ohneSpalten} archiv={archiv} />}
+    </div>
   );
 }

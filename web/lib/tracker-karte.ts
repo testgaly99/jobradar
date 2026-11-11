@@ -36,3 +36,16 @@ export function baueKarte(a: Zeile, events: Ereignis[], interviews: Termin[], he
     letzterSchritt: letzt ? (label ? `${label} · ${tage}` : tage) : "", naechsterTermin: naechsterTermin(termine, heute),
   };
 }
+
+// Board: sichtbare Spalten (abgeschlossen ist das Archiv) und Gruppierung in Server-Reihenfolge.
+export const BOARD_SPALTEN = ["gemerkt", "beworben", "eingang_bestaetigt", "im_gespraech", "angebot"] as const satisfies readonly Status[];
+export function nachSpalten(karten: Karte[]): Record<Status, Karte[]> {
+  const g = { gemerkt: [], beworben: [], eingang_bestaetigt: [], im_gespraech: [], angebot: [], abgeschlossen: [] } as Record<Status, Karte[]>;
+  for (const k of karten) g[k.status].push(k);
+  return g;
+}
+// Geänderte Karte nach vorn: wie die Server-Sortierung "zuletzt geändert oben", sonst springt sie nach dem Neuladen.
+export function karteAendern(karten: Karte[], id: string, patch: Partial<Karte>): Karte[] {
+  const k = karten.find((x) => x.id === id);
+  return k ? [{ ...k, ...patch }, ...karten.filter((x) => x.id !== id)] : karten;
+}

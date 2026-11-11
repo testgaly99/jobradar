@@ -35,6 +35,15 @@
   /* Bewegung */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --dur-micro: 120ms; --dur-short: 220ms;
   --z-sticky-nav: 300;
+  /* Board: weiche Übergänge für Hover, Fokus, Ablageziel; schwebende Karte mit Schatten als einzige Ausnahme von "Rahmen statt Schatten" */
+  --uebergang: 160ms ease;
+  --karte-schatten-hover: 0 1px 2px oklch(21% 0.025 170 / 0.08), 0 4px 12px oklch(21% 0.025 170 / 0.1);
+  --karte-schatten-zieht: 0 8px 24px oklch(21% 0.025 170 / 0.22);
+  --spalte-ziel: var(--color-gemerkt);
+  --archiv-flaeche: var(--color-paper-2);
+  --archiv-rand: 2px dashed var(--color-field-edge);
+  --z-meldung: 400;
+  --dialog-hintergrund: oklch(0% 0 0 / 0.35);
 
   /* Firmenfarbe aus firmenFarbe(): Anteil der Firmenfarbe in der Mischung mit der Tinte, damit jeder Farbton AA erreicht */
   --firma-anteil: 50%;

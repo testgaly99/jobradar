@@ -285,12 +285,43 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 @media (max-width: 60rem) { .tabelle tr > :first-child { position: sticky; left: 0; background: var(--karte-flaeche); } }
 
 /* Kanban */
-.kanban { display: flex; gap: var(--space-md); overflow-x: auto; padding-bottom: var(--space-md); align-items: flex-start; }
-.spalte { flex: 0 0 17rem; display: grid; gap: var(--space-sm); }
+/* Das Board nutzt die ganze Fensterbreite statt der Seitenbreite */
+main.seite:has(> .kanban-bereich) { max-width: none; }
+.kanban-bereich > * + * { margin-top: var(--space-md); }
+.kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 1fr); gap: var(--space-sm); overflow-x: auto; padding-bottom: var(--space-md); align-items: stretch; }
+.spalte { display: flex; flex-direction: column; gap: var(--space-sm); min-height: 12rem; padding: var(--space-xs); border-radius: var(--radius-card); transition: background-color var(--uebergang), outline-color var(--uebergang); outline: 2px solid transparent; outline-offset: -2px; }
+.spalte[data-ziel] { background: var(--spalte-ziel); outline-color: var(--color-accent); }
 .spalte > h2 { display: flex; align-items: center; gap: var(--space-xs); padding-bottom: var(--space-xs); border-bottom: var(--rule-hair) solid var(--color-rule); font-size: var(--text-md); }
-.kanbankarte { padding: var(--space-md); }
+.spalte-archiv { background: var(--archiv-flaeche); border: var(--archiv-rand); }
+.ablage-hinweis { color: var(--color-muted); margin-block: auto; text-align: center; }
+.kanbankarte { padding: var(--space-sm); cursor: grab; touch-action: manipulation; transition: box-shadow var(--uebergang), border-color var(--uebergang), opacity var(--uebergang); }
+.kanbankarte:hover { box-shadow: var(--karte-schatten-hover); border-color: var(--color-field-edge); }
+.kanbankarte[data-zieht] { opacity: 0.35; }
+.kanbankarte[data-neu] { animation: karte-ankunft 320ms ease-out; }
+@keyframes karte-ankunft { from { opacity: 0.4; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.karte-schwebt { cursor: grabbing; box-shadow: var(--karte-schatten-zieht); transform: rotate(1.5deg); }
 .kanbankarte > * + * { margin-top: var(--space-xs); }
-.kanbankarte h3 { font-size: var(--text-md); }
+.kanbankarte h3 { font-size: var(--text-md); min-width: 0; overflow-wrap: anywhere; flex: 1; }
+.karte-kopf { display: flex; align-items: center; gap: var(--space-xs); }
+.logo { flex: 0 0 24px; width: 24px; height: 24px; border-radius: var(--radius-mark); object-fit: contain; }
+.logo-kreis { display: inline-grid; place-items: center; border-radius: 50%; font-size: var(--text-xs); font-weight: var(--weight-strong); color: var(--color-accent-ink); background: color-mix(in oklch, var(--firma) var(--firma-anteil), var(--color-ink)); }
+.griff { flex: 0 0 auto; min-width: 2rem; min-height: 2rem; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--color-muted); cursor: grab; transition: background-color var(--uebergang), color var(--uebergang); }
+.griff:hover { background: var(--color-paper-2); color: var(--color-ink); }
+.sterne { color: var(--color-ink-2); letter-spacing: 0.1em; }
+.runde { display: flex; align-items: center; gap: var(--space-2xs); }
+.runde .menue { position: relative; }
+.runde .menue summary { min-width: auto; min-height: 2rem; list-style: none; }
+.runde .menue[open] > button { position: absolute; z-index: 1; top: 100%; left: 0; white-space: nowrap; background: var(--karte-flaeche); border: var(--karte-rand); }
+.runde .knopf-leise { min-height: 2rem; padding-inline: var(--space-xs); }
+.kommentar { display: block; width: 100%; padding: var(--space-3xs) var(--space-2xs); border: 0; border-radius: var(--radius-mark); background: transparent; color: inherit; font: inherit; font-size: var(--text-sm); text-align: left; cursor: text; transition: background-color var(--uebergang); }
+.kommentar:hover { background: var(--color-paper-2); }
+.kommentar-feld { width: 100%; font-size: var(--text-sm); }
+.karte-status { display: grid; gap: var(--space-3xs); }
+.board-meldungen { position: fixed; z-index: var(--z-meldung); left: 50%; bottom: var(--space-lg); transform: translateX(-50%); display: grid; gap: var(--space-xs); width: min(32rem, calc(100% - 2 * var(--space-md))); }
+.toast { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); box-shadow: var(--karte-schatten-hover); animation: karte-ankunft var(--dur-short) ease-out; }
+.archiv-dialog { max-width: 24rem; border: var(--karte-rand); color: var(--color-ink); }
+.archiv-dialog::backdrop { background: var(--dialog-hintergrund); }
+.archiv-wahl { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xs); }
 .statusform { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--space-xs); }
 .statusform .knopf { width: auto; }
 
