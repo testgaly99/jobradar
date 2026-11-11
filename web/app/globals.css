@@ -310,6 +310,8 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 .kanban-bereich > * + * { margin-top: var(--space-md); }
 .kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 1fr); gap: var(--space-sm); overflow-x: auto; padding-bottom: var(--space-md); align-items: stretch; }
 .spalte { display: flex; flex-direction: column; gap: var(--space-sm); min-height: 12rem; padding: var(--space-xs); border-radius: var(--radius-card); transition: background-color var(--uebergang), outline-color var(--uebergang); outline: 2px solid transparent; outline-offset: -2px; }
+/* A2: Fokusring sofort (Hallmark 15); das Aufleuchten als Ablageziel behält seinen Übergang */
+.spalte:focus-visible { transition: background-color var(--uebergang); }
 .spalte[data-ziel] { background: var(--spalte-ziel); outline-color: var(--color-accent); }
 .spalte > h2 { display: flex; align-items: center; gap: var(--space-xs); padding-bottom: var(--space-xs); border-bottom: var(--rule-hair) solid var(--color-rule); font-size: var(--text-md); }
 .spalte-archiv { background: var(--archiv-flaeche); border: var(--archiv-rand); }
