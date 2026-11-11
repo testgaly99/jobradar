@@ -12,13 +12,17 @@ const BASIS = "id,firma,titel,status,ergebnis,interesse,beworben_am,erstellt_am,
 const VOLL = `${BASIS},runde,kommentar,jobs(steckbrief,companies(logo_url))`;
 const OHNE = `${BASIS},jobs(steckbrief)`;
 
-async function inChunks<T>(sb: SupabaseClient, tabelle: string, spalten: string, ids: string[]): Promise<T[]> {
-  const out: T[] = [];
+const LADEFEHLER = "Bewerbungen konnten nicht geladen werden.";
+
+// Erster Fehler wird zurückgegeben statt verschluckt: sonst fehlen Verlauf/Termine unbemerkt.
+async function inChunks<T>(sb: SupabaseClient, tabelle: string, spalten: string, ids: string[]): Promise<{ zeilen: T[]; error: { message: string } | null }> {
+  const zeilen: T[] = [];
   for (let i = 0; i < ids.length; i += 100) {
-    const { data } = await sb.from(tabelle).select(spalten).in("application_id", ids.slice(i, i + 100));
-    out.push(...((data ?? []) as T[]));
+    const { data, error } = await sb.from(tabelle).select(spalten).in("application_id", ids.slice(i, i + 100));
+    if (error) return { zeilen, error };
+    zeilen.push(...((data ?? []) as T[]));
   }
-  return out;
+  return { zeilen, error: null };
 }
 
 export async function ladeKarten(sb: SupabaseClient, f: TabellenFilter & { archiv: boolean }): Promise<{ karten: Karte[]; ohneSpalten: boolean; fehler?: string }> {
@@ -33,13 +37,16 @@ export async function ladeKarten(sb: SupabaseClient, f: TabellenFilter & { archi
   let { data, error } = await lade(VOLL);
   const ohneSpalten = spaltenFehlen(error);
   if (ohneSpalten) ({ data, error } = await lade(OHNE));
-  if (error) return { karten: [], ohneSpalten, fehler: error.message || "Bewerbungen konnten nicht geladen werden." };
+  if (error) { console.error("ladeKarten applications:", error.message); return { karten: [], ohneSpalten, fehler: LADEFEHLER }; }
   const zeilen = (data ?? []) as unknown as { id: string }[];
   const ids = zeilen.map((z) => z.id);
-  const [events, interviews] = await Promise.all([
+  const [ev, iv] = await Promise.all([
     inChunks<Ereignis & { application_id: string }>(sb, "application_events", "id,application_id,datum,neuer_status,notiz", ids),
     inChunks<Termin & { application_id: string }>(sb, "interviews", "application_id,datum,aufgabe,aufgabe_frist", ids),
   ]);
+  const ladefehler = ev.error ?? iv.error;
+  if (ladefehler) { console.error("ladeKarten Verlauf/Termine:", ladefehler.message); return { karten: [], ohneSpalten, fehler: LADEFEHLER }; }
+  const [events, interviews] = [ev.zeilen, iv.zeilen];
   const heute = heuteLokal();
   const karten = zeilen.map((z) => baueKarte(z as never, events.filter((e) => e.application_id === z.id), interviews.filter((i) => i.application_id === z.id), heute));
   return { karten, ohneSpalten };

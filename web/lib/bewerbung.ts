@@ -71,8 +71,8 @@ export function parseAbschnitt(abschnitt: Abschnitt, f: Eingabe): { daten: Recor
         break;
       }
       case "status": if (!istStatus(s)) return { fehler: "Ungültiger Status." }; daten[k] = s; break;
-      case "ergebnis": if (!(s in ERGEBNIS_LABEL)) return { fehler: "Ungültiges Ergebnis." }; daten[k] = s; break;
-      case "art": if (!(s in KONTAKT_ART_LABEL)) return { fehler: "Ungültige Art." }; daten[k] = s; break;
+      case "ergebnis": if (!Object.hasOwn(ERGEBNIS_LABEL, s)) return { fehler: "Ungültiges Ergebnis." }; daten[k] = s; break;
+      case "art": if (!Object.hasOwn(KONTAKT_ART_LABEL, s)) return { fehler: "Ungültige Art." }; daten[k] = s; break;
       case "uuid": if (!istUuid(s)) return { fehler: "Ungültiges Dokument." }; daten[k] = s; break;
     }
   }

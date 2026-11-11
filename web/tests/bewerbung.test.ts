@@ -43,6 +43,8 @@ test("Datum, Status und Ergebnis werden geprueft", () => {
   assert.ok("fehler" in parseAbschnitt("ablauf", fd({ status: "" })));
   assert.ok("daten" in parseAbschnitt("ablauf", fd({ status: "angebot" })));
   assert.ok("fehler" in parseAbschnitt("ergebnis", fd({ ergebnis: "gewonnen" })));
+  assert.ok("fehler" in parseAbschnitt("ergebnis", fd({ ergebnis: "constructor" })));
+  assert.ok("fehler" in parseAbschnitt("person", fd({ name: "A", art: "toString" })));
   assert.deepEqual(parseAbschnitt("ergebnis", fd({ ergebnis: "" })),
     { daten: { ergebnis: null, absagegrund: null, feedback: null, rueckzug_grund: null } });
 });

@@ -78,13 +78,16 @@ export async function zugRueckgaengig(
   if (spaltenFehlen(error)) ({ data, error } = await setze({ status, ergebnis, beworben_am }));
   if (error) return nein(DB_FEHLER);
   if (!data?.length) return nein(ZU_SPAET);
+  // Löschen serverseitig begrenzt: nur Statuseinträge der letzten 10 Minuten; eventIds engen nur weiter ein.
   // Auch den Eintrag, den der Trigger für die Rücknahme selbst schreibt, wieder entfernen.
   const { data: neu } = await sb.from("application_events").select("id")
     .eq("application_id", id).eq("neuer_status", status).gte("datum", seit);
   const alle = [...new Set([...eventIds, ...(neu ?? []).map((e) => e.id as string)])];
   neuLaden(id);
   if (!alle.length) return { ok: true };
-  const { data: weg, error: delFehler } = await sb.from("application_events").delete().in("id", alle).eq("application_id", id).select("id");
+  const { data: weg, error: delFehler } = await sb.from("application_events").delete()
+    .in("id", alle).eq("application_id", id).not("neuer_status", "is", null).gte("datum", new Date(Date.now() - 10 * 60 * 1000).toISOString())
+    .select("id");
   // Vor 006 fehlt die Lösch-Policy: dann löscht RLS still 0 Zeilen. Der Status ist trotzdem zurück.
   if (delFehler || (weg?.length ?? 0) < alle.length) return { ok: true, hinweis: "Verlauf konnte nicht bereinigt werden (Migration 006 fehlt)." };
   return { ok: true };
