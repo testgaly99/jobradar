@@ -1,6 +1,6 @@
 # STATUS
 
-Stand: 2026-11-09
+Stand: 2026-11-11
 
 ## Was funktioniert (Phase 1, 2 und 2b, Code fertig)
 - Täglicher Lauf per GitHub Actions („Täglicher Lauf“, 04:00 UTC): ruft die Stellen von 4 Firmen ab (Helsing, The Exploration Company, Taktile, telli), schreibt sie in Supabase und legt `data/bericht.md` ab.
@@ -38,4 +38,4 @@ Stand: 2026-11-09
 - **Phase 3 (Gmail):** Erinnerungs-Mail an den Admin (`ADMIN_EMAIL`) einrichten, sobald die jährlichen Hand-Quellen der Rankings (trendence, Universum, LinkedIn) fällig sind. Bis dahin erinnert ein GitHub-Issue (Entscheidung 2026-11-10, CLAUDE.md 4.8).
 
 ## Nächster Schritt
-Die Liste oben abarbeiten, dann Phase 2 abschließen und nach `main` mergen.
+Phase 2, 2b und das Firmen-Paket sind am 2026-11-11 nach `main` gemergt und hochgeladen. Der erste tägliche Lauf mit 12 Firmen läuft am 2026-11-12 um 05:00 (dauert ca. 40 Minuten). Als Nächstes: Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`), parallel die restlichen To-dos oben (Klicktest, Vercel, Backup, Pages, Groq-Key).
