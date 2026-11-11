@@ -295,7 +295,8 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 /* Bewerbungen: Filter und Tabelle */
 .statuswahl { display: flex; flex-wrap: wrap; gap: 0 var(--space-lg); margin: 0; padding: var(--space-xs) var(--space-md); border: var(--rule-hair) solid var(--color-rule); border-radius: var(--radius-control); }
 .statuswahl legend { padding: 0 var(--space-2xs); font-weight: var(--weight-strong); font-size: var(--text-sm); }
-.filterreihe { display: grid; gap: var(--space-md); }
+.filterreihe { display: grid; gap: var(--space-md); align-items: end; } /* B6: Felder auf einer Grundlinie, gleiche Höhe */
+.filterreihe .suchzeile { grid-template-columns: minmax(0, 1fr) auto; align-items: end; } /* B6: „Suchen“ neben dem Feld statt als Balken */
 @media (min-width: 44rem) {
   .filterreihe { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .aktionsreihe { grid-template-columns: auto auto; justify-content: start; }
