@@ -61,7 +61,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               <button className="knopf" type="submit">Suchen</button>
             </div>
             <label>Interesse mindestens
-              <select name="interesse" defaultValue={f.interesse ?? ""}>
+              <select key={f.interesse ?? ""} name="interesse" defaultValue={f.interesse ?? ""}>
                 <option value="">egal</option>
                 {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
               </select>

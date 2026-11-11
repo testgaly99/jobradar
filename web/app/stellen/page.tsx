@@ -92,7 +92,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 <span>Auch im Anzeigentext suchen</span>
               </label>
               <label>Sortieren nach
-                <select name="sort" defaultValue={f.sort}>
+                <select key={f.sort} name="sort" defaultValue={f.sort}>
                   <option value="neu">Online seit (neueste zuerst)</option>
                   <option value="firma">Firma A–Z</option>
                   <option value="titel">Titel A–Z</option>
