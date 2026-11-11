@@ -63,16 +63,6 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
           }} aria-label={`${firma} verschieben (Pfeil links/rechts)`}>
           <span aria-hidden="true">⠿</span>
         </button>
-        {/* B7: Status-Auswahl im ⋯-Menü statt immer sichtbar (Karten halb so hoch); bleibt für Handy und Bildschirmleser erreichbar */}
-        <details className="menue karte-menue">
-          <summary aria-label={`Status von ${firma} ändern`}><span aria-hidden="true">⋯</span></summary>
-          <label className="klein karte-status">Status
-            <select value={karte.status} onChange={(e) => { (e.currentTarget.closest("details") as HTMLDetailsElement).open = false; aktionen.status(karte, e.currentTarget.value as Status); }}>
-              {BOARD_SPALTEN.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
-              <option value="abgeschlossen">Archiv…</option>
-            </select>
-          </label>
-        </details>
       </div>
       {karte.titel && <p>{karte.titel}</p>}
       {karte.status === "abgeschlossen" && <p><span className="chip chip-ergebnis">{ERGEBNIS_LABEL[karte.ergebnis ?? ""] ?? "ohne Ergebnis"}</span></p>}
@@ -94,17 +84,29 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
           <button type="button" className="knopf knopf-leise" disabled={!rundePatch(karte.runde, 1)} onClick={() => aktionen.runde(karte, 1)}>+ Runde</button>
         </div>
       )}
-      {!ohneSpalten && (bearbeiten
-        ? <input className="kommentar-feld" aria-label={`Kommentar zu ${firma}`} maxLength={140} autoFocus defaultValue={karte.kommentar ?? ""}
-            onBlur={(e) => speichern(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") e.currentTarget.blur();
-              if (e.key === "Escape") { e.currentTarget.value = karte.kommentar ?? ""; e.currentTarget.blur(); }
-            }} />
-        : <button type="button" className={`kommentar${karte.kommentar ? "" : " gedaempft"}`} onClick={() => setBearbeiten(true)}
-            aria-label={karte.kommentar ? `Kommentar ändern: ${karte.kommentar}` : `Kommentar zu ${firma} hinzufügen`}>
-            {karte.kommentar || "+ Kommentar"}
-          </button>)}
+      <div className="karte-fuss">
+        {!ohneSpalten && (bearbeiten
+          ? <input className="kommentar-feld" aria-label={`Kommentar zu ${firma}`} maxLength={140} autoFocus defaultValue={karte.kommentar ?? ""}
+              onBlur={(e) => speichern(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+                if (e.key === "Escape") { e.currentTarget.value = karte.kommentar ?? ""; e.currentTarget.blur(); }
+              }} />
+          : <button type="button" className={`kommentar${karte.kommentar ? "" : " gedaempft"}`} onClick={() => setBearbeiten(true)}
+              aria-label={karte.kommentar ? `Kommentar ändern: ${karte.kommentar}` : `Kommentar zu ${firma} hinzufügen`}>
+              {karte.kommentar || "+ Kommentar"}
+            </button>)}
+        {/* B7 (unten, damit der Firmenname im Kopf Platz hat): Status-Auswahl im ⋯-Menü statt immer sichtbar (Karten halb so hoch); bleibt für Handy und Bildschirmleser erreichbar */}
+          <details className="menue karte-menue">
+            <summary aria-label={`Status von ${firma} ändern`}><span aria-hidden="true">⋯</span></summary>
+            <label className="klein karte-status">Status
+              <select value={karte.status} onChange={(e) => { (e.currentTarget.closest("details") as HTMLDetailsElement).open = false; aktionen.status(karte, e.currentTarget.value as Status); }}>
+                {BOARD_SPALTEN.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
+                <option value="abgeschlossen">Archiv…</option>
+              </select>
+            </label>
+          </details>
+      </div>
       {ohneSpalten && <Link className="klein" href={`/bewerbungen/${karte.id}`} draggable={false}>Bewerbung öffnen</Link>}
     </article>
   );

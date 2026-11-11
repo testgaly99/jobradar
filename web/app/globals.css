@@ -334,7 +334,9 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 .kanbankarte h3 { font-size: var(--text-md); min-width: 0; overflow-wrap: anywhere; flex: 1; }
 .karte-kopf { display: flex; align-items: center; gap: var(--space-xs); }
 /* B7: ⋯-Menü der Karte; die Auswahl klappt als kleine Fläche unter dem Knopf auf */
-.karte-menue { position: relative; }
+.karte-fuss { display: flex; align-items: center; gap: var(--space-2xs); }
+.karte-fuss > .kommentar, .karte-fuss > .kommentar-feld { flex: 1; min-width: 0; }
+.karte-menue { position: relative; margin-left: auto; }
 .karte-menue summary { min-width: 2rem; min-height: 2rem; list-style: none; }
 .karte-menue summary::-webkit-details-marker { display: none; }
 .karte-menue[open] > .karte-status { position: absolute; z-index: 2; right: 0; top: 100%; min-width: 12rem; padding: var(--space-xs); background: var(--karte-flaeche); border: var(--karte-rand); border-radius: var(--radius-control); box-shadow: var(--karte-schatten-hover); }
