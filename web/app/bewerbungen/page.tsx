@@ -10,7 +10,7 @@ import UnterNav from "./unternav";
 import Woche from "./woche";
 
 // B11: diese Spalten fallen am Handy weg, damit die Tabelle ohne seitliches Wischen passt
-const NUR_BREIT = new Set<SortSpalte>(["interesse", "beworben_am", "naechster_schritt_faellig"]);
+const NUR_BREIT = new Set<SortSpalte>(["interesse", "beworben_am", "naechster_schritt_faellig", "geaendert_am"]);
 const SPALTEN: [SortSpalte, string][] = [
   ["firma", "Firma"], ["titel", "Titel"], ["status", "Status"], ["interesse", "Interesse"],
   ["beworben_am", "Beworben am"], ["naechster_schritt_faellig", "Nächster Schritt"], ["geaendert_am", "Geändert"],
@@ -110,7 +110,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   <td className="nur-breit">{z.interesse && <span className="sterne" role="img" aria-label={`Interesse ${z.interesse} von 5`}>{"★".repeat(z.interesse)}{"☆".repeat(5 - z.interesse)}</span>}</td>
                   <td className="num nur-breit">{datumDe(z.beworben_am)}</td>
                   <td className="nur-breit">{z.naechster_schritt}{z.naechster_schritt_faellig && ` (bis ${datumDe(z.naechster_schritt_faellig)})`}</td>
-                  <td className="num">{tagDe(z.geaendert_am)}</td>
+                  <td className="num nur-breit">{tagDe(z.geaendert_am)}</td>
                 </tr>
               ))}
             </tbody>
