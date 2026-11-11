@@ -80,7 +80,11 @@ a:active { color: var(--color-ink); }
 .nav form { margin: 0; }
 /* In scrollbaren Zeilen den Fokusring nach innen legen, sonst schneidet der Rand ihn ab */
 .nav a:focus-visible, .nav button:focus-visible, .unternav a:focus-visible { outline-offset: -2px; }
-@media (max-width: 40rem) { .nav { flex: 1 0 100%; margin-inline: calc(-1 * var(--space-sm)); } }
+@media (max-width: 40rem) {
+  /* A1: am Handy umbrechen statt seitlich scrollen, sonst wird „Abmelden“ abgeschnitten */
+  .nav { flex: 1 0 100%; flex-wrap: wrap; overflow-x: visible; margin-inline: calc(-1 * var(--space-xs)); }
+  .nav a, .nav button { padding-inline: var(--space-xs); }
+}
 
 /* Karten: eine Ebene, nie ineinander */
 .karte {
