@@ -56,7 +56,7 @@ export function LinkFormular() {
         </>
       )}
       <label>Anzeigentext (optional)
-        <textarea value={text} onChange={(e) => setText(e.target.value)} maxLength={MAX_TEXT} rows={4} placeholder="Am Handy: Text der Anzeige kopieren und hier einfügen" />
+        <textarea value={text} onChange={(e) => setText(e.target.value)} maxLength={MAX_TEXT} rows={4} placeholder="Den ganzen Text der Anzeige hier einfügen…" />
       </label>
       {zustand && "fehler" in zustand && <p className="meldung fehler" role="alert">{zustand.fehler}</p>}
       <SendeKnopf text={brauchtEingabe ? "Bewerbung anlegen" : "Anlegen"} />

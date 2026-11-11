@@ -232,7 +232,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         <form action={interviewAnlegen.bind(null, id)} className="formular">
           <h3>Interview hinzufügen</h3>
           <label>Datum und Uhrzeit<input name="datum" type="datetime-local" /></label>
-          <label>Format<input name="format" placeholder="z. B. Video, vor Ort" /></label>
+          <label>Format<input name="format" placeholder="z. B. Video oder vor Ort…" /></label>
           <label>Teilnehmer<input name="teilnehmer" /></label>
           <label>Gestellte Fragen<textarea name="fragen_gestellt" rows={3} /></label>
           <label>Eigene Fragen<textarea name="eigene_fragen" rows={3} /></label>

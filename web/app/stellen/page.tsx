@@ -90,7 +90,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               <details className="gruppe ausschluss" open={!!f.ohne}>
                 <summary>Wörter ausschließen{f.ohne && " (aktiv)"}</summary>
                 <label>Stellen ohne diese Wörter
-                  <input type="search" name="ohne" defaultValue={f.ohne} placeholder="z. B. Praktikum, Sales" />
+                  <input type="search" name="ohne" defaultValue={f.ohne} placeholder="z. B. Praktikum, Sales…" />
                 </label>
                 <p className="gedaempft klein">Mehrere durch Komma trennen. Gilt für den Titel, mit Häkchen unten auch für den Anzeigentext. Enter oder „Suchen“ wendet an.</p>
               </details>
