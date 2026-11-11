@@ -39,9 +39,11 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       <h1>Bewerbungen</h1>
       <UnterNav aktiv="tabelle" sp={sp} />
       <Woche />
-      <div className="karte block">
+      {/* B5: Anlegen ist Nebensache, die Liste ist die Hauptsache: zugeklappt, eine Zeile */}
+      <details className="karte block">
+        <summary>Bewerbung aus Link anlegen</summary>
         <LinkFormular />
-      </div>
+      </details>
       <div className="karte block">
         <FilterClient aktion="/bewerbungen" listeId="bewerbungsliste" textFelder={["firma"]}>
           <fieldset className="statuswahl">
