@@ -7,7 +7,7 @@ export default function ArchivDialog({ firma, onWahl, onZu }: { firma: string | 
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const d = ref.current;
-    if (firma !== null && d && !d.open) d.showModal();
+    if (firma !== null && d && !d.open) { d.showModal(); d.querySelector("button")?.focus(); }
   }, [firma]);
   const zu = () => ref.current?.close();
   return (
@@ -15,8 +15,8 @@ export default function ArchivDialog({ firma, onWahl, onZu }: { firma: string | 
       <h2 id="archiv-titel">Ergebnis</h2>
       {firma && <p className="gedaempft">{firma} ins Archiv legen</p>}
       <div className="archiv-wahl">
-        {Object.entries(ERGEBNIS_LABEL).map(([wert, label], i) => (
-          <button key={wert} type="button" className="knopf knopf-rand" autoFocus={i === 0} onClick={() => { onWahl(wert); zu(); }}>{label}</button>
+        {Object.entries(ERGEBNIS_LABEL).map(([wert, label]) => (
+          <button key={wert} type="button" className="knopf knopf-rand" onClick={() => { onWahl(wert); zu(); }}>{label}</button>
         ))}
       </div>
       <button type="button" className="knopf knopf-leise" onClick={zu}>Abbrechen</button>

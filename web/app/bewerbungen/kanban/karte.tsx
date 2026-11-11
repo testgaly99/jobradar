@@ -1,9 +1,10 @@
 "use client";
-import { useState, type CSSProperties, type MouseEvent, type TouchEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent, type TouchEvent } from "react";
 import Link from "next/link";
 import { useDraggable } from "@dnd-kit/core";
 import { ERGEBNIS_LABEL, STATUS_LABEL, tagDe, type Status } from "@/lib/bewerbung";
 import { firmenFarbe } from "@/lib/farbe";
+import { rundePatch } from "@/lib/zug";
 import { BOARD_SPALTEN, type Karte } from "@/lib/tracker-karte";
 
 export type KartenAktionen = {
@@ -24,9 +25,11 @@ export function Logo({ karte }: { karte: Karte }) {
   return <span className="logo logo-kreis" aria-hidden="true" style={{ "--firma": firmenFarbe(name) } as CSSProperties}>{name.trim().charAt(0).toUpperCase()}</span>;
 }
 
-export default function KarteAnsicht({ karte, ohneSpalten, neu, aktionen }: { karte: Karte; ohneSpalten: boolean; neu: boolean; aktionen: KartenAktionen }) {
+export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen }: { karte: Karte; ohneSpalten: boolean; neu: boolean; fokus: number; aktionen: KartenAktionen }) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, isDragging } = useDraggable({ id: karte.id, data: { karte } });
   const [bearbeiten, setBearbeiten] = useState(false);
+  const griff = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => { if (fokus) griff.current?.focus(); }, [fokus]);
   const firma = karte.firma || "(ohne Firma)";
   const speichern = (text: string) => {
     setBearbeiten(false);
@@ -45,7 +48,7 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, aktionen }: { ka
       <div className="karte-kopf">
         {!ohneSpalten && <Logo karte={karte} />}
         <h3><Link href={`/bewerbungen/${karte.id}`} draggable={false}>{firma}</Link></h3>
-        <button type="button" ref={setActivatorNodeRef} className="griff" {...attributes} onKeyDown={(e) => listeners?.onKeyDown?.(e)} aria-label={`${firma} verschieben`}>
+        <button type="button" ref={(el) => { setActivatorNodeRef(el); griff.current = el; }} className="griff" {...attributes} onKeyDown={(e) => listeners?.onKeyDown?.(e)} aria-label={`${firma} verschieben`}>
           <span aria-hidden="true">⠿</span>
         </button>
       </div>
@@ -63,10 +66,10 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, aktionen }: { ka
         <div className="runde">
           <details className="menue">
             <summary aria-label={`Runde ${karte.runde ?? 1}, Menü`}><span className="chip">R{karte.runde ?? 1}</span></summary>
-            <button type="button" className="knopf knopf-leise" disabled={(karte.runde ?? 1) <= 1}
+            <button type="button" className="knopf knopf-leise" disabled={!rundePatch(karte.runde, -1)}
               onClick={(e) => { (e.currentTarget.closest("details") as HTMLDetailsElement).open = false; aktionen.runde(karte, -1); }}>Runde zurück</button>
           </details>
-          <button type="button" className="knopf knopf-leise" disabled={(karte.runde ?? 1) >= 4} onClick={() => aktionen.runde(karte, 1)}>+ Runde</button>
+          <button type="button" className="knopf knopf-leise" disabled={!rundePatch(karte.runde, 1)} onClick={() => aktionen.runde(karte, 1)}>+ Runde</button>
         </div>
       )}
       {!ohneSpalten && (bearbeiten

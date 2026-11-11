@@ -8,7 +8,7 @@ import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { ERGEBNIS_LABEL, STATUS_LABEL, type Status } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { BOARD_SPALTEN, karteAendern, nachSpalten, type Karte } from "@/lib/tracker-karte";
-import { zugPatch } from "@/lib/zug";
+import { rundePatch, zugPatch } from "@/lib/zug";
 import { kommentarSpeichern, rundeAendern, zugAusfuehren, zugRueckgaengig, type ZugVorher } from "../zug-actions";
 import ArchivDialog from "./archiv-dialog";
 import KarteAnsicht, { Logo, type KartenAktionen } from "./karte";
@@ -47,6 +47,9 @@ export default function Board({ karten, ohneSpalten, archiv }: { karten: Karte[]
   const [archivFrage, setArchivFrage] = useState<Karte | null>(null);
   const [gezogen, setGezogen] = useState<Karte | null>(null);
   const [zuletzt, setZuletzt] = useState<string | null>(null);
+  // Tastaturfokus folgt der Karte in die neue Spalte (sie wird dort neu aufgebaut); n zählt hoch, damit auch derselbe Wert neu fokussiert.
+  const [fokus, setFokus] = useState({ id: "", n: 0 });
+  const fokussiere = (id: string | null) => setFokus((f) => ({ id: id ?? "", n: f.n + 1 }));
 
   useEffect(() => {
     if (!meldung) return;
@@ -65,39 +68,47 @@ export default function Board({ karten, ohneSpalten, archiv }: { karten: Karte[]
   const schritt = (id: string, patch: Partial<Karte>, action: () => Promise<{ ok: boolean; fehler?: string }>, danach?: (r: never) => void) => {
     setFehler("");
     setMeldung(null);
-    setZuletzt(id);
     starte(async () => {
       aendern({ id, patch });
-      const r = await action();
+      let r: { ok: boolean; fehler?: string };
+      // Netz weg/Serverfehler: nicht zur Fehlerseite, sondern Rücksprung (Transition endet) und Meldung.
+      try { r = await action(); } catch { r = { ok: false, fehler: "Speichern fehlgeschlagen. Bitte erneut versuchen." }; }
       if (!r.ok) setFehler(r.fehler ?? "Das hat leider nicht geklappt.");
       else danach?.(r as never);
     });
   };
 
-  const rueckgaengig = (k: Karte, vorher: ZugVorher, eventIds: string[], aktuell: Status) =>
+  const rueckgaengig = (k: Karte, vorher: ZugVorher, eventIds: string[], aktuell: Status) => {
+    setZuletzt(k.id);
+    fokussiere(k.id); // der Rückgängig-Knopf verschwindet gleich
     schritt(k.id, { status: vorher.status, runde: vorher.runde, ergebnis: vorher.ergebnis, beworben_am: vorher.beworben_am },
       () => zugRueckgaengig(k.id, vorher, eventIds, aktuell),
       (r: { hinweis?: string }) => setMeldung({ text: r.hinweis ?? `${k.firma || "Karte"} ist wieder in ${spaltenName(vorher.status)}.` }));
+  };
 
   const zug = (k: Karte, ziel: { status: Status; ergebnis?: string }) => {
     if (k.status === ziel.status) return;
+    setZuletzt(k.id);
     const wohin = ziel.ergebnis ? `Archiv (${ERGEBNIS_LABEL[ziel.ergebnis]})` : STATUS_LABEL[ziel.status];
     schritt(k.id, zugPatch(k, ziel, heuteLokal()), () => zugAusfuehren(k.id, k.status, ziel),
       (r: { vorher: ZugVorher; eventIds: string[] }) =>
         setMeldung({ text: `Verschoben nach ${wohin}.`, rueck: () => rueckgaengig(k, r.vorher, r.eventIds, ziel.status) }));
   };
 
+  const statusWahl = (k: Karte, s: Status) => (s === "abgeschlossen" ? setArchivFrage(k) : zug(k, { status: s }));
   const aktionen: KartenAktionen = {
-    status: (k, s) => (s === "abgeschlossen" ? setArchivFrage(k) : zug(k, { status: s })),
-    runde: (k, richtung) => schritt(k.id, { runde: Math.min(4, Math.max(1, (k.runde ?? 1) + richtung)) }, () => rundeAendern(k.id, richtung)),
+    status: (k, s) => { fokussiere(k.id); statusWahl(k, s); },
+    // Gleiche Regel wie der Server (null + 1 = 1); ohne gültigen Schritt nichts optimistisch ändern.
+    runde: (k, richtung) => schritt(k.id, rundePatch(k.runde, richtung) ?? {}, () => rundeAendern(k.id, richtung)),
     kommentar: (k, text) => schritt(k.id, { kommentar: text.trim() || null }, () => kommentarSpeichern(k.id, text)),
   };
 
-  const ablegen = ({ active, over }: DragEndEvent) => {
+  const ablegen = ({ active, over, activatorEvent }: DragEndEvent) => {
     setGezogen(null);
     const k = karteVon(active);
     if (!over || !k || over.id === k.status) return;
-    aktionen.status(k, over.id as Status);
+    fokussiere(activatorEvent instanceof KeyboardEvent ? k.id : null);
+    statusWahl(k, over.id as Status);
   };
 
   const g = nachSpalten(liste);
@@ -108,12 +119,12 @@ export default function Board({ karten, ohneSpalten, archiv }: { karten: Karte[]
         <div className="kanban" role="region" aria-label="Kanban-Ansicht" tabIndex={0}>
           {BOARD_SPALTEN.map((s) => (
             <Spalte key={s} id={s} titel={STATUS_LABEL[s]} anzahl={g[s].length}>
-              {g[s].map((k) => <KarteAnsicht key={k.id} karte={k} ohneSpalten={ohneSpalten} neu={k.id === zuletzt} aktionen={aktionen} />)}
+              {g[s].map((k) => <KarteAnsicht key={k.id} karte={k} ohneSpalten={ohneSpalten} neu={k.id === zuletzt} fokus={k.id === fokus.id ? fokus.n : 0} aktionen={aktionen} />)}
             </Spalte>
           ))}
           {archiv
             ? <Spalte id="abgeschlossen" titel="Archiv" anzahl={g.abgeschlossen.length} leer={g.abgeschlossen.length ? undefined : "Noch nichts archiviert."}>
-                {g.abgeschlossen.map((k) => <KarteAnsicht key={k.id} karte={k} ohneSpalten={ohneSpalten} neu={k.id === zuletzt} aktionen={aktionen} />)}
+                {g.abgeschlossen.map((k) => <KarteAnsicht key={k.id} karte={k} ohneSpalten={ohneSpalten} neu={k.id === zuletzt} fokus={k.id === fokus.id ? fokus.n : 0} aktionen={aktionen} />)}
               </Spalte>
             : <Spalte id="abgeschlossen" titel="Archiv" anzahl={0} leer="Karte hierher ziehen, um sie mit Ergebnis abzuschließen." />}
         </div>
@@ -128,7 +139,7 @@ export default function Board({ karten, ohneSpalten, archiv }: { karten: Karte[]
         </DragOverlay>
       </DndContext>
       <ArchivDialog firma={archivFrage ? archivFrage.firma || "(ohne Firma)" : null}
-        onWahl={(ergebnis) => archivFrage && zug(archivFrage, { status: "abgeschlossen", ergebnis })} onZu={() => setArchivFrage(null)} />
+        onWahl={(ergebnis) => archivFrage && zug(archivFrage, { status: "abgeschlossen", ergebnis })} onZu={() => { if (archivFrage) fokussiere(archivFrage.id); setArchivFrage(null); }} />
       <div className="board-meldungen">
         <div role="status">
           {meldung && (

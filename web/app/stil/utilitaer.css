@@ -37,6 +37,7 @@
   --z-sticky-nav: 300;
   /* Board: weiche Übergänge für Hover, Fokus, Ablageziel; schwebende Karte mit Schatten als einzige Ausnahme von "Rahmen statt Schatten" */
   --uebergang: 160ms ease;
+  --dur-ankunft: 320ms; --karte-zieht-deckkraft: 0.35; --karte-schwebt-drehung: 1.5deg;
   --karte-schatten-hover: 0 1px 2px oklch(21% 0.025 170 / 0.08), 0 4px 12px oklch(21% 0.025 170 / 0.1);
   --karte-schatten-zieht: 0 8px 24px oklch(21% 0.025 170 / 0.22);
   --spalte-ziel: var(--color-gemerkt);

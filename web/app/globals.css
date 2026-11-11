@@ -296,10 +296,10 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 .ablage-hinweis { color: var(--color-muted); margin-block: auto; text-align: center; }
 .kanbankarte { padding: var(--space-sm); cursor: grab; touch-action: manipulation; transition: box-shadow var(--uebergang), border-color var(--uebergang), opacity var(--uebergang); }
 .kanbankarte:hover { box-shadow: var(--karte-schatten-hover); border-color: var(--color-field-edge); }
-.kanbankarte[data-zieht] { opacity: 0.35; }
-.kanbankarte[data-neu] { animation: karte-ankunft 320ms ease-out; }
+.kanbankarte[data-zieht] { opacity: var(--karte-zieht-deckkraft); }
+.kanbankarte[data-neu] { animation: karte-ankunft var(--dur-ankunft) ease-out; }
 @keyframes karte-ankunft { from { opacity: 0.4; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
-.karte-schwebt { cursor: grabbing; box-shadow: var(--karte-schatten-zieht); transform: rotate(1.5deg); }
+.karte-schwebt { cursor: grabbing; box-shadow: var(--karte-schatten-zieht); transform: rotate(var(--karte-schwebt-drehung)); }
 .kanbankarte > * + * { margin-top: var(--space-xs); }
 .kanbankarte h3 { font-size: var(--text-md); min-width: 0; overflow-wrap: anywhere; flex: 1; }
 .karte-kopf { display: flex; align-items: center; gap: var(--space-xs); }
