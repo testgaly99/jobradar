@@ -115,3 +115,29 @@ def test_firma_reicht_bekannte_durch(aufbau, monkeypatch):
     assert gesehen == [frozenset({"1"})] and len(geprueft) == 1
     assert (f["gefunden"], f["neu"], f["geschlossen"], f["fehler"]) == (2, 1, 0, "")
     assert t["jobs"]["A:1"]["zuletzt_gesehen"] == "2026-11-07" and "A:2" in t["jobs"]
+
+
+def test_logo_einmal_je_firma_ohne_logo(aufbau, monkeypatch, capsys):
+    f = {**firma("A", "a"), "careers_url": "https://a.de/jobs"}
+    d, t = aufbau([f, {**firma("B", "a"), "careers_url": "https://b.de"}], {"a": lambda _, **k: []})
+    abrufe = []
+    monkeypatch.setattr(run, "hole_logo", lambda u: abrufe.append(u) or ("https://a.de/i.png" if "a.de" in u else None))
+    run.lauf("2026-11-07", d)
+    assert t["companies"]["A"]["logo_url"] == "https://a.de/i.png" and "logo_url" not in t["companies"]["B"]
+    run.lauf("2026-11-08", d)  # A hat Logo, B wird erneut versucht
+    assert abrufe == ["https://a.de/jobs", "https://b.de", "https://b.de"]
+
+
+def test_logo_spalte_fehlt_oder_fehler_kippt_lauf_nicht(aufbau, monkeypatch, capsys):
+    f = {**firma("A", "a"), "careers_url": "https://a.de"}
+    d, t = aufbau([f], {"a": lambda _, **k: []})
+    abrufe = []
+    monkeypatch.setattr(run, "hole_logo", lambda u: abrufe.append(u))
+    monkeypatch.setattr(db, "_req", fake := FakeDB())
+    fake.ohne_logo_spalte = True
+    run.lauf("2026-11-07", d)
+    assert abrufe == [] and "Migration 006" in capsys.readouterr().out
+    fake.ohne_logo_spalte = False
+    monkeypatch.setattr(run, "hole_logo", lambda u: 1 / 0)
+    assert run.lauf("2026-11-08", d)["firmen"][0]["fehler"] == ""
+    assert "Logos fehlgeschlagen" in capsys.readouterr().out

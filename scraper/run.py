@@ -9,6 +9,7 @@ from pathlib import Path
 from scraper.ats import ADAPTER
 from scraper import db
 from scraper.companies import lade_unternehmen
+from scraper.logo import hole_logo
 from scraper.steckbrief import steckbrief
 from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant, land
 
@@ -76,11 +77,25 @@ def _markdown(bericht):
     return "\n".join(z) + "\n"
 
 
+def _logos(firmen):
+    """Je Firma ohne logo_url hoechstens ein Abruf pro Lauf; Fehler duerfen den Lauf nie kippen."""
+    try:
+        fehlen = db.firmen_ohne_logo()
+        for f in firmen:
+            if f["aktiv"] == "ja" and f["name"] in fehlen and f["careers_url"]:
+                url = hole_logo(f["careers_url"])
+                if url:
+                    db.setze_logo(f["name"], url)
+    except Exception as e:
+        print(f"Hinweis: Logos fehlgeschlagen: {type(e).__name__}: {e}")
+
+
 def lauf(heute, datenordner="data"):
     datenordner = Path(datenordner)
     firmen = lade_unternehmen(datenordner / "companies.csv")
     db._spalten = None  # Spalten-Pruefung (Migration 005) einmal pro Lauf neu
     db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
+    _logos(firmen)
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in firmen if f["aktiv"] == "ja"]}
     _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
     db.snapshot_nachruesten()  # nach allen Firmen

@@ -55,6 +55,22 @@ def _spalten_da():
     return _spalten
 
 
+def firmen_ohne_logo():
+    """Namen aller Firmen ohne logo_url. Fehlt die Spalte (Migration 006 offen), Hinweis und leere Menge."""
+    try:
+        zeilen = _req("GET", "companies", params={"select": "name,logo_url"})
+    except RuntimeError as e:
+        if ": 400 " not in str(e):
+            raise
+        print("Hinweis: Spalte companies.logo_url fehlt (Migration 006 offen), Logos übersprungen.")
+        return set()
+    return {z["name"] for z in zeilen if not z["logo_url"]}
+
+
+def setze_logo(name, url):
+    _req("PATCH", "companies", params={"name": f"eq.{name}"}, json={"logo_url": url})
+
+
 def _in(werte):
     return "in.(" + ",".join('"' + w.replace('"', '\\"') + '"' for w in werte) + ")"
 

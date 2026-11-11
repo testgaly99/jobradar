@@ -24,6 +24,7 @@ class FakeDB:
     def __init__(self):
         self.ohne_spalten = False
         self.ohne_funktion = False
+        self.ohne_logo_spalte = False
         self.nachgeruestet = 0
         self.pruefungen = 0
         self.t = {"companies": {}, "jobs": {}, "laeufe": [], "applications": []}
@@ -53,11 +54,17 @@ class FakeDB:
             rows = [z for z in self.t["jobs"].values() if z["unternehmen"] == params["unternehmen"][3:]]
             rows.sort(key=lambda z: z["id"])
             return rows[params["offset"]:params["offset"] + params["limit"]]
+        elif method == "GET" and pfad == "companies" and params.get("select") == "name,logo_url":
+            if self.ohne_logo_spalte:
+                raise RuntimeError("Supabase GET companies: 400 column companies.logo_url does not exist")
+            return [{"name": z["name"], "logo_url": z.get("logo_url")} for z in self.t["companies"].values()]
         elif method == "GET" and pfad == "companies":
             return list(self.t["companies"].values())
         elif method == "GET" and pfad == "applications":
             ids = _in(params["job_id"])
             return [{"job_id": a} for a in self.t["applications"] if a in ids]
+        elif method == "PATCH" and pfad == "companies":
+            self.t["companies"][params["name"][3:]].update(json)
         elif method == "PATCH":
             for i in _in(params["id"]):
                 self.t["jobs"][i].update(json)
