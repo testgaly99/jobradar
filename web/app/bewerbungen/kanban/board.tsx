@@ -23,13 +23,14 @@ const ansagen: Announcements = {
   onDragCancel: ({ active }) => `Ziehen abgebrochen. ${nameVon(active)} bleibt an ihrem Platz.`,
 };
 // Tastatur: ←/→ setzt die Karte auf die vorige/nächste Spalte (auch das Archiv am Ende); andere Tasten bewegen nichts.
-const spaltenSprung: KeyboardCoordinateGetter = (event, { context: { active, over, droppableRects } }) => {
+// Nur waagerecht springen: Mit r.top flog die Karte an den Spaltenanfang, und bei gescrollter Seite scrollte dnd-kit die Seite mit.
+const spaltenSprung: KeyboardCoordinateGetter = (event, { currentCoordinates, context: { active, over, droppableRects } }) => {
   const richtung = event.code === "ArrowRight" ? 1 : event.code === "ArrowLeft" ? -1 : 0;
   if (!richtung || !active) return;
   event.preventDefault();
   const ziel = naechsteSpalte([...droppableRects].map(([id, r]) => ({ id, left: r.left })), over?.id ?? karteVon(active).status, richtung);
   const r = ziel == null ? undefined : droppableRects.get(ziel);
-  return r && { x: r.left, y: r.top };
+  return r && { x: r.left, y: currentCoordinates.y };
 };
 const anleitung ="Zum Aufnehmen Leertaste oder Enter drücken. Mit den Pfeiltasten eine andere Spalte wählen, mit Leertaste oder Enter ablegen, mit Escape abbrechen.";
 
