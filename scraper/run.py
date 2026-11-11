@@ -35,9 +35,12 @@ def _firma(f, heute):
         adapter = ADAPTER.get(f["ats_typ"])
         if adapter is None:
             raise LookupError(f"kein Adapter für {f['ats_typ']}")
-        stellen = adapter(f["ats_id"])
+        bekannte = frozenset(i[len(name) + 1:] for i in db.lade_offene(name))
+        stellen = adapter(f["ats_id"], bekannte=bekannte)
+        unveraendert = [s["ext_id"] for s in stellen if s.get("unveraendert")]
+        voll = [s for s in stellen if not s.get("unveraendert")]
         behalten, gruende = [], Counter()
-        for s in stellen:
+        for s in voll:
             ok, grund = ist_relevant(s["titel"], s["ort"], s["remote"])
             if ok:
                 try:
@@ -50,7 +53,7 @@ def _firma(f, heute):
                                  "steckbrief": sbr})
             else:
                 gruende[grund] += 1
-        neu, geschlossen = db.schreibe(name, behalten, heute)
+        neu, geschlossen = db.schreibe(name, behalten, heute, unveraendert)
         zeile.update(gefunden=len(stellen), gefiltert=sum(gruende.values()), gruende=dict(gruende),
                      neu=neu, geschlossen=geschlossen)
     except Exception as e:

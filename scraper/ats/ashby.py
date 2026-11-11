@@ -6,7 +6,7 @@ _MODELL = {"Remote": "Remote", "Hybrid": "Hybrid", "OnSite": "Vor Ort"}
 _VERTRAG = {"FullTime": "Vollzeit", "PartTime": "Teilzeit", "Contract": "Befristet", "Temporary": "Befristet"}
 
 
-def hole_stellen(ats_id: str) -> list[dict]:
+def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[dict]:  # bekannte: ignoriert
     daten = http.hole(f"https://api.ashbyhq.com/posting-api/job-board/{ats_id}").json()
     stellen = []
     for j in daten["jobs"]:

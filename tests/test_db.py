@@ -3,7 +3,7 @@ import hashlib
 import pytest
 
 from scraper import db
-from tests.fakedb import FakeDB
+from tests.fakedb import FakeDB, _in as fake_in
 
 
 @pytest.fixture
@@ -34,6 +34,19 @@ def test_bleibt_offen(fake):
     s = fake.t["jobs"]["acme:1"]
     assert (s["status"], s["titel"]) == ("offen", "Neu")
     assert (s["erstmals_gesehen"], s["zuletzt_gesehen"]) == ("2026-11-07", "2026-11-08")
+
+
+def test_unveraendert_bleibt_offen(fake):
+    db.schreibe("A", [job("1")], "2026-11-07")
+    assert db.schreibe("A", [], "2026-11-08", unveraendert=["1"]) == (0, 0)
+    s = fake.t["jobs"]["A:1"]
+    assert (s["status"], s["zuletzt_gesehen"], s["text"]) == ("offen", "2026-11-08", "Text")
+
+
+def test_unveraendert_fehlt_wird_geschlossen(fake):
+    db.schreibe("A", [job("1"), job("2")], "2026-11-07")
+    assert db.schreibe("A", [], "2026-11-08", unveraendert=["1"]) == (0, 1)
+    assert fake.t["jobs"]["A:1"]["status"] == "offen" and fake.t["jobs"]["A:2"]["status"] == "geschlossen"
 
 
 def test_fehlt_ohne_bewerbung(fake):
@@ -168,3 +181,14 @@ def test_snapshot_nachruesten_anderer_fehler_bricht_nicht(monkeypatch, capsys):
     monkeypatch.setattr(db, "_req", kaputt)
     db.snapshot_nachruesten()
     assert "fehlgeschlagen" in capsys.readouterr().out
+
+
+def test_unveraendert_wird_in_paketen_gepatcht(fake, monkeypatch):
+    ids = [str(i) for i in range(5)]
+    db.schreibe("A", [job(i) for i in ids], "2026-11-07")
+    monkeypatch.setattr(db, "CHUNK", 2)
+    patches = []
+    monkeypatch.setattr(db, "_req", lambda m, p, **k: (m == "PATCH" and patches.append(k["params"]["id"])) or fake(m, p, **k))
+    assert db.schreibe("A", [], "2026-11-08", unveraendert=ids) == (0, 0)
+    assert len(patches) == 3 and all(len(fake_in(p)) <= 2 for p in patches)
+    assert {z["zuletzt_gesehen"] for z in fake.t["jobs"].values()} == {"2026-11-08"}

@@ -13,7 +13,8 @@ Stand: 2026-11-09
 - Tests: `py -m pytest` und `npm test` in `web/`.
 
 ## Bekannte Probleme
-- 9 der 13 Firmen in `data/companies.csv` sind noch nicht angebunden (`aktiv=nein`).
+- 12 der 13 Firmen in `data/companies.csv` sind angebunden. Es fehlt die TK (Techniker Krankenkasse): ihre Stellenliste lässt sich nur per JSF-Nachladen (Seite lädt Inhalte per Skript nach) erreichen. Eine einfache Lösung wäre wackelig, ein Browser-Roboter (Playwright) braucht eine Entscheidung in Phase 4.
+- Der erste volle Lauf nach dem Zusammenführen dauert deutlich länger (geschätzt ca. 41 Minuten: Porsche ca. 31, Neura ca. 6, dm ca. 3), weil alle Stellenseiten einmal geladen werden. Danach lädt der Lauf neue Stellen und erneut alle Seiten, die er aussortiert (Ausland, abgelaufen, kaputt), weil diese nie gespeichert werden: bei Porsche täglich etwa 200 Seiten, rund 8 Minuten. Die Firmenauswahl soll später nur noch aus Ranglisten kommen (siehe CLAUDE.md 4.8).
 - Der Backup-Workflow ist noch nie gelaufen (Secret `SUPABASE_DB_URL` fehlt).
 
 ## Umgebung (Windows 11, lokal)

@@ -20,6 +20,21 @@ from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant
     ("Dualität Engineer", "Berlin", False),
     ("Dual-Use Systems Engineer", "Munich", False),
     ("Dual Use Program Manager", "Berlin", False),
+    ("Projektleiter Initiative Digitalisierung", "Berlin", False),
+    ("Praktiker Instandhaltung (m/w/d)", "Berlin", False),
+    ("Ingenieur für praktische Anwendungen", "Berlin", False),
+    ("Ausbildungsleiter (m/w/d)", "Berlin", False),
+    ("Praktikumsbetreuer HR", "Berlin", False),
+    ("Data Engineer", "Berlin", False),
+    ("Elektrotechnik-Ingenieur (m/w/d)", "Berlin", False),
+    ("Mechatronik-Ingenieur (m/w/d)", "Berlin", False),
+    ("Fahrerassistenzsysteme Entwickler (m/w/d)", "Berlin", False),
+    ("Entwickler Fahrerassistenzsysteme (ADAS)", "Berlin", False),
+    ("Fahrer-Assistenzsysteme Entwickler (m/w/d)", "Berlin", False),
+    ("Fahrer-Fahrzeug-Interaktion Ingenieur", "Berlin", False),
+    ("Service Techniker (m/w/d)", "Berlin", False),
+    ("Nachwuchsführungskraft (w/m/d)", "Berlin", False),
+    ("Elektronikentwickler Hardware", "Berlin", False),
 ])
 def test_bleibt(titel, ort, remote):
     assert ist_relevant(titel, ort, remote) == (True, "")
@@ -45,6 +60,16 @@ def test_werkstudent():
     "Verkäufer (m/w/d) Filiale Köln", "Ausbildung zum Fachinformatiker", "Praktikum Marketing",
     "Werkstudentin Marketing (w/m/d)", "Praktikantin HR", "Verkäuferin (m/w/d)", "Kassiererin", "Aushilfen gesucht", "Azubis",
     "Intern Data", "Summer Internship", "Duales Studium BWL", "Dualer Student", "Masterarbeit KI", "Working Student Ops",
+    "Initiativbewerbung", "Initiativbewerbungen Studierende", "Unsolicited Application", "Open Application (m/f/d)",
+    "Spontaneous Application", "Schülerpraktikum dm-Markt (w/m/d) in Berlin", "Pflichtpraktikum Marketing",
+    "Schülerpraktikant (m/w/d)", "Schülerpraktikantin IT",
+    # nicht-akademische Berufe (der Nutzer will nur Stellen mit Studium)
+    "Warenverräumer (w/m/d) 6 Std./Wo. in 59065 Hamm", "Warenverräumerin", "Reinigungskraft (w/m/d) 10 Std./Wo.",
+    "Reinigungskräfte gesucht", "Stellvertretender Filialleiter (w/m/d)", "stellv. Filialleitung", "Filialleiterin",
+    "Servicekraft für die Cafeteria im Geldmuseum", "Kfz-Mechatroniker (m/w/d)", "Mechatronikerin",
+    "Elektroniker für Betriebstechnik (m/w/d)", "Industrieelektronikerin", "Servicemonteur (m/w/d)", "Monteurin",
+    "Lagerist (m/w/d)", "Fachlageristin", "LKW-Fahrer (m/w/d)", "Auslieferungsfahrer", "Fahrer/in", "Fahrerin Shuttle", "Fahrer (m/w/d)",
+    "Schülerjob dm-Markt (w/m/d)",
 ])
 def test_stellenart_raus(titel):
     ok, grund = ist_relevant(titel, "Berlin", False)
