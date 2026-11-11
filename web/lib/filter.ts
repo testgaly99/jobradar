@@ -67,7 +67,7 @@ const LEVEL: Record<string, string> = {
 };
 export const levelText = (level: string): string => LEVEL[level] ?? level;
 
-const lokal = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+export const lokal = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 // Frühestes Datum (YYYY-MM-DD, lokal) für "Online seit".
 export function onlineSeitGrenze(wahl: Seit, jetzt: Date): string {
