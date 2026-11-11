@@ -40,7 +40,7 @@ export default async function Seite() {
           </div>
           <section className="karte block">
             <h2>Bewerbungen pro Woche</h2>
-            <ul className="balken">
+            <ul className="wochenbalken">
               {k.proWoche.map((w) => (
                 <li key={w.woche} aria-label={`KW ${kw(w.woche)}: ${w.anzahl} Bewerbungen`} title={`ab ${datumDe(w.woche)}`}>
                   <span className="num">KW {kw(w.woche)}</span>
