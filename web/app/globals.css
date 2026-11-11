@@ -217,18 +217,22 @@ input[type="checkbox"], input[type="radio"] { width: 1.1rem; height: 1.1rem; mar
 details.karte > summary { cursor: pointer; min-height: var(--control-h); display: flex; align-items: center; border-radius: var(--radius-control); }
 details.karte > summary h2 { margin: 0; }
 details.karte[open] > summary { margin-bottom: var(--space-md); }
-/* Aufklappbar sichtbar machen: display:flex blendet das Browser-Dreieck aus, darum ein eigener Pfeil rechts, der sich beim Öffnen dreht */
-details.karte > summary, .filterblock > summary, .gruppe > summary { list-style: none; gap: var(--space-sm); }
-details.karte > summary::-webkit-details-marker, .filterblock > summary::-webkit-details-marker, .gruppe > summary::-webkit-details-marker { display: none; }
-details.karte > summary::after, .filterblock > summary::after, .gruppe > summary::after {
-  content: ""; flex: none; margin-left: auto; width: 0.5rem; height: 0.5rem;
-  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
-  transform: translateY(-25%) rotate(45deg); transition: transform var(--dur-short) var(--ease-out); color: var(--color-muted);
+/* Aufklappbar sichtbar machen (display:flex blendet das Browser-Dreieck aus). Nach NN/g, UX Movement, GOV.UK:
+   Winkel direkt LINKS vor der Beschriftung (kurzer Blickweg), zu ▸ / offen ▾, ganze Zeile klickbar mit Hover-Fläche. */
+details.karte > summary, .filterblock > summary, .gruppe > summary {
+  list-style: none; gap: var(--space-xs); margin-inline: calc(-1 * var(--space-xs)); padding-inline: var(--space-xs);
+  border-radius: var(--radius-control); transition: background var(--dur-short) var(--ease-out);
 }
-details[open].karte > summary::after, .filterblock[open] > summary::after, .gruppe[open] > summary::after { transform: translateY(25%) rotate(-135deg); }
-details.karte > summary { font-weight: var(--weight-strong); margin-inline: calc(-1 * var(--space-xs)); padding-inline: var(--space-xs); transition: background var(--dur-short) var(--ease-out); }
-details.karte > summary:hover { background: var(--color-paper-2); }
-details.karte > summary:hover::after { color: var(--color-ink); }
+details.karte > summary::-webkit-details-marker, .filterblock > summary::-webkit-details-marker, .gruppe > summary::-webkit-details-marker { display: none; }
+details.karte > summary::before, .filterblock > summary::before, .gruppe > summary::before {
+  content: ""; flex: none; width: 0.45rem; height: 0.45rem; margin-inline: 0.15rem 0.2rem;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg); transition: transform var(--dur-short) var(--ease-out); color: var(--color-ink-2);
+}
+details[open].karte > summary::before, .filterblock[open] > summary::before, .gruppe[open] > summary::before { transform: translateY(-20%) rotate(45deg); }
+details.karte > summary { font-weight: var(--weight-strong); }
+details.karte > summary:hover, .filterblock > summary:hover, .gruppe > summary:hover { background: var(--color-paper-2); }
+details.karte > summary:hover::before, .filterblock > summary:hover::before, .gruppe > summary:hover::before { color: var(--color-ink); }
 .filterblock[open] > summary { margin-bottom: var(--space-xs); }
 .filterform { display: grid; gap: var(--space-md); padding-bottom: var(--space-md); }
 .filteraktionen { display: grid; gap: var(--space-xs); }
