@@ -20,10 +20,10 @@ async function inChunks<T>(sb: SupabaseClient, tabelle: string, spalten: string,
   return out;
 }
 
-export async function ladeKarten(sb: SupabaseClient, f: TabellenFilter & { archiv: boolean }): Promise<{ karten: Karte[]; ohneSpalten: boolean }> {
+export async function ladeKarten(sb: SupabaseClient, f: TabellenFilter & { archiv: boolean }): Promise<{ karten: Karte[]; ohneSpalten: boolean; fehler?: string }> {
   const lade = (spalten: string) => {
     let q = sb.from("applications").select(spalten).order(f.sort, { ascending: f.dir === "asc", nullsFirst: false }).limit(500);
-    q = f.archiv ? q.eq("status", "abgeschlossen") : q.neq("status", "abgeschlossen");
+    if (!f.archiv) q = q.neq("status", "abgeschlossen"); // Archiv an: alle Status, abgeschlossen wird eigene Spalte
     if (f.status.length) q = q.in("status", f.status);
     if (f.firma) q = q.ilike("firma", `%${escapeLike(f.firma)}%`);
     if (f.interesse) q = q.gte("interesse", f.interesse);
@@ -32,7 +32,7 @@ export async function ladeKarten(sb: SupabaseClient, f: TabellenFilter & { archi
   let { data, error } = await lade(VOLL);
   const ohneSpalten = spaltenFehlen(error);
   if (ohneSpalten) ({ data, error } = await lade(OHNE));
-  if (error) return { karten: [], ohneSpalten };
+  if (error) return { karten: [], ohneSpalten, fehler: error.message || "Bewerbungen konnten nicht geladen werden." };
   const zeilen = (data ?? []) as unknown as { id: string }[];
   const ids = zeilen.map((z) => z.id);
   const [events, interviews] = await Promise.all([
