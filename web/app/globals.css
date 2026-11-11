@@ -313,8 +313,8 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 @media (max-width: 60rem) { .tabelle tr > :first-child { position: sticky; left: 0; background: var(--karte-flaeche); } }
 
 /* Kanban */
-/* Das Board nutzt die ganze Fensterbreite statt der Seitenbreite */
-main.seite:has(> .kanban-bereich) { max-width: none; }
+/* B10: das Board hält dieselbe Seitenbreite wie alle Seiten (sechs Spalten passen dank B8); vorher: volle Fensterbreite */
+
 .kanban-bereich > * + * { margin-top: var(--space-md); }
 .kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(180px, 1fr); /* B8: alle 6 Spalten passen ab ca. 1200 px */ gap: var(--space-sm); overflow-x: auto; padding-bottom: var(--space-md); align-items: stretch; }
 .spalte { display: flex; flex-direction: column; gap: var(--space-sm); min-height: 12rem; padding: var(--space-xs); border-radius: var(--radius-card); transition: background-color var(--uebergang), outline-color var(--uebergang); outline: 2px solid transparent; outline-offset: -2px; }
