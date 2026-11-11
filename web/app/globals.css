@@ -303,8 +303,8 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 .kanbankarte > * + * { margin-top: var(--space-xs); }
 .kanbankarte h3 { font-size: var(--text-md); min-width: 0; overflow-wrap: anywhere; flex: 1; }
 .karte-kopf { display: flex; align-items: center; gap: var(--space-xs); }
-.logo { flex: 0 0 24px; width: 24px; height: 24px; border-radius: var(--radius-mark); object-fit: contain; }
-.logo-kreis { display: inline-grid; place-items: center; border-radius: 50%; font-size: var(--text-xs); font-weight: var(--weight-strong); color: var(--color-accent-ink); background: color-mix(in oklch, var(--firma) var(--firma-anteil), var(--color-ink)); }
+.firmenlogo { flex: 0 0 24px; width: 24px; height: 24px; border-radius: var(--radius-mark); object-fit: contain; }
+.firmenlogo-kreis { display: inline-grid; place-items: center; border-radius: 50%; font-size: var(--text-xs); font-weight: var(--weight-strong); color: var(--color-accent-ink); background: color-mix(in oklch, var(--firma) var(--firma-anteil), var(--color-ink)); }
 .griff { flex: 0 0 auto; min-width: 2rem; min-height: 2rem; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--color-muted); cursor: grab; transition: background-color var(--uebergang), color var(--uebergang); }
 .griff:hover { background: var(--color-paper-2); color: var(--color-ink); }
 .sterne { color: var(--color-ink-2); letter-spacing: 0.1em; }
