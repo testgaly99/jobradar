@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, facettenSortieren, LEVEL_REIHENFOLGE, stadtAnzeige, suchBedingung, landNurMitFacette, ID_FORM } from "../lib/filter.ts";
+import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, facettenSortieren, LEVEL_REIHENFOLGE, stadtAnzeige, suchBedingung, formZuUrl, landNurMitFacette, ID_FORM } from "../lib/filter.ts";
 
 test("leerer Filter gibt /stellen", () => {
   const f = leseFilter({});
@@ -114,4 +114,12 @@ test("sort: Unbekanntes wird neu, firma und neu in der URL", () => {
   const leer = leseFilter({});
   assert.ok(filterZuUrl({ ...leer, sort: "firma" }).includes("sort=firma"));
   assert.ok(!filterZuUrl({ ...leer, sort: "neu" }).includes("sort"));
+});
+
+test("formZuUrl: Filterwechsel behaelt q aus der Adresse, Suche nimmt es aus dem Formular", () => {
+  const form = new URLSearchParams("q=neu&volltext=1&level=Senior&sort=neu&seite=3&seit=");
+  const aktuell = new URLSearchParams("q=alt");
+  assert.equal(formZuUrl("/stellen", form, aktuell, false), "/stellen?level=Senior&q=alt");
+  assert.equal(formZuUrl("/stellen", form, aktuell, true), "/stellen?q=neu&volltext=1&level=Senior");
+  assert.equal(formZuUrl("/stellen", new URLSearchParams("sort=firma"), new URLSearchParams(), false), "/stellen?sort=firma");
 });

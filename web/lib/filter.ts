@@ -107,3 +107,14 @@ export const landNurMitFacette = (f: Filter, hatLand: boolean): Filter => (hatLa
 
 // Job-ids sind "<firma>:<ext>"; Firmenname darf Leerzeichen enthalten.
 export const ID_FORM = /^[^:]{1,100}:\S{1,200}$/;
+
+// Formular -> Adresse. Leere Werte, seite und sort=neu entfallen. Suchfeld (q, volltext) kommt nur beim Absenden
+// der Suche aus dem Formular, sonst bleibt der Stand aus der aktuellen Adresse.
+export function formZuUrl(aktion: string, form: URLSearchParams, aktuell: URLSearchParams, mitSuche: boolean): string {
+  const u = new URLSearchParams();
+  const suche = (k: string) => k === "q" || k === "volltext";
+  for (const [k, v] of form) if (v.trim() !== "" && k !== "seite" && !(k === "sort" && v === "neu") && (mitSuche || !suche(k))) u.append(k, v.trim());
+  if (!mitSuche) for (const [k, v] of aktuell) if (suche(k) && v.trim() !== "") u.append(k, v.trim());
+  const s = u.toString();
+  return s ? `${aktion}?${s}` : aktion;
+}
