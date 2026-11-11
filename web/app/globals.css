@@ -308,7 +308,7 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 /* Das Board nutzt die ganze Fensterbreite statt der Seitenbreite */
 main.seite:has(> .kanban-bereich) { max-width: none; }
 .kanban-bereich > * + * { margin-top: var(--space-md); }
-.kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 1fr); gap: var(--space-sm); overflow-x: auto; padding-bottom: var(--space-md); align-items: stretch; }
+.kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(180px, 1fr); /* B8: alle 6 Spalten passen ab ca. 1200 px */ gap: var(--space-sm); overflow-x: auto; padding-bottom: var(--space-md); align-items: stretch; }
 .spalte { display: flex; flex-direction: column; gap: var(--space-sm); min-height: 12rem; padding: var(--space-xs); border-radius: var(--radius-card); transition: background-color var(--uebergang), outline-color var(--uebergang); outline: 2px solid transparent; outline-offset: -2px; }
 /* A2: Fokusring sofort (Hallmark 15); das Aufleuchten als Ablageziel behält seinen Übergang */
 .spalte:focus-visible { transition: background-color var(--uebergang); }
