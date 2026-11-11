@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { escapeLike, type TabellenFilter } from "./bewerbung.ts";
+import { escapeLike, istStatus, type TabellenFilter } from "./bewerbung.ts";
+import type { ZugAlt } from "./zug.ts";
 import { heuteLokal } from "./filter.ts";
 import { baueKarte, spaltenFehlen, type Ereignis, type Karte, type Termin } from "./tracker-karte.ts";
 
@@ -42,4 +43,14 @@ export async function ladeKarten(sb: SupabaseClient, f: TabellenFilter & { archi
   const heute = heuteLokal();
   const karten = zeilen.map((z) => baueKarte(z as never, events.filter((e) => e.application_id === z.id), interviews.filter((i) => i.application_id === z.id), heute));
   return { karten, ohneSpalten };
+}
+
+// Zeile für einen Zug lesen; ohne 006 fehlt `runde` (dann ohne006 = true, runde = null).
+export async function ladeZugZeile(sb: SupabaseClient, id: string): Promise<{ alt: ZugAlt | null; ohne006: boolean; fehler: boolean }> {
+  const lade = (spalten: string) => sb.from("applications").select(spalten).eq("id", id).maybeSingle();
+  let { data, error } = await lade("status,runde,ergebnis,beworben_am");
+  const ohne006 = spaltenFehlen(error);
+  if (ohne006) ({ data, error } = await lade("status,ergebnis,beworben_am"));
+  const z = data as Partial<ZugAlt> | null;
+  return { alt: z && istStatus(z.status) ? { status: z.status, runde: z.runde ?? null, ergebnis: z.ergebnis ?? null, beworben_am: z.beworben_am ?? null } : null, ohne006, fehler: !!error };
 }

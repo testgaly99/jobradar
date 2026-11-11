@@ -2,8 +2,10 @@
 import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { beworbenPatch, istStatus, istUuid, parseAbschnitt, type Abschnitt } from "@/lib/bewerbung";
+import { istStatus, istUuid, parseAbschnitt, type Abschnitt } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
+import { ladeZugZeile } from "@/lib/tracker-daten";
+import { zugPatch, type ZugPatch } from "@/lib/zug";
 import { textZuLang } from "@/lib/uebernahme";
 
 // Jede Aktion prüft zuerst die Sitzung und die Form der id. RLS beschränkt alles auf eigene Zeilen.
@@ -45,9 +47,15 @@ export async function statusWechseln(id: string, f: FormData) {
   const sb = await start(id);
   const status = f.get("status");
   if (!istStatus(status)) notFound();
-  const { data: alt } = await sb.from("applications").select("beworben_am").eq("id", id).maybeSingle();
+  const { alt, ohne006 } = await ladeZugZeile(sb, id);
   if (!alt) notFound();
-  const { data, error } = await sb.from("applications").update({ status, ...beworbenPatch(status, alt.beworben_am, heuteLokal()) }).eq("id", id).select("id");
+  const heute = heuteLokal();
+  let patch: ZugPatch;
+  // Dieses Formular hat ein eigenes Ergebnis-Feld: abgeschlossen ohne Ergebnis bleibt hier erlaubt.
+  try { patch = zugPatch(alt, { status, ergebnis: alt.ergebnis }, heute); }
+  catch { patch = { status, ...(alt.beworben_am ? {} : { beworben_am: heute }) }; }
+  if (ohne006) delete patch.runde;
+  const { data, error } = await sb.from("applications").update(patch).eq("id", id).select("id");
   if (error || !data?.length) notFound();
   revalidatePath("/bewerbungen/kanban");
   redirect("/bewerbungen/kanban");
