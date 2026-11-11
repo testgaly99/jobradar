@@ -65,12 +65,12 @@ Die Liste steht in `data/companies.csv` (eine Tabelle als Textdatei). Bearbeite 
 | `aktiv` | `ja` = wird abgerufen, `nein` = übersprungen |
 | `notiz` | Freitext |
 
-## Datenbank einrichten (Migrationen 001–005)
+## Datenbank einrichten (Migrationen 001–006)
 
-Die Dateien in `supabase/migrations/` bauen die Tabellen und den Zugriffsschutz auf: `001_schema.sql` (Tabellen und Schutz), `002_facetten.sql` (Filterwerte), `003_bewerbung_eindeutig.sql` (keine doppelten Bewerbungen), `004_dokumente.sql` (Dokumente und Storage), `005_abschnitte_land.sql` (gegliederte Anzeige, Steckbrief, Land, Wichtige Punkte, Listen-Einstellungen, Admin-Kennzahlen). Ohne 005 fehlen diese Teile.
+Die Dateien in `supabase/migrations/` bauen die Tabellen und den Zugriffsschutz auf: `001_schema.sql` (Tabellen und Schutz), `002_facetten.sql` (Filterwerte), `003_bewerbung_eindeutig.sql` (keine doppelten Bewerbungen), `004_dokumente.sql` (Dokumente und Storage), `005_abschnitte_land.sql` (gegliederte Anzeige, Steckbrief, Land, Wichtige Punkte, Listen-Einstellungen, Admin-Kennzahlen). Ohne 005 fehlen diese Teile. `006_tracker.sql` (Runde, Kommentar, Firmenlogo und Rückgängig im Tracker) ist optional: Ohne 006 laufen Tracker und Website weiter, nur diese Felder fehlen.
 
 1. Öffne Supabase → dein Projekt → „SQL Editor“.
-2. Öffne die Datei auf deinem Rechner, kopiere den ganzen Inhalt, füge ihn ein und klicke „Run“. Immer in der Reihenfolge 001, 002, 003, 004, 005.
+2. Öffne die Datei auf deinem Rechner, kopiere den ganzen Inhalt, füge ihn ein und klicke „Run“. Immer in der Reihenfolge 001, 002, 003, 004, 005, 006.
 3. Erfolg: unten steht „Success“. Die Dateien lassen sich ohne Schaden mehrfach ausführen.
 
 ## Backup und Wiederherstellung
