@@ -361,8 +361,10 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 .statusform .knopf { width: auto; }
 
 /* Bewerbung im Detail */
+/* B2: eine Spalte in Lesebreite statt zwei Spalten mit Löchern */
 .detail { display: grid; gap: var(--space-md); }
-@media (min-width: 60rem) { .detail { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+.bewerbung-seite { max-width: 52rem; }
+.bewerbung-seite > * + * { margin-top: var(--space-md); }
 .eintraege { list-style: none; padding: 0; display: grid; }
 .eintraege li { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-sm); padding-block: var(--space-sm); border-bottom: var(--rule-hair) solid var(--color-rule); }
 .eintraege li > div:first-child { min-width: 0; overflow-wrap: anywhere; }

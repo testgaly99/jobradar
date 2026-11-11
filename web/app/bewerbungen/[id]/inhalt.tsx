@@ -57,7 +57,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   );
 
   return (
-    <>
+    <div className="bewerbung-seite">
       <p className="kein-druck"><Link href="/bewerbungen">Alle Bewerbungen</Link></p>
       <h1 id="bewerbung-titel">{v(row.firma) || "(ohne Firma)"}: {v(row.titel)}</h1>
       <p className="chips kein-druck">
@@ -274,6 +274,6 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
       <section className="block kein-druck">
         <LoeschForm action={bewerbungLoeschen.bind(null, id)} frage="Diese Bewerbung mit allem Zubehör endgültig löschen?" text="Bewerbung löschen" />
       </section>
-    </>
+    </div>
   );
 }
