@@ -3,7 +3,7 @@ export const STATUS = ["gemerkt", "beworben", "eingang_bestaetigt", "im_gespraec
 export type Status = (typeof STATUS)[number];
 export const STATUS_LABEL: Record<Status, string> = {
   gemerkt: "Gemerkt", beworben: "Beworben", eingang_bestaetigt: "Eingang bestätigt",
-  im_gespraech: "Im Gespräch", angebot: "Angebot", abgeschlossen: "Abgeschlossen",
+  im_gespraech: "Im Gespräch", angebot: "Angebot", abgeschlossen: "Archiv", // B9: gleicher Begriff wie die Board-Spalte
 };
 export const ERGEBNIS_LABEL: Record<string, string> = {
   zusage: "Zusage", absage: "Absage", zurueckgezogen: "Abgebrochen", angebot_abgelehnt: "Angebot abgelehnt",
