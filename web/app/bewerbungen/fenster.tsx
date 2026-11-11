@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function Fenster({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null);
   const router = useRouter();
+  const amRand = useRef(false); // nur schließen, wenn der Klick auch auf dem Rand begann (Text markieren und daneben loslassen schließt nicht)
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
     const d = ref.current;
@@ -17,9 +18,10 @@ export default function Fenster({ children }: { children: React.ReactNode }) {
     <dialog
       ref={ref}
       className="fenster"
-      aria-label="Bewerbung"
+      aria-labelledby="bewerbung-titel"
       onCancel={(e) => { e.preventDefault(); router.back(); }}
-      onClick={(e) => { if (e.target === e.currentTarget) router.back(); }}
+      onPointerDown={(e) => { amRand.current = e.target === e.currentTarget; }}
+      onClick={(e) => { if (amRand.current && e.target === e.currentTarget) router.back(); amRand.current = false; }}
     >
       <div className="fenster-innen">
         <button type="button" className="knopf knopf-leise knopf-schmal fenster-zu" onClick={() => router.back()}>Schließen</button>

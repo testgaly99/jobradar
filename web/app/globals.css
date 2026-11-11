@@ -390,6 +390,9 @@ mark { background: var(--color-mark); color: var(--color-mark-ink); padding: 0 v
   .nur-druck { display: block; }
   details.karte > summary { margin-bottom: var(--space-md); }
   details.karte::details-content { content-visibility: visible; display: block; } /* auch zugeklappte Kästen drucken */
+  main:has(> .fenster[open]) > :not(.fenster) { display: none !important; } /* offenes Seitenfenster: nur die Bewerbung drucken */
+  .fenster { position: static; width: auto; height: auto; border: 0; animation: none; }
+  .fenster::backdrop { display: none; }
 }
 
 /* Weniger Bewegung */

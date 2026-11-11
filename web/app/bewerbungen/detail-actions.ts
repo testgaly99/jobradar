@@ -1,5 +1,5 @@
 "use server";
-import { notFound, redirect } from "next/navigation";
+import { notFound, redirect, RedirectType } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { istStatus, istUuid, parseAbschnitt, type Abschnitt } from "@/lib/bewerbung";
@@ -17,7 +17,8 @@ async function start(id?: string) {
   return sb;
 }
 const zurueck = (id: string, fehler?: string): never =>
-  redirect(`/bewerbungen/${id}${fehler ? `?fehler=${encodeURIComponent(fehler)}` : ""}`);
+  // replace: Speichern legt keinen History-Eintrag an, sonst führt "Schließen" (router.back) erst durch alle Speicherstände.
+  redirect(`/bewerbungen/${id}${fehler ? `?fehler=${encodeURIComponent(fehler)}` : ""}`, RedirectType.replace);
 const DB_FEHLER = "Das hat leider nicht geklappt. Bitte versuche es erneut.";
 
 export async function bewerbungManuell(f: FormData) {

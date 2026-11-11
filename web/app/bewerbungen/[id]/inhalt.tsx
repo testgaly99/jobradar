@@ -59,7 +59,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   return (
     <>
       <p className="kein-druck"><Link href="/bewerbungen">Alle Bewerbungen</Link></p>
-      <h1>{v(row.firma) || "(ohne Firma)"}: {v(row.titel)}</h1>
+      <h1 id="bewerbung-titel">{v(row.firma) || "(ohne Firma)"}: {v(row.titel)}</h1>
       <p className="chips kein-druck">
         <span className="chip" data-status={v(row.status)}>{STATUS_LABEL[row.status as Status]}</span>
         {row.ergebnis && <span className="chip">{ERGEBNIS_LABEL[row.ergebnis as string]}</span>}
