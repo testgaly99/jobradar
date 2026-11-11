@@ -21,14 +21,19 @@ Claude Code liest diese Datei zu Beginn jeder Sitzung. Sie ist die **einzige Que
 ## 2. Ziel
 
 Eine eigene Website zur Jobsuche, die besser filtert als Stepstone, Indeed, LinkedIn oder Glassdoor.
-- Die Stellen kommen direkt von den **offiziellen Karriereseiten** ausgewählter Zielunternehmen. Ausbauziel sind rund 1000 Firmen.
+- Die Stellen kommen direkt von den **offiziellen Karriereseiten** der Firmen, die auf ausgewählten **seriösen Ranking-Listen** stehen (Abschnitt 4.8). Nur diese Firmen, keine eigene Zusatzliste (Entscheidung 2026-11-09). Ausbauziel sind rund 1000 Firmen.
 - Dazu kommt ein **persönlicher Bewerbungs-Tracker**.
+- **Nur Stellen, die ein Studium voraussetzen** (Entscheidung 2026-11-09). Andere Stellen werden gar nicht gespeichert.
+  - Stufe 1, sofort per Regeln: Titel eindeutig nicht-akademischer Berufe fliegen beim Abrufen raus (z. B. Warenverräumer, Reinigungskraft, Filialleitung, Mechatroniker, Fahrer).
+  - Stufe 2, mit dem Groq-Paket: Groq stuft jede Anzeige ein: Studium „ja“, „nein“ oder „unklar“ und Tätigkeit „anspruchsvoll“ oder „einfach“. Gespeichert wird bei „ja“ und „unklar“.
+  - **Ausnahme Prestige-Arbeitgeber** (z. B. Magnificent 7): Dort bleiben auch Stellen ohne Studium, wenn die Tätigkeit anspruchsvoll ist (z. B. Program Manager bei Google). Einfache Tätigkeiten fliegen auch dort raus. Welche Firmen als Prestige gelten, bestimmen die Prestige-Listen unter den Ranking-Listen (Abschnitt 4.8).
 - Freunde bekommen später eigene Konten.
 
 Wichtigste Filter, in dieser Reihenfolge:
-1. Unternehmensgröße
-2. Kategorie des Unternehmens
-3. alle weiteren Filter (Abschnitt 4.1)
+1. Liste (aus welchem Ranking die Firma stammt)
+2. Unternehmensgröße
+3. Kategorie des Unternehmens
+4. alle weiteren Filter (Abschnitt 4.1)
 
 ---
 
@@ -36,7 +41,9 @@ Wichtigste Filter, in dieser Reihenfolge:
 
 1. **Kostenlos.** Keine Dienste, die Geld kosten oder eine Kreditkarte verlangen, ohne meine ausdrückliche Zustimmung. Grenzen von Gratis-Tarifen nennst du mir, bevor wir uns festlegen.
 2. **Keine API-Kosten für KI.**
-   - KI im laufenden Betrieb ist erlaubt, aber **nur** über meinen Claude-Abo-Token (`claude setup-token`, in GitHub Actions als Secret `CLAUDE_CODE_OAUTH_TOKEN`).
+   - KI im laufenden Betrieb ist erlaubt, nur auf zwei Wegen (Stand 2026-11-09):
+     - **Öffentliche Stellenanzeigen zusammenfassen:** Groq im Gratis-Tarif (großes Llama-Modell), Secret `GROQ_API_KEY`. An Groq gehen **nur Anzeigentexte**, nie persönliche Daten. Ist das Tageslimit erreicht, folgt der Rest am nächsten Tag. Kein Ausweichen auf Claude.
+     - **Alles mit persönlichen Daten** (Lebenslauf-Abgleich, CV-Empfehlung, Anschreiben): nur über meinen Claude-Abo-Token (`claude setup-token`, in GitHub Actions als Secret `CLAUDE_CODE_OAUTH_TOKEN`).
    - Es gibt keine Ausweichlösung. GitHub Models wurde am 30.07.2026 abgeschaltet.
    - Ist das Kontingent erschöpft, wird der Rest in der nächsten Nacht ausgewertet.
    - **Nie ein kostenpflichtiger API-Schlüssel.**
@@ -75,20 +82,20 @@ Wichtigste Filter, in dieser Reihenfolge:
 ### 4.1 Filter der Jobsuche
 - **Unternehmen**
   - Mitarbeiterzahl als frei wählbare Spanne
-  - Kategorie
+  - Branche (in der Oberfläche „Branche“, intern `kategorie`)
   - Rolle im Markt
   - Kundenbranche (bei Beratungen)
   - Eigentümerstruktur
   - Unternehmensalter
   - Mindestwert der Arbeitgeberbewertung. Diesen Wert pflege ich selbst pro Firma, weil kununu und Glassdoor das Auslesen verbieten.
-  - Zielfirmenliste
+  - Liste: das Ranking, aus dem die Firma stammt (erster Filter)
   - Später: Gesellschaft vs. Gruppe, feinere Finanzbranche
 - **Rolle**
   - Seniority, abgeleitet aus den Anforderungen der Anzeige
   - Jahre Berufserfahrung
   - Personalverantwortung
-  - Funktion bzw. Bereich
-  - geforderter Abschluss
+  - Funktion (in der Oberfläche „Funktion“, intern `abteilung`/Bereich)
+  - geforderter Abschluss (harte Regel, siehe Abschnitt 2)
   - Vertriebsanteil
   - Ausschlusswörter in Titel und Text
   - Später: fachliche Tags
@@ -140,7 +147,7 @@ Wichtigste Filter, in dieser Reihenfolge:
 - **Per Regex, ohne KI:** Befristung, Urlaubstage, Gehaltszahlen, Schlagwörter wie „Remote“.
 - **Per KI:** Seniority, Präsenztage, normalisiertes Gehalt, Vermittler, Personalverantwortung, Abschluss, Vertriebsanteil, Remote-Gebiet, Workation, variable Vergütung, Ghost-Job-Ampel.
 - **Ablauf:** ein nächtlicher Batch-Lauf, nur für neue oder geänderte Stellen. Das Ergebnis ist JSON pro Stelle, gespeichert unter einem Hash des Anzeigentexts.
-- **Modell:** nur Claude über den Abo-Token.
+- **Modell:** Groq im Gratis-Tarif (nur öffentliche Anzeigentexte, Entscheidung 2026-11-09).
 - **Passungs-Score und Skill-Lücken** laufen nur über Claude, damit mein CV nicht bei weiteren Anbietern landet.
 
 ### 4.3 Selbstreparatur
@@ -166,6 +173,8 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Bei Links auf Karriereseiten bzw. das ATS fragt der Code die offizielle Schnittstelle ab.
   - Bei Links von LinkedIn, Stepstone o. Ä. liest der Code nur Titel und Firma aus dem Link selbst. Die Seite wird **nicht** geöffnet. Danach sucht er die Stelle in der eigenen Stellenliste und in den gängigen ATS der Firma.
   - Ist nichts erkennbar, gibt es zwei Felder für Firma und Titel.
+  - LinkedIn-Links aus Sammlung oder Suche (`currentJobId`) werden zu `linkedin.com/jobs/view/<nummer>/` vereinheitlicht, damit die Dublettenprüfung greift.
+  - Optional lässt sich der Anzeigentext einfügen (z. B. am Handy); er landet in `snapshot_text`, falls es keinen Text aus Stellenliste oder ATS gibt.
 - **Manuell**, z. B. bei Empfehlung, Headhunter oder nachgetragenen Bewerbungen.
 - **Stelle:**
   - Firma, verknüpft mit den Firmendaten
@@ -227,14 +236,14 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Erst mit eigener Domain wird die App veröffentlicht. Dann kann sich jeder mit dem Link anmelden (siehe Backlog).
 - **Größe:** zuerst 1–5 Freunde, perspektivisch bis 20.
 - **Datentrennung** auf Datenbankebene (Row Level Security). Getestet wird, dass Person A die Daten von Person B nicht sieht. Das gilt auch für mich als Admin.
-- **Gemeinsam genutzt** werden Firmendaten und gescrapte Stellen. Freunde sehen die Stellenliste und ihren eigenen Tracker. Setzt jemand eine Firma auf seine Zielliste, erweitert das den Scraper für alle. Niemand sieht, wer sie verfolgt.
+- **Gemeinsam genutzt** werden Firmendaten und gescrapte Stellen. Freunde sehen die Stellenliste und ihren eigenen Tracker.
 - **Rollen:**
   - Ich bin Admin. Auf der Seite „Nutzer“ sehe ich alle angemeldeten Nutzer mit Name, E-Mail und „dabei seit“.
   - „Entfernen“ löscht nach Bestätigung Konto und Daten. Vorher erscheint der Hinweis, die Person solle zuerst exportieren.
   - Später verwalte ich als Admin auch Scraper-Quellen und Firmendaten. Alle anderen sind normale Nutzer.
 - **Export und Löschen:**
   - Bewerbungen lassen sich als eine CSV-Tabelle mit klickbaren Links exportieren (Dokumente nur mit Namen).
-  - **Konto löschen** kann jeder selbst. Die Seite empfiehlt dabei ausdrücklich den Export und bietet ihn direkt daneben an.
+  - **Konto löschen** kann jeder selbst, außer dem Admin: Mein Konto lässt sich nie löschen. Es endet erst, wenn Website und Datenbank entfernt werden. Die Seite empfiehlt dabei ausdrücklich den Export und bietet ihn direkt daneben an.
   - Zum Bestätigen wird „LÖSCHEN“ eingetippt. Danach sind alle Daten und Dateien sofort und endgültig entfernt.
 - **Datenschutzerklärung:** eine kurze Seite. Kontakt: Mark Galysh, markgaly99@gmail.com.
 - **Domain-Wechsel:** Die Adresse der Website steht nie im Code, nur in den Einstellungen von Vercel, Supabase und Google.
@@ -259,12 +268,21 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Der neue Status wird nur **vorgeschlagen**. Ich bestätige ihn mit einem Klick.
   - Der Mailverlauf wird an die Bewerbung gehängt.
 
-### 4.8 Monatliche Unternehmensübersichten
-- Einmal im Monat werden aus offiziellen und erlaubten Quellen Kandidaten für meine Zielliste gesammelt:
-  - Top-Startups und Finanzierungsrunden
-  - Unternehmen nach Größe
-  - beliebteste und beste Arbeitgeber nach Kategorie
-- Das Ergebnis ist eine **Vorschlagsliste**. Ich entscheide, welche Firma aufgenommen wird.
+### 4.8 Ranking-Listen (Herzstück der Firmenauswahl, Entscheidung 2026-11-09)
+- **Welche Listen:** echte, seriöse Rankings deutscher oder internationaler Herausgeber (Magazine wie WirtschaftsWoche, Institute), etwa Top-Arbeitgeber, Mitarbeiterzufriedenheit, beliebteste Arbeitgeber, Top-Startups, vielversprechendste Startups, Gehalt oder Prestige. Das sind nur Ideen: Die Listen werden in einem eigenen Recherche-Schritt anhand **realer** Rankings festgelegt (Name, Herausgeber, Rhythmus, Umfang, frei lesbar?). Der Katalog liegt dann in `docs/`.
+- **Alle 4 Wochen** prüft ein Lauf, ob es neue Ausgaben gibt. Firmen auf einer Liste werden **automatisch** aufgenommen und angebunden. Fällt eine Firma von allen Listen, verschwinden ihre Stellen beim nächsten Check; Bewerbungen bleiben immer erhalten.
+- **Nur Listen-Firmen.** Bis die Listen live sind, bleiben die heutigen Firmen aus `data/companies.csv`; danach bleibt nur, wer auf einer Liste steht.
+- In der Stellenliste ist **„Liste“ der erste Filter**. Bei jeder Firma steht immer, **welchen Rang sie in welchem Ranking** hat (z. B. „stern Beste Arbeitgeber 2026: Platz 12“). Nach **jedem einzelnen Ranking** kann man filtern und sortieren (Entscheidung 2026-11-10).
+- Startup-Listen dürfen europäisch oder amerikanisch sein, Gehaltslisten dürfen nur Tech abdecken. Bedingung: Die Firma bietet Stellen in Deutschland an.
+- **Quellen (Entscheidung 2026-11-10, Recherche `docs/ranking-recherche-v2.md`, vorerst nur Eigennutzung):**
+  - **Offene Lizenzen, automatisch:** EU R&D Scoreboard (CC BY), Technology Dashboard des Europäischen Patentamts, DPMA Top 50, EIC-Accelerator-Geförderte über CORDIS, Börsenindex-Mitglieder über Wikidata (CC0), Wikipedia-Unicorn-Liste (CC BY-SA), US-Arbeitsministerium Visa-Gehaltsdaten (gemeinfrei, nur als Gehalts-Indikator).
+  - **Über die Text-und-Data-Mining-Schranke (§ 44b UrhG), automatisch:** Great Place to Work Deutschland, Top Employers Deutschland, TOP 100 Innovatoren. Nur solange die Seite kein Verbot und keinen maschinenlesbaren Vorbehalt setzt; jede Quelle hat einen Schalter zum sofortigen Abschalten. **Nicht:** HTGF (setzt ein Vorbehalts-Signal).
+  - **Von Hand, einmal im Jahr:** Pressemitteilungen von trendence, Universum und LinkedIn (Beliebtheit bei Absolventen), Spitzenplätze aus Statistas CC-BY-ND-Infografiken.
+    - **Erinnerung per E-Mail (Entscheidung 2026-11-10):** Der 4-Wochen-Lauf legt zum Erscheinungstermin jeder Hand-Quelle ein GitHub-Issue an („trendence Top 50 2026 übernehmen“, mit Link und Klick-Anleitung). GitHub schickt dafür automatisch eine E-Mail an den Repo-Besitzer; kein eigener Mail-Dienst nötig. Das Issue bleibt offen, bis die Daten eingelesen sind. **Sobald die Gmail-Anbindung (Phase 3) steht, geht die Erinnerung zusätzlich als E-Mail an den Admin** (`ADMIN_EMAIL`); To-do in `docs/STATUS.md`.
+  - **Nicht, auch nicht privat:** Statista-Gesamtlisten (stern, Forbes, FT, TIME, Capital, FOCUS), Levels.fyi, LinkedIn-Website, zeit.de, Sifted, Glassdoor, Crunchbase, abgeschriebene Listen auf Wikipedia/Kaggle. Höchstens ein Link zur Ranking-Seite.
+- **Speicherregeln (Entscheidung 2026-11-10):** Rohseiten werden sofort nach dem Auslesen gelöscht. Gespeichert werden nur Firmenname, Rang, Listenname, Jahr und Quell-Link. Jede Ausgabe lebt bis zur nächsten Ausgabe, höchstens 13 Monate, dann wird sie gelöscht. Quelle und Lizenz stehen sichtbar in der Website. Abruf höchstens 1× je Quelle und Monat, eigener User-Agent mit Kontakt-E-Mail, robots.txt vor jedem Abruf.
+- **Für Freunde oder öffentlich (Backlog „Live gehen“):** Eine Liste wird nur genutzt, wenn der Herausgeber die Weiterverwendung ausdrücklich erlaubt (Lizenz, Nutzungsbedingungen, offene Lizenz wie CC) oder schriftlich zugestimmt hat. „Unklar“, „nur robots.txt erlaubt es“ oder „sind ja nur Fakten“ reicht nicht. Lässt sich für eine Liste kein solcher Weg finden, wird sie weggelassen. Auch Herunterladen von Hand ersetzt die Erlaubnis nicht. Der Katalog: `docs/ranking-katalog.md`, die rechtliche Prüfung: `docs/ranking-legal.md`.
+- Die Prestige-Listen bestimmen die Ausnahme beim Studiums-Filter (Abschnitt 2).
 
 ---
 
@@ -281,7 +299,8 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 |---|---|---|
 | Datenbank, Login, Dateien | Supabase, Region Frankfurt | Pausiert nach ca. 1 Woche ohne Datenbank-Aktivität. Der tägliche Scraper-Lauf schreibt in die Datenbank und hält sie wach. Limits: 500 MB Datenbank, 1 GB Dateien, 50 MB pro Datei, 2 Projekte. |
 | Scraper und Hintergrundjobs | Python, zeitgesteuert per GitHub Actions (Digest, Alarme, Briefings, Gmail-Abgleich, Erinnerungen) | Im öffentlichen Repo unbegrenzt gratis. Abschaltung nach 60 Tagen ohne Aktivität; der tägliche Commit verhindert sie. |
-| KI-Auswertung und Reparatur | Claude Code Action mit Abo-Token | Der Verbrauch zählt gegen das Abo-Kontingent. |
+| KI-Auswertung der Anzeigen | Groq Gratis-Tarif (Llama 70B) | Etwa 1.000 Anfragen pro Tag; Rest am nächsten Tag. Nur öffentliche Texte. |
+| KI mit persönlichen Daten und Reparatur | Claude Code Action mit Abo-Token | Der Verbrauch zählt gegen das Abo-Kontingent. |
 | Website | Next.js auf Vercel (Hobby) | Nur private, nicht-kommerzielle Nutzung. Zeitgesteuerte Jobs laufen deshalb über GitHub Actions statt über Vercel. |
 | Benachrichtigung | Telegram-Bot, später zusätzlich Google Kalender (kein Teams). E-Mail erst mit dem Mail-Paket. | – |
 
@@ -302,6 +321,8 @@ Tabellen im Zielbild:
 
 Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung und einem eigenen Plan (Abschnitt 7).
 
+**Reihenfolge ab 2026-11-09:** 2b abschließen → Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`, freigegeben) → Groq-Paket (Zusammenfassungen, Studium ja/nein, Firma/Titel aus eingefügtem Text) → Phase 4 → Phase 3 → Phase 5 → Phase 6. Das Paket „Firmen anbinden“ (8 weitere Firmen, Plan `docs/plans/2026-11-09-firmen-anbinden.md`) läuft parallel.
+
 0. **Erledigt:** Scraper-Grundlage mit 4 Firmen, statische Website und täglicher Lauf (Version 1, 2026-11-07).
 1. **Erledigt (Code, 2026-11-08): Tracker und neue Website für mich allein:**
    - Login (Google oder E-Mail und Passwort).
@@ -318,20 +339,59 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
    - Datenschutzerklärung
    - Datentrennung testen
    - Als letzter Schritt meine offenen To-dos aus `docs/STATUS.md`, darunter Vercel und die Migrationen.
-3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung.
+2b. **Website-Überarbeitung (geklärt 2026-11-08, nach meinem Klicktest), vor dem Einladen von Freunden:**
+   - **Stellenliste:**
+     - Größe aufsteigend sortiert, mit „Mitarbeitende“.
+     - Filter „Branche“ (statt Kategorie) und „Funktion“ (statt Bereich).
+     - Neuer Filter „Land“ (Deutschland, Österreich, Schweiz, Remote; die Daten kommen mit Phase 4).
+     - Erfahrungslevel mit Jahren: Junior 0–2, Mid 2–5, Senior 5–8, Lead 8+ (aus dem Titel abgeleitet).
+     - „Online seit“ statt „erstmals gesehen“, als Filter mit Feldern Heute, 3 Tage, 7 Tage, 30 Tage. Das Abzeichen „Neu“ gilt nur bis 3 Tage, mit Erklärung.
+     - Suche standardmäßig nur im Titel, Volltext zuschaltbar.
+     - Städte bereinigt (kein „Munich, Germany, Germany“ oder „Berlin Office“). Bei Stadtfilter nur diese Stadt, sonst erste Stadt plus „+N weitere“.
+     - Kein Firmen-Werbetext. „Startup / Venture-finanziert“ wird ausgeblendet, bis echte Finanzierungsdaten da sind (Phase 4).
+   - **Merken und Detailseite:**
+     - Knopf „Merken“ an jeder Stelle (Status „gemerkt“).
+     - Klick auf eine Stelle öffnet eine eigene Detailseite mit Aufgaben, Anforderungen und Benefits als Stichpunkte, ohne KI aus den Zwischenüberschriften zerlegt, dazu „Original-Anzeige öffnen“ und „Ich habe mich beworben“.
+     - Dieselbe Gliederung ersetzt den Fließtext-Snapshot in Bewerbungen.
+   - **Navigation:** Reiter „Dokumente“ entfällt, der Export zieht nach „Konto“.
+   - **Konto:** Name, E-Mail, Anmeldeart, dabei seit, Bewerbungen nach Status, Export. „Konto löschen“ klein unten.
+   - **Admin „Nutzer“:**
+     - Übersichtlicher, „Entfernen“ im „…“-Menü.
+     - Name nur bei Google-Konten.
+     - Einblicke nur als Zahlen ohne Inhalte: pro Nutzer letzte Anmeldung und Anzahl Bewerbungen, gesamt aktive Nutzer 7/30 Tage und Bewerbungen pro Woche. Die Datenschutzerklärung nennt das.
+   - **Design:** mit dem Skill Hallmark, Variante „utilitär“ (`web/app/stil/utilitaer.css`). Das Aussehen steckt nur in dieser Datei, `globals.css` hat nur den Aufbau.
+   - **Steckbrief statt Textwand (ohne KI):**
+     - Der Scraper zieht per Regeln heraus: Erfahrung in Jahren, Sprachen, Gehalt (falls angegeben), Sicherheitsüberprüfung.
+     - Die Detailseite zeigt oben den Steckbrief, die gegliederte Anzeige eingeklappt darunter.
+     - In der Stellenliste steht eine Kurzbeschreibung. Welche Felder sie zeigt, stellt jeder Nutzer auf der Konto-Seite selbst ein.
+     - „Kurz gesagt“, Top-3-Anforderungen und „Auffällig“ brauchen KI: per Groq, nach einer Probe mit 20 Anzeigen (eigenes Paket direkt nach 2b).
+   - **Wichtige Punkte:** Auf der Konto-Seite pflege ich Begriffe, die mir bei einer Stelle wichtig sind. Kommen sie in einem Stichpunkt der Anzeige vor, werden sie auf der Detailseite hervorgehoben. Reiner Textvergleich, ohne KI: Ein Begriff trifft ganze Wörter und Wortanfänge („Team“ trifft „Teamfähigkeit“). Übergangslösung; in Phase 6 kommt der Abgleich nach Bedeutung per KI dazu.
+   - **Gegliederte Snapshots für alle:** Jede Bewerbung bekommt die gegliederte Anzeige, auch bestehende. Der tägliche Lauf rüstet fehlende Snapshots automatisch nach, solange die Stelle noch online ist.
+3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung, Erinnerungs-Mail an den Admin für die jährlichen Hand-Quellen der Rankings (4.8).
    - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
-4. **Scraper für alle Zielfirmen:** rund 1000 Firmen, Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern.
-5. **KI-Auswertung und Filter:** Extraktion über den Abo-Token, alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
-6. **Passung und Analyse:** Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
+4. **Ranking-Listen und Scraper für alle Listen-Firmen:** Listen anhand realer Rankings festlegen (Recherche läuft seit 2026-11-09), Listen in der Datenbank, 4-Wochen-Check, Filter „Liste“, automatische Erkennung des Bewerbermanagement-Systems und Anbindung (rund 1000 Firmen), Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern. Offen: TK (Stellen nur per „Mehr laden“, bräuchte Playwright).
+5. **KI-Auswertung und Filter:** Extraktion aus Anzeigen per Groq (Gratis-Tarif), alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
+6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (Anforderungen, die mein CV abdeckt, fett; nicht abgedeckte rot) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token; dazu „Wichtige Punkte“ nach Bedeutung statt nach Wortanfang, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Dafür das günstigste Modell (Haiku), um das Abo-Kontingent zu schonen; ein größeres Modell nur, wenn Stichproben zeigen, dass Haiku zu oft danebenliegt. Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
 
 **Backlog (noch keiner Phase zugeordnet):**
+- **Live gehen (Freunde oder öffentlich), Entscheidung 2026-11-10:** Vorerst nutze nur ich Jobradar. Vor dem Einladen von Freunden oder einer Veröffentlichung:
+  - Erlaubnis-E-Mails an die Ranking-Herausgeber schicken (7 nötig, 1 optional; Vorlage und Empfänger in `docs/ranking-legal.md`, Abschnitt 5). Nur Listen mit schriftlicher Zusage dürfen dann gezeigt werden.
+  - Den ersten Freund als Google-Testnutzer eintragen (README „Freunde einladen“), dazu das Mail-Paket prüfen.
 - **Mail-Paket:**
   - eigene Domain
   - Mail-Dienst, z. B. Resend (gratis)
   - Google-App veröffentlichen, damit „Link teilen, jeder kommt rein“ ohne Testnutzer klappt
   - dabei entscheiden: neue Nutzer sofort drin oder erst nach Freigabe?
   - spätestens nötig, wenn es Richtung 20 Nutzer geht
+- **Dokumente klären:** Wozu dienen hochgeladene Dokumente, wenn man sich nicht über die Website bewirbt? Bis dahin ist der Reiter ausgeblendet (Entscheidung 2026-11-08).
+- **Bewerbungsformular neu definieren:**
+  - welche Felder es gibt,
+  - was automatisch aus der Stelle übernommen wird,
+  - welche Felder erst in späteren Bewerbungsphasen erscheinen,
+  - kein manuelles Abtippen bekannter Stellen.
+  - Eigene Fragerunde in einer späteren Phase.
 - **Login für Freunde:** E-Mail und Passwort zusätzlich zu Google (braucht das Mail-Paket).
+- **E-Mail-Registrierung absichern:** Der Knopf „Registrieren“ (E-Mail und Passwort) ist bis zum Mail-Paket bewusst offen (Entscheidung 2026-11-08). Dann: sperren (Hook, der neue E-Mail-Registrierungen ablehnt) oder mit Bestätigungsmail absichern.
 
 ---
 

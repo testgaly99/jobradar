@@ -31,9 +31,10 @@
    - Supabase verweigert `deleteUser`, solange der Nutzer noch Storage-Objekte besitzt.
    - Die Dateien müssen deshalb zuerst weg, auch mehr als 100 Stück, denn `list` liefert seitenweise.
    - → Test in Task 2.
-2. **Admin entfernt sich selbst:**
-   - Wird abgelehnt mit „Du kannst dich nicht selbst entfernen. Nutze ‚Konto löschen‘.“
-   - → Test in Task 3.
+2. **Admin löscht oder entfernt sich selbst:**
+   - Das ist nie möglich, weder über `/konto` noch über die Admin-Seite.
+   - Meldung: „Das Admin-Konto kann nicht gelöscht werden.“
+   - → Tests in Task 2 und Task 3.
 3. **Nicht-Admin ruft die Admin-Aktion direkt auf:**
    - Ein Server-Action-POST ohne Admin-Rechte führt zu keinem Löschen und zu `notFound()`.
    - → Task 3.
@@ -102,6 +103,7 @@
     5. Jeder Fehler wird als deutscher Fehler weitergeworfen. Es gibt kein stilles Weitermachen, damit nie nur ein halber Löschvorgang gemeldet wird.
   - Server-Action `kontoLoeschen(formData)` in `web/app/konto/actions.ts`
     1. Sitzung prüfen.
+    1a. Ist der Aufrufer Admin (`aktuellerNutzer().admin`), folgt `redirect("/konto?fehler=…")` mit „Das Admin-Konto kann nicht gelöscht werden.“, und es wird nichts gelöscht.
     2. `bestaetigt(formData.get("bestaetigung"))` prüfen, sonst `redirect("/konto?fehler=…")`.
     3. `loescheNutzer(eigene id)` aufrufen.
     4. Abmelden (`auth.signOut()`).
@@ -109,7 +111,8 @@
     6. `redirect` steht außerhalb von try/catch.
 - Seite `/konto`:
   - **Abschnitt „Meine Daten exportieren“ zuerst**, mit Empfehlungstext: „Wir empfehlen dir, deine Bewerbungen vorher zu exportieren. Nach dem Löschen sind sie nicht wiederherstellbar.“ Daneben der Knopf zum vorhandenen `/export`.
-  - Dann der Abschnitt „Konto löschen“:
+  - Für den Admin erscheint statt des Lösch-Abschnitts nur der Satz „Das Admin-Konto kann nicht gelöscht werden. Es endet erst, wenn die Website und die Datenbank entfernt werden.“
+  - Für alle anderen folgt dann der Abschnitt „Konto löschen“:
     - Liste dessen, was gelöscht wird: Bewerbungen, Kontakte, Interviews, Verlauf, Dokumente samt Dateien.
     - Eingabefeld „Tippe LÖSCHEN ein“.
     - Knopf `SendeKnopf` aus `web/app/bewerbungen/knoepfe.tsx`.
@@ -151,12 +154,12 @@
     - Ist der Aufrufer kein Admin, folgt `notFound()`.
     - Sonst `auth.admin.listUsers({ page, perPage: 100 })` über alle Seiten.
     - Tabelle mit Name, E-Mail und „dabei seit“, pro Zeile ein Knopf „Entfernen“.
-    - Bei der eigenen Zeile steht statt des Knopfes der Text „Du (Admin)“.
+    - Bei Admin-Zeilen (auch der eigenen) steht statt des Knopfes der Text „Admin“.
     - Über der Tabelle der Hinweis: „Neue Freunde: In der Google Cloud Console als Testnutzer eintragen, dann den Link zur Website schicken.“
   - Server-Action `nutzerEntfernen(uid)`:
     1. Ohne Admin-Rechte folgt `notFound()`.
     2. Die uid muss uuid-förmig sein.
-    3. Ist `uid === eigene id`, folgt `redirect("/admin/nutzer?fehler=…")` mit „Du kannst dich nicht selbst entfernen. Nutze ‚Konto löschen‘.“
+    3. Ist `uid === eigene id` oder hat die Ziel-E-Mail laut `istAdmin` Admin-Rechte, folgt `redirect("/admin/nutzer?fehler=…")` mit „Das Admin-Konto kann nicht gelöscht werden.“
     4. Sonst `loescheNutzer(uid)` und `redirect("/admin/nutzer")`.
   - Der Knopf ist eine Client-Komponente mit `confirm("<Name> entfernen? Bitte die Person vorher, ihre Daten zu exportieren. Alle Bewerbungen und Dateien werden endgültig gelöscht.")`, nach dem Muster des vorhandenen Lösch-Knopfs in `web/app/bewerbungen/knoepfe.tsx`.
 
@@ -167,7 +170,7 @@
 - [ ] Rot → Code → Grün, `npx tsc --noEmit`, `npm run build`
 - [ ] Live-Check mit zwei Wegwerf-Nutzern, A als Admin über `ADMIN_EMAIL` im Skript-Env:
   - B entfernen: B ist weg.
-  - A entfernt A: wird abgelehnt.
+  - A entfernt A: wird abgelehnt. A ruft kontoLoeschen auf: wird abgelehnt, A existiert weiter.
   - B als Nicht-Admin ruft die Liste ab: kein Zugriff.
   - Beide Nutzer danach löschen.
 - [ ] Commit `Admin-Seite Nutzer`

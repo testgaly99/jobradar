@@ -131,3 +131,40 @@ def test_bewerbungspruefung_in_chunks(fake, monkeypatch):
     for i, z in fake.t["jobs"].items():
         assert (z["text"], z["sichtbar"]) == (("Text", True) if i == 'acme:a,"b' else (None, False))
         assert z["status"] == "geschlossen"
+
+
+def test_spalten_fehlen_wird_uebersprungen(fake, capsys):
+    fake.ohne_spalten = True
+    db._spalten = None
+    db.schreibe("acme", [job("1", abschnitte=[{"titel": "A", "punkte": ["x"]}], land="Deutschland")], "2026-11-01")
+    db.schreibe("acme", [job("2")], "2026-11-01")
+    assert "abschnitte" not in fake.t["jobs"]["acme:1"] and fake.pruefungen == 1  # nur einmal geprueft
+    assert capsys.readouterr().out.count("Migration 005") == 1
+
+
+def test_spalten_da_werden_geschrieben(fake):
+    db._spalten = None
+    db.schreibe("acme", [job("1", abschnitte=[{"titel": "A", "punkte": ["x"]}], land="Deutschland", steckbrief={"erfahrung_jahre": 3})], "2026-11-01")
+    assert fake.t["jobs"]["acme:1"]["steckbrief"] == {"erfahrung_jahre": 3}
+    assert fake.t["jobs"]["acme:1"]["abschnitte"] == [{"titel": "A", "punkte": ["x"]}]
+    assert fake.t["jobs"]["acme:1"]["land"] == "Deutschland"
+
+
+def test_snapshot_nachruesten_normal(fake, capsys):
+    db.snapshot_nachruesten()
+    assert fake.nachgeruestet == 1
+    assert "nachgerüstet: 3" in capsys.readouterr().out
+
+
+def test_snapshot_nachruesten_funktion_fehlt(fake, capsys):
+    fake.ohne_funktion = True
+    db.snapshot_nachruesten()  # wirft nicht
+    assert "Migration 005 offen" in capsys.readouterr().out
+
+
+def test_snapshot_nachruesten_anderer_fehler_bricht_nicht(monkeypatch, capsys):
+    def kaputt(*a, **k):
+        raise RuntimeError("Supabase POST rpc/snapshot_nachruesten: 500 boom")
+    monkeypatch.setattr(db, "_req", kaputt)
+    db.snapshot_nachruesten()
+    assert "fehlgeschlagen" in capsys.readouterr().out

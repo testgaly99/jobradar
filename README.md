@@ -6,9 +6,18 @@ jobradar holt jeden Tag die offenen Stellen von ausgewählten Unternehmen und ze
 
 ## Was die Website kann
 
-- **Stellen:** Alle offenen Stellen der Firmen aus `data/companies.csv`, mit Filtern.
+- **Stellen:** Alle offenen Stellen der Firmen aus `data/companies.csv`, mit Filtern und Suche. Jede Stelle hat eine Detailseite mit Steckbrief und der ganzen Anzeige.
 - **Bewerbungen:** Du legst Bewerbungen aus einer Stelle an, per Link oder von Hand, und setzt den Stand (gemerkt, beworben, Gespräch …).
 - **Dokumente:** Lebenslauf und Anschreiben hochladen, jede Bewerbung merkt sich die benutzte Version.
+- **Konto:** Deine Daten, deine Bewerbungen nach Stand, „Wichtige Punkte“ und Einstellungen für die Stellenliste.
+
+## Stellenliste und Detailseite
+
+- **Begriffe:** *Branche* ist die Art der Firma (z. B. Tech). *Funktion* ist die Rolle der Stelle (z. B. Engineering). *Online seit* filtert nach dem Tag, an dem die Stelle zum ersten Mal bei uns aufgetaucht ist. „Neu“ steht an Stellen, die höchstens 3 Tage alt sind. Die Größe ist nach Mitarbeitenden sortiert, das Level nennt die Jahre (z. B. „Junior (0–2 Jahre)“). Den Land-Filter gibt es erst nach Migration 005.
+- **Merken:** Der Knopf „Merken“ legt aus einer Stelle direkt eine Bewerbung im Stand „gemerkt“ an, in der Liste und auf der Detailseite.
+- **Steckbrief:** Oben auf der Detailseite stehen Erfahrung, Gehalt, Sprachen und Sicherheitsüberprüfung. Sie werden mit festen Regeln aus dem Anzeigentext gelesen, ohne KI, und können daher auch mal fehlen. Darunter folgt „Ganze Anzeige lesen“ in Abschnitten, dazu „Original-Anzeige“ und „Ich habe mich beworben“.
+- **Kurzbeschreibung:** Die Zeile unter jeder Stelle in der Liste zeigt Angaben aus dem Steckbrief. Unter „Konto“ setzt du Häkchen, welche Angaben das sind (Sprachen sind standardmäßig aus).
+- **Wichtige Punkte:** Unter „Konto“ trägst du bis zu 50 Begriffe ein. Sie werden in allen Anzeigen gelb markiert (ganze Wörter und Wortanfänge). *Warum:* So siehst du Dinge, die dir wichtig sind, sofort. Bei Bewerbungen bleibt die Anzeige gegliedert als Kopie erhalten, auch wenn die Stelle schließt.
 
 ## Login
 
@@ -17,6 +26,10 @@ Du meldest dich mit Google oder mit E-Mail und Passwort an. *Warum:* Deine Bewer
 ## Link einfügen
 
 Klicke auf „Bewerbung anlegen“ und füge den Link einer Stellenanzeige ein. Die Seite erkennt Firma und Titel allein aus dem Link. Seiten wie LinkedIn oder Stepstone werden nie abgerufen (das wäre gegen deren Regeln). Wird nichts erkannt, trägst du Firma und Titel in zwei Feldern selbst ein.
+
+Ins Feld „Anzeigentext (optional)“ kannst du den Text der Anzeige einfügen, z. B. am Handy. Er wird mit der Bewerbung gespeichert (höchstens 50.000 Zeichen). Das geht auch unter „Manuell anlegen“.
+
+**LinkedIn:** Dort darf Jobradar die Anzeige nicht selbst abrufen. Drücke auf der LinkedIn-Anzeige Strg+A (alles markieren) und Strg+C (kopieren). Füge in Jobradar den Link ein und den kopierten Text in das Feld „Anzeigentext (optional)“. Trage Firma und Titel ein, wenn danach gefragt wird.
 
 ## Dokumente und Export
 
@@ -52,12 +65,12 @@ Die Liste steht in `data/companies.csv` (eine Tabelle als Textdatei). Bearbeite 
 | `aktiv` | `ja` = wird abgerufen, `nein` = übersprungen |
 | `notiz` | Freitext |
 
-## Datenbank einrichten (Migrationen 001–004)
+## Datenbank einrichten (Migrationen 001–005)
 
-Die Dateien in `supabase/migrations/` bauen die Tabellen und den Zugriffsschutz auf: `001_schema.sql` (Tabellen und Schutz), `002_facetten.sql` (Filterwerte), `003_bewerbung_eindeutig.sql` (keine doppelten Bewerbungen), `004_dokumente.sql` (Dokumente und Storage).
+Die Dateien in `supabase/migrations/` bauen die Tabellen und den Zugriffsschutz auf: `001_schema.sql` (Tabellen und Schutz), `002_facetten.sql` (Filterwerte), `003_bewerbung_eindeutig.sql` (keine doppelten Bewerbungen), `004_dokumente.sql` (Dokumente und Storage), `005_abschnitte_land.sql` (gegliederte Anzeige, Steckbrief, Land, Wichtige Punkte, Listen-Einstellungen, Admin-Kennzahlen). Ohne 005 fehlen diese Teile.
 
 1. Öffne Supabase → dein Projekt → „SQL Editor“.
-2. Öffne die Datei auf deinem Rechner, kopiere den ganzen Inhalt, füge ihn ein und klicke „Run“. Immer in der Reihenfolge 001, 002, 003, 004.
+2. Öffne die Datei auf deinem Rechner, kopiere den ganzen Inhalt, füge ihn ein und klicke „Run“. Immer in der Reihenfolge 001, 002, 003, 004, 005.
 3. Erfolg: unten steht „Success“. Die Dateien lassen sich ohne Schaden mehrfach ausführen.
 
 ## Backup und Wiederherstellung
@@ -85,13 +98,27 @@ py -m pytest
 cd web; npm test
 ```
 
+## Freunde einladen
+
+Solange die Google-App im Testmodus ist, darf sich nur anmelden, wer als Testnutzer eingetragen ist.
+
+1. Google Cloud Console → APIs & Dienste → OAuth-Zustimmungsbildschirm → Zielgruppe → Testnutzer → „Add users“ → die Gmail-Adresse des Freundes eintragen und speichern. *Warum:* Google lässt im Testmodus nur eingetragene Adressen durch. Erfolg: Die Adresse steht in der Liste.
+2. Schicke dem Freund den Link zur Website. *Warum:* Er meldet sich dort selbst mit Google an. Seine Daten sind für dich unsichtbar.
+3. Erfolg: Der Freund taucht auf der Admin-Seite „Nutzer“ (`/admin/nutzer`) auf. Dort kannst du ihn mit „Entfernen“ samt allen Daten löschen.
+
+Jeder Nutzer kann sein Konto selbst unter „Konto“ löschen. Das Admin-Konto kann nicht gelöscht werden, weder dort noch auf der Admin-Seite. Was gespeichert wird, steht auf `/datenschutz`.
+
 ## Vercel einrichten
 
 *Warum:* Vercel stellt die Website unter einer festen Adresse ins Netz.
 
 1. Auf vercel.com anmelden, „Add New → Project“, dieses Repo importieren.
 2. Bei „Root Directory“ `web` eintragen (die Website liegt im Unterordner).
-3. Unter „Environment Variables“ `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_ANON_KEY` eintragen, dann „Deploy“. Erfolg: Vercel zeigt eine Adresse, die Seite lädt.
+3. Unter „Environment Variables“ `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_ANON_KEY` eintragen. Trage außerdem zwei Server-Variablen ein, beide **ohne** `NEXT_PUBLIC_` am Anfang:
+   - `SUPABASE_SERVICE_KEY`: der Secret Key aus Supabase → Project Settings → API Keys. *Warum:* Nur damit kann die Website ein Konto samt Daten löschen. Ohne `NEXT_PUBLIC_` bleibt er auf dem Server und gelangt nie in den Browser.
+   - `ADMIN_EMAIL`: deine E-Mail-Adresse (mehrere durch Komma getrennt). *Warum:* Wer hier steht, sieht die Admin-Seite „Nutzer“. Das Admin-Konto lässt sich nicht löschen.
+
+   Dann „Deploy“. Erfolg: Vercel zeigt eine Adresse, die Seite lädt. Dieselben zwei Variablen brauchst du auch in `web/.env.local`, wenn du lokal arbeitest.
 4. Supabase → Authentication → URL Configuration: die Vercel-Adresse als „Site URL“ eintragen und unter „Redirect URLs“ `https://<deine-adresse>/**` hinzufügen. *Warum:* Sonst schickt dich der Login auf die falsche Seite zurück.
 5. Der Google-Login braucht normalerweise nichts Neues, denn Supabases Rückruf-Adresse bleibt gleich. Nur wenn Google meckert: in der Google Cloud Console beim OAuth-Client prüfen, ob die Supabase-Adresse als „Authorized redirect URI“ steht.
 

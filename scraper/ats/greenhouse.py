@@ -3,6 +3,7 @@ import html
 import re
 
 from scraper import http
+from scraper.abschnitte import abschnitte
 
 
 def hole_stellen(ats_id: str) -> list[dict]:
@@ -11,7 +12,8 @@ def hole_stellen(ats_id: str) -> list[dict]:
     for j in daten["jobs"]:
         ort = (j.get("location") or {}).get("name") or ""
         # Greenhouse liefert doppelt escaped: erst entpacken, Tags entfernen, nochmal entpacken.
-        text = " ".join(html.unescape(re.sub(r"<[^>]+>", " ", html.unescape(j.get("content") or ""))).split())
+        roh = html.unescape(j.get("content") or "")
+        text = " ".join(html.unescape(re.sub(r"<[^>]+>", " ", roh)).split())
         abt = ((j.get("departments") or [{}])[0].get("name") or "").strip()
         stellen.append({
             "ext_id": str(j["id"]),
@@ -21,6 +23,7 @@ def hole_stellen(ats_id: str) -> list[dict]:
             "url": j["absolute_url"],
             "beschreibung_kurz": text[:300],
             "text": text,
+            "abschnitte": abschnitte(roh),
             "abteilung": abt,
             "arbeitsmodell": "Remote" if "remote" in ort.lower() else "Hybrid" if "hybrid" in ort.lower() else "",
             "vertragsart": "",

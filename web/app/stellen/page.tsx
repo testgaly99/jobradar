@@ -1,63 +1,102 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { firmenFarbe } from "@/lib/farbe";
-import { GRUPPEN, filterZuUrl, heuteLokal, leseFilter, tagePlus, type Gruppe } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
+import { kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
-import { bewerbungAusStelle } from "./actions";
+import { merken, entmerken, bewerbungZuruecknehmen } from "./actions";
 import FilterBlock from "./filterblock";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 
 const TITEL: Record<Gruppe, string> = {
-  groesse: "Größe", kategorie: "Kategorie", level: "Erfahrungslevel", modell: "Arbeitsmodell",
-  vertrag: "Vertragsart", bereich: "Bereich", firma: "Unternehmen", stadt: "Stadt",
+  groesse: "Größe", kategorie: "Branche", level: "Erfahrungslevel", modell: "Arbeitsmodell",
+  vertrag: "Vertragsart", bereich: "Funktion", firma: "Unternehmen", stadt: "Stadt", land: "Land",
 };
 type Facetten = Partial<Record<Gruppe, Record<string, number>>>;
 type Job = {
   id: string; unternehmen: string; titel: string; ort: string | null; staedte: string[] | null; remote: boolean | null;
   arbeitsmodell: string | null; vertragsart: string | null; abteilung: string | null; erfahrungslevel: string | null;
-  url: string | null; beschreibung_kurz: string | null; erstmals_gesehen: string | null;
+  url: string | null; erstmals_gesehen: string | null;
   companies: { groesse_klasse: string | null; kategorie: string[] | null };
 };
 
 const bekannt = (s: string | null) => (s && s.toLowerCase() !== "unbekannt" ? s : null);
-const sicherLink = (u: string | null) => (u && /^https?:\/\//i.test(u) ? u : null);
 const datumDe = (iso: string) => iso.split("-").reverse().join(".");
 
 export default async function Seite({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
-  const f = leseFilter(sp);
+  const roh = leseFilter(sp);
   const fehler = typeof sp.fehler === "string" ? sp.fehler : null;
   const sb = await createClient();
-  const [ergebnis, lauf, fac] = await Promise.all([
+  // Facetten zuerst: ohne Migration 005 fehlt "land", dann wird ein ?land= ignoriert statt die Abfrage zu sprengen.
+  const fac = await sb.rpc("facetten"); // fehlt die Funktion noch (002_facetten.sql), gibt es Filter ohne Zahlen
+  const fa: Facetten = fac.error ? {} : (fac.data ?? {});
+  const f = landNurMitFacette(roh, !!fa.land);
+  const [ergebnis, lauf, erster] = await Promise.all([
     stellenAbfrage(sb, f),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
-    sb.rpc("facetten"), // fehlt die Funktion noch (002_facetten.sql), gibt es Filter ohne Zahlen
+    sb.from("laeufe").select("datum").order("datum", { ascending: true }).limit(1).maybeSingle(), // fehlt die Tabelle: nur 3-Tage-Regel
   ]);
+  const ersterLauf: string | null = erster.data?.datum ?? null;
   const jobs = (ergebnis.data ?? []) as unknown as Job[];
   const gesamt = ergebnis.count ?? 0;
   const letzterLauf: string | null = lauf.data?.datum ?? null;
   const veraltet = letzterLauf !== null && letzterLauf < tagePlus(heuteLokal(), -2);
-  const neuAb = letzterLauf ? tagePlus(letzterLauf, -2) : null;
-  const fa: Facetten = fac.error ? {} : (fac.data ?? {});
+  const jetzt = new Date();
   const hatZahlen = !fac.error;
   const seiten = Math.max(1, Math.ceil(gesamt / PRO_SEITE));
-  const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.neu ? 1 : 0);
+  const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.seit ? 1 : 0);
+  // Eine Abfrage für alle angezeigten Stellen: welche sind schon gemerkt oder beworben? (RLS liefert nur eigene Zeilen)
+  const status = new Map<string, string>();
+  const steckbriefe = new Map<string, unknown>();
+  // Steckbrief-Spalte und Felder-Tabelle gibt es erst nach Migration 005: Fehler ergibt leeren Steckbrief bzw. Standardfelder.
+  const felderZeile = await sb.from("listen_felder").select("felder").maybeSingle();
+  const felder = waehleFelder(felderZeile.error ? null : felderZeile.data?.felder);
+  if (jobs.length) {
+    const ids = jobs.map((j) => j.id);
+    const [apps, sbr] = await Promise.all([
+      sb.from("applications").select("job_id,status").in("job_id", ids),
+      sb.from("jobs").select("id,steckbrief").in("id", ids),
+    ]);
+    for (const a of apps.data ?? []) status.set(a.job_id, a.status);
+    for (const s of sbr.error ? [] : (sbr.data ?? [])) steckbriefe.set(s.id, s.steckbrief);
+  }
 
   return (
     <>
       {veraltet && letzterLauf && (
-        <p className="meldung fehler" role="alert">Letzter Lauf am {datumDe(letzterLauf)} – automatischen Abruf prüfen</p>
+        <p className="meldung fehler" role="alert">Letzter Lauf am {datumDe(letzterLauf)}. Automatischen Abruf prüfen.</p>
       )}
+      <div className="seitenkopf">
+        <h1>Stellen</h1>
+        <p className="gedaempft">
+          <span className="num">{gesamt}</span> Treffer{letzterLauf && `, Stand ${datumDe(letzterLauf)}`}
+        </p>
+      </div>
+      {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+      {ergebnis.error && ergebnis.error.code !== "PGRST103" && <p className="meldung fehler">Stellen konnten nicht geladen werden.</p>}
       <div className="stellen-layout">
         <aside className="filterleiste">
           <FilterBlock titel={aktiv ? `Filter (${aktiv} aktiv)` : "Filter"}>
             <form method="get" action="/stellen" className="filterform">
-              <label>Stichwort (Titel und Text)
+              <label>Stichwort (im Titel)
                 <input type="search" name="q" defaultValue={f.q} />
               </label>
-              <label>Neu seit
-                <input type="date" name="neu" defaultValue={f.neu} />
+              <label className="option">
+                <input type="checkbox" name="volltext" value="1" defaultChecked={f.volltext} />
+                <span>Auch im Anzeigentext suchen</span>
               </label>
+              <fieldset className="gruppe">
+                <legend>Online seit</legend>
+                <div className="optionen">
+                  {([["", "Egal"], ["heute", "Heute"], ["3", "3 Tage"], ["7", "7 Tage"], ["30", "30 Tage"]] as const).map(([w, t]) => (
+                    <label key={w} className="option">
+                      <input type="radio" name="seit" value={w} defaultChecked={f.seit === w} />
+                      <span>{t}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
               <div className="filteraktionen">
                 <button className="knopf" type="submit">Filtern</button>
                 <Link className="knopf knopf-rand" href="/stellen">Filter zurücksetzen</Link>
@@ -66,7 +105,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               {GRUPPEN.map((g) => {
                 const werte = fa[g] ?? {};
                 // Gewählte Werte bleiben sichtbar, auch wenn sie in den Zahlen fehlen
-                const namen = [...new Set([...Object.keys(werte), ...f[g]])].sort((a, b) => a.localeCompare(b, "de"));
+                const namen = facettenSortieren(g, [...new Set([...Object.keys(werte), ...f[g]])]
+                  .filter((n) => !(g === "kategorie" && n === AUSGEBLENDET_BRANCHE))
+                );
                 if (!namen.length) return null;
                 return (
                   <details key={g} className="gruppe" open={g === "groesse" || g === "kategorie" || f[g].length > 0}>
@@ -75,7 +116,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       {namen.map((n) => (
                         <label key={n} className="option">
                           <input type="checkbox" name={g} value={n} defaultChecked={f[g].includes(n)} />
-                          <span>{n}{werte[n] !== undefined && ` (${werte[n]})`}</span>
+                          <span>{g === "level" ? levelText(n) : g === "groesse" ? n + " Mitarbeitende" : n}{werte[n] !== undefined && ` (${werte[n]})`}</span>
                         </label>
                       ))}
                     </div>
@@ -87,37 +128,48 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
         </aside>
 
         <section aria-label="Stellen">
-          <h1>Stellen</h1>
-          {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
-          <p className="gedaempft">
-            {gesamt} Treffer{letzterLauf && ` · Stand ${datumDe(letzterLauf)}`}
-          </p>
-          {ergebnis.error && ergebnis.error.code !== "PGRST103" && <p className="meldung fehler">Stellen konnten nicht geladen werden.</p>}
-          {(!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="karte">Keine Stellen für diese Auswahl.</p>}
+          {(!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
           <ul className="stellenliste">
             {jobs.map((j) => {
-              const link = sicherLink(j.url);
-              const ort = j.ort || j.staedte?.join(", ") || null;
-              const neu = !!(neuAb && j.erstmals_gesehen && j.erstmals_gesehen >= neuAb);
-              const chips = [bekannt(j.erfahrungslevel), bekannt(j.arbeitsmodell), bekannt(j.vertragsart),
-                j.remote ? "Remote" : null, bekannt(j.companies?.groesse_klasse ?? null)].filter(Boolean) as string[];
+              const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;
+              const neu = !!(j.erstmals_gesehen && istNeu(j.erstmals_gesehen, jetzt, ersterLauf));
+              const kurz = kurzzeile({
+                groesse: j.companies?.groesse_klasse ?? null, level: j.erfahrungslevel,
+                modell: modellText(j.arbeitsmodell, j.remote), vertrag: j.vertragsart, ort,
+                erstmalsGesehen: j.erstmals_gesehen, steckbrief: leseSteckbrief(steckbriefe.get(j.id)),
+                branchen: (j.companies?.kategorie ?? []).filter((k) => k !== AUSGEBLENDET_BRANCHE),
+              }, felder);
+              const st = status.get(j.id);
               return (
-                <li key={j.id} className="karte stelle" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
-                  <h2>
-                    {link ? <a href={link} target="_blank" rel="noopener noreferrer">{j.titel}</a> : j.titel}
-                  </h2>
-                  <p className="firma" style={{ color: firmenFarbe(j.unternehmen) }}>{j.unternehmen}</p>
-                  <p className="gedaempft">{[ort, bekannt(j.abteilung)].filter(Boolean).join(" · ")}</p>
-                  <p className="chips">
-                    {neu && <span className="chip chip-neu">neu</span>}
-                    {chips.map((c) => <span key={c} className="chip">{c}</span>)}
-                  </p>
-                  {!!j.companies?.kategorie?.length && <p className="gedaempft klein">{j.companies.kategorie.join(", ")}</p>}
-                  {j.erstmals_gesehen && <p className="gedaempft klein">Erstmals gesehen: {datumDe(j.erstmals_gesehen)}</p>}
-                  {j.beschreibung_kurz && <p>{j.beschreibung_kurz}</p>}
-                  <form action={bewerbungAusStelle.bind(null, j.id)}>
-                    <SendeKnopf text="Bewerbung anlegen" klasse="knopf knopf-rand knopf-schmal" />
-                  </form>
+                <li key={j.id} className="stelle" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
+                  <div className="stelle-text">
+                    <h2><Link href={"/stellen/" + encodeURIComponent(j.id)}>{j.titel}</Link></h2>
+                    <p className="meta">
+                      <span className="firma">{j.unternehmen}</span>
+                      {bekannt(j.abteilung) && <span className="gedaempft">{j.abteilung}</span>}
+                      {neu && <span className="chip chip-neu" title="Seit höchstens 3 Tagen online">Neu</span>}
+                    </p>
+                    {kurz.length > 0 && (
+                      <ul className="kurz" aria-label="Kurzbeschreibung">
+                        {kurz.map((e) => <li key={e.feld}>{e.text}</li>)}
+                      </ul>
+                    )}
+                  </div>
+                  {st === "gemerkt" ? (
+                    <form action={entmerken.bind(null, j.id)}>
+                      <SendeKnopf text="Gemerkt ✓" klasse="knopf knopf-zustand knopf-schmal ist-gemerkt" gedrueckt title="Klicken, um nicht mehr zu merken" />
+                    </form>
+                  ) : st === "beworben" ? (
+                    <form action={bewerbungZuruecknehmen.bind(null, j.id)}>
+                      <SendeKnopf text="Beworben ✓" klasse="knopf knopf-zustand knopf-schmal" gedrueckt title="Klicken, um zurückzunehmen" />
+                    </form>
+                  ) : st ? (
+                    <button className="knopf knopf-zustand knopf-schmal" type="button" disabled>Beworben</button>
+                  ) : (
+                    <form action={merken.bind(null, j.id)}>
+                      <SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" />
+                    </form>
+                  )}
                 </li>
               );
             })}

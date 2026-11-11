@@ -68,7 +68,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
 
       {error && <p className="meldung fehler">Bewerbungen konnten nicht geladen werden.</p>}
       {!error && zeilen.length === 0 && (
-        <p className="karte">{aktiv ? "Keine Bewerbungen für diese Auswahl." : "Noch keine Bewerbungen. Lege eine aus einer Stelle, per Link oder manuell an."}</p>
+        <p className="leer">{aktiv ? "Keine Bewerbungen für diese Auswahl." : "Noch keine Bewerbungen. Lege eine aus einer Stelle, per Link oder manuell an."}</p>
       )}
       {zeilen.length > 0 && (
         <div className="tabelle-rahmen">
@@ -91,11 +91,11 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 <tr key={z.id}>
                   <td><Link href={`/bewerbungen/${z.id}`}>{z.firma || "(ohne Firma)"}</Link></td>
                   <td>{z.titel}</td>
-                  <td><span className="chip">{STATUS_LABEL[z.status]}</span></td>
-                  <td>{z.interesse ?? ""}</td>
-                  <td>{datumDe(z.beworben_am)}</td>
+                  <td><span className="chip" data-status={z.status}>{STATUS_LABEL[z.status]}</span></td>
+                  <td className="num">{z.interesse ?? ""}</td>
+                  <td className="num">{datumDe(z.beworben_am)}</td>
                   <td>{z.naechster_schritt}{z.naechster_schritt_faellig && ` (bis ${datumDe(z.naechster_schritt_faellig)})`}</td>
-                  <td>{tagDe(z.geaendert_am)}</td>
+                  <td className="num">{tagDe(z.geaendert_am)}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,5 +1,6 @@
 """RLS-Test gegen das echte Supabase-Projekt. Start: py -m pytest -m supabase"""
 import secrets
+import time
 from pathlib import Path
 
 import pytest
@@ -27,6 +28,17 @@ ANON = ENV.get("SUPABASE_ANON_KEY", "")
 
 def _h(key, token=None):
     return {"apikey": key, "Authorization": f"Bearer {token or key}"}
+
+
+def _retry(fn, versuche=5, pause=3):
+    """Cleanup ueberlebt kurze Netzabbrueche: bei Netzfehlern (RequestException) wiederholen."""
+    for i in range(versuche):
+        try:
+            return fn()
+        except requests.RequestException:
+            if i == versuche - 1:
+                raise
+            time.sleep(pause)
 
 
 def _warn(what, r):
@@ -63,11 +75,17 @@ def users():
     finally:
         # Datei zuerst (Nutzer-Loeschung kann an Storage-Objekten scheitern), dann Nutzer
         if ids:
-            _warn("Datei", requests.delete(f"{URL}/storage/v1/object/dokumente/{ids[0]}/test.txt",
-                                            headers=_h(SERVICE), timeout=30))
+            try:
+                _warn("Datei", _retry(lambda: requests.delete(f"{URL}/storage/v1/object/dokumente/{ids[0]}/test.txt",
+                                                                headers=_h(SERVICE), timeout=30)))
+            except Exception as e:  # jeder Schritt einzeln, damit Nutzer B trotzdem geloescht wird
+                print("WARNUNG Cleanup Datei:", e)
         for uid in ids:
-            _warn("Nutzer", requests.delete(f"{URL}/auth/v1/admin/users/{uid}",
-                                            headers=_h(SERVICE), timeout=30))
+            try:
+                _warn("Nutzer", _retry(lambda: requests.delete(f"{URL}/auth/v1/admin/users/{uid}",
+                                                                headers=_h(SERVICE), timeout=30)))
+            except Exception as e:
+                print("WARNUNG Cleanup Nutzer:", e)
 
 
 def test_rls_isolation(users):
@@ -137,3 +155,38 @@ def test_rls_isolation(users):
     # Anon darf jobs nicht lesen (revoke -> 401/403)
     r = requests.get(f"{rest}/jobs", headers=_h(ANON), timeout=30)
     assert r.status_code in (401, 403)
+
+
+def test_admin_einblicke_nicht_fuer_authenticated(users):
+    _, tok = users[0]
+    r = requests.post(f"{URL}/rest/v1/rpc/admin_einblicke", headers=_h(ANON, tok), json={}, timeout=30)
+    if r.status_code == 404 or "PGRST202" in r.text:
+        pytest.skip("Migration 005 noch nicht angewendet (admin_einblicke existiert nicht)")
+    assert r.status_code in (401, 403), f"authenticated darf admin_einblicke nicht aufrufen: {r.status_code} {r.text}"
+    r = requests.post(f"{URL}/rest/v1/rpc/admin_einblicke", headers=_h(SERVICE), json={}, timeout=30)
+    assert r.status_code == 200 and "aktiv_7" in r.json()
+
+
+def test_wichtige_punkte_rls(users):
+    (a_id, a_tok), (b_id, b_tok) = users
+    ha, hb = _h(ANON, a_tok), _h(ANON, b_tok)
+    rest = f"{URL}/rest/v1/wichtige_punkte"
+    prefer = {"Prefer": "return=representation"}
+    r = requests.get(f"{rest}?limit=1", headers=_h(SERVICE), timeout=30)
+    if r.status_code == 404 or "PGRST205" in r.text or "42P01" in r.text:
+        pytest.skip("Migration 005 noch nicht angewendet (wichtige_punkte fehlt)")
+    try:
+        r = requests.post(rest, headers={**ha, **prefer}, json={"begriff": "Homeoffice"}, timeout=30)
+        assert r.status_code == 201, r.text
+        pid = r.json()[0]["id"]
+        assert requests.get(rest, headers=hb, timeout=30).json() == []
+        r = requests.post(rest, headers=hb, json={"owner_id": a_id, "begriff": "Fremd"}, timeout=30)
+        assert 400 <= r.status_code < 500, r.text
+        r = requests.delete(f"{rest}?id=eq.{pid}", headers={**hb, **prefer}, timeout=30)
+        assert r.json() == []
+        r = requests.get(f"{rest}?id=eq.{pid}", headers=ha, timeout=30)
+        assert len(r.json()) == 1
+        r = requests.post(rest, headers=ha, json={"begriff": " homeoffice "}, timeout=30)  # Duplikat trotz Gross/Klein/Leerraum
+        assert r.status_code == 409, r.text
+    finally:
+        _warn("wichtige_punkte", _retry(lambda: requests.delete(f"{rest}?owner_id=eq.{a_id}", headers=_h(SERVICE), timeout=30)))

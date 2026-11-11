@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { fehlerText } from "@/lib/fehler";
 
@@ -14,6 +15,9 @@ export default function Login() {
   const [fehler, setFehler] = useState("");
   const [info, setInfo] = useState("");
   const [laedt, setLaedt] = useState(false);
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get("geloescht") === "1") setInfo("Dein Konto wurde gelöscht.");
+  }, []);
 
   function wechsle(m: Modus) {
     setModus(m);
@@ -101,6 +105,7 @@ export default function Login() {
           </>
         )}
       </p>
+      <p><Link href="/datenschutz">Datenschutz</Link></p>
     </div>
   );
 }

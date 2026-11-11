@@ -9,7 +9,8 @@ from pathlib import Path
 from scraper.ats import ADAPTER
 from scraper import db
 from scraper.companies import lade_unternehmen
-from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant
+from scraper.steckbrief import steckbrief
+from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant, land
 
 
 def _schreibe_text(pfad, text):
@@ -39,8 +40,14 @@ def _firma(f, heute):
         for s in stellen:
             ok, grund = ist_relevant(s["titel"], s["ort"], s["remote"])
             if ok:
+                try:
+                    sbr = steckbrief(s.get("abschnitte"), s["text"])
+                except Exception as e:  # eine Anzeige darf nie die ganze Firma kippen
+                    print(f"Hinweis: Steckbrief fehlgeschlagen ({name}): {type(e).__name__}: {e}")
+                    sbr = None
                 behalten.append({**s, "erfahrungslevel": erfahrungslevel(s["titel"]),
-                                 "staedte": deutsche_staedte(s["ort"])})
+                                 "staedte": deutsche_staedte(s["ort"]), "land": land(s["ort"]),
+                                 "steckbrief": sbr})
             else:
                 gruende[grund] += 1
         neu, geschlossen = db.schreibe(name, behalten, heute)
@@ -69,9 +76,11 @@ def _markdown(bericht):
 def lauf(heute, datenordner="data"):
     datenordner = Path(datenordner)
     firmen = lade_unternehmen(datenordner / "companies.csv")
+    db._spalten = None  # Spalten-Pruefung (Migration 005) einmal pro Lauf neu
     db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in firmen if f["aktiv"] == "ja"]}
     _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
+    db.snapshot_nachruesten()  # nach allen Firmen
     db.speichere_lauf(bericht)
     return bericht
 

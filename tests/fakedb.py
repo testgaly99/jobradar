@@ -22,17 +22,33 @@ def _in(p):
 
 class FakeDB:
     def __init__(self):
+        self.ohne_spalten = False
+        self.ohne_funktion = False
+        self.nachgeruestet = 0
+        self.pruefungen = 0
         self.t = {"companies": {}, "jobs": {}, "laeufe": [], "applications": []}
 
     def __call__(self, method, pfad, params=None, json=None, headers=None):
         params = params or {}
-        if method == "POST" and pfad == "laeufe":
+        if method == "POST" and pfad == "rpc/snapshot_nachruesten":
+            self.nachgeruestet += 1
+            if self.ohne_funktion:
+                raise RuntimeError("Supabase POST rpc/snapshot_nachruesten: 404 {\"code\":\"PGRST202\"}")
+            return 3
+        elif method == "POST" and pfad == "laeufe":
             self.t["laeufe"].append(json)
         elif method == "POST":
             assert "merge-duplicates" in headers["Prefer"]
             key = params["on_conflict"]
             for z in json:
+                if self.ohne_spalten:
+                    assert not {"abschnitte", "land", "steckbrief"} & set(z)
                 self.t[pfad].setdefault(z[key], {}).update(z)  # merge wie PostgREST
+        elif method == "GET" and pfad == "jobs" and params.get("select") == "abschnitte,land,steckbrief":
+            self.pruefungen += 1
+            if self.ohne_spalten:
+                raise RuntimeError("Supabase GET jobs: 400 column jobs.abschnitte does not exist")
+            return []
         elif method == "GET" and pfad == "jobs":
             rows = [z for z in self.t["jobs"].values() if z["unternehmen"] == params["unternehmen"][3:]]
             rows.sort(key=lambda z: z["id"])

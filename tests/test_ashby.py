@@ -26,7 +26,7 @@ def test_fixture(monkeypatch):
     assert len(stellen) == 3  # unlisted copy excluded
     for s in stellen:
         assert set(s) == {"ext_id", "titel", "ort", "remote", "url", "beschreibung_kurz", "text",
-                          "abteilung", "arbeitsmodell", "vertragsart"}
+                          "abteilung", "arbeitsmodell", "vertragsart", "abschnitte"}
         assert isinstance(s["ext_id"], str) and s["url"].startswith("http")
         assert isinstance(s["remote"], bool)
         assert len(s["beschreibung_kurz"]) <= 300 and s["text"].startswith(s["beschreibung_kurz"])
@@ -44,3 +44,9 @@ def test_fixture(monkeypatch):
 def test_new_york_remote_wird_ausgefiltert(monkeypatch):
     ny = _stellen(monkeypatch)[0]
     assert ist_relevant(ny["titel"], ny["ort"], ny["remote"]) == (False, "Ausland")
+
+
+def test_abschnitte(monkeypatch):
+    stellen = _stellen(monkeypatch)
+    assert stellen[0]["abschnitte"][0]["titel"] == "About Taktile"  # <p><strong>
+    assert stellen[1]["abschnitte"][0]["titel"] == "ABOUT THE ROLE"  # <h2>

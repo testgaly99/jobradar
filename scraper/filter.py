@@ -66,3 +66,16 @@ def deutsche_staedte(ort_text: str) -> list[str]:
         if s not in ergebnis:
             ergebnis.append(s)
     return ergebnis
+
+
+_AT_RE = re.compile(r"\b(Austria|Österreich|Oesterreich|Wien|Vienna)\b", re.IGNORECASE)
+_CH_RE = re.compile(r"\b(Switzerland|Schweiz|Zürich|Zuerich|Zurich|Genf|Geneva|Basel)\b", re.IGNORECASE)
+
+
+def land(ort_text: str) -> str:
+    # Deutschland hat Vorrang (der Vorfilter lässt nur Deutschland durch); sonst das zuerst genannte.
+    if _DE_RE.search(ort_text) or _DE_CODE.search(ort_text):
+        return "Deutschland"
+    treffer = [(m.start(), name) for name, rx in (("Österreich", _AT_RE), ("Schweiz", _CH_RE))
+               if (m := rx.search(ort_text))]
+    return min(treffer)[1] if treffer else ""

@@ -20,7 +20,7 @@ const STELLE: Record<string, Typ> = { firma: "text", titel: "text", link: "url",
 
 // Allowlist je Abschnitt: nur diese Spalten dürfen geschrieben werden.
 export const FELDER: Record<Abschnitt, Record<string, Typ>> = {
-  neu: { ...STELLE, status: "status" },
+  neu: { ...STELLE, status: "status", snapshot_text: "text" },
   stelle: STELLE,
   bewerbung: { beworben_am: "datum", bewerbungsweg: "text", referenznummer: "text", portal_hinweis: "text", cv_dokument_id: "uuid", anschreiben_dokument_id: "uuid" },
   gehalt: { gehalt_spanne_anzeige: "text", gehalt_wunsch: "text", angebot_fix: "text", angebot_variabel: "text", angebot_urlaub: "text", angebot_benefits: "text", gehalt_aktuell_vergleich: "text" },
@@ -131,3 +131,7 @@ export function berlinZuIso(lokal: string): string | null {
   t = wand - berlinOffsetMs(t); // Offset am Zielzeitpunkt erneut prüfen (Sommerzeitwechsel)
   return new Date(t).toISOString();
 }
+
+// Wechsel auf "beworben" setzt das Datum, falls es noch leer ist (ein vorhandenes Datum bleibt).
+export const beworbenPatch = (status: string, beworbenAm: string | null | undefined, heute: string): { beworben_am?: string } =>
+  status === "beworben" && !beworbenAm ? { beworben_am: heute } : {};

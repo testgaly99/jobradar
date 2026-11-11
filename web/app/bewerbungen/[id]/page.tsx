@@ -7,6 +7,8 @@ import {
 import {
   abschnittSpeichern, bewerbungLoeschen, eintragLoeschen, interviewAnlegen, notizAnlegen, personAnlegen,
 } from "../detail-actions";
+import Abschnitte from "../../abschnitte";
+import { leseAbschnitte } from "@/lib/anzeige";
 import { DruckKnopf, LoeschForm, SendeKnopf } from "../knoepfe";
 
 type Row = Record<string, string | number | string[] | null>;
@@ -48,7 +50,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   const link = sicher(row.link as string | null);
   const dokOptionen = (art: string) => (
     <>
-      <option value="">– keins –</option>
+      <option value="">keins</option>
       {docs.filter((d) => d.art === art).map((d) => (
         <option key={d.id} value={d.id}>{d.name || "Dokument"}{d.version_datum ? ` (${datumDe(d.version_datum)})` : ""}</option>
       ))}
@@ -57,10 +59,10 @@ export default async function Seite({ params, searchParams }: { params: Promise<
 
   return (
     <>
-      <p className="kein-druck"><Link href="/bewerbungen">← Alle Bewerbungen</Link></p>
+      <p className="kein-druck"><Link href="/bewerbungen">Alle Bewerbungen</Link></p>
       <h1>{v(row.firma) || "(ohne Firma)"}: {v(row.titel)}</h1>
       <p className="chips kein-druck">
-        <span className="chip">{STATUS_LABEL[row.status as Status]}</span>
+        <span className="chip" data-status={v(row.status)}>{STATUS_LABEL[row.status as Status]}</span>
         {row.ergebnis && <span className="chip">{ERGEBNIS_LABEL[row.ergebnis as string]}</span>}
         {link && <a href={link} target="_blank" rel="noopener noreferrer">Anzeige öffnen</a>}
       </p>
@@ -69,13 +71,14 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       {/* Nur im Druck sichtbar: Stelle als Text, der Snapshot folgt darunter */}
       <section className="nur-druck">
         <p><strong>{v(row.firma)}</strong>: {v(row.titel)}</p>
-        <p>{[row.standort, row.praesenzmodell, row.quelle, row.link].filter(Boolean).join(" · ")}</p>
+        <p>{[row.standort, row.praesenzmodell, row.quelle, row.link].filter(Boolean).join(", ")}</p>
         {row.anforderungen && <pre className="snapshot">{v(row.anforderungen)}</pre>}
       </section>
 
       <div className="detail">
-        <form action={speichern("stelle")} className="karte formular kein-druck">
-          <h2>Stelle</h2>
+        <details className="karte kein-druck" open>
+          <summary><h2>Stelle</h2></summary>
+          <form action={speichern("stelle")} className="formular">
           <Text a={row} name="firma" label="Firma (Pflicht)" />
           <Text a={row} name="titel" label="Titel (Pflicht)" />
           <Text a={row} name="link" label="Link" type="url" />
@@ -85,9 +88,11 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <Text a={row} name="anforderungen" label="Anforderungen und Aufgaben (Auszug)" gross />
           <SendeKnopf text="Stelle speichern" />
         </form>
+        </details>
 
-        <form action={speichern("ablauf")} className="karte formular kein-druck">
-          <h2>Ablauf</h2>
+        <details className="karte kein-druck" open>
+          <summary><h2>Ablauf</h2></summary>
+          <form action={speichern("ablauf")} className="formular">
           <label>Status
             <select name="status" defaultValue={v(row.status)}>
               {STATUS.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
@@ -97,15 +102,18 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <Text a={row} name="naechster_schritt_faellig" label="Fällig am" type="date" />
           <SendeKnopf text="Ablauf speichern" />
         </form>
+        </details>
 
-        <form action={speichern("bewerbung")} className="karte formular kein-druck">
-          <h2>Bewerbung</h2>
+        <details className="karte kein-druck" open>
+          <summary><h2>Bewerbung</h2></summary>
+          <form action={speichern("bewerbung")} className="formular">
           <Text a={row} name="beworben_am" label="Beworben am" type="date" />
           <Text a={row} name="bewerbungsweg" label="Bewerbungsweg" />
           <Text a={row} name="referenznummer" label="Referenznummer" />
           <Text a={row} name="portal_hinweis" label="Hinweis zum Bewerberportal (kein Passwort!)" />
           <label>CV
             <select name="cv_dokument_id" defaultValue={v(row.cv_dokument_id)}>{dokOptionen("cv")}</select>
+            <a href="/dokumente" className="klein">Dokument hochladen</a>
           </label>
           <label>Anschreiben
             <select name="anschreiben_dokument_id" defaultValue={v(row.anschreiben_dokument_id)}>{dokOptionen("anschreiben")}</select>
@@ -113,9 +121,11 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           {docs.length === 0 && <p className="gedaempft klein">Noch keine Dokumente. <a href="/dokumente">Jetzt hochladen</a>.</p>}
           <SendeKnopf text="Bewerbung speichern" />
         </form>
+        </details>
 
-        <form action={speichern("gehalt")} className="karte formular kein-druck">
-          <h2>Gehalt</h2>
+        <details className="karte kein-druck" open>
+          <summary><h2>Gehalt</h2></summary>
+          <form action={speichern("gehalt")} className="formular">
           <Text a={row} name="gehalt_spanne_anzeige" label="Spanne laut Anzeige" />
           <Text a={row} name="gehalt_wunsch" label="Eigener Wunsch" />
           <Text a={row} name="angebot_fix" label="Angebot: fix" />
@@ -125,20 +135,24 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <Text a={row} name="gehalt_aktuell_vergleich" label="Vergleich zum aktuellen Gehalt" />
           <SendeKnopf text="Gehalt speichern" />
         </form>
+        </details>
 
-        <form action={speichern("rahmen")} className="karte formular kein-druck">
-          <h2>Rahmen</h2>
+        <details className="karte kein-druck" open>
+          <summary><h2>Rahmen</h2></summary>
+          <form action={speichern("rahmen")} className="formular">
           <Text a={row} name="starttermin" label="Starttermin" type="date" />
           <Text a={row} name="kuendigungsfrist" label="Kündigungsfrist" />
           <Text a={row} name="referenzen" label="Referenzen" gross />
           <SendeKnopf text="Rahmen speichern" />
         </form>
+        </details>
 
-        <form action={speichern("ergebnis")} className="karte formular kein-druck">
-          <h2>Ergebnis</h2>
+        <details className="karte kein-druck" open>
+          <summary><h2>Ergebnis</h2></summary>
+          <form action={speichern("ergebnis")} className="formular">
           <label>Ergebnis
             <select name="ergebnis" defaultValue={v(row.ergebnis)}>
-              <option value="">– offen –</option>
+              <option value="">offen</option>
               {Object.entries(ERGEBNIS_LABEL).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
             </select>
           </label>
@@ -147,12 +161,14 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <Text a={row} name="rueckzug_grund" label="Grund für das Zurückziehen" />
           <SendeKnopf text="Ergebnis speichern" />
         </form>
+        </details>
 
-        <form action={speichern("einschaetzung")} className="karte formular kein-druck">
-          <h2>Einschätzung</h2>
+        <details className="karte kein-druck" open>
+          <summary><h2>Einschätzung</h2></summary>
+          <form action={speichern("einschaetzung")} className="formular">
           <label>Interesse
             <select name="interesse" defaultValue={v(row.interesse)}>
-              <option value="">– keine Angabe –</option>
+              <option value="">keine Angabe</option>
               {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
             </select>
           </label>
@@ -162,16 +178,17 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <Text a={row} name="notizen" label="Notizen" gross />
           <SendeKnopf text="Einschätzung speichern" />
         </form>
+        </details>
       </div>
 
-      <section className="karte block kein-druck">
-        <h2>Personen</h2>
+      <details className="karte block kein-druck" open>
+        <summary><h2>Personen</h2></summary>
         <ul className="eintraege">
           {personen.map((p) => (
             <li key={p.id}>
               <div>
                 <strong>{p.name}</strong> {p.art && <span className="chip">{KONTAKT_ART_LABEL[p.art]}</span>}
-                <p className="klein">{[p.rolle, p.firma, p.email, p.telefon, p.linkedin].filter(Boolean).join(" · ")}</p>
+                <p className="klein">{[p.rolle, p.firma, p.email, p.telefon, p.linkedin].filter(Boolean).join(", ")}</p>
               </div>
               <LoeschForm action={eintragLoeschen.bind(null, id, "contacts", p.id)} frage="Person löschen?" />
             </li>
@@ -193,10 +210,10 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <label>LinkedIn<input name="linkedin" /></label>
           <SendeKnopf text="Person speichern" />
         </form>
-      </section>
+      </details>
 
-      <section className="karte block kein-druck">
-        <h2>Interviews und Aufgaben</h2>
+      <details className="karte block kein-druck" open>
+        <summary><h2>Interviews und Aufgaben</h2></summary>
         <ul className="eintraege">
           {interviews.map((i) => (
             <li key={i.id}>
@@ -225,10 +242,10 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <label>Frist der Aufgabe<input name="aufgabe_frist" type="date" /></label>
           <SendeKnopf text="Interview speichern" />
         </form>
-      </section>
+      </details>
 
-      <section className="karte block kein-druck">
-        <h2>Verlauf</h2>
+      <details className="karte block kein-druck" open>
+        <summary><h2>Verlauf</h2></summary>
         <ul className="eintraege">
           {events.map((e) => (
             <li key={e.id}>
@@ -245,17 +262,15 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <label>Notiz zum Verlauf<textarea name="notiz" rows={3} required /></label>
           <SendeKnopf text="Notiz hinzufügen" />
         </form>
-      </section>
+      </details>
 
-      <section className="karte block">
-        <div className="kopfzeile">
-          <h2>Snapshot der Anzeige</h2>
-          <DruckKnopf />
-        </div>
-        {row.snapshot_text
-          ? <pre className="snapshot">{v(row.snapshot_text)}</pre>
+      <details className="karte block" open>
+        <summary><h2>Snapshot der Anzeige</h2></summary>
+        <div className="kopfzeile"><DruckKnopf /></div>
+        {row.snapshot_text || (a as { snapshot_abschnitte?: unknown }).snapshot_abschnitte
+          ? <Abschnitte abschnitte={leseAbschnitte((a as { snapshot_abschnitte?: unknown }).snapshot_abschnitte)} text={v(row.snapshot_text)} />
           : <p className="gedaempft">Kein Snapshot gespeichert.</p>}
-      </section>
+      </details>
 
       <section className="block kein-druck">
         <LoeschForm action={bewerbungLoeschen.bind(null, id)} frage="Diese Bewerbung mit allem Zubehör endgültig löschen?" text="Bewerbung löschen" />
