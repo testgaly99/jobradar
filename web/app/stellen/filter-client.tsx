@@ -22,9 +22,13 @@ export default function FilterClient({ aktion, listeId, textFelder = ["q", "voll
     start(() => router.replace(u, { scroll: false }));
   }
 
-  // key = aktuelle Adresse: bei Zurücksetzen, Zurück/Vor wird das Formular neu aufgebaut und zeigt wieder den Stand der Adresse.
+  // Neue Adresse (Filter, Zurücksetzen, Zurück/Vor): Felder auf den Stand der Adresse zurücksetzen, ohne Neuaufbau,
+  // damit Tastaturfokus und geöffnete Gruppen bleiben. React hat defaultValue/defaultChecked da schon aktualisiert.
+  const adresse = sp.toString();
+  useEffect(() => { form.current?.reset(); }, [adresse]);
+
   return (
-    <form key={sp.toString()} ref={form} method="get" action={aktion} className="filterform"
+    <form ref={form} method="get" action={aktion} className="filterform"
       onChange={(e) => { const t = e.target as unknown as HTMLInputElement; if (t.type !== "search" && !textFelder.includes(t.name)) los(false); }}
       onSubmit={(e) => { e.preventDefault(); los(true); }}>
       {children}

@@ -49,3 +49,10 @@ export function karteAendern(karten: Karte[], id: string, patch: Partial<Karte>)
   const k = karten.find((x) => x.id === id);
   return k ? [{ ...k, ...patch }, ...karten.filter((x) => x.id !== id)] : karten;
 }
+
+// Tastatur-Ziehen: die Spalte links (-1) bzw. rechts (1) von der aktuellen, nach Lage sortiert; am Rand null.
+export function naechsteSpalte<T>(spalten: { id: T; left: number }[], aktuell: T, richtung: 1 | -1): T | null {
+  const ids = [...spalten].sort((a, b) => a.left - b.left).map((s) => s.id);
+  const i = ids.indexOf(aktuell);
+  return i < 0 ? null : ids[i + richtung] ?? null;
+}

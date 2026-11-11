@@ -2,7 +2,7 @@
 import { notFound, redirect, RedirectType } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { istStatus, istUuid, parseAbschnitt, type Abschnitt } from "@/lib/bewerbung";
+import { istUuid, parseAbschnitt, type Abschnitt, type Status } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { ladeZugZeile } from "@/lib/tracker-daten";
 import { zugPatch, type ZugPatch } from "@/lib/zug";
@@ -37,29 +37,36 @@ export async function abschnittSpeichern(id: string, abschnitt: Abschnitt, f: Fo
   if (!["stelle", "bewerbung", "gehalt", "rahmen", "ergebnis", "einschaetzung", "ablauf"].includes(abschnitt)) notFound();
   const r = parseAbschnitt(abschnitt, f);
   if ("fehler" in r) return zurueck(id, r.fehler);
-  const { data, error } = await sb.from("applications").update(r.daten).eq("id", id).select("id");
+  let daten: Record<string, unknown> = r.daten;
+  let vonStatus: Status | null = null;
+  // Statuswechsel im Formular "Ablauf": dieselben Zugregeln wie das Board, Bedingung im Schreibbefehl.
+  if (abschnitt === "ablauf") {
+    const { alt, ohne006, fehler } = await ladeZugZeile(sb, id);
+    if (fehler) zurueck(id, DB_FEHLER);
+    if (!alt) notFound();
+    const status = r.daten.status as Status;
+    if (status !== alt.status) {
+      const heute = heuteLokal();
+      let patch: ZugPatch;
+      // Das Formular hat kein Ergebnis-Feld: das vorhandene Ergebnis zählt, abgeschlossen ohne Ergebnis bleibt hier erlaubt.
+      try { patch = zugPatch(alt, { status, ergebnis: alt.ergebnis }, heute); }
+      catch { patch = { status, ...(alt.beworben_am ? {} : { beworben_am: heute }) }; }
+      if (ohne006) delete patch.runde;
+      daten = { ...daten, ...patch };
+      vonStatus = alt.status;
+    }
+  }
+  let q = sb.from("applications").update(daten).eq("id", id);
+  if (vonStatus) q = q.eq("status", vonStatus);
+  const { data, error } = await q.select("id");
   if (error) zurueck(id, DB_FEHLER);
-  if (!data?.length) notFound();
+  if (!data?.length) {
+    if (vonStatus) zurueck(id, "Der Status wurde inzwischen geändert (z. B. im Board). Bitte prüfe ihn und speichere erneut.");
+    notFound();
+  }
   revalidatePath(`/bewerbungen/${id}`);
+  if (vonStatus) for (const p of ["/bewerbungen", "/bewerbungen/kanban", "/stellen"]) revalidatePath(p);
   zurueck(id);
-}
-
-export async function statusWechseln(id: string, f: FormData) {
-  const sb = await start(id);
-  const status = f.get("status");
-  if (!istStatus(status)) notFound();
-  const { alt, ohne006 } = await ladeZugZeile(sb, id);
-  if (!alt) notFound();
-  const heute = heuteLokal();
-  let patch: ZugPatch;
-  // Dieses Formular hat ein eigenes Ergebnis-Feld: abgeschlossen ohne Ergebnis bleibt hier erlaubt.
-  try { patch = zugPatch(alt, { status, ergebnis: alt.ergebnis }, heute); }
-  catch { patch = { status, ...(alt.beworben_am ? {} : { beworben_am: heute }) }; }
-  if (ohne006) delete patch.runde;
-  const { data, error } = await sb.from("applications").update(patch).eq("id", id).select("id");
-  if (error || !data?.length) notFound();
-  revalidatePath("/bewerbungen/kanban");
-  redirect("/bewerbungen/kanban");
 }
 
 export async function personAnlegen(id: string, f: FormData) {

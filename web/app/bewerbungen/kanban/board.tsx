@@ -2,12 +2,11 @@
 import { useEffect, useOptimistic, useState, useTransition, type ReactNode } from "react";
 import {
   DndContext, DragOverlay, KeyboardSensor, MouseSensor, TouchSensor, useDroppable, useSensor, useSensors,
-  type Active, type Announcements, type DragEndEvent, type UniqueIdentifier,
+  type Active, type Announcements, type DragEndEvent, type KeyboardCoordinateGetter, type UniqueIdentifier,
 } from "@dnd-kit/core";
-import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { ERGEBNIS_LABEL, STATUS_LABEL, type Status } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
-import { BOARD_SPALTEN, karteAendern, nachSpalten, type Karte } from "@/lib/tracker-karte";
+import { BOARD_SPALTEN, karteAendern, nachSpalten, naechsteSpalte, type Karte } from "@/lib/tracker-karte";
 import { rundePatch, zugPatch } from "@/lib/zug";
 import { kommentarSpeichern, rundeAendern, zugAusfuehren, zugRueckgaengig, type ZugVorher } from "../zug-actions";
 import ArchivDialog from "./archiv-dialog";
@@ -23,7 +22,16 @@ const ansagen: Announcements = {
   onDragEnd: ({ active, over }) => (over ? `${nameVon(active)} abgelegt in ${spaltenName(over.id)}.` : `${nameVon(active)} abgelegt, keine Spalte gewählt.`),
   onDragCancel: ({ active }) => `Ziehen abgebrochen. ${nameVon(active)} bleibt an ihrem Platz.`,
 };
-const anleitung = "Zum Aufnehmen Leertaste oder Enter drücken. Mit den Pfeiltasten eine andere Spalte wählen, mit Leertaste oder Enter ablegen, mit Escape abbrechen.";
+// Tastatur: ←/→ setzt die Karte auf die vorige/nächste Spalte (auch das Archiv am Ende); andere Tasten bewegen nichts.
+const spaltenSprung: KeyboardCoordinateGetter = (event, { context: { active, over, droppableRects } }) => {
+  const richtung = event.code === "ArrowRight" ? 1 : event.code === "ArrowLeft" ? -1 : 0;
+  if (!richtung || !active) return;
+  event.preventDefault();
+  const ziel = naechsteSpalte([...droppableRects].map(([id, r]) => ({ id, left: r.left })), over?.id ?? karteVon(active).status, richtung);
+  const r = ziel == null ? undefined : droppableRects.get(ziel);
+  return r && { x: r.left, y: r.top };
+};
+const anleitung ="Zum Aufnehmen Leertaste oder Enter drücken. Mit den Pfeiltasten eine andere Spalte wählen, mit Leertaste oder Enter ablegen, mit Escape abbrechen.";
 
 function Spalte({ id, titel, anzahl, leer, children }: { id: Status; titel: string; anzahl: number; leer?: string; children?: ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id });
@@ -61,7 +69,7 @@ export default function Board({ karten, ohneSpalten, archiv }: { karten: Karte[]
     useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
     // Finger: kurz halten, damit Wischen weiter scrollt.
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, { coordinateGetter: spaltenSprung }),
   );
 
   // Ein Schritt im Hintergrund: optimistisch ändern, Action rufen, bei Fehler springt die Karte von selbst zurück.

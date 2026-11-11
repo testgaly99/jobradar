@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { karteAendern, nachSpalten, type Karte } from "../lib/tracker-karte.ts";
+import { karteAendern, nachSpalten, naechsteSpalte, type Karte } from "../lib/tracker-karte.ts";
 
 const k = (id: string, status: Karte["status"]) => ({ id, status } as Karte);
 
@@ -18,4 +18,14 @@ test("karteAendern: setzt Felder und legt die Karte nach vorn", () => {
   assert.equal(neu[0].runde, 1);
   const gleich = [k("a", "gemerkt")];
   assert.equal(karteAendern(gleich, "x", { status: "angebot" }), gleich);
+});
+
+test("naechsteSpalte: nach Lage sortiert, am Rand null", () => {
+  const sp = [{ id: "beworben", left: 300 }, { id: "gemerkt", left: 0 }, { id: "abgeschlossen", left: 900 }];
+  assert.equal(naechsteSpalte(sp, "gemerkt", 1), "beworben");
+  assert.equal(naechsteSpalte(sp, "beworben", 1), "abgeschlossen");
+  assert.equal(naechsteSpalte(sp, "beworben", -1), "gemerkt");
+  assert.equal(naechsteSpalte(sp, "gemerkt", -1), null);
+  assert.equal(naechsteSpalte(sp, "abgeschlossen", 1), null);
+  assert.equal(naechsteSpalte(sp, "fehlt", 1), null);
 });

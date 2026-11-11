@@ -2,6 +2,8 @@
 alter table public.applications add column if not exists runde smallint;
 alter table public.applications drop constraint if exists applications_runde_check;
 alter table public.applications add constraint applications_runde_check check (runde between 1 and 4);
+-- Schon laufende Gespräche starten bei Runde 1 (sonst wirkt der erste Klick auf "+ Runde" wie nichts).
+update public.applications set runde = 1 where runde is null and status = 'im_gespraech';
 
 alter table public.applications add column if not exists kommentar text;
 alter table public.applications drop constraint if exists applications_kommentar_check;
