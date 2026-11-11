@@ -5,7 +5,7 @@ import { AUSGEBLENDET_BRANCHE, ID_FORM } from "@/lib/filter";
 import { modellText, FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
 import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
-import { merken, beworben, entmerken, bewerbungZuruecknehmen } from "../actions";
+import { merken, beworben, entmerken } from "../actions";
 import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
 
@@ -61,15 +61,8 @@ export default async function Seite({ params, searchParams }: { params: Promise<
             </form>
             <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Zur Bewerbung</Link>
           </>
-        ) : app.data?.status === "beworben" ? (
-          <>
-            <form action={bewerbungZuruecknehmen.bind(null, j.id)}>
-              <SendeKnopf text="Beworben ✓" klasse="knopf knopf-zustand knopf-schmal" gedrueckt title="Klicken, um zurückzunehmen" />
-            </form>
-            <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Zur Bewerbung</Link>
-          </>
         ) : app.data ? (
-          <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Zur Bewerbung</Link>
+          <Link className="knopf knopf-zustand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Beworben ✓ · Zur Bewerbung</Link>
         ) : (
           <form action={merken.bind(null, j.id)}><SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" /></form>
         )}

@@ -1,3 +1,2 @@
-// Welche Umschalt-Aktion darf bei welchem Status etwas tun? (Merken/Beworben sind getrennte Kategorien.)
+// Entmerken löscht nur im Status gemerkt; ab beworben gibt es in der Stellenliste keinen Umschalter mehr.
 export const darfEntmerken = (status: string | null | undefined) => status === "gemerkt";
-export const darfZuruecknehmen = (status: string | null | undefined) => status === "beworben";

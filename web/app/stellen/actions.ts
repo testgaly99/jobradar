@@ -6,7 +6,7 @@ import { beworbenPatch } from "@/lib/bewerbung";
 import { anlegenAusJob } from "@/lib/bewerbung-anlegen";
 import { fehlerText } from "@/lib/fehler";
 import { heuteLokal } from "@/lib/filter";
-import { darfEntmerken, darfZuruecknehmen } from "@/lib/schalter";
+import { darfEntmerken } from "@/lib/schalter";
 
 // Merkt die Stelle (Status gemerkt) und bleibt auf der Liste. Doppelklick legt dank anlegenAusJob keine zweite Bewerbung an.
 export async function merken(jobId: string) {
@@ -58,16 +58,3 @@ export async function entmerken(jobId: string) {
   revalidatePath(`/stellen/${jobId}`);
 }
 
-// Beworben zurücknehmen: nur Status beworben, zurück auf gemerkt ohne Datum. Nichts wird gelöscht.
-export async function bewerbungZuruecknehmen(jobId: string) {
-  const sb = await createClient();
-  const { data: claims } = await sb.auth.getClaims();
-  if (!claims?.claims) redirect("/login");
-  const { data: a } = await sb.from("applications").select("id,status").eq("job_id", jobId).limit(1).maybeSingle();
-  if (a && darfZuruecknehmen(a.status)) {
-    const { error } = await sb.from("applications").update({ status: "gemerkt", beworben_am: null }).eq("id", a.id).eq("status", "beworben");
-    if (error) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Der Status konnte nicht gespeichert werden. Bitte erneut versuchen.")}`);
-  }
-  revalidatePath("/stellen");
-  revalidatePath(`/stellen/${jobId}`);
-}

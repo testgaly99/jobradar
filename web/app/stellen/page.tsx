@@ -4,7 +4,7 @@ import { firmenFarbe } from "@/lib/farbe";
 import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
 import { kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, nachGroesse, stellenAbfrage } from "@/lib/stellen";
-import { merken, entmerken, bewerbungZuruecknehmen } from "./actions";
+import { merken, entmerken } from "./actions";
 import FilterBlock from "./filterblock";
 import FilterClient from "./filter-client";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
@@ -49,7 +49,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const seiten = Math.max(1, Math.ceil(gesamt / PRO_SEITE));
   const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.seit ? 1 : 0);
   // Eine Abfrage für alle angezeigten Stellen: welche sind schon gemerkt oder beworben? (RLS liefert nur eigene Zeilen)
-  const status = new Map<string, string>();
+  const status = new Map<string, { status: string; id: string }>();
   const steckbriefe = new Map<string, unknown>();
   // Steckbrief-Spalte und Felder-Tabelle gibt es erst nach Migration 005: Fehler ergibt leeren Steckbrief bzw. Standardfelder.
   const felderZeile = await sb.from("listen_felder").select("felder").maybeSingle();
@@ -57,10 +57,10 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   if (jobs.length) {
     const ids = jobs.map((j) => j.id);
     const [apps, sbr] = await Promise.all([
-      sb.from("applications").select("job_id,status").in("job_id", ids),
+      sb.from("applications").select("id,job_id,status").in("job_id", ids),
       sb.from("jobs").select("id,steckbrief").in("id", ids),
     ]);
-    for (const a of apps.data ?? []) status.set(a.job_id, a.status);
+    for (const a of apps.data ?? []) status.set(a.job_id, { status: a.status, id: a.id });
     for (const s of sbr.error ? [] : (sbr.data ?? [])) steckbriefe.set(s.id, s.steckbrief);
   }
 
@@ -151,7 +151,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 erstmalsGesehen: j.erstmals_gesehen, steckbrief: leseSteckbrief(steckbriefe.get(j.id)),
                 branchen: (j.companies?.kategorie ?? []).filter((k) => k !== AUSGEBLENDET_BRANCHE),
               }, felder);
-              const st = status.get(j.id);
+              const app = status.get(j.id);
+              const st = app?.status;
               return (
                 <li key={j.id} className="stelle" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
                   <div className="stelle-text">
@@ -171,12 +172,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                     <form action={entmerken.bind(null, j.id)}>
                       <SendeKnopf text="Gemerkt ✓" klasse="knopf knopf-zustand knopf-schmal ist-gemerkt" gedrueckt title="Klicken, um nicht mehr zu merken" />
                     </form>
-                  ) : st === "beworben" ? (
-                    <form action={bewerbungZuruecknehmen.bind(null, j.id)}>
-                      <SendeKnopf text="Beworben ✓" klasse="knopf knopf-zustand knopf-schmal" gedrueckt title="Klicken, um zurückzunehmen" />
-                    </form>
-                  ) : st ? (
-                    <button className="knopf knopf-zustand knopf-schmal" type="button" disabled>Beworben</button>
+                  ) : app ? (
+                    // Ab "beworben" kein Umschalter mehr: ein Klick würde Status zurücksetzen, ein zweiter die Bewerbung samt Eingaben löschen.
+                    <Link className="knopf knopf-zustand knopf-schmal" href={`/bewerbungen/${app.id}`} title="Zur Bewerbung">Beworben ✓</Link>
                   ) : (
                     <form action={merken.bind(null, j.id)}>
                       <SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" />
