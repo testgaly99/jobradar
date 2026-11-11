@@ -30,3 +30,9 @@ test("Median 5", () => {
   ], H);
   assert.equal(k.antwortzeitMedian, 5);
 });
+test("Gesprächsquote >= Angebotsquote, Angebotsquote-Wert", () => {
+  const k = kennzahlen([b({ status: "abgeschlossen", ergebnis: "zusage" }), b({ status: "angebot" }), b(), b(), b()], H);
+  assert.equal(k.angebotsquote, 40);
+  assert.equal(k.gespraechsquote, 40);
+  assert.ok(k.gespraechsquote! >= k.angebotsquote!);
+});

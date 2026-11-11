@@ -24,3 +24,13 @@ test("Aufgabe nach +7 raus; abgeschlossen raus", () => {
   const ok = wochenListe([b({ interviews: [{ datum: null, aufgabe: "Case", aufgabe_frist: "2026-11-18" }] })], H);
   assert.equal(ok[0].art, "aufgabe");
 });
+test("Grenzen heute und heute+7", () => {
+  const s = (d: string) => wochenListe([b({ naechster_schritt: "x", naechster_schritt_faellig: d })], H).length;
+  assert.equal(s("2026-11-11"), 1);
+  assert.equal(s("2026-11-18"), 1);
+  assert.equal(s("2026-11-19"), 0);
+});
+test("Interview mit reinem Datum hat keine Zeit", () => {
+  const l = wochenListe([b({ interviews: [{ datum: "2026-11-12", aufgabe: null, aufgabe_frist: null }] })], H);
+  assert.equal(l[0].zeit, null);
+});

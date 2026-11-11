@@ -17,3 +17,6 @@ test("naechsterTermin", () => {
   assert.deepEqual(naechsterTermin([{ datum: "2026-11-10", text: "a" }, { datum: "2026-11-12T09:00:00Z", text: "b" }], "2026-11-11"), { datum: "2026-11-12T09:00:00Z", text: "b" });
   assert.equal(naechsterTermin([{ datum: null, text: "x" }], "2026-11-11"), null);
 });
+test("gehaltText: andere Währung", () => {
+  assert.equal(gehaltText({}, { gehalt: { min: 50000, max: null, waehrung: "USD", zeitraum: "Jahr" } }), "50.000 USD / Jahr");
+});
