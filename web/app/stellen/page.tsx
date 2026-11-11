@@ -3,9 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { firmenFarbe } from "@/lib/farbe";
 import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
 import { kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
-import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
+import { PRO_SEITE, nachGroesse, stellenAbfrage } from "@/lib/stellen";
 import { merken, entmerken, bewerbungZuruecknehmen } from "./actions";
 import FilterBlock from "./filterblock";
+import FilterClient from "./filter-client";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 
 const TITEL: Record<Gruppe, string> = {
@@ -38,7 +39,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
     sb.from("laeufe").select("datum").order("datum", { ascending: true }).limit(1).maybeSingle(), // fehlt die Tabelle: nur 3-Tage-Regel
   ]);
   const ersterLauf: string | null = erster.data?.datum ?? null;
-  const jobs = (ergebnis.data ?? []) as unknown as Job[];
+  const geladen = (ergebnis.data ?? []) as unknown as Job[];
+  const jobs = f.sort === "groesse" ? nachGroesse(geladen) : geladen;
   const gesamt = ergebnis.count ?? 0;
   const letzterLauf: string | null = lauf.data?.datum ?? null;
   const veraltet = letzterLauf !== null && letzterLauf < tagePlus(heuteLokal(), -2);
@@ -78,13 +80,24 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       <div className="stellen-layout">
         <aside className="filterleiste">
           <FilterBlock titel={aktiv ? `Filter (${aktiv} aktiv)` : "Filter"}>
-            <form method="get" action="/stellen" className="filterform">
-              <label>Stichwort (im Titel)
-                <input type="search" name="q" defaultValue={f.q} />
-              </label>
+            <FilterClient aktion="/stellen" listeId="stellenliste">
+              <div className="suchzeile">
+                <label>Stichwort (im Titel)
+                  <input type="search" name="q" defaultValue={f.q} />
+                </label>
+                <button className="knopf" type="submit">Suchen</button>
+              </div>
               <label className="option">
                 <input type="checkbox" name="volltext" value="1" defaultChecked={f.volltext} />
                 <span>Auch im Anzeigentext suchen</span>
+              </label>
+              <label>Sortieren nach
+                <select name="sort" defaultValue={f.sort}>
+                  <option value="neu">Online seit (neueste zuerst)</option>
+                  <option value="firma">Firma A–Z</option>
+                  <option value="titel">Titel A–Z</option>
+                  <option value="groesse">Größe</option>
+                </select>
               </label>
               <fieldset className="gruppe">
                 <legend>Online seit</legend>
@@ -98,7 +111,6 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 </div>
               </fieldset>
               <div className="filteraktionen">
-                <button className="knopf" type="submit">Filtern</button>
                 <Link className="knopf knopf-rand" href="/stellen">Filter zurücksetzen</Link>
               </div>
               {hatZahlen && <p className="gedaempft klein">Anzahl gesamt, nicht nach aktuellem Filter.</p>}
@@ -123,13 +135,13 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   </details>
                 );
               })}
-            </form>
+            </FilterClient>
           </FilterBlock>
         </aside>
 
         <section aria-label="Stellen">
           {(!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
-          <ul className="stellenliste">
+          <ul className="stellenliste" id="stellenliste">
             {jobs.map((j) => {
               const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;
               const neu = !!(j.erstmals_gesehen && istNeu(j.erstmals_gesehen, jetzt, ersterLauf));

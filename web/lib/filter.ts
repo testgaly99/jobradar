@@ -3,7 +3,9 @@ export const GRUPPEN = ["groesse", "kategorie", "level", "modell", "vertrag", "b
 export type Gruppe = (typeof GRUPPEN)[number];
 export const SEIT_WERTE = ["heute", "3", "7", "30"] as const;
 export type Seit = (typeof SEIT_WERTE)[number];
-export type Filter = Record<Gruppe, string[]> & { q: string; volltext: boolean; seit: Seit | ""; seite: number };
+export const SORTIERUNG = ["neu", "firma", "titel", "groesse"] as const;
+export type Sortierung = (typeof SORTIERUNG)[number];
+export type Filter = Record<Gruppe, string[]> & { q: string; volltext: boolean; seit: Seit | ""; seite: number; sort: Sortierung };
 type Params = Record<string, string | string[] | undefined>;
 
 
@@ -11,10 +13,12 @@ const liste = (v: string | string[] | undefined) =>
   [...new Set((Array.isArray(v) ? v : v === undefined ? [] : [v]).map((s) => s.trim()).filter(Boolean))];
 
 export function leseFilter(p: Params): Filter {
-  const f = { q: liste(p.q)[0] ?? "", volltext: liste(p.volltext)[0] === "1", seit: "", seite: 1 } as Filter;
+  const f = { q: liste(p.q)[0] ?? "", volltext: liste(p.volltext)[0] === "1", seit: "", seite: 1, sort: "neu" } as Filter;
   for (const g of GRUPPEN) f[g] = liste(p[g]);
   const seit = liste(p.seit)[0] as Seit;
   if (SEIT_WERTE.includes(seit)) f.seit = seit;
+  const so = liste(p.sort)[0] as Sortierung;
+  if (SORTIERUNG.includes(so)) f.sort = so;
   const s = Number(liste(p.seite)[0]);
   if (Number.isInteger(s) && s > 1) f.seite = s;
   return f;
@@ -26,6 +30,7 @@ export function filterZuUrl(f: Filter): string {
   if (f.q) u.set("q", f.q);
   if (f.volltext) u.set("volltext", "1");
   if (f.seit) u.set("seit", f.seit);
+  if (f.sort !== "neu") u.set("sort", f.sort);
   if (f.seite > 1) u.set("seite", String(f.seite));
   const s = u.toString();
   return s ? `/stellen?${s}` : "/stellen";

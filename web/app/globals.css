@@ -389,3 +389,7 @@ mark { background: var(--color-mark); color: var(--color-mark-ink); padding: 0 v
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
   .knopf:active { transform: none; }
 }
+
+/* Filter ohne Neuladen: Liste dimmen, solange die neue Auswahl lädt */
+.stellenliste[aria-busy="true"] { opacity: 0.55; transition: opacity 0.15s; }
+.suchzeile { display: grid; gap: var(--space-xs); }

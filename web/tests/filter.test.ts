@@ -108,3 +108,10 @@ test("istNeu: Stellen des ersten Laufs sind nie neu", () => {
   assert.equal(istNeu("2026-11-08", JETZT, "2026-11-07"), true);
   assert.equal(istNeu("2026-11-07", JETZT, null), true);
 });
+
+test("sort: Unbekanntes wird neu, firma und neu in der URL", () => {
+  assert.equal(leseFilter({ sort: "foo" }).sort, "neu");
+  const leer = leseFilter({});
+  assert.ok(filterZuUrl({ ...leer, sort: "firma" }).includes("sort=firma"));
+  assert.ok(!filterZuUrl({ ...leer, sort: "neu" }).includes("sort"));
+});

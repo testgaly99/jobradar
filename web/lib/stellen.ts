@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { onlineSeitGrenze, suchBedingung, type Filter } from "./filter";
+import { GROESSEN_REIHENFOLGE, onlineSeitGrenze, suchBedingung, type Filter } from "./filter";
 
 // Postgres-Array-Literal mit Anführungszeichen, damit Kommas in Werten ("Luft- & Raumfahrt, Verteidigung") nicht trennen.
 const arr = (l: string[]) => `{${l.map((s) => `"${s.replace(/[\\"]/g, "\\$&")}"`).join(",")}}`;
@@ -29,5 +29,15 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   if (f.q) q = q.or(suchBedingung(f.q, f.volltext));
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
   const von = (f.seite - 1) * PRO_SEITE;
-  return q.order("erstmals_gesehen", { ascending: false }).order("id").range(von, von + PRO_SEITE - 1);
+  const o = f.sort === "firma" ? q.order("unternehmen").order("id")
+    : f.sort === "titel" ? q.order("titel").order("id")
+    : q.order("erstmals_gesehen", { ascending: false }).order("id");
+  return o.range(von, von + PRO_SEITE - 1);
+}
+
+// shortcut: "groesse" liegt in der Join-Spalte companies.groesse_klasse (in PostgREST nicht sortierbar), darum wird nur die
+// geladene Seite sortiert, nicht die ganze Trefferliste. Upgrade: View oder RPC mit Sortierung in der DB.
+export function nachGroesse<T extends { companies: { groesse_klasse: string | null } }>(jobs: T[]): T[] {
+  const rang = (j: T) => { const i = GROESSEN_REIHENFOLGE.indexOf(j.companies?.groesse_klasse ?? ""); return i < 0 ? 99 : i; };
+  return [...jobs].sort((a, b) => rang(a) - rang(b));
 }
