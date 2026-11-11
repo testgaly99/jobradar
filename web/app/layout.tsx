@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./stil/utilitaer.css"; // Variante: nur diese Zeile tauschen
 import Link from "next/link";
@@ -7,6 +7,14 @@ import Kopf from "./kopf";
 export const metadata: Metadata = {
   title: "Jobradar",
   description: "Stellen finden und Bewerbungen verfolgen",
+};
+
+// A7: Browserleiste am Handy in Papierfarbe; Werte spiegeln --color-paper aus stil/utilitaer.css (hell/dunkel).
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "oklch(97.6% 0.011 88)" },
+    { media: "(prefers-color-scheme: dark)", color: "oklch(16.5% 0.012 170)" },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

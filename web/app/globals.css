@@ -3,7 +3,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html, body { overflow-x: clip; }
-html { scroll-padding-top: var(--space-3xl); }
+html { scroll-padding-top: var(--space-3xl); scrollbar-color: var(--color-muted) var(--color-paper); -webkit-tap-highlight-color: transparent; } /* A7: Scrollbalken in Seitenfarben, kein grauer Antipp-Blitz (Knöpfe haben eigene :active-Zustände) */
 body {
   margin: 0;
   background: var(--color-paper);
