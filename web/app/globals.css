@@ -38,6 +38,10 @@ a:active { color: var(--color-ink); }
 
 :focus-visible { outline: var(--fokus-ring); outline-offset: 2px; }
 
+/* A6: Tastatur-Nutzer springen am Menü vorbei; unsichtbar, bis er per Tab den Fokus bekommt */
+.skiplink { position: absolute; z-index: calc(var(--z-sticky-nav) + 1); left: var(--space-sm); top: var(--space-sm); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-control); background: var(--color-ink); color: var(--color-paper); transform: translateY(-200%); }
+.skiplink:focus-visible { transform: none; }
+
 .gedaempft { color: var(--color-muted); }
 .klein { font-size: var(--text-sm); }
 .num { font-variant-numeric: tabular-nums; }
