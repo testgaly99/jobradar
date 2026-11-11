@@ -3,6 +3,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { escapeLike, istStatus, type TabellenFilter } from "./bewerbung.ts";
 import type { ZugAlt } from "./zug.ts";
 import { heuteLokal } from "./filter.ts";
+import { wochenListe } from "./woche.ts";
+import { kennzahlen } from "./auswertung.ts";
 import { baueKarte, spaltenFehlen, type Ereignis, type Karte, type Termin } from "./tracker-karte.ts";
 
 export { spaltenFehlen };
@@ -60,4 +62,21 @@ export async function ladeZugZeile(sb: SupabaseClient, id: string): Promise<{ al
   if (ohne006) ({ data, error } = await lade("status,ergebnis,beworben_am"));
   const z = data as Partial<ZugAlt> | null;
   return { alt: z && istStatus(z.status) ? { status: z.status, runde: z.runde ?? null, ergebnis: z.ergebnis ?? null, beworben_am: z.beworben_am ?? null } : null, ohne006, fehler: !!error };
+}
+
+// "Diese Woche": offene Bewerbungen mit Schritt und Terminen.
+export async function ladeWoche(sb: SupabaseClient) {
+  const { data, error } = await sb.from("applications")
+    .select("id,firma,status,naechster_schritt,naechster_schritt_faellig,interviews(datum,aufgabe,aufgabe_frist)")
+    .neq("status", "abgeschlossen").limit(500);
+  if (error) { console.error("ladeWoche:", error.message); return { zeilen: [], fehler: LADEFEHLER }; }
+  return { zeilen: (data ?? []) as unknown as Parameters<typeof wochenListe>[0], fehler: undefined };
+}
+
+// Auswertung: alle Bewerbungen samt Statusverlauf.
+export async function ladeAuswertung(sb: SupabaseClient) {
+  const { data, error } = await sb.from("applications")
+    .select("status,ergebnis,beworben_am,erstellt_am,events:application_events(datum,neuer_status)").limit(2000);
+  if (error) { console.error("ladeAuswertung:", error.message); return { zeilen: [], fehler: LADEFEHLER }; }
+  return { zeilen: (data ?? []) as unknown as Parameters<typeof kennzahlen>[0], fehler: undefined };
 }

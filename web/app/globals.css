@@ -404,3 +404,18 @@ mark { background: var(--color-mark); color: var(--color-mark-ink); padding: 0 v
 /* Filter ohne Neuladen: Liste dimmen, solange die neue Auswahl lädt */
 .stellenliste[aria-busy="true"] { opacity: 0.55; transition: opacity 0.15s; }
 .suchzeile { display: grid; gap: var(--space-xs); }
+
+/* Diese Woche, Auswertung */
+.woche > summary { cursor: pointer; }
+.wochenliste { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-xs); }
+.wochenliste li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2xs) var(--space-md); }
+.wochenliste form { margin-left: auto; }
+.ueberfaellig { color: var(--color-error-ink); font-weight: var(--weight-strong); }
+.ueberfaellig a { color: inherit; }
+.kacheln { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: var(--space-md); margin-block: var(--space-md); }
+.kachel p { margin: 0; }
+.kachelwert { font-size: var(--text-xl, 1.75rem); font-weight: var(--weight-strong); }
+.balken { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2xs); }
+.balken li { display: grid; grid-template-columns: 4.5rem 1fr 2rem; align-items: center; gap: var(--space-sm); }
+.balkenfeld { background: var(--color-paper-2); border-radius: var(--radius-control); height: 0.9rem; overflow: hidden; }
+.balkenfuell { display: block; height: 100%; background: var(--color-accent); }

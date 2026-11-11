@@ -82,7 +82,7 @@ export function parseAbschnitt(abschnitt: Abschnitt, f: Eingabe): { daten: Recor
 // ---------- Tabelle ----------
 export const SORT_SPALTEN = ["firma", "titel", "status", "interesse", "beworben_am", "naechster_schritt_faellig", "geaendert_am"] as const;
 export type SortSpalte = (typeof SORT_SPALTEN)[number];
-export type TabellenFilter = { status: Status[]; firma: string; interesse: number | null; sort: SortSpalte; dir: "asc" | "desc" };
+export type TabellenFilter = { status: Status[]; firma: string; interesse: number | null; archiv: boolean; sort: SortSpalte; dir: "asc" | "desc" };
 type SP = Record<string, string | string[] | undefined>;
 const eins = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 
@@ -94,6 +94,7 @@ export function leseTabelle(sp: SP): TabellenFilter {
     status: [...new Set(roh.filter(istStatus))],
     firma: eins(sp.firma).trim(),
     interesse: Number.isInteger(i) && i >= 1 && i <= 5 ? i : null,
+    archiv: eins(sp.archiv) === "1",
     sort: (SORT_SPALTEN as readonly string[]).includes(sort) ? (sort as SortSpalte) : "geaendert_am",
     dir: eins(sp.dir) === "asc" ? "asc" : "desc",
   };
@@ -103,6 +104,7 @@ export function tabelleZuUrl(f: TabellenFilter): string {
   f.status.forEach((s) => p.append("status", s));
   if (f.firma) p.set("firma", f.firma);
   if (f.interesse) p.set("interesse", String(f.interesse));
+  if (f.archiv) p.set("archiv", "1");
   if (f.sort !== "geaendert_am") p.set("sort", f.sort);
   if (f.dir === "asc") p.set("dir", "asc");
   const q = p.toString();

@@ -5,7 +5,9 @@ import {
   type SortSpalte, type Status,
 } from "@/lib/bewerbung";
 import { LinkFormular } from "./knoepfe";
+import FilterClient from "../stellen/filter-client";
 import UnterNav from "./unternav";
+import Woche from "./woche";
 
 const SPALTEN: [SortSpalte, string][] = [
   ["firma", "Firma"], ["titel", "Titel"], ["status", "Status"], ["interesse", "Interesse"],
@@ -17,55 +19,64 @@ type Zeile = {
 };
 
 export default async function Seite({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const f = leseTabelle(await searchParams);
+  const sp = await searchParams;
+  const f = leseTabelle(sp);
   const sb = await createClient();
   let q = sb.from("applications")
     .select("id,firma,titel,status,interesse,beworben_am,naechster_schritt,naechster_schritt_faellig,geaendert_am")
     .order(f.sort, { ascending: f.dir === "asc", nullsFirst: false })
     .limit(500);
+  if (!f.archiv && !f.status.length) q = q.neq("status", "abgeschlossen"); // ausdrücklich gewählte Status gelten immer
   if (f.status.length) q = q.in("status", f.status);
   if (f.firma) q = q.ilike("firma", `%${escapeLike(f.firma)}%`);
   if (f.interesse) q = q.gte("interesse", f.interesse);
   const { data, error } = await q;
   const zeilen = (data ?? []) as Zeile[];
-  const aktiv = f.status.length > 0 || !!f.firma || !!f.interesse;
+  const aktiv = f.status.length > 0 || !!f.firma || !!f.interesse || f.archiv;
 
   return (
     <>
       <h1>Bewerbungen</h1>
-      <UnterNav aktiv="tabelle" />
+      <Woche />
+      <UnterNav aktiv="tabelle" sp={sp} />
       <div className="karte block">
         <LinkFormular />
       </div>
-      <form method="get" action="/bewerbungen" className="karte block filterform">
-        <fieldset className="statuswahl">
-          <legend>Status</legend>
-          {STATUS.map((s) => (
-            <label key={s} className="option">
-              <input type="checkbox" name="status" value={s} defaultChecked={f.status.includes(s)} />
-              <span>{STATUS_LABEL[s]}</span>
+      <div className="karte block">
+        <FilterClient aktion="/bewerbungen" listeId="bewerbungsliste" textFelder={["firma"]}>
+          <fieldset className="statuswahl">
+            <legend>Status</legend>
+            {STATUS.map((s) => (
+              <label key={s} className="option">
+                <input type="checkbox" name="status" value={s} defaultChecked={f.status.includes(s)} />
+                <span>{STATUS_LABEL[s]}</span>
+              </label>
+            ))}
+          </fieldset>
+          <div className="filterreihe">
+            <div className="suchzeile">
+              <label>Firma
+                <input type="search" name="firma" defaultValue={f.firma} />
+              </label>
+              <button className="knopf" type="submit">Suchen</button>
+            </div>
+            <label>Interesse mindestens
+              <select name="interesse" defaultValue={f.interesse ?? ""}>
+                <option value="">egal</option>
+                {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>
             </label>
-          ))}
-        </fieldset>
-        <div className="filterreihe">
-          <label>Firma
-            <input type="search" name="firma" defaultValue={f.firma} />
+          </div>
+          <label className="option">
+            <input type="checkbox" name="archiv" value="1" defaultChecked={f.archiv} />
+            <span>Archiv anzeigen</span>
           </label>
-          <label>Interesse mindestens
-            <select name="interesse" defaultValue={f.interesse ?? ""}>
-              <option value="">egal</option>
-              {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
-            </select>
-          </label>
-        </div>
-        {f.sort !== "geaendert_am" && <input type="hidden" name="sort" value={f.sort} />}
-        {f.dir === "asc" && <input type="hidden" name="dir" value="asc" />}
-        <div className="filteraktionen aktionsreihe">
-          <button className="knopf" type="submit">Filtern</button>
-          {aktiv && <Link className="knopf knopf-rand" href="/bewerbungen">Filter zurücksetzen</Link>}
-        </div>
-      </form>
-
+          {f.sort !== "geaendert_am" && <input type="hidden" name="sort" value={f.sort} />}
+          {f.dir === "asc" && <input type="hidden" name="dir" value="asc" />}
+          {aktiv && <div className="filteraktionen aktionsreihe"><Link className="knopf knopf-rand" href="/bewerbungen">Filter zurücksetzen</Link></div>}
+        </FilterClient>
+      </div>
+      <div id="bewerbungsliste">
       {error && <p className="meldung fehler">Bewerbungen konnten nicht geladen werden.</p>}
       {!error && zeilen.length === 0 && (
         <p className="leer">{aktiv ? "Keine Bewerbungen für diese Auswahl." : "Noch keine Bewerbungen. Lege eine aus einer Stelle, per Link oder manuell an."}</p>
@@ -102,6 +113,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
           </table>
         </div>
       )}
+      </div>
     </>
   );
 }

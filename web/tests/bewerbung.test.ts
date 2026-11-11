@@ -69,6 +69,14 @@ test("Tabellenfilter aus searchParams", () => {
   assert.equal(d.dir, "desc");
 });
 
+test("Archiv-Schalter und unbekannter Status", () => {
+  assert.equal(leseTabelle({ archiv: "1" }).archiv, true);
+  assert.equal(leseTabelle({}).archiv, false);
+  assert.deepEqual(leseTabelle({ status: "xyz" }).status, []);
+  const u = new URL(tabelleZuUrl(leseTabelle({ archiv: "1" })), "http://x");
+  assert.equal(u.searchParams.get("archiv"), "1");
+});
+
 test("tabelleZuUrl und escapeLike", () => {
   assert.equal(tabelleZuUrl(leseTabelle({})), "/bewerbungen");
   const u = new URL(tabelleZuUrl(leseTabelle({ status: "beworben", firma: "A&B", sort: "firma" })), "http://x");
