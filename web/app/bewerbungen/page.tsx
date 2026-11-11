@@ -9,6 +9,8 @@ import FilterClient from "../stellen/filter-client";
 import UnterNav from "./unternav";
 import Woche from "./woche";
 
+// B11: diese Spalten fallen am Handy weg, damit die Tabelle ohne seitliches Wischen passt
+const NUR_BREIT = new Set<SortSpalte>(["interesse", "beworben_am", "naechster_schritt_faellig"]);
 const SPALTEN: [SortSpalte, string][] = [
   ["firma", "Firma"], ["titel", "Titel"], ["status", "Status"], ["interesse", "Interesse"],
   ["beworben_am", "Beworben am"], ["naechster_schritt_faellig", "Nächster Schritt"], ["geaendert_am", "Geändert"],
@@ -92,7 +94,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   const hier = f.sort === key;
                   const neu = tabelleZuUrl({ ...f, sort: key, dir: hier && f.dir === "desc" ? "asc" : "desc" });
                   return (
-                    <th key={key} scope="col" aria-sort={hier ? (f.dir === "asc" ? "ascending" : "descending") : "none"}>
+                    <th key={key} scope="col" className={NUR_BREIT.has(key) ? "nur-breit" : undefined} aria-sort={hier ? (f.dir === "asc" ? "ascending" : "descending") : "none"}>
                       <Link href={neu}>{name}{hier ? (f.dir === "asc" ? " ▲" : " ▼") : ""}</Link>
                     </th>
                   );
@@ -105,9 +107,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   <td><Link href={`/bewerbungen/${z.id}`}>{z.firma || "(ohne Firma)"}</Link></td>
                   <td>{z.titel}</td>
                   <td><span className="chip" data-status={z.status}>{STATUS_LABEL[z.status]}</span></td>
-                  <td>{z.interesse && <span className="sterne" role="img" aria-label={`Interesse ${z.interesse} von 5`}>{"★".repeat(z.interesse)}{"☆".repeat(5 - z.interesse)}</span>}</td>
-                  <td className="num">{datumDe(z.beworben_am)}</td>
-                  <td>{z.naechster_schritt}{z.naechster_schritt_faellig && ` (bis ${datumDe(z.naechster_schritt_faellig)})`}</td>
+                  <td className="nur-breit">{z.interesse && <span className="sterne" role="img" aria-label={`Interesse ${z.interesse} von 5`}>{"★".repeat(z.interesse)}{"☆".repeat(5 - z.interesse)}</span>}</td>
+                  <td className="num nur-breit">{datumDe(z.beworben_am)}</td>
+                  <td className="nur-breit">{z.naechster_schritt}{z.naechster_schritt_faellig && ` (bis ${datumDe(z.naechster_schritt_faellig)})`}</td>
                   <td className="num">{tagDe(z.geaendert_am)}</td>
                 </tr>
               ))}
