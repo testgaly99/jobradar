@@ -39,8 +39,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   return (
     <>
       <h1>Bewerbungen</h1>
-      <UnterNav aktiv="tabelle" sp={sp} />
       <Woche />
+      <UnterNav aktiv="tabelle" sp={sp} />
       {/* B5: Anlegen ist Nebensache, die Liste ist die Hauptsache: zugeklappt, eine Zeile */}
       <details className="karte block">
         <summary>Bewerbung aus Link anlegen</summary>

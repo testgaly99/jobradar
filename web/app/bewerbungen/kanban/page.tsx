@@ -21,8 +21,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<SP
   return (
     <div className="kanban-bereich">
       <h1>Bewerbungen</h1>
-      <UnterNav aktiv="kanban" sp={sp} />
       <Woche />
+      <UnterNav aktiv="kanban" sp={sp} />
       <p className="board-schalter">
         <Link href={q ? `/bewerbungen/kanban?${q}` : "/bewerbungen/kanban"} className="knopf knopf-rand knopf-schmal">
           {archiv ? "Archiv ausblenden" : "Archiv anzeigen"}

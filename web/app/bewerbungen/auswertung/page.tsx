@@ -24,8 +24,8 @@ export default async function Seite() {
   return (
     <>
       <h1>Bewerbungen</h1>
-      <UnterNav aktiv="auswertung" />
       <Woche />
+      <UnterNav aktiv="auswertung" />
       {fehler ? <p className="meldung fehler" role="alert">{fehler}</p> : (
         <>
           {k.zuWenig && <p className="meldung info">Noch zu wenig Daten (mindestens 5 Bewerbungen).</p>}
