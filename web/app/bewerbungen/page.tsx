@@ -77,7 +77,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
         </FilterClient>
       </div>
       <div id="bewerbungsliste">
-      {error && <p className="meldung fehler">Bewerbungen konnten nicht geladen werden.</p>}
+      {error && <p className="meldung fehler" role="alert">Bewerbungen konnten nicht geladen werden.</p>}
       {!error && zeilen.length === 0 && (
         <p className="leer">{aktiv ? "Keine Bewerbungen für diese Auswahl." : "Noch keine Bewerbungen. Lege eine aus einer Stelle, per Link oder manuell an."}</p>
       )}

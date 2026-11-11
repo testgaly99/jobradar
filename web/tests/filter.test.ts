@@ -123,3 +123,10 @@ test("formZuUrl: Filterwechsel behaelt q aus der Adresse, Suche nimmt es aus dem
   assert.equal(formZuUrl("/stellen", form, aktuell, true), "/stellen?q=neu&volltext=1&level=Senior");
   assert.equal(formZuUrl("/stellen", new URLSearchParams("sort=firma"), new URLSearchParams(), false), "/stellen?sort=firma");
 });
+
+test("formZuUrl mit textFelder [firma]: ungesendeter Firmentext kommt aus der Adresse", () => {
+  const form = new URLSearchParams("firma=neu&status=beworben");
+  const aktuell = new URLSearchParams("firma=alt");
+  assert.equal(formZuUrl("/bewerbungen", form, aktuell, false, ["firma"]), "/bewerbungen?status=beworben&firma=alt");
+  assert.equal(formZuUrl("/bewerbungen", form, aktuell, true, ["firma"]), "/bewerbungen?firma=neu&status=beworben");
+});

@@ -18,7 +18,7 @@ export default function FilterClient({ aktion, listeId, textFelder = ["q", "voll
   }, [laedt, listeId]);
 
   function los(mitSuche: boolean) {
-    const u = formZuUrl(aktion, new URLSearchParams(new FormData(form.current!) as unknown as Record<string, string>), new URLSearchParams(sp.toString()), mitSuche);
+    const u = formZuUrl(aktion, new URLSearchParams(new FormData(form.current!) as unknown as Record<string, string>), new URLSearchParams(sp.toString()), mitSuche, textFelder);
     start(() => router.replace(u, { scroll: false }));
   }
 

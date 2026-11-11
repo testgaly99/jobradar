@@ -4,13 +4,7 @@ import { datumDe } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { ladeWoche } from "@/lib/tracker-daten";
 import { wochenListe } from "@/lib/woche";
-import { schrittErledigt } from "./zug-actions";
-
-// Fehler von schrittErledigt bleiben still; die Zeile bleibt dann sichtbar (shortcut: keine Fehlermeldung, bei Bedarf useActionState).
-async function erledigt(f: FormData) {
-  "use server";
-  await schrittErledigt(String(f.get("id")));
-}
+import ErledigtForm from "./erledigt-form";
 
 export default async function Woche() {
   const { zeilen, fehler } = await ladeWoche(await createClient());
@@ -18,21 +12,18 @@ export default async function Woche() {
   return (
     <details open className="karte block woche">
       <summary><h2>Diese Woche</h2></summary>
-      {fehler ? <p className="meldung fehler">{fehler}</p>
+      {fehler ? <p className="meldung fehler" role="alert">{fehler}</p>
         : liste.length === 0 ? <p className="leer">Nichts Fälliges in den nächsten 7 Tagen.</p>
         : (
           <ul className="wochenliste">
-            {liste.map((e, i) => (
-              <li key={i} className={e.ueberfaellig ? "ueberfaellig" : undefined}>
+            {liste.map((e) => (
+              <li key={`${e.id}-${e.art}-${e.datum}-${e.text}`} className={e.ueberfaellig ? "ueberfaellig" : undefined}>
                 <span className="num">{datumDe(e.datum)}</span>
                 <span className="num">{e.zeit ?? ""}</span>
                 <Link href={`/bewerbungen/${e.id}`}>{e.firma || "(ohne Firma)"}</Link>
                 <span>{e.text}{e.ueberfaellig && " (überfällig)"}</span>
                 {e.art === "schritt" && (
-                  <form action={erledigt}>
-                    <input type="hidden" name="id" value={e.id} />
-                    <button className="knopf knopf-rand knopf-schmal" type="submit" aria-label={`Erledigt: ${e.text} bei ${e.firma}`}>✓ Erledigt</button>
-                  </form>
+                  <ErledigtForm id={e.id} label={`Erledigt: ${e.text} bei ${e.firma}`} />
                 )}
               </li>
             ))}
