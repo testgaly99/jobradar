@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { firmenFarbe } from "@/lib/farbe";
+import { datumDe } from "@/lib/bewerbung";
 import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
 import { kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, nachGroesse, stellenAbfrage } from "@/lib/stellen";
@@ -22,7 +23,6 @@ type Job = {
 };
 
 const bekannt = (s: string | null) => (s && s.toLowerCase() !== "unbekannt" ? s : null);
-const datumDe = (iso: string) => iso.split("-").reverse().join(".");
 
 export default async function Seite({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;

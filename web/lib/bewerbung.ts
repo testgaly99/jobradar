@@ -112,7 +112,12 @@ export function tabelleZuUrl(f: TabellenFilter): string {
 }
 export const escapeLike = (s: string) => s.replace(/[\\%_]/g, "\\$&");
 
-export const datumDe = (iso: string | null) => (iso ? iso.slice(0, 10).split("-").reverse().join(".") : "");
+// A8: eine Datumsfunktion für die ganze Seite, über Intl statt von Hand. UTC, weil ein reines Datum (YYYY-MM-DD) keine Uhrzeit hat.
+const tagFormat = new Intl.DateTimeFormat("de-DE", { timeZone: "UTC", day: "2-digit", month: "2-digit", year: "numeric" });
+export function datumDe(iso: string | null): string {
+  const d = iso ? new Date(`${iso.slice(0, 10)}T00:00:00Z`) : null;
+  return d && !Number.isNaN(d.getTime()) ? tagFormat.format(d) : "";
+}
 export const zeitDe = (iso: string) =>
   new Date(iso).toLocaleString("de-DE", { timeZone: "Europe/Berlin", dateStyle: "short", timeStyle: "short" });
 export const tagDe = (iso: string) => new Date(iso).toLocaleDateString("de-DE", { timeZone: "Europe/Berlin" });

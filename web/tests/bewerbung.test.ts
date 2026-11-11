@@ -108,3 +108,11 @@ test("beworbenPatch setzt das Datum nur bei beworben und leerem Datum", () => {
   assert.deepEqual(beworbenPatch("beworben", "2026-11-01", "2026-11-10"), {});
   assert.deepEqual(beworbenPatch("gemerkt", null, "2026-11-10"), {});
 });
+
+test("A8 datumDe: TT.MM.JJJJ über Intl, robust bei leer und Unsinn", async () => {
+  const { datumDe } = await import("../lib/bewerbung.ts");
+  assert.equal(datumDe("2026-11-09"), "09.11.2026");
+  assert.equal(datumDe("2026-01-05T23:30:00+00:00"), "05.01.2026");
+  assert.equal(datumDe(null), "");
+  assert.equal(datumDe("kein datum"), "");
+});

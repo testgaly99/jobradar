@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { datumDe } from "@/lib/bewerbung";
 import { dokumentHerunterladen } from "./actions";
 import { DokumentLoeschen, UploadFormular } from "./upload";
 
@@ -21,7 +22,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
             <li key={d.id}>
               <div>
                 <strong>{d.name || "Dokument"}</strong>
-                <p className="gedaempft klein">{ART[d.art ?? ""] ?? d.art}{d.version_datum ? `, ${d.version_datum.split("-").reverse().join(".")}` : ""}</p>
+                <p className="gedaempft klein">{ART[d.art ?? ""] ?? d.art}{d.version_datum ? `, ${datumDe(d.version_datum)}` : ""}</p>
               </div>
               <div>
                 <form action={dokumentHerunterladen.bind(null, d.id)}><button className="knopf knopf-rand knopf-schmal" type="submit">Herunterladen</button></form>

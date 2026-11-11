@@ -1,5 +1,6 @@
 // Steckbrief einer Anzeige und die einstellbare Kurzbeschreibung der Stellenliste (rein, ohne Next-Importe).
 import { levelText } from "./filter.ts";
+import { datumDe } from "./bewerbung.ts";
 
 export const FELDER = ["groesse", "level", "modell", "vertrag", "ort", "online_seit", "erfahrung", "gehalt", "sprachen", "sicherheit", "branche"] as const;
 export type Feld = (typeof FELDER)[number];
@@ -64,7 +65,6 @@ export const modellText = (modell: string | null, remote: boolean | null): strin
   return [m, remote && m !== "Remote" ? "Remote" : null].filter(Boolean).join(", ") || null;
 };
 
-export const datumDe = (iso: string) => iso.slice(0, 10).split("-").reverse().join(".");
 const bekannt = (s: string | null | undefined) => (s && s.toLowerCase() !== "unbekannt" ? s : null);
 
 export type KurzDaten = {
