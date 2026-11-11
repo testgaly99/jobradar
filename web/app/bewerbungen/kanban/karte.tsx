@@ -5,7 +5,9 @@ import { useDraggable } from "@dnd-kit/core";
 import { ERGEBNIS_LABEL, STATUS_LABEL, tagDe, type Status } from "@/lib/bewerbung";
 import { firmenFarbe } from "@/lib/farbe";
 import { rundePatch } from "@/lib/zug";
-import { BOARD_SPALTEN, type Karte } from "@/lib/tracker-karte";
+import { BOARD_SPALTEN, naechsteSpalte, type Karte } from "@/lib/tracker-karte";
+
+const REIHENFOLGE = [...BOARD_SPALTEN, "abgeschlossen" as const].map((id, left) => ({ id, left }));
 
 export type KartenAktionen = {
   status: (k: Karte, ziel: Status) => void;
@@ -48,7 +50,17 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
       <div className="karte-kopf">
         {!ohneSpalten && <Logo karte={karte} />}
         <h3><Link href={`/bewerbungen/${karte.id}`} draggable={false}>{firma}</Link></h3>
-        <button type="button" ref={(el) => { setActivatorNodeRef(el); griff.current = el; }} className="griff" {...attributes} onKeyDown={(e) => listeners?.onKeyDown?.(e)} aria-label={`${firma} verschieben`}>
+        <button type="button" ref={(el) => { setActivatorNodeRef(el); griff.current = el; }} className="griff" {...attributes} onKeyDown={(e) => {
+            // Pfeil links/rechts verschiebt direkt um eine Spalte (ohne vorher Leertaste); Leertaste/Enter bleibt Ziehen mit dnd-kit.
+            const richtung = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+            if (richtung && !isDragging && !ohneSpalten) {
+              e.preventDefault();
+              const ziel = naechsteSpalte(REIHENFOLGE, karte.status, richtung);
+              if (ziel) aktionen.status(karte, ziel);
+              return;
+            }
+            listeners?.onKeyDown?.(e);
+          }} aria-label={`${firma} verschieben (Pfeil links/rechts)`}>
           <span aria-hidden="true">⠿</span>
         </button>
       </div>

@@ -32,7 +32,7 @@ const spaltenSprung: KeyboardCoordinateGetter = (event, { currentCoordinates, co
   const r = ziel == null ? undefined : droppableRects.get(ziel);
   return r && { x: r.left, y: currentCoordinates.y };
 };
-const anleitung ="Zum Aufnehmen Leertaste oder Enter drücken. Mit den Pfeiltasten eine andere Spalte wählen, mit Leertaste oder Enter ablegen, mit Escape abbrechen.";
+const anleitung = "Pfeil links oder rechts verschiebt die Karte sofort um eine Spalte. Alternativ: Leertaste zum Aufnehmen, Pfeiltasten zum Wählen, Leertaste zum Ablegen, Escape zum Abbrechen.";
 
 function Spalte({ id, titel, anzahl, leer, children }: { id: Status; titel: string; anzahl: number; leer?: string; children?: ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id });
