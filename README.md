@@ -8,6 +8,11 @@ jobradar holt jeden Tag die offenen Stellen von ausgewählten Unternehmen und ze
 
 - **Stellen:** Alle offenen Stellen der Firmen aus `data/companies.csv`, mit Filtern und Suche. Jede Stelle hat eine Detailseite mit Steckbrief und der ganzen Anzeige.
 - **Bewerbungen:** Du legst Bewerbungen aus einer Stelle an, per Link oder von Hand, und setzt den Stand (gemerkt, beworben, Gespräch …).
+- **Board:** Unter „Bewerbungen“ ziehst du Karten zwischen den Spalten (Maus, Finger oder Tastatur über den Griff an der Karte). Nach jedem Verschieben kannst du es 8 Sekunden lang rückgängig machen. Ziehst du eine Karte auf die Archiv-Fläche, fragt ein Fenster nach dem Ergebnis (Zusage, Absage, Abgebrochen, Angebot abgelehnt); „Archiv anzeigen“ blendet sie wieder ein. Gespräche zählst du als Runde (R1–R4, „+ Runde“), dazu gibt es einen Kurzkommentar (bis 140 Zeichen). Die Karte zeigt Gehalt, Tage seit dem letzten Schritt, den nächsten Termin, Sterne und das Firmenlogo (oder den Anfangsbuchstaben).
+- **Seitenfenster:** Ein Klick auf eine Karte öffnet die Bewerbung in einem Fenster neben dem Board. Schließen mit Esc, „Schließen“ oder Klick daneben. Ein direkter Link zeigt dieselbe Bewerbung als ganze Seite.
+- **Diese Woche:** Ein Kasten mit den Terminen der Woche; erledigte Punkte hakst du ab.
+- **Auswertung:** Ein eigener Reiter zeigt Gesprächsquote, Angebotsquote, Antwortzeit und Bewerbungen pro Woche. Bei weniger als 5 Bewerbungen steht dort „Noch zu wenig Daten“.
+- **Filter ohne Knopf:** Auf „Stellen“ und „Bewerbungen“ wirken Filter sofort beim Auswählen. Nur Suche und Firma warten auf Enter oder „Suchen“. Die Stellen sortierst du nach Online seit, Firma, Titel oder Größe (Größe sortiert nur die gerade geladene Seite).
 - **Dokumente:** Lebenslauf und Anschreiben hochladen, jede Bewerbung merkt sich die benutzte Version.
 - **Konto:** Deine Daten, deine Bewerbungen nach Stand, „Wichtige Punkte“ und Einstellungen für die Stellenliste.
 
@@ -67,7 +72,7 @@ Die Liste steht in `data/companies.csv` (eine Tabelle als Textdatei). Bearbeite 
 
 ## Datenbank einrichten (Migrationen 001–006)
 
-Die Dateien in `supabase/migrations/` bauen die Tabellen und den Zugriffsschutz auf: `001_schema.sql` (Tabellen und Schutz), `002_facetten.sql` (Filterwerte), `003_bewerbung_eindeutig.sql` (keine doppelten Bewerbungen), `004_dokumente.sql` (Dokumente und Storage), `005_abschnitte_land.sql` (gegliederte Anzeige, Steckbrief, Land, Wichtige Punkte, Listen-Einstellungen, Admin-Kennzahlen). Ohne 005 fehlen diese Teile. `006_tracker.sql` (Runde, Kommentar, Firmenlogo und Rückgängig im Tracker) ist optional: Ohne 006 laufen Tracker und Website weiter, nur diese Felder fehlen.
+Die Dateien in `supabase/migrations/` bauen die Tabellen und den Zugriffsschutz auf: `001_schema.sql` (Tabellen und Schutz), `002_facetten.sql` (Filterwerte), `003_bewerbung_eindeutig.sql` (keine doppelten Bewerbungen), `004_dokumente.sql` (Dokumente und Storage), `005_abschnitte_land.sql` (gegliederte Anzeige, Steckbrief, Land, Wichtige Punkte, Listen-Einstellungen, Admin-Kennzahlen). Ohne 005 fehlen diese Teile. `006_tracker.sql` (Runde, Kommentar, Firmenlogo und Rückgängig im Tracker) ist optional: Ohne 006 laufen Tracker und Website weiter, nur Runden, Kommentare und Logos bleiben ausgeblendet und „Rückgängig“ kann den Verlauf nicht aufräumen. Die Logos holt der tägliche Lauf von der Seite der Firma selbst.
 
 1. Öffne Supabase → dein Projekt → „SQL Editor“.
 2. Öffne die Datei auf deinem Rechner, kopiere den ganzen Inhalt, füge ihn ein und klicke „Run“. Immer in der Reihenfolge 001, 002, 003, 004, 005, 006.
@@ -114,9 +119,11 @@ Jeder Nutzer kann sein Konto selbst unter „Konto“ löschen. Das Admin-Konto 
 
 1. Auf vercel.com anmelden, „Add New → Project“, dieses Repo importieren.
 2. Bei „Root Directory“ `web` eintragen (die Website liegt im Unterordner).
-3. Unter „Environment Variables“ `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_ANON_KEY` eintragen. Trage außerdem zwei Server-Variablen ein, beide **ohne** `NEXT_PUBLIC_` am Anfang:
+3. Unter „Environment Variables“ `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_ANON_KEY` eintragen. Trage außerdem Server-Variablen ein, beide **ohne** `NEXT_PUBLIC_` am Anfang:
    - `SUPABASE_SERVICE_KEY`: der Secret Key aus Supabase → Project Settings → API Keys. *Warum:* Nur damit kann die Website ein Konto samt Daten löschen. Ohne `NEXT_PUBLIC_` bleibt er auf dem Server und gelangt nie in den Browser.
    - `ADMIN_EMAIL`: deine E-Mail-Adresse (mehrere durch Komma getrennt). *Warum:* Wer hier steht, sieht die Admin-Seite „Nutzer“. Das Admin-Konto lässt sich nicht löschen.
+
+   - `TZ`: `Europe/Berlin`. *Warum:* Sonst zeigt „Diese Woche“ die Uhrzeiten in der falschen Zeitzone.
 
    Dann „Deploy“. Erfolg: Vercel zeigt eine Adresse, die Seite lädt. Dieselben zwei Variablen brauchst du auch in `web/.env.local`, wenn du lokal arbeitest.
 4. Supabase → Authentication → URL Configuration: die Vercel-Adresse als „Site URL“ eintragen und unter „Redirect URLs“ `https://<deine-adresse>/**` hinzufügen. *Warum:* Sonst schickt dich der Login auf die falsche Seite zurück.

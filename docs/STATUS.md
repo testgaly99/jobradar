@@ -12,6 +12,8 @@ Stand: 2026-11-11
 - Repo: https://github.com/testgaly99/jobradar (öffentlich)
 - Tests: `py -m pytest` und `npm test` in `web/`.
 
+- Tracker-Paket (Code fertig 2026-11-11, braucht Migration 006): Board mit Drag-and-drop (Maus, Finger, Tastatur), Rückgängig-Hinweis (8 s), Archiv-Fläche mit Ergebnis-Fenster, Runden R1–R4, Kommentar, Seitenfenster für Bewerbungen, Filter ohne Knopf und Sortierung auf `/stellen`, „Diese Woche“, Reiter „Auswertung“, Firmenlogos (vom täglichen Lauf geholt).
+
 ## Bekannte Probleme
 - 12 der 13 Firmen in `data/companies.csv` sind angebunden. Es fehlt die TK (Techniker Krankenkasse): ihre Stellenliste lässt sich nur per JSF-Nachladen (Seite lädt Inhalte per Skript nach) erreichen. Eine einfache Lösung wäre wackelig, ein Browser-Roboter (Playwright) braucht eine Entscheidung in Phase 4.
 - Der erste volle Lauf nach dem Zusammenführen dauert deutlich länger (geschätzt ca. 41 Minuten: Porsche ca. 31, Neura ca. 6, dm ca. 3), weil alle Stellenseiten einmal geladen werden. Danach lädt der Lauf neue Stellen und erneut alle Seiten, die er aussortiert (Ausland, abgelaufen, kaputt), weil diese nie gespeichert werden: bei Porsche täglich etwa 200 Seiten, rund 8 Minuten. Die Firmenauswahl soll später nur noch aus Ranglisten kommen (siehe CLAUDE.md 4.8).
@@ -35,8 +37,12 @@ Stand: 2026-11-11
 10. ~~Den ersten Freund als Google-Testnutzer eintragen~~ **Verschoben 2026-11-10:** Vorerst nutzt nur Mark Jobradar; steht im Backlog unter „Live gehen“.
 11. Groq-Konto für einen späteren Test von KI-Zusammenfassungen öffentlicher Anzeigen: Auf groq.com ein kostenloses Konto anlegen, einen API-Key erstellen und ihn selbst als `GROQ_API_KEY=...` in `jobradar/.env` eintragen. Nie in den Chat und nie ins Repo. Warum: Ein Key im Chat oder Repo wäre einsehbar und müsste getauscht werden. Erfolg: Die Zeile steht in `.env`; sag Claude nur „Key ist eingetragen“, nicht den Key.
 
+12. Tracker-Paket, Nachfragen von Claude: Willst du das Seitenfenster für Bewerbungen und die Firmenlogos behalten? (Das Design sieht beides vor; sag Bescheid, wenn eins davon stören sollte.)
+13. Vercel: Umgebungsvariable `TZ` = `Europe/Berlin` eintragen (Vercel → Project → Settings → Environment Variables), danach neu deployen. Warum: Sonst stimmen die Zeiten in „Diese Woche“ nicht. Erfolg: Termine zeigen deine Ortszeit.
+14. Klicktest Tracker-Paket (nach Migration 006): Karte per Maus, am Handy mit dem Finger und per Tastatur (Griff fokussieren, Leertaste, Pfeiltasten, Leertaste) verschieben; „Rückgängig“ im Hinweis klicken; Karte auf die Archiv-Fläche ziehen, im Ergebnis-Fenster mit Esc und „Abbrechen“ schließen und einmal ein Ergebnis wählen, „Archiv anzeigen“ prüfen; Seitenfenster öffnen, mit Esc, „Schließen“ und Klick daneben schließen, etwas ändern und speichern (der Zurück-Knopf des Browsers darf nicht in eine alte Fassung führen); Runde mit „+ Runde“ und Kommentar setzen; Filter auf `/stellen` und `/bewerbungen` (wirken ohne Knopf, Suche nur mit Enter oder „Suchen“); Sortierung auf `/stellen`; „Diese Woche“ mit „erledigt“-Häkchen; Reiter „Auswertung“. Auffälligkeiten mit Bildschirmfoto melden.
+
 ## Offene To-dos für spätere Phasen
 - **Phase 3 (Gmail):** Erinnerungs-Mail an den Admin (`ADMIN_EMAIL`) einrichten, sobald die jährlichen Hand-Quellen der Rankings (trendence, Universum, LinkedIn) fällig sind. Bis dahin erinnert ein GitHub-Issue (Entscheidung 2026-11-10, CLAUDE.md 4.8).
 
 ## Nächster Schritt
-Phase 2, 2b und das Firmen-Paket sind am 2026-11-11 nach `main` gemergt und hochgeladen. Der erste tägliche Lauf mit 12 Firmen läuft am 2026-11-12 um 05:00 (dauert ca. 40 Minuten). Als Nächstes: Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`), parallel die restlichen To-dos oben (Klicktest, Vercel, Backup, Pages, Groq-Key).
+Phase 2, 2b und das Firmen-Paket sind am 2026-11-11 nach `main` gemergt und hochgeladen. Der erste tägliche Lauf mit 12 Firmen läuft am 2026-11-12 um 05:00 (dauert ca. 40 Minuten). Das Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`) ist am 2026-11-11 als Code fertig. Als Nächstes: Migration 006 und Klicktest (To-dos 3, 12–14), danach das Groq-Paket; parallel die restlichen To-dos oben (Klicktest, Vercel, Backup, Pages, Groq-Key).

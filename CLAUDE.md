@@ -321,7 +321,7 @@ Tabellen im Zielbild:
 
 Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung und einem eigenen Plan (Abschnitt 7).
 
-**Reihenfolge ab 2026-11-09:** 2b abschließen → Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`, freigegeben) → Groq-Paket (Zusammenfassungen, Studium ja/nein, Firma/Titel aus eingefügtem Text) → Phase 4 → Phase 3 → Phase 5 → Phase 6. Das Paket „Firmen anbinden“ (8 weitere Firmen, Plan `docs/plans/2026-11-09-firmen-anbinden.md`) läuft parallel.
+**Reihenfolge ab 2026-11-09:** 2b abschließen → Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`, freigegeben) **erledigt (2026-11-11)** → Groq-Paket (Zusammenfassungen, Studium ja/nein, Firma/Titel aus eingefügtem Text) → Phase 4 → Phase 3 → Phase 5 → Phase 6. Das Paket „Firmen anbinden“ (8 weitere Firmen, Plan `docs/plans/2026-11-09-firmen-anbinden.md`) läuft parallel.
 
 0. **Erledigt:** Scraper-Grundlage mit 4 Firmen, statische Website und täglicher Lauf (Version 1, 2026-11-07).
 1. **Erledigt (Code, 2026-11-08): Tracker und neue Website für mich allein:**
