@@ -10,6 +10,7 @@ import {
 import Abschnitte from "../../abschnitte";
 import { leseAbschnitte } from "@/lib/anzeige";
 import { DruckKnopf, LoeschForm, SendeKnopf } from "../knoepfe";
+import Ungespeichert from "./ungespeichert";
 
 type Row = Record<string, string | number | string[] | null>;
 type Dok = { id: string; name: string | null; version_datum: string | null };
@@ -68,7 +69,8 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   );
 
   return (
-    <div className="bewerbung-seite">
+    <div className="bewerbung-seite" id="bewerbung-formulare">
+      <Ungespeichert bereich="bewerbung-formulare" />
       <p className="kein-druck"><Link href="/bewerbungen">Alle Bewerbungen</Link></p>
       <h1 id="bewerbung-titel">{v(row.firma) || "(ohne Firma)"}: {v(row.titel)}</h1>
       <p className="chips kein-druck">
