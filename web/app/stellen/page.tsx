@@ -161,7 +161,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               const app = status.get(j.id);
               const st = app?.status;
               return (
-                <li key={j.id} className="stelle" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
+                <li key={j.id} className="stelle" style={{ "--firma-h": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
                   <div className="stelle-text">
                     <h2><Link href={"/stellen/" + encodeURIComponent(j.id)}>{j.titel}</Link></h2>
                     <p className="meta">

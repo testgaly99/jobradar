@@ -24,7 +24,7 @@ export function Logo({ karte }: { karte: Karte }) {
   if (karte.logo_url && !kaputt) {
     return <img className="firmenlogo" src={karte.logo_url} alt="" width={24} height={24} draggable={false} referrerPolicy="no-referrer" onError={() => setKaputt(true)} />;
   }
-  return <span className="firmenlogo firmenlogo-kreis" aria-hidden="true" style={{ "--firma": firmenFarbe(name) } as CSSProperties}>{name.trim().charAt(0).toUpperCase()}</span>;
+  return <span className="firmenlogo firmenlogo-kreis" aria-hidden="true" style={{ "--firma-h": firmenFarbe(name) } as CSSProperties}>{name.trim().charAt(0).toUpperCase()}</span>;
 }
 
 export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen }: { karte: Karte; ohneSpalten: boolean; neu: boolean; fokus: number; aktionen: KartenAktionen }) {

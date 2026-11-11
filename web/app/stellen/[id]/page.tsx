@@ -45,7 +45,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
     <>
       <p><Link href="/stellen">Alle Stellen</Link></p>
       <h1>{j.titel}</h1>
-      <p className="firma" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>{j.unternehmen}</p>
+      <p className="firma" style={{ "--firma-h": firmenFarbe(j.unternehmen) } as React.CSSProperties}>{j.unternehmen}</p>
       {eintraege.length > 0 && (
         <section className="steckbrief karte" aria-labelledby="steckbrief-titel">
           <h2 id="steckbrief-titel">Steckbrief</h2>

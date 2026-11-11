@@ -267,7 +267,9 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 .stelle h2 { font-size: var(--text-lg); }
 .stelle h2 a { color: var(--color-ink); text-decoration: none; }
 .stelle h2 a:hover { text-decoration: underline; }
-.firma { font-weight: var(--weight-strong); color: color-mix(in oklch, var(--akzent, var(--color-ink)) var(--firma-anteil), var(--color-ink)); }
+/* A3: Firmenfarbe aus dem Farbton im style-Attribut plus Helligkeit/Sättigung als Token */
+[style*="--firma-h"] { --firma: oklch(var(--firma-l) var(--firma-c) var(--firma-h)); }
+.firma { font-weight: var(--weight-strong); color: color-mix(in oklch, var(--firma, var(--color-ink)) var(--firma-anteil), var(--color-ink)); }
 .meta { display: flex; flex-wrap: wrap; gap: var(--space-2xs) var(--space-md); }
 .meta:empty, .stellenliste:empty { display: none; }
 .seiten { display: flex; justify-content: space-between; align-items: center; gap: var(--space-xs); }
