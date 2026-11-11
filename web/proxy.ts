@@ -3,6 +3,8 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
+  // Next prüft die abfangende Route /bewerbungen/(.)[id] vor statischen Seiten: ohne das würden kanban/neu im Seitenfenster landen (404).
+  if (/^\/bewerbungen\/(kanban|neu)\/?$/.test(request.nextUrl.pathname)) request.headers.delete("next-url");
   let response = NextResponse.next({ request });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

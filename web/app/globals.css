@@ -372,6 +372,14 @@ mark { background: var(--color-mark); color: var(--color-mark-ink); padding: 0 v
 
 /* Lesetext */
 .prosa { max-width: 70ch; line-height: var(--leading-prose); }
+/* Seitenfenster (abgefangene Route): rechts, 40 % ab 1100 px, sonst volle Breite */
+.fenster { margin: 0 0 0 auto; width: 100%; max-width: none; height: 100dvh; max-height: none; padding: 0; border: 0; border-left: var(--karte-rand); background: var(--color-paper); color: var(--color-ink); animation: fenster-rein var(--uebergang); }
+.fenster::backdrop { background: var(--dialog-hintergrund); }
+.fenster-innen { min-height: 100%; padding: var(--space-md); } /* füllt das Fenster, damit nur der abgedunkelte Rand "daneben" ist */
+.fenster-innen > * + * { margin-top: var(--space-md); }
+.fenster .detail { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1100px) { .fenster { width: 40%; } }
+@keyframes fenster-rein { from { transform: translateX(var(--space-xl)); opacity: 0; } }
 .prosa h2 { margin-top: var(--space-xl); }
 .prosa ul { padding-left: var(--space-lg); }
 
