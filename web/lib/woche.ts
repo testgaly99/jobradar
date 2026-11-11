@@ -20,7 +20,7 @@ export function wochenListe(bewerbungen: B[], heute: string): WochenEintrag[] {
     for (const i of b.interviews) {
       if (i.datum) {
         const dt = new Date(i.datum), d = lokal(dt);
-        if (imFenster(d)) out.push({ id: b.id, firma, datum: d, zeit: `${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`, text: "Interview", art: "interview", ueberfaellig: false });
+        if (imFenster(d)) out.push({ id: b.id, firma, datum: d, zeit: /^d{4}-d{2}-d{2}$/.test(i.datum) ? null : `${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`, text: "Interview", art: "interview", ueberfaellig: false });
       }
       if (i.aufgabe_frist) {
         const d = tagVon(i.aufgabe_frist);

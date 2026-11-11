@@ -14,6 +14,7 @@ function bewerbungsdatum(b: B): string | null {
   if (e) return tagVon(e);
   return ab(b.status) ? tagVon(b.erstellt_am) : null;
 }
+const hatAngebot = (b: B) => erreicht(b, "angebot") || b.ergebnis === "zusage" || b.ergebnis === "angebot_abgelehnt";
 const erreicht = (b: B, ...s: Status[]) => s.includes(b.status) || b.events.some((e) => e.neuer_status && s.includes(e.neuer_status));
 
 export function kennzahlen(bewerbungen: B[], heute: string) {
@@ -41,8 +42,8 @@ export function kennzahlen(bewerbungen: B[], heute: string) {
 
   return {
     anzahl,
-    gespraechsquote: quote(mit.filter((x) => erreicht(x.b, "im_gespraech", "angebot")).length),
-    angebotsquote: quote(mit.filter((x) => erreicht(x.b, "angebot") || x.b.ergebnis === "zusage" || x.b.ergebnis === "angebot_abgelehnt").length),
+    gespraechsquote: quote(mit.filter((x) => erreicht(x.b, "im_gespraech", "angebot") || hatAngebot(x.b)).length),
+    angebotsquote: quote(mit.filter((x) => hatAngebot(x.b)).length),
     proWoche, antwortzeitMedian, zuWenig,
   };
 }

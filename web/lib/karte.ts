@@ -18,7 +18,7 @@ export function gehaltText(
   const werte = [g?.min, g?.max].filter((x): x is number => typeof x === "number" && Number.isFinite(x));
   if (!g || !werte.length) return null;
   const zahlen = werte.length === 2 && werte[0] !== werte[1] ? `${zahl.format(werte[0])}–${zahl.format(werte[1])}` : zahl.format(werte[0]);
-  const w = g.waehrung === "CHF" ? " CHF" : " €";
+  const w = ` ${!g.waehrung || g.waehrung === "EUR" ? "€" : g.waehrung}`;
   return `${zahlen}${w} / ${g.zeitraum === "Monat" ? "Monat" : "Jahr"}`;
 }
 
