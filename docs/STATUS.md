@@ -44,6 +44,8 @@ Stand: 2026-11-11
 
 ## Offene To-dos für spätere Phasen
 - **Phase 3 (Gmail):** Erinnerungs-Mail an den Admin (`ADMIN_EMAIL`) einrichten, sobald die jährlichen Hand-Quellen der Rankings (trendence, Universum, LinkedIn) fällig sind. Bis dahin erinnert ein GitHub-Issue (Entscheidung 2026-11-10, CLAUDE.md 4.8).
+- **Offener Punkt „Ähnliche Stellen“** (Wettbewerbsanalyse 2026-11-12, erstmal nicht): auf der Stellenseite ähnliche Stellen zeigen (gleiche Funktion/Level, andere Firmen). Wieder aufgreifen, wenn mehr Firmen angebunden sind.
+- **Phase 4, Zusatzfirmen:** Die Tabelle `laeufe` (Laufberichte mit Firmennamen) ist für alle lesbar; private Zusatzfirmen dürfen dort nicht für andere sichtbar werden.
 
 ## Nächster Schritt
 Phase 2, 2b und das Firmen-Paket sind am 2026-11-11 nach `main` gemergt und hochgeladen. Der erste tägliche Lauf mit 12 Firmen läuft am 2026-11-12 um 05:00 (dauert ca. 40 Minuten). Das Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`) ist am 2026-11-11 als Code fertig. Als Nächstes: Migration 006 und Klicktest (To-dos 3, 12–14), danach das Groq-Paket; parallel die restlichen To-dos oben (Klicktest, Vercel, Backup, Pages, Groq-Key).

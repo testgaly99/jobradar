@@ -392,6 +392,8 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
   - kein manuelles Abtippen bekannter Stellen.
   - Eigene Fragerunde in einer späteren Phase.
 - **Login für Freunde:** E-Mail und Passwort zusätzlich zu Google (braucht das Mail-Paket).
+- **„In Jobradar speichern“ per Lesezeichen (Wunsch 2026-11-12, aus der Wettbewerbsanalyse):** Ein Browser-Lesezeichen, das auf jeder Stellenseite die Adresse an „Manuell anlegen“ übergibt. Kein Plugin, keine fremden Daten.
+- **Automatisch bewerben (Wunsch 2026-11-12, später bewerten):** Bots wie LazyApply schicken Bewerbungen selbst ab. Vor einer Entscheidung prüfen: Nutzungsbedingungen der ATS und Jobbörsen (Kontosperren), Qualität, Datenschutz, Regel 5 „legal und fair“.
 - **E-Mail-Registrierung absichern:** Der Knopf „Registrieren“ (E-Mail und Passwort) ist bis zum Mail-Paket bewusst offen (Entscheidung 2026-11-08). Dann: sperren (Hook, der neue E-Mail-Registrierungen ablehnt) oder mit Bestätigungsmail absichern.
 
 ---
