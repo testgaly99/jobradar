@@ -90,6 +90,12 @@ function feldText(f: Feld, d: KurzDaten): string | null {
   }
 }
 
-// Genau die gewählten Felder, in fester Reihenfolge.
-export const kurzzeile = (d: KurzDaten, felder: Feld[]): Eintrag[] =>
-  felder.flatMap((feld) => { const text = feldText(feld, d); return text ? [{ feld, text }] : []; });
+// Die gewählten Felder in fester Reihenfolge.
+// Steht die geforderte Erfahrung in der Anzeige, entfällt die nur geschätzte Stufe (sonst doppelt und oft widersprüchlich).
+export const kurzzeile = (d: KurzDaten, felder: Feld[]): Eintrag[] => {
+  const ohneStufe = felder.includes("erfahrung") && !!d.steckbrief.erfahrungJahre;
+  return felder.flatMap((feld) => {
+    if (feld === "level" && ohneStufe) return [];
+    const text = feldText(feld, d); return text ? [{ feld, text }] : [];
+  });
+};

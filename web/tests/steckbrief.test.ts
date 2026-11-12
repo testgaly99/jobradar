@@ -51,3 +51,12 @@ test("Modell und Remote erscheinen beide, ohne Doppelung", () => {
   assert.equal(modellText("Hybrid", false), "Hybrid");
   assert.equal(modellText(null, null), null);
 });
+
+test("Kurzzeile: Jahre aus der Anzeige ersetzen die geschätzte Stufe", () => {
+  const beide = kurzzeile(daten, waehleFelder(["level", "erfahrung"]));
+  assert.deepEqual(beide.map((x) => x.text), ["ab 5 Jahren Erfahrung"]);
+  const ohneJahre = kurzzeile({ ...daten, steckbrief: { ...daten.steckbrief, erfahrungJahre: null } }, waehleFelder(["level", "erfahrung"]));
+  assert.deepEqual(ohneJahre.map((x) => x.text), ["Senior (5–8 Jahre)"]);
+  const nurStufe = kurzzeile(daten, waehleFelder(["level"]));
+  assert.deepEqual(nurStufe.map((x) => x.text), ["Senior (5–8 Jahre)"]);
+});
