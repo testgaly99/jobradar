@@ -101,3 +101,41 @@ def test_anfrage_nach_fuenf_429_erschoepft():
     post = poster(*[Antwort(429, header={"retry-after": "1"}) for _ in range(5)])
     with pytest.raises(ki.Erschoepft):
         ki.anfrage("Text", ki.KLEIN, post=post, schlaf=lambda s: None)
+
+
+def _fake_stellen():
+    titel = ["Werkstudent Data", "Assistenz Vertrieb", "Sales Manager"] + ["Ingenieur"] * 57
+    return [{"id": f"s{i:02d}", "unternehmen": f"Firma{i % 6}", "titel": titel[i],
+             "text": "x the " * 6 if i % 6 == 3 and i < 60 and i // 6 < 10 else "Wir suchen."} for i in range(60)]
+
+
+def test_waehle_probe_mischt():
+    from scraper.ki_probe import waehle_probe
+    stellen = _fake_stellen()
+    p = waehle_probe(stellen)
+    assert len(p) == 20 and len({s["id"] for s in p}) == 20
+    assert len({s["unternehmen"] for s in p}) >= 5
+    assert sum(s["text"].count(" the ") >= 5 for s in p) >= 4
+    for wort in ("Werkstudent", "Assistenz", "Sales"):
+        assert any(wort in s["titel"] for s in p)
+    assert p == waehle_probe(list(reversed(stellen)))
+
+
+def test_probe_html_unveraendert_und_ungueltig(tmp_path):
+    from scraper.ki_probe import probe
+    stellen = [{"id": "1", "unternehmen": "F", "titel": "T<b>", "url": "http://x", "text": "t"},
+               {"id": "2", "unternehmen": "F", "titel": "U", "url": "http://y", "text": "t"},
+               {"id": "3", "unternehmen": "F", "titel": "V", "url": "http://z", "text": "t"}]
+    antw = iter([(json.dumps(GUT), "modell-A"), ("kein <json>", "modell-B"), ki.Erschoepft("m")])
+
+    def fake(text, modell):
+        a = next(antw)
+        if isinstance(a, Exception):
+            raise a
+        return a
+
+    out = tmp_path / "p.html"
+    zeilen = probe(stellen, out, anfrage=fake)
+    h = out.read_text(encoding="utf-8")
+    assert len(zeilen) == 3 and "modell-A" in h and "T&lt;b&gt;" in h
+    assert "ungültig" in h and "kein &lt;json&gt;" in h and "Tageslimit" in h
