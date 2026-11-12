@@ -357,6 +357,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
      - Klick auf eine Stelle öffnet eine eigene Detailseite mit Aufgaben, Anforderungen und Benefits als Stichpunkte, ohne KI aus den Zwischenüberschriften zerlegt, dazu „Original-Anzeige öffnen“ und „Ich habe mich beworben“.
      - Dieselbe Gliederung ersetzt den Fließtext-Snapshot in Bewerbungen.
    - **Navigation:** Reiter „Dokumente“ entfällt, der Export zieht nach „Konto“.
+   - **Bewerbungen (2026-11-12):** Reiter „Meine Bewerbungen“ (oben Kanban-Board, darunter Liste links und Detailspalte rechts, Auswahl als `?id=` in der Adresse, am Handy klappt das Detail unter der Zeile auf; bearbeitet wird im Seitenfenster), „+ Bewerbung hinzufügen“ (Formular) und „Auswertung“. `/bewerbungen/kanban` leitet auf `/bewerbungen` um.
    - **Konto:** Name, E-Mail, Anmeldeart, dabei seit, Bewerbungen nach Status, Export. „Konto löschen“ klein unten.
    - **Admin „Nutzer“:**
      - Übersichtlicher, „Entfernen“ im „…“-Menü.

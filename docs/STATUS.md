@@ -52,4 +52,6 @@ Stand: 2026-11-11
 - **Phase 4, Zusatzfirmen:** Die Tabelle `laeufe` (Laufberichte mit Firmennamen) ist für alle lesbar; private Zusatzfirmen dürfen dort nicht für andere sichtbar werden.
 
 ## Nächster Schritt
+**2026-11-12 (Zweig `entwurf-ui`, noch nicht hochgeladen):** „Meine Bewerbungen“ (Board + Liste mit Detailspalte, Plan `docs/superpowers/plans/2026-11-12-meine-bewerbungen.md`), Firmenlogos in der Stellenliste, Paket „Öffentlicher Zugang“ eingemergt; lokal läuft nur noch `localhost:3002`. Vor dem nächsten Upload: Impressum-Werte in Vercel (To-do 17).
+
 Phase 2, 2b und das Firmen-Paket sind am 2026-11-11 nach `main` gemergt und hochgeladen. Der erste tägliche Lauf mit 12 Firmen läuft am 2026-11-12 um 05:00 (dauert ca. 40 Minuten). Das Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`) ist am 2026-11-11 als Code fertig. Als Nächstes: Migration 006 und Klicktest (To-dos 3, 12–14), danach das Groq-Paket; parallel die restlichen To-dos oben (Klicktest, Vercel, Backup, Pages, Groq-Key).
