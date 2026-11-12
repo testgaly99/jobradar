@@ -21,7 +21,7 @@ Claude Code liest diese Datei zu Beginn jeder Sitzung. Sie ist die **einzige Que
 ## 2. Ziel
 
 Eine eigene Website zur Jobsuche, die besser filtert als Stepstone, Indeed, LinkedIn oder Glassdoor.
-- Die Stellen kommen direkt von den **offiziellen Karriereseiten** der Firmen, die auf ausgewählten **seriösen Ranking-Listen** stehen (Abschnitt 4.8). Nur diese Firmen, keine eigene Zusatzliste (Entscheidung 2026-11-09). Ausbauziel sind rund 1000 Firmen.
+- Die Stellen kommen direkt von den **offiziellen Karriereseiten** der Firmen, die auf ausgewählten **seriösen Ranking-Listen** stehen (Abschnitt 4.8). Dazu kommen **Zusatzfirmen**, die jeder Nutzer selbst einträgt (Phase 4, Entscheidung 2026-11-12). Ausbauziel sind rund 1000 Firmen.
 - Dazu kommt ein **persönlicher Bewerbungs-Tracker**.
 - **Nur Stellen, die ein Studium voraussetzen** (Entscheidung 2026-11-09). Andere Stellen werden gar nicht gespeichert.
   - Stufe 1, sofort per Regeln: Titel eindeutig nicht-akademischer Berufe fliegen beim Abrufen raus (z. B. Warenverräumer, Reinigungskraft, Filialleitung, Mechatroniker, Fahrer).
@@ -271,7 +271,8 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 ### 4.8 Ranking-Listen (Herzstück der Firmenauswahl, Entscheidung 2026-11-09)
 - **Welche Listen:** echte, seriöse Rankings deutscher oder internationaler Herausgeber (Magazine wie WirtschaftsWoche, Institute), etwa Top-Arbeitgeber, Mitarbeiterzufriedenheit, beliebteste Arbeitgeber, Top-Startups, vielversprechendste Startups, Gehalt oder Prestige. Das sind nur Ideen: Die Listen werden in einem eigenen Recherche-Schritt anhand **realer** Rankings festgelegt (Name, Herausgeber, Rhythmus, Umfang, frei lesbar?). Der Katalog liegt dann in `docs/`.
 - **Alle 4 Wochen** prüft ein Lauf, ob es neue Ausgaben gibt. Firmen auf einer Liste werden **automatisch** aufgenommen und angebunden. Fällt eine Firma von allen Listen, verschwinden ihre Stellen beim nächsten Check; Bewerbungen bleiben immer erhalten.
-- **Nur Listen-Firmen.** Bis die Listen live sind, bleiben die heutigen Firmen aus `data/companies.csv`; danach bleibt nur, wer auf einer Liste steht.
+- **Listen-Firmen plus Zusatzfirmen.** Bis die Listen live sind, bleiben die heutigen Firmen aus `data/companies.csv`; danach bleibt, wer auf einer Liste steht, dazu die Zusatzfirmen der Nutzer.
+- **Zusatzfirmen (Entscheidung 2026-11-12, kommt mit Phase 4):** Jeder Nutzer kann einen Firmennamen oder Link eingeben; Karriereseite und ATS werden automatisch erkannt. Standard: Die Stellen sieht nur dieser Nutzer (in der Datenbank abgeschirmt, nicht in der öffentlichen `companies.csv`). Der Admin kann eine Firma für alle freigeben. Welche ATS-Systeme dazukommen, wird zu Beginn von Phase 4 geklärt.
 - In der Stellenliste ist **„Liste“ der erste Filter**. Bei jeder Firma steht immer, **welchen Rang sie in welchem Ranking** hat (z. B. „stern Beste Arbeitgeber 2026: Platz 12“). Nach **jedem einzelnen Ranking** kann man filtern und sortieren (Entscheidung 2026-11-10).
 - Startup-Listen dürfen europäisch oder amerikanisch sein, Gehaltslisten dürfen nur Tech abdecken. Bedingung: Die Firma bietet Stellen in Deutschland an.
 - **Quellen (Entscheidung 2026-11-10, Recherche `docs/ranking-recherche-v2.md`, vorerst nur Eigennutzung):**
@@ -369,7 +370,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
    - **Gegliederte Snapshots für alle:** Jede Bewerbung bekommt die gegliederte Anzeige, auch bestehende. Der tägliche Lauf rüstet fehlende Snapshots automatisch nach, solange die Stelle noch online ist.
 3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung, Erinnerungs-Mail an den Admin für die jährlichen Hand-Quellen der Rankings (4.8).
    - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
-4. **Ranking-Listen und Scraper für alle Listen-Firmen:** Listen anhand realer Rankings festlegen (Recherche läuft seit 2026-11-09), Listen in der Datenbank, 4-Wochen-Check, Filter „Liste“, automatische Erkennung des Bewerbermanagement-Systems und Anbindung (rund 1000 Firmen), Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern. Offen: TK (Stellen nur per „Mehr laden“, bräuchte Playwright).
+4. **Ranking-Listen und Scraper für alle Listen-Firmen:** Listen anhand realer Rankings festlegen (Recherche läuft seit 2026-11-09), Listen in der Datenbank, 4-Wochen-Check, Filter „Liste“, automatische Erkennung des Bewerbermanagement-Systems und Anbindung (rund 1000 Firmen), Zusatzfirmen pro Nutzer mit Admin-Freigabe (4.8), Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern. Offen: TK (Stellen nur per „Mehr laden“, bräuchte Playwright).
 5. **KI-Auswertung und Filter:** Extraktion aus Anzeigen per Groq (Gratis-Tarif), alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
 6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (Anforderungen, die mein CV abdeckt, fett; nicht abgedeckte rot) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token; dazu „Wichtige Punkte“ nach Bedeutung statt nach Wortanfang, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Dafür das günstigste Modell (Haiku), um das Abo-Kontingent zu schonen; ein größeres Modell nur, wenn Stichproben zeigen, dass Haiku zu oft danebenliegt. Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
 
