@@ -9,6 +9,7 @@ import { merken, entmerken } from "./actions";
 import FilterBlock from "./filterblock";
 import FilterClient from "./filter-client";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
+import FirmenLogo from "../firmenlogo";
 
 const TITEL: Record<Gruppe, string> = {
   groesse: "Größe", kategorie: "Branche", level: "Erfahrungslevel", modell: "Arbeitsmodell",
@@ -54,12 +55,16 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   // Steckbrief-Spalte und Felder-Tabelle gibt es erst nach Migration 005: Fehler ergibt leeren Steckbrief bzw. Standardfelder.
   const felderZeile = await sb.from("listen_felder").select("felder").maybeSingle();
   const felder = waehleFelder(felderZeile.error ? null : felderZeile.data?.felder);
+  const logos = new Map<string, string>();
   if (jobs.length) {
     const ids = jobs.map((j) => j.id);
-    const [apps, sbr] = await Promise.all([
+    const [apps, sbr, lg] = await Promise.all([
       sb.from("applications").select("id,job_id,status").in("job_id", ids),
       sb.from("jobs").select("id,steckbrief").in("id", ids),
+      // Besucher ohne Konto dürfen logo_url nicht lesen (Migration 007): dann Fehler, also nur Buchstaben-Kreise.
+      sb.from("companies").select("name,logo_url").not("logo_url", "is", null),
     ]);
+    for (const c of lg.error ? [] : (lg.data ?? [])) logos.set(c.name, c.logo_url);
     for (const a of apps.data ?? []) status.set(a.job_id, { status: a.status, id: a.id });
     for (const s of sbr.error ? [] : (sbr.data ?? [])) steckbriefe.set(s.id, s.steckbrief);
   }
@@ -162,6 +167,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               const st = app?.status;
               return (
                 <li key={j.id} className="stelle" style={{ "--firma-h": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
+                  <FirmenLogo firma={j.unternehmen} url={logos.get(j.unternehmen)} gross />
                   <div className="stelle-text">
                     <h2><Link href={"/stellen/" + encodeURIComponent(j.id)}>{j.titel}</Link></h2>
                     <p className="meta">
