@@ -45,7 +45,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
         ? <p className="meldung fehler" role="alert">Bewerbungen konnten nicht geladen werden.</p>
         : <Board karten={karten} ohneSpalten={ohneSpalten} archiv={archiv} />}
       <h2>Alle Bewerbungen</h2>
-      <div className="karte block">
+      {/* Eingeklappt (Wunsch 2026-11-12); mit aktiven Filtern offen, damit sichtbar ist, was gerade gilt */}
+      <details className="karte block" open={aktiv}>
+        <summary>Meine Bewerbungen filtern{aktiv && " (aktiv)"}</summary>
         <FilterClient aktion="/bewerbungen" listeId="bewerbungsliste" textFelder={["firma"]}>
           <fieldset className="statuswahl">
             <legend>Status</legend>
@@ -81,7 +83,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
           </label>
           {aktiv && <div className="filteraktionen aktionsreihe"><Link className="knopf knopf-rand" href="/bewerbungen">Filter zurücksetzen</Link></div>}
         </FilterClient>
-      </div>
+      </details>
       <div id="bewerbungsliste">
         {!fehler && karten.length === 0 && (
           <p className="leer">{aktiv ? "Keine Bewerbungen für diese Auswahl." : "Noch keine Bewerbungen. Lege eine aus einer Stelle oder über „+ Bewerbung hinzufügen“ an."}</p>
