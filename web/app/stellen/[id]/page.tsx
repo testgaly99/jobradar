@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { AUSGEBLENDET_BRANCHE, ID_FORM, heuteLokal } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, ID_FORM, heuteLokal, tagePlus } from "@/lib/filter";
 import { datumDe } from "@/lib/bewerbung";
 import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
 import { firmenTrend } from "@/lib/firmentrend";
@@ -35,7 +35,8 @@ export default async function Seite({ params, searchParams }: { params: Promise<
     sb.from("laeufe").select("datum,bericht").order("datum", { ascending: false }).limit(120),
     bewerbungenBei(sb, firma),
   ]);
-  const trend = firmenTrend(lf.data ?? [], firma, heuteLokal());
+  const heute = heuteLokal();
+  const trend = firmenTrend(lf.data ?? [], firma, heute);
   const maxOffen = Math.max(1, ...trend.punkte.map((p) => p.offen));
   const q = encodeURIComponent(firma);
   const abschnitte = leseAbschnitte(ab.data?.abschnitte);
@@ -69,22 +70,27 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           )}
           <p>Bewertungen suchen:{" "}
             <a href={`https://www.kununu.com/de/search?q=${q}`} target="_blank" rel="noopener noreferrer">kununu</a>{" · "}
-            <a href={`https://www.glassdoor.de/Suche/results.htm?keyword=${q}`} target="_blank" rel="noopener noreferrer">Glassdoor</a>
+            <a href={`https://www.glassdoor.de/Search/results.htm?keyword=${q}`} target="_blank" rel="noopener noreferrer">Glassdoor</a>
           </p>
           {trend.punkte.length > 0 && (
+            <p>Gerade offen: <strong>{trend.punkte.at(-1)!.offen} passende Stellen</strong> bei {firma}.</p>
+          )}
+          {trend.punkte.length >= 2 ? (
             <>
-              <h3>Offene Stellen über die Zeit</h3>
+              <h3>Offene Stellen pro Woche</h3>
               <ul className="wochenbalken">
                 {trend.punkte.map((p) => (
-                  <li key={p.datum} aria-label={`Stand ${datumDe(p.datum)}: ${p.offen} offene Stellen`}>
-                    <span className="num">Stand {datumDe(p.datum).slice(0, 6)}</span>
+                  <li key={p.datum} aria-label={`Woche bis ${datumDe(p.datum)}: ${p.offen} offene Stellen`}>
+                    <span className="num">{datumDe(p.datum).slice(0, 6)}</span>
                     <span className="balkenfeld"><span className="balkenfuell" style={{ width: `${(p.offen / maxOffen) * 100}%` }} /></span>
                     <span className="num">{p.offen}</span>
                   </li>
                 ))}
               </ul>
-              <p className="gedaempft">Letzte 30 Tage: {trend.neu} neu ausgeschrieben, {trend.geschlossen} geschlossen{trend.seit ? ` (Daten seit ${datumDe(trend.seit)})` : ""}. Gezählt werden nur Stellen, die zu den Jobradar-Regeln passen.</p>
+              <p className="gedaempft">{trend.seit && trend.seit > tagePlus(heute, -30) ? `Seit ${datumDe(trend.seit)}` : "In den letzten 30 Tagen"}: {trend.neu} neu ausgeschrieben, {trend.geschlossen} geschlossen. Zeigt, ob die Firma gerade mehr oder weniger sucht. Gezählt werden nur Stellen, die zu den Jobradar-Regeln passen.</p>
             </>
+          ) : trend.punkte.length === 1 && (
+            <p className="gedaempft">Jobradar sammelt seit {datumDe(trend.punkte[0].datum)}. Ab der zweiten Woche siehst du hier, ob die Firma mehr oder weniger Stellen ausschreibt.</p>
           )}
         </section>
       )}
