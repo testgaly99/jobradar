@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 type SP = Record<string, string | string[] | undefined>;
-const LINKS = [["tabelle", "/bewerbungen", "Tabelle"], ["kanban", "/bewerbungen/kanban", "Kanban"], ["neu", "/bewerbungen/neu", "Manuell anlegen"], ["auswertung", "/bewerbungen/auswertung", "Auswertung"]] as const;
+const LINKS = [["tabelle", "/bewerbungen", "Manuell anlegen"], ["kanban", "/bewerbungen/kanban", "Kanban"], ["auswertung", "/bewerbungen/auswertung", "Auswertung"]] as const;
 
 // Tabelle und Kanban teilen Filter und Archiv-Schalter: beim Wechsel bleiben die Suchparameter erhalten.
 export default function UnterNav({ aktiv, sp }: { aktiv: string; sp?: SP }) {

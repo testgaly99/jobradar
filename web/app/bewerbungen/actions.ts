@@ -10,15 +10,23 @@ type Ergebnis = { brauchtEingabe: true } | { fehler: string };
 type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; job?: JobZeile | null };
 
 // text: eingefügter Anzeigentext, nur wenn es keinen Text aus Stellenliste oder ATS gibt. Es wird nichts abgerufen, was GESPERRT ist.
+// Ohne Link: Firma und Titel sind Pflicht. Mit Link: eingetragene Firma/Titel gehen vor, der Rest kommt aus dem Link.
 export async function bewerbungAusLink(url: string, firma?: string, titel?: string, text?: string): Promise<Ergebnis> {
-  let u: URL;
-  try { u = new URL(url.trim()); } catch { return { fehler: "Das ist kein gültiger Link." }; }
-  if (u.protocol !== "http:" && u.protocol !== "https:") return { fehler: "Nur http- und https-Links sind möglich." };
   text = text?.replace(/\r\n/g, "\n").trim();
   if (text && textZuLang(text)) return { fehler: "Der Anzeigentext ist zu lang (höchstens 50.000 Zeichen)." };
   const sb = await createClient();
   const { data: claims } = await sb.auth.getClaims();
   if (!claims?.claims) return { fehler: "Bitte melde dich an." };
+  if (!url.trim()) {
+    if (!firma?.trim() || !titel?.trim()) return { fehler: "Bitte einen Link einfügen oder Firma und Titel eintragen." };
+    const { data, error } = await sb.from("applications")
+      .insert({ firma: firma.trim(), titel: titel.trim(), snapshot_text: text || null, status: "gemerkt" }).select("id").single();
+    if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
+    redirect(`/bewerbung/${data.id}`);
+  }
+  let u: URL;
+  try { u = new URL(url.trim()); } catch { return { fehler: "Das ist kein gültiger Link." }; }
+  if (u.protocol !== "http:" && u.protocol !== "https:") return { fehler: "Nur http- und https-Links sind möglich." };
   const a = analysiereLink(u.toString());
   const link = a.link ?? u.toString();
   firma = firma?.trim() || a.firma;

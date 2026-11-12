@@ -6,7 +6,6 @@ import { istUuid, parseAbschnitt, type Abschnitt, type Status } from "@/lib/bewe
 import { heuteLokal } from "@/lib/filter";
 import { ladeZugZeile } from "@/lib/tracker-daten";
 import { GEMERKT_GESPERRT, zugPatch, zurueckZuGemerkt, type ZugPatch } from "@/lib/zug";
-import { textZuLang } from "@/lib/uebernahme";
 
 // Jede Aktion prüft zuerst die Sitzung und die Form der id. RLS beschränkt alles auf eigene Zeilen.
 async function start(id?: string) {
@@ -20,17 +19,6 @@ const zurueck = (id: string, fehler?: string): never =>
   // replace: Speichern legt keinen History-Eintrag an, sonst führt "Schließen" (router.back) erst durch alle Speicherstände.
   redirect(`/bewerbung/${id}${fehler ? `?fehler=${encodeURIComponent(fehler)}` : ""}`, RedirectType.replace);
 const DB_FEHLER = "Das hat leider nicht geklappt. Bitte versuche es erneut.";
-
-export async function bewerbungManuell(f: FormData) {
-  const sb = await start();
-  const r = textZuLang(String(f.get("snapshot_text") ?? ""))
-    ? { fehler: "Der Anzeigentext ist zu lang (höchstens 50.000 Zeichen)." }
-    : parseAbschnitt("neu", f);
-  if ("fehler" in r) redirect(`/bewerbungen/neu?fehler=${encodeURIComponent(r.fehler)}`);
-  const { data, error } = await sb.from("applications").insert({ ...r.daten, status: r.daten.status ?? "gemerkt" }).select("id").single();
-  if (error || !data) redirect(`/bewerbungen/neu?fehler=${encodeURIComponent(DB_FEHLER)}`);
-  redirect(`/bewerbung/${data.id}`);
-}
 
 export async function abschnittSpeichern(id: string, abschnitt: Abschnitt, f: FormData) {
   const sb = await start(id);

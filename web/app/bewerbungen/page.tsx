@@ -41,9 +41,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       <h1>Bewerbungen</h1>
       <Woche />
       <UnterNav aktiv="tabelle" sp={sp} />
-      {/* B5: Anlegen ist Nebensache, die Liste ist die Hauptsache: zugeklappt, eine Zeile */}
-      <details className="karte block">
-        <summary>Bewerbung aus Link anlegen</summary>
+      {/* Anlegen steht zuerst und ist offen (Wunsch 2026-11-12); zuklappbar, wenn nur die Liste gebraucht wird */}
+      <details className="karte block" open>
+        <summary>Bewerbung anlegen</summary>
         <LinkFormular />
       </details>
       <div className="karte block">
@@ -83,7 +83,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       <div id="bewerbungsliste">
       {error && <p className="meldung fehler" role="alert">Bewerbungen konnten nicht geladen werden.</p>}
       {!error && zeilen.length === 0 && (
-        <p className="leer">{aktiv ? "Keine Bewerbungen für diese Auswahl." : "Noch keine Bewerbungen. Lege eine aus einer Stelle, per Link oder manuell an."}</p>
+        <p className="leer">{aktiv ? "Keine Bewerbungen für diese Auswahl." : "Noch keine Bewerbungen. Lege eine aus einer Stelle oder über „Bewerbung anlegen“ an."}</p>
       )}
       {zeilen.length > 0 && (
         <div className="tabelle-rahmen">
