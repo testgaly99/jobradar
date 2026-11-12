@@ -56,3 +56,12 @@ export function naechsteSpalte<T>(spalten: { id: T; left: number }[], aktuell: T
   const i = ids.indexOf(aktuell);
   return i < 0 ? null : ids[i + richtung] ?? null;
 }
+
+// Meine Bewerbungen: gewünschte id, wenn sichtbar; sonst frühester nächster Termin (bei Gleichstand die obere); sonst die oberste.
+export function vorauswahl(karten: Karte[], gewuenscht: string | undefined): Karte | null {
+  const treffer = gewuenscht ? karten.find((k) => k.id === gewuenscht) : undefined;
+  if (treffer) return treffer;
+  let best: Karte | null = null;
+  for (const k of karten) if (k.naechsterTermin && (!best?.naechsterTermin || k.naechsterTermin.datum < best.naechsterTermin.datum)) best = k;
+  return best ?? karten[0] ?? null;
+}
