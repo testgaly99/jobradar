@@ -25,7 +25,7 @@ Eine eigene Website zur Jobsuche, die besser filtert als Stepstone, Indeed, Link
 - Dazu kommt ein **persönlicher Bewerbungs-Tracker**.
 - **Nur Stellen, die ein Studium voraussetzen** (Entscheidung 2026-11-09). Andere Stellen werden gar nicht gespeichert.
   - Stufe 1, sofort per Regeln: Titel eindeutig nicht-akademischer Berufe fliegen beim Abrufen raus (z. B. Warenverräumer, Reinigungskraft, Filialleitung, Mechatroniker, Fahrer).
-  - Stufe 2, mit dem Groq-Paket: Groq stuft jede Anzeige ein: Studium „ja“, „nein“ oder „unklar“ und Tätigkeit „anspruchsvoll“ oder „einfach“. Gespeichert wird bei „ja“ und „unklar“.
+  - Stufe 2, mit dem Groq-Paket: Groq stuft jede Anzeige ein: Studium „ja“, „nein“ oder „unklar“ und Tätigkeit „anspruchsvoll“ oder „einfach“. Sichtbar bleiben „ja“ und „unklar“; „nein“ wird vorerst **ausgeblendet statt gelöscht**, bis die Prestige-Bewertung steht (Entscheidung 2026-11-12).
   - **Ausnahme Prestige-Arbeitgeber** (z. B. Magnificent 7): Dort bleiben auch Stellen ohne Studium, wenn die Tätigkeit anspruchsvoll ist (z. B. Program Manager bei Google). Einfache Tätigkeiten fliegen auch dort raus. Welche Firmen als Prestige gelten, bestimmen die Prestige-Listen unter den Ranking-Listen (Abschnitt 4.8).
 - Freunde bekommen später eigene Konten.
 
@@ -42,7 +42,7 @@ Wichtigste Filter, in dieser Reihenfolge:
 1. **Kostenlos.** Keine Dienste, die Geld kosten oder eine Kreditkarte verlangen, ohne meine ausdrückliche Zustimmung. Grenzen von Gratis-Tarifen nennst du mir, bevor wir uns festlegen.
 2. **Keine API-Kosten für KI.**
    - KI im laufenden Betrieb ist erlaubt, nur auf zwei Wegen (Stand 2026-11-09):
-     - **Öffentliche Stellenanzeigen zusammenfassen:** Groq im Gratis-Tarif (großes Llama-Modell), Secret `GROQ_API_KEY`. An Groq gehen **nur Anzeigentexte**, nie persönliche Daten. Ist das Tageslimit erreicht, folgt der Rest am nächsten Tag. Kein Ausweichen auf Claude.
+     - **Öffentliche Stellenanzeigen zusammenfassen:** Groq im Gratis-Tarif (`gpt-oss-120b`; ist dessen Tageskontingent erschöpft, vorläufig `gpt-oss-20b`, am Folgetag mit dem großen Modell nachgebessert; Entscheidung 2026-11-12, Llama 70B gibt es nicht mehr), Secret `GROQ_API_KEY`. An Groq gehen **nur Anzeigentexte**, nie persönliche Daten. Ist das Tageslimit erreicht, folgt der Rest am nächsten Tag. Kein Ausweichen auf Claude.
      - **Alles mit persönlichen Daten** (Lebenslauf-Abgleich, CV-Empfehlung, Anschreiben): nur über meinen Claude-Abo-Token (`claude setup-token`, in GitHub Actions als Secret `CLAUDE_CODE_OAUTH_TOKEN`).
    - Es gibt keine Ausweichlösung. GitHub Models wurde am 30.07.2026 abgeschaltet.
    - Ist das Kontingent erschöpft, wird der Rest in der nächsten Nacht ausgewertet.
@@ -302,7 +302,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 |---|---|---|
 | Datenbank, Login, Dateien | Supabase, Region Frankfurt | Pausiert nach ca. 1 Woche ohne Datenbank-Aktivität. Der tägliche Scraper-Lauf schreibt in die Datenbank und hält sie wach. Limits: 500 MB Datenbank, 1 GB Dateien, 50 MB pro Datei, 2 Projekte. |
 | Scraper und Hintergrundjobs | Python, zeitgesteuert per GitHub Actions (Digest, Alarme, Briefings, Gmail-Abgleich, Erinnerungen) | Im öffentlichen Repo unbegrenzt gratis. Abschaltung nach 60 Tagen ohne Aktivität; der tägliche Commit verhindert sie. |
-| KI-Auswertung der Anzeigen | Groq Gratis-Tarif (Llama 70B) | Etwa 1.000 Anfragen pro Tag; Rest am nächsten Tag. Nur öffentliche Texte. |
+| KI-Auswertung der Anzeigen | Groq Gratis-Tarif (`gpt-oss-120b`, Überlauf `gpt-oss-20b`) | Je Modell 1.000 Anfragen und ca. 200.000 Tokens pro Tag, 8.000 Tokens pro Minute (≈ 100 Anzeigen/Tag); Rest am nächsten Tag. Nur öffentliche Texte. |
 | KI mit persönlichen Daten und Reparatur | Claude Code Action mit Abo-Token | Der Verbrauch zählt gegen das Abo-Kontingent. |
 | Website | Next.js auf Vercel (Hobby) | Nur private, nicht-kommerzielle Nutzung. Zeitgesteuerte Jobs laufen deshalb über GitHub Actions statt über Vercel. |
 | Benachrichtigung | Telegram-Bot, später zusätzlich Google Kalender (kein Teams). E-Mail erst mit dem Mail-Paket. | – |
@@ -368,7 +368,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
      - Der Scraper zieht per Regeln heraus: Erfahrung in Jahren, Sprachen, Gehalt (falls angegeben), Sicherheitsüberprüfung.
      - Die Detailseite zeigt oben den Steckbrief, die gegliederte Anzeige eingeklappt darunter.
      - In der Stellenliste steht eine Kurzbeschreibung. Welche Felder sie zeigt, stellt jeder Nutzer auf der Konto-Seite selbst ein.
-     - „Kurz gesagt“, Top-3-Anforderungen und „Auffällig“ brauchen KI: per Groq, nach einer Probe mit 20 Anzeigen (eigenes Paket direkt nach 2b).
+     - KI-Zusammenfassung per Groq (Groq-Paket, Design `docs/superpowers/specs/2026-11-12-groq-paket-design.md`): 3–5 Stichpunkte zu den nicht-trivialen Aufgaben plus „Das musst du mitbringen“ (3 Muss-Anforderungen ohne Sprachen); kein Bereich „Auffällig“. Erst nach einer Probe mit 20 Anzeigen.
    - **Wichtige Punkte:** Auf der Konto-Seite pflege ich Begriffe, die mir bei einer Stelle wichtig sind. Kommen sie in einem Stichpunkt der Anzeige vor, werden sie auf der Detailseite hervorgehoben. Reiner Textvergleich, ohne KI: Ein Begriff trifft ganze Wörter und Wortanfänge („Team“ trifft „Teamfähigkeit“). Übergangslösung; in Phase 6 kommt der Abgleich nach Bedeutung per KI dazu.
    - **Gegliederte Snapshots für alle:** Jede Bewerbung bekommt die gegliederte Anzeige, auch bestehende. Der tägliche Lauf rüstet fehlende Snapshots automatisch nach, solange die Stelle noch online ist.
 3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung, Erinnerungs-Mail an den Admin für die jährlichen Hand-Quellen der Rankings (4.8).

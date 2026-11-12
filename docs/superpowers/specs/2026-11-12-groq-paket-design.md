@@ -33,7 +33,7 @@ Anzeigen sind lange Textwände (Median rund 4.700 Zeichen). Der Nutzer will auf 
 7. **Wann:** im täglichen Lauf nach dem Abrufen. Ändert sich der Anzeigentext, wird neu zusammengefasst; sonst nie.
 8. **Teil C (eigener kleiner Schritt nach A+B):** Wird eine Bewerbung ohne Link, aber mit eingefügtem Anzeigentext angelegt, schlägt Groq Firma und Titel vor; der Nutzer kann sie ändern. Hinweis am Feld: „Nur den Anzeigentext einfügen, keine eigenen Daten.“ Der Text wird wie heute als `snapshot_text` gespeichert.
    - Großes Modell erschöpft → anderes Groq-Modell.
-   - Groq gar nicht erreichbar → Bewerbung wird so gespeichert, wie sie ist (Firma/Titel leer, wenn nicht eingetragen); der tägliche Lauf füllt sie nach, sobald Groq wieder geht. *(Auslegung von Claude, vom Nutzer zu bestätigen.)*
+   - Groq gar nicht erreichbar → Bewerbung wird so gespeichert, wie sie ist (Firma/Titel leer, wenn nicht eingetragen); der tägliche Lauf füllt sie nach, sobald Groq wieder geht. *(vom Nutzer bestätigt 2026-11-12)*
 9. **Admin auf der Konto-Seite:** „Noch X Anzeigen warten auf Auswertung“, Anzahl vorläufiger Zusammenfassungen, Liste der wegen „Studium: nein“ ausgeblendeten Stellen zum Gegenprüfen.
 
 ## Nicht-Ziele
