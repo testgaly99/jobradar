@@ -7,7 +7,7 @@ import {
 import { ERGEBNIS_LABEL, STATUS_LABEL, type Status } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { BOARD_SPALTEN, karteAendern, nachSpalten, naechsteSpalte, type Karte } from "@/lib/tracker-karte";
-import { rundePatch, zugPatch } from "@/lib/zug";
+import { GEMERKT_GESPERRT, rundePatch, zugPatch, zurueckZuGemerkt } from "@/lib/zug";
 import { kommentarSpeichern, rundeAendern, zugAusfuehren, zugRueckgaengig, type ZugVorher } from "../zug-actions";
 import ArchivDialog from "./archiv-dialog";
 import KarteAnsicht, { Logo, type KartenAktionen } from "./karte";
@@ -97,6 +97,7 @@ export default function Board({ karten, ohneSpalten, archiv }: { karten: Karte[]
 
   const zug = (k: Karte, ziel: { status: Status; ergebnis?: string }) => {
     if (k.status === ziel.status) return;
+    if (zurueckZuGemerkt(k.status, ziel.status)) { setMeldung(null); setFehler(GEMERKT_GESPERRT); return; }
     setZuletzt(k.id);
     const wohin = ziel.ergebnis ? `Archiv (${ERGEBNIS_LABEL[ziel.ergebnis]})` : STATUS_LABEL[ziel.status];
     schritt(k.id, zugPatch(k, ziel, heuteLokal()), () => zugAusfuehren(k.id, k.status, ziel),

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useDraggable } from "@dnd-kit/core";
 import { ERGEBNIS_LABEL, STATUS_LABEL, tagDe, type Status } from "@/lib/bewerbung";
 import { firmenFarbe } from "@/lib/farbe";
-import { rundePatch } from "@/lib/zug";
+import { rundePatch, zurueckZuGemerkt } from "@/lib/zug";
 import { BOARD_SPALTEN, naechsteSpalte, type Karte } from "@/lib/tracker-karte";
 
 const REIHENFOLGE = [...BOARD_SPALTEN, "abgeschlossen" as const].map((id, left) => ({ id, left }));
@@ -101,7 +101,7 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
             <summary aria-label={`Status von ${firma} ändern`}><span aria-hidden="true">⋯</span></summary>
             <label className="klein karte-status">Status
               <select value={karte.status} onChange={(e) => { (e.currentTarget.closest("details") as HTMLDetailsElement).open = false; aktionen.status(karte, e.currentTarget.value as Status); }}>
-                {BOARD_SPALTEN.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
+                {BOARD_SPALTEN.map((s) => <option key={s} value={s} disabled={zurueckZuGemerkt(karte.status, s)}>{STATUS_LABEL[s]}</option>)}
                 <option value="abgeschlossen">Archiv…</option>
               </select>
             </label>

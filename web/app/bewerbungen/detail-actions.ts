@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { istUuid, parseAbschnitt, type Abschnitt, type Status } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { ladeZugZeile } from "@/lib/tracker-daten";
-import { zugPatch, type ZugPatch } from "@/lib/zug";
+import { GEMERKT_GESPERRT, zugPatch, zurueckZuGemerkt, type ZugPatch } from "@/lib/zug";
 import { textZuLang } from "@/lib/uebernahme";
 
 // Jede Aktion prüft zuerst die Sitzung und die Form der id. RLS beschränkt alles auf eigene Zeilen.
@@ -45,6 +45,7 @@ export async function abschnittSpeichern(id: string, abschnitt: Abschnitt, f: Fo
     if (fehler) zurueck(id, DB_FEHLER);
     if (!alt) notFound();
     const status = r.daten.status as Status;
+    if (zurueckZuGemerkt(alt.status, status)) zurueck(id, GEMERKT_GESPERRT);
     if (status !== alt.status) {
       const heute = heuteLokal();
       let patch: ZugPatch;

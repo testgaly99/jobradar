@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ERGEBNIS_LABEL, istStatus, istUuid, type Status } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { ladeZugZeile, spaltenFehlen } from "@/lib/tracker-daten";
-import { rueckgaengigErlaubt, rundePatch, zugPatch, type ZugAlt } from "@/lib/zug";
+import { GEMERKT_GESPERRT, rueckgaengigErlaubt, rundePatch, zugPatch, zurueckZuGemerkt, type ZugAlt } from "@/lib/zug";
 
 // Diese Actions antworten mit Ergebnissen statt redirect(): das Board zeigt Fehler selbst an.
 export type ZugVorher = ZugAlt & { zeitpunkt: string };
@@ -42,6 +42,7 @@ export async function zugAusfuehren(
   const { alt, ohne006, fehler: lesefehler } = await ladeZugZeile(sb, id);
   if (lesefehler) return nein(DB_FEHLER);
   if (!alt) return nein("Bewerbung nicht gefunden.");
+  if (zurueckZuGemerkt(alt.status, ziel.status)) return nein(GEMERKT_GESPERRT);
   let patch;
   try { patch = zugPatch(alt, ziel, heuteLokal()); } catch { return nein("Bitte wähle ein Ergebnis."); }
   if (ohne006) delete patch.runde;

@@ -9,6 +9,7 @@ import {
 } from "@/app/bewerbungen/detail-actions";
 import Abschnitte from "../../abschnitte";
 import { leseAbschnitte } from "@/lib/anzeige";
+import { zurueckZuGemerkt } from "@/lib/zug";
 import { DruckKnopf, LoeschForm, SendeKnopf } from "@/app/bewerbungen/knoepfe";
 import Ungespeichert from "./ungespeichert";
 
@@ -113,7 +114,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           <form action={speichern("ablauf")} className="formular">
           <label>Status
             <select name="status" defaultValue={v(row.status)}>
-              {STATUS.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
+              {STATUS.map((s) => <option key={s} value={s} disabled={zurueckZuGemerkt(row.status as Status, s)}>{STATUS_LABEL[s]}</option>)}
             </select>
           </label>
           <Text a={row} name="naechster_schritt" label="Nächster Schritt" />

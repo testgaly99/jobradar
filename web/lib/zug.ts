@@ -6,6 +6,10 @@ export const STATUS_RANG = Object.fromEntries(STATUS.map((s, i) => [s, i])) as R
 export type ZugAlt = { status: Status; runde: number | null; ergebnis: string | null; beworben_am: string | null };
 export type ZugPatch = { status: Status; runde?: number; ergebnis?: string | null; beworben_am?: string };
 
+// Wer einmal beworben ist, war beworben: zurück auf "Gemerkt" geht nicht (Rückgängig direkt nach einem Zug bleibt erlaubt).
+export const zurueckZuGemerkt = (von: Status, nach: Status) => nach === "gemerkt" && von !== "gemerkt";
+export const GEMERKT_GESPERRT = "Nach einer Bewerbung geht es nicht zurück auf „Gemerkt“.";
+
 export function zugPatch(alt: ZugAlt, ziel: { status: Status; ergebnis?: string | null }, heute: string): ZugPatch {
   const p: ZugPatch = { status: ziel.status };
   if (ziel.status === "abgeschlossen") {
