@@ -3,10 +3,12 @@ import "./globals.css";
 import "./stil/utilitaer.css"; // Variante: nur diese Zeile tauschen
 import Link from "next/link";
 import Kopf from "./kopf";
+import { ROBOTS } from "@/lib/oeffentlich";
 
 export const metadata: Metadata = {
   title: "Jobradar",
   description: "Stellen finden und Bewerbungen verfolgen",
+  robots: ROBOTS,
 };
 
 // A7: Browserleiste am Handy in Papierfarbe; Werte spiegeln --color-paper aus stil/utilitaer.css (hell/dunkel).
