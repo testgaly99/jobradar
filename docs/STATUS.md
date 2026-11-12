@@ -46,6 +46,8 @@ Stand: 2026-11-11
 19. ~~Glassdoor-Link im Kasten „Über <Firma>“ erneut anklicken (Adresse jetzt `/Search/`). Claude darf Glassdoor nicht selbst aufrufen, weil die Seite automatische Abrufe blockiert.~~ **Erledigt 2026-11-12.**
 20. ~~Google-Anmeldung für die Laptop-Entwürfe: Supabase → Authentication → URL Configuration → Redirect URLs → „Add URL“ → `http://localhost:*/**` → „Save URLs“ (Site URL nicht ändern). Warum: Ohne die Freigabe schickt Supabase nach der Google-Anmeldung immer zur Vercel-Seite zurück (die seit dem Upload am 2026-11-12 den aktuellen Stand zeigt). Erfolg: Nach „Mit Google anmelden“ auf `localhost:3002` landest du auf `localhost:3002/stellen`.~~ **Erledigt 2026-11-12.**
 
+21. **Groq-Probe ansehen** (Groq-Paket angehalten, Plan `docs/superpowers/plans/2026-11-12-groq-paket.md`, Task 2): Übersicht mit Groqs unveränderten Antworten zu 20 Anzeigen lesen und „passt“ sagen oder Änderungen nennen. Offen: Claudes Vorschlag (bei zu vielen Punkten erneut fragen, „muss“ in Anzeigensprache) plus vierter Probelauf.
+
 ## Offene To-dos für spätere Phasen
 - **Phase 3 (Gmail):** Erinnerungs-Mail an den Admin (`ADMIN_EMAIL`) einrichten, sobald die jährlichen Hand-Quellen der Rankings (trendence, Universum, LinkedIn) fällig sind. Bis dahin erinnert ein GitHub-Issue (Entscheidung 2026-11-10, CLAUDE.md 4.8).
 - **Offener Punkt „Ähnliche Stellen“** (Wettbewerbsanalyse 2026-11-12, erstmal nicht): auf der Stellenseite ähnliche Stellen zeigen (gleiche Funktion/Level, andere Firmen). Wieder aufgreifen, wenn mehr Firmen angebunden sind.
