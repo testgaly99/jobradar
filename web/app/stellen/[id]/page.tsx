@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { aktuellerNutzer } from "@/lib/nutzer";
 import { AUSGEBLENDET_BRANCHE, ID_FORM, heuteLokal } from "@/lib/filter";
 import { datumDe } from "@/lib/bewerbung";
 import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
@@ -21,26 +22,32 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   try { id = decodeURIComponent(roh); } catch { notFound(); }
   if (!ID_FORM.test(id)) notFound();
   const sb = await createClient();
+  const nutzer = await aktuellerNutzer();
+  // Ohne "text": Besucher dürfen ihn nicht lesen (Migration 007), die Datenbank würde die ganze Abfrage ablehnen.
   const { data: j } = await sb.from("jobs")
-    .select("id,unternehmen,titel,url,ort,remote,arbeitsmodell,vertragsart,text,erfahrungslevel,erstmals_gesehen,companies(groesse_klasse,kategorie)")
+    .select("id,unternehmen,titel,url,ort,remote,arbeitsmodell,vertragsart,erfahrungslevel,erstmals_gesehen,companies(groesse_klasse,kategorie)")
     .eq("id", id).maybeSingle();
   if (!j) notFound();
   // Alles Folgende toleriert fehlende Migration 005: Fehler ergibt leere Daten statt Absturz.
+  // Anzeigentext, wichtige Punkte, Merk-Status und "Über <Firma>" nur für Angemeldete.
   const firma = j.unternehmen ?? "";
-  const [ab, sbr, wp, app, lf, schonBeworben] = await Promise.all([
-    sb.from("jobs").select("abschnitte").eq("id", id).maybeSingle(),
+  const leer = { data: null, error: null };
+  const [tx, ab, sbr, wp, app, lf, schonBeworben] = await Promise.all([
+    nutzer ? sb.from("jobs").select("text").eq("id", id).maybeSingle() : leer,
+    nutzer ? sb.from("jobs").select("abschnitte").eq("id", id).maybeSingle() : leer,
     sb.from("jobs").select("steckbrief").eq("id", id).maybeSingle(),
-    sb.from("wichtige_punkte").select("begriff"),
-    sb.from("applications").select("id,status").eq("job_id", id).limit(1).maybeSingle(),
-    sb.from("laeufe").select("datum,bericht").order("datum", { ascending: false }).limit(120),
-    bewerbungenBei(sb, firma),
+    nutzer ? sb.from("wichtige_punkte").select("begriff") : { data: [], error: null },
+    nutzer ? sb.from("applications").select("id,status").eq("job_id", id).limit(1).maybeSingle() : leer,
+    nutzer ? sb.from("laeufe").select("datum,bericht").order("datum", { ascending: false }).limit(120) : { data: [] },
+    nutzer ? bewerbungenBei(sb, firma) : 0,
   ]);
+  const text: string | null = tx.data?.text ?? null;
   const trend = firmenTrend(lf.data ?? [], firma, heuteLokal());
   const maxOffen = Math.max(1, ...trend.punkte.map((p) => p.offen));
   const q = encodeURIComponent(firma);
   const abschnitte = leseAbschnitte(ab.data?.abschnitte);
   const begriffe = wp.error ? [] : (wp.data ?? []).map((p: { begriff: string }) => p.begriff);
-  const alleText = abschnitte ? abschnitte.flatMap((a) => [a.titel, ...a.punkte]).join("\n") : (j.text ?? "");
+  const alleText = abschnitte ? abschnitte.flatMap((a) => [a.titel, ...a.punkte]).join("\n") : (text ?? "");
   const n = zaehleTreffer(alleText, begriffe);
   const co = j.companies as unknown as { groesse_klasse: string | null; kategorie: string[] | null } | null;
   const eintraege = kurzzeile({
@@ -61,7 +68,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <dl>{eintraege.map((e) => <div key={e.feld}><dt>{FELD_TITEL[e.feld]}</dt><dd>{e.text}</dd></div>)}</dl>
         </section>
       )}
-      {firma && (
+      {nutzer && firma && (
         <section className="karte block" aria-labelledby="firma-titel">
           <h2 id="firma-titel">Über {firma}</h2>
           {schonBeworben > 0 && (
@@ -90,7 +97,9 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       )}
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
       <div className="knopfreihe">
-        {app.data?.status === "gemerkt" ? (
+        {!nutzer ? (
+          <Link className="knopf knopf-rand knopf-schmal" href="/login">Anmelden zum Merken</Link>
+        ) : app.data?.status === "gemerkt" ? (
           <>
             <form action={entmerken.bind(null, j.id)}>
               <SendeKnopf text="Gemerkt ✓" klasse="knopf knopf-zustand knopf-schmal ist-gemerkt" gedrueckt title="Klicken, um nicht mehr zu merken" />
@@ -103,15 +112,19 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           <form action={merken.bind(null, j.id)}><SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" /></form>
         )}
         {link && <a className="knopf knopf-rand knopf-schmal" href={link} target="_blank" rel="noopener noreferrer">Original-Anzeige öffnen</a>}
-        {(!app.data || app.data.status === "gemerkt") && (
+        {nutzer && (!app.data || app.data.status === "gemerkt") && (
           <form action={beworben.bind(null, j.id)}><SendeKnopf text="Ich habe mich beworben" klasse="knopf knopf-schmal" /></form>
         )}
       </div>
       {begriffe.length > 0 && <p className="meldung hinweis">{n} deiner wichtigen Punkte kommen vor</p>}
-      <details className="karte">
-        <summary>Ganze Anzeige lesen</summary>
-        <Abschnitte abschnitte={abschnitte} text={j.text} begriffe={begriffe} ebene={2} />
-      </details>
+      {nutzer ? (
+        <details className="karte">
+          <summary>Ganze Anzeige lesen</summary>
+          <Abschnitte abschnitte={abschnitte} text={text} begriffe={begriffe} ebene={2} />
+        </details>
+      ) : (
+        <p className="gedaempft">Melde dich an, um die ganze Anzeige hier zu lesen.</p>
+      )}
     </>
   );
 }
