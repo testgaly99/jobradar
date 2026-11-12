@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a className="skiplink" href="#inhalt">Zum Inhalt springen</a>
         <Kopf />
         <main className="seite" id="inhalt">{children}</main>
-        <footer className="seite fuss"><Link href="/datenschutz">Datenschutz</Link></footer>
+        <footer className="seite fuss"><Link href="/impressum">Impressum</Link> · <Link href="/datenschutz">Datenschutz</Link></footer>
       </body>
     </html>
   );
