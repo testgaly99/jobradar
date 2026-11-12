@@ -256,8 +256,10 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 .stelle + .stelle { border-top: var(--rule-hair) solid var(--color-rule); }
 @media (min-width: 40rem) { .stelle { grid-template-columns: minmax(0, 1fr) auto; align-items: start; } }
 .stelle-text { display: grid; gap: var(--space-2xs); min-width: 0; }
-.kurz { display: flex; flex-wrap: wrap; gap: var(--space-2xs) var(--space-md); list-style: none; padding: 0; font-size: var(--text-sm); color: var(--color-ink-2); }
+.kurz { display: flex; flex-wrap: wrap; gap: var(--space-2xs) var(--space-xs); list-style: none; padding: 0; font-size: var(--text-sm); color: var(--color-ink-2); }
 .stelle-text .kurz { margin-top: var(--space-2xs); }
+/* Trenner hinter jedem Eintrag außer dem letzten; "/ ''" = Vorleseprogramme lesen ihn nicht vor. */
+.kurz li:not(:last-child)::after { content: "·" / ""; margin-left: var(--space-xs); }
 .steckbrief { display: grid; gap: var(--space-xs); margin-block: var(--space-md); }
 .steckbrief dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-2xs) var(--space-md); }
 .steckbrief dl > div { display: contents; }
