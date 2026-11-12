@@ -61,13 +61,14 @@ def _zeile(s, erg):
     if erg["fehler"]:
         mitte = f'<td colspan="5"><b>Fehler:</b> {e(erg["fehler"])}</td>'
     elif erg["gueltig"]:
-        f = erg["felder"]
+        f = erg["felder"]  # unveraendert aus Groqs JSON, nicht die normalisierte Fassung von pruefe
         mitte = (f'<td>{_liste(f["aufgaben"])}</td><td>{_liste(f["muss"])}</td><td>{e(f["studium"])}</td>'
                  f'<td>{e(f["taetigkeit"])}</td><td>{e(f["sprache"])}</td>')
     else:
         mitte = f'<td colspan="5"><b>ungültig</b><pre>{e(erg["roh"])}</pre></td>'
     ende = (f'<td>{e(erg["modell"])}</td><td>{e(erg["zeit"])}</td>'
-            f'<td><details><summary>Text</summary><pre>{e(s.get("text") or "")}</pre></details></td>')
+            f'<td><details><summary>Rohantwort von Groq</summary><pre>{e(erg["roh"])}</pre></details>'
+            f'<details><summary>Text</summary><pre>{e(s.get("text") or "")}</pre></details></td>')
     return f"<tr>{kopf}{mitte}{ende}</tr>"
 
 
@@ -89,8 +90,10 @@ def probe(stellen, ausgabe, anfrage=ki.anfrage):
         stopp = False
         try:
             erg["roh"], erg["modell"] = anfrage(s.get("text") or "", ki.GROSS)
+            erg["zeit"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
             try:
-                erg["felder"] = ki.pruefe(json.loads(erg["roh"]))
+                erg["felder"] = json.loads(erg["roh"])
+                ki.pruefe(erg["felder"])  # nur zur Entscheidung gueltig/ungueltig
                 erg["gueltig"] = True
             except (ValueError, TypeError, ki.Ungueltig):
                 pass
@@ -98,6 +101,8 @@ def probe(stellen, ausgabe, anfrage=ki.anfrage):
             erg["fehler"], stopp = f"Tageslimit erschöpft ({e.modell})", True
         except ki.GroqWeg as e:
             erg["fehler"], stopp = f"Groq nicht erreichbar ({e})", True
+        except Exception as e:  # z. B. fehlender Schluessel, unerwartetes Antwortformat; nur Typ + Text
+            erg["fehler"], stopp = f"{type(e).__name__}: {e}", True
         zeilen.append((s, erg))
         if stopp:
             break

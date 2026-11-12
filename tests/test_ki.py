@@ -139,3 +139,30 @@ def test_probe_html_unveraendert_und_ungueltig(tmp_path):
     h = out.read_text(encoding="utf-8")
     assert len(zeilen) == 3 and "modell-A" in h and "T&lt;b&gt;" in h
     assert "ungültig" in h and "kein &lt;json&gt;" in h and "Tageslimit" in h
+
+
+def test_probe_zeigt_roh_unnormalisiert(tmp_path):
+    from scraper.ki_probe import probe
+    roh = json.dumps({**GUT, "aufgaben": ["  mit Leerraum  ", "b", "c"], "extra": "zusatz"})
+    out = tmp_path / "p.html"
+    probe([{"id": "1", "unternehmen": "F", "titel": "T", "url": "u", "text": "t"}], out, anfrage=lambda t, m: (roh, "m"))
+    h = out.read_text(encoding="utf-8")
+    assert "<li>  mit Leerraum  </li>" in h
+    assert "Rohantwort von Groq" in h and "&quot;extra&quot;: &quot;zusatz&quot;" in h
+
+
+def test_probe_faengt_beliebige_fehler(tmp_path):
+    from scraper.ki_probe import probe
+    antw = iter([(json.dumps(GUT), "m")])
+
+    def fake(t, m):
+        try:
+            return next(antw)
+        except StopIteration:
+            raise KeyError("GROQ_API_KEY")
+
+    stellen = [{"id": str(i), "unternehmen": "F", "titel": f"T{i}", "url": "u", "text": "t"} for i in range(3)]
+    out = tmp_path / "p.html"
+    zeilen = probe(stellen, out, anfrage=fake)
+    h = out.read_text(encoding="utf-8")
+    assert len(zeilen) == 2 and "KeyError" in h and ">T0<" in h and ">T2<" not in h
