@@ -2,7 +2,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { analysiereLink, firmaPasst, hostOhneWww, normFirma, normTitel, slugAusFirma } from "@/lib/link-import";
-import { anlegenAusJob, type JobZeile } from "@/lib/bewerbung-anlegen";
+import { anlegenAusJob, aufBeworben, type JobZeile } from "@/lib/bewerbung-anlegen";
+import { heuteLokal } from "@/lib/filter";
 import { holeStelle, sucheTitel, type Stelle } from "@/lib/ats-abruf";
 import { textZuLang } from "@/lib/uebernahme";
 
@@ -10,6 +11,7 @@ type Ergebnis = { brauchtEingabe: true } | { fehler: string };
 type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; job?: JobZeile | null };
 
 // text: eingefügter Anzeigentext, nur wenn es keinen Text aus Stellenliste oder ATS gibt. Es wird nichts abgerufen, was GESPERRT ist.
+// Neue Bewerbungen starten als beworben (gemerkt nur über "Merken" in der Stellenliste).
 // Ohne Link: Firma und Titel sind Pflicht. Mit Link: eingetragene Firma/Titel gehen vor, der Rest kommt aus dem Link.
 export async function bewerbungAusLink(url: string, firma?: string, titel?: string, text?: string): Promise<Ergebnis> {
   text = text?.replace(/\r\n/g, "\n").trim();
@@ -17,10 +19,12 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   const sb = await createClient();
   const { data: claims } = await sb.auth.getClaims();
   if (!claims?.claims) return { fehler: "Bitte melde dich an." };
+  const heute = heuteLokal();
+  const NEU = { status: "beworben", beworben_am: heute };
   if (!url.trim()) {
     if (!firma?.trim() || !titel?.trim()) return { fehler: "Bitte einen Link einfügen oder Firma und Titel eintragen." };
     const { data, error } = await sb.from("applications")
-      .insert({ firma: firma.trim(), titel: titel.trim(), snapshot_text: text || null, status: "gemerkt" }).select("id").single();
+      .insert({ firma: firma.trim(), titel: titel.trim(), snapshot_text: text || null, ...NEU }).select("id").single();
     if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
     redirect(`/bewerbung/${data.id}`);
   }
@@ -36,7 +40,11 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
     (await sb.from("applications").select("id").eq(spalte, wert).limit(1).maybeSingle()).data?.id as string | undefined;
 
   const dupLink = await vorhandenZu("link", link);
-  if (dupLink) redirect(`/bewerbung/${dupLink}`);
+  // Schon vorhanden (z. B. gemerkt): auf beworben setzen und öffnen.
+  if (dupLink) {
+    if (!(await aufBeworben(sb, dupLink, heute))) return { fehler: "Der Status konnte nicht gespeichert werden." };
+    redirect(`/bewerbung/${dupLink}`);
+  }
 
   // Verknüpfung nur über die Firma des Boards (companies.ats_typ/ats_id) und die exakte id "<firma>:<ext_id>".
   const ausStelle = async (s: Stelle, typ: string, boardId: string): Promise<Ziel> => {
@@ -100,13 +108,14 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   }
 
   if (ziel.job) {
-    const r = await anlegenAusJob(sb, ziel.job, { quelle: ziel.quelle, text });
+    const r = await anlegenAusJob(sb, ziel.job, { quelle: ziel.quelle, text, beworbenAm: heute });
     if ("fehler" in r) return { fehler: "Bewerbung konnte nicht angelegt werden." };
+    if (!(await aufBeworben(sb, r.id, heute))) return { fehler: "Der Status konnte nicht gespeichert werden." }; // war die Stelle schon gemerkt
     redirect(`/bewerbung/${r.id}`);
   }
   const { data, error } = await sb.from("applications").insert({
     firma: ziel.firma ?? null, titel: ziel.titel ?? null, link: ziel.link, quelle: ziel.quelle,
-    standort: ziel.ort || null, snapshot_text: ziel.text || text || null, status: "gemerkt",
+    standort: ziel.ort || null, snapshot_text: ziel.text || text || null, ...NEU,
   }).select("id").single();
   if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
   redirect(`/bewerbung/${data.id}`);

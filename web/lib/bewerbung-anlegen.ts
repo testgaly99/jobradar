@@ -1,10 +1,11 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { beworbenPatch } from "./bewerbung";
 
 export type JobZeile = { id: string; unternehmen: string | null; titel: string | null; url: string | null; ort: string | null; arbeitsmodell: string | null; text: string | null; abschnitte?: unknown };
 
 // Legt die Bewerbung zu einer Stelle an oder liefert die vorhandene (auch bei Doppelklick). Gibt die id oder einen Fehler zurück.
-export async function anlegenAusJob(sb: SupabaseClient, job: JobZeile, extra: { quelle?: string | null; text?: string | null } = {}): Promise<{ id: string } | { fehler: true }> {
+export async function anlegenAusJob(sb: SupabaseClient, job: JobZeile, extra: { quelle?: string | null; text?: string | null; beworbenAm?: string } = {}): Promise<{ id: string } | { fehler: true }> {
   const finde = async () => (await sb.from("applications").select("id").eq("job_id", job.id).limit(1).maybeSingle()).data?.id as string | undefined;
   const vorhanden = await finde();
   if (vorhanden) return { id: vorhanden };
@@ -14,7 +15,8 @@ export async function anlegenAusJob(sb: SupabaseClient, job: JobZeile, extra: { 
   const abschnitte = job.abschnitte ?? (await sb.from("jobs").select("abschnitte").eq("id", job.id).maybeSingle()).data?.abschnitte ?? null;
   const { data, error } = await sb.from("applications").insert({
     job_id: job.id, firma: job.unternehmen, titel: job.titel, link: job.url, quelle,
-    standort: job.ort, praesenzmodell: job.arbeitsmodell, snapshot_text: job.text || extra.text || null, status: "gemerkt",
+    standort: job.ort, praesenzmodell: job.arbeitsmodell, snapshot_text: job.text || extra.text || null,
+    ...(extra.beworbenAm ? { status: "beworben", beworben_am: extra.beworbenAm } : { status: "gemerkt" }),
     ...(abschnitte ? { snapshot_abschnitte: abschnitte } : {}),
   }).select("id").single();
   if (error?.code === "23505") { // Doppelklick: die Bewerbung existiert schon
@@ -22,4 +24,14 @@ export async function anlegenAusJob(sb: SupabaseClient, job: JobZeile, extra: { 
     if (dup) return { id: dup };
   }
   return error || !data ? { fehler: true } : { id: data.id };
+}
+
+// Vorhandene Bewerbung als beworben markieren: nur von "gemerkt" aus vorwärts, ein späterer Status bleibt. false = Fehler.
+export async function aufBeworben(sb: SupabaseClient, id: string, heute: string): Promise<boolean> {
+  const { data: a } = await sb.from("applications").select("status,beworben_am").eq("id", id).maybeSingle();
+  if (!a) return true;
+  const patch: Record<string, string> = { ...beworbenPatch("beworben", a.beworben_am, heute) };
+  if (a.status === "gemerkt") patch.status = "beworben";
+  if (!Object.keys(patch).length) return true;
+  return !(await sb.from("applications").update(patch).eq("id", id)).error;
 }

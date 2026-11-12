@@ -2,8 +2,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { beworbenPatch } from "@/lib/bewerbung";
-import { anlegenAusJob } from "@/lib/bewerbung-anlegen";
+import { anlegenAusJob, aufBeworben } from "@/lib/bewerbung-anlegen";
 import { fehlerText } from "@/lib/fehler";
 import { heuteLokal } from "@/lib/filter";
 import { darfEntmerken, hatEigeneEingaben } from "@/lib/schalter";
@@ -31,14 +30,8 @@ export async function beworben(jobId: string) {
   if (!job) redirect("/stellen");
   const r = await anlegenAusJob(sb, job);
   if ("fehler" in r) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent(fehlerText({}))}`);
-  const { data: a } = await sb.from("applications").select("status,beworben_am").eq("id", r.id).maybeSingle();
-  // Nur von "gemerkt" aus vorwärts; ein späterer Status (z. B. im Gespräch) wird nicht zurückgesetzt.
-  const patch: Record<string, string> = {};
-  if (a?.status === "gemerkt") patch.status = "beworben";
-  if (a) Object.assign(patch, beworbenPatch("beworben", a.beworben_am, heuteLokal()));
-  if (Object.keys(patch).length) {
-    const { error } = await sb.from("applications").update(patch).eq("id", r.id);
-    if (error) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Der Status konnte nicht gespeichert werden. Bitte erneut versuchen.")}`);
+  if (!(await aufBeworben(sb, r.id, heuteLokal()))) {
+    redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Der Status konnte nicht gespeichert werden. Bitte erneut versuchen.")}`);
   }
   revalidatePath("/stellen");
   redirect(`/bewerbung/${r.id}`);
