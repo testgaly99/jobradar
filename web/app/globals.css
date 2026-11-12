@@ -463,3 +463,19 @@ mark { background: var(--color-mark); color: var(--color-mark-ink); padding: 0 v
 .wochenbalken li { display: grid; grid-template-columns: 7.5rem 1fr 2rem; align-items: center; gap: var(--space-sm); }
 .balkenfeld { background: var(--color-paper-2); border-radius: var(--radius-control); height: 0.9rem; overflow: hidden; }
 .balkenfuell { display: block; height: 100%; background: var(--color-accent); }
+
+/* Meine Bewerbungen: Liste links, Detailspalte rechts (Master-Detail); schmal klappt das Detail unter der Zeile auf */
+.detail { display: grid; gap: var(--space-md); }
+.detail-kopf { display: flex; gap: var(--space-sm); align-items: center; }
+.detail-kopf h2 { font-size: var(--text-lg); }
+.stufen { display: flex; list-style: none; padding: 0; margin: 0; font-size: var(--text-xs); color: var(--color-muted); }
+.stufen li { flex: 1; min-width: 0; display: grid; gap: var(--space-3xs); padding-right: var(--space-2xs); }
+.stufen li::before { content: ""; height: 4px; border-radius: 2px; background: var(--color-rule); }
+.stufen li.erreicht { color: var(--color-ink); }
+.stufen li.erreicht::before { background: var(--color-accent); }
+.stufen li[aria-current] { font-weight: var(--weight-strong); }
+.fakten { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: var(--space-xs); margin: 0; }
+.fakt { display: grid; gap: var(--space-3xs); align-content: start; padding: var(--space-xs) var(--space-sm); background: var(--karte-flaeche); border: var(--karte-rand); border-radius: var(--radius-control); }
+.fakt dt { font-size: var(--text-xs); color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.fakt dd { margin: 0; font-size: var(--text-sm); overflow-wrap: anywhere; }
+.detail-kommentar { margin: 0; font-size: var(--text-sm); }
