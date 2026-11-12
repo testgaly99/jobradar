@@ -411,8 +411,10 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 | **Karpathy** | nachfragen statt annehmen, einfache Lösungen, nur Nötiges ändern |
 | **Ponytail** | Code klein halten; nach größeren Änderungen `/ponytail-review` |
 | **I have ADHD** | kurzer, handlungsorientierter Antwortstil |
+| **webapp-testing** (Anthropic) | **Standard zum Testen der Website** (Entscheidung 2026-11-12): wiederholbare Klicktest-Skripte in Python mit Prüfungen, Wegwerf-Konto `…@example.com` und Abgleich in der Datenbank. Läuft mit dem installierten Chrome (`channel="chrome"`). |
+| **playwright-cli** (Microsoft) | Nur zum schnellen Nachsehen und Nachstellen eines gemeldeten Fehlers, Schritt für Schritt. Immer aus einem Ordner außerhalb des Repos starten; sein Arbeitsordner `.playwright-cli/` steht in `.gitignore`. |
 
-**Nicht installiert:** Playwright und Firecrawl.
+**Nicht installiert:** Firecrawl. Playwright ist nur zum Testen der Website installiert; im Scraper gilt weiter Abschnitt 9.
 - Firecrawl nur nach meiner Zustimmung, weil es Guthaben kostet.
 - Für Recherchen nutzt du die eingebaute Websuche.
 
@@ -421,7 +423,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 2. **Planen:** Der Plan liegt in `docs/plans/<datum>-<thema>.md`, in Schritten, die jeder für sich testbar sind.
 3. **Freigabe:** Ich bestätige den Plan, bevor Code entsteht.
 4. **Umsetzen:** mit Helfern; jeder Schritt wird gebaut, geprüft, getestet und committet.
-5. **Prüfen:** Tests, bei Website-Änderungen durchklicken, `/ponytail-review`.
+5. **Prüfen:** Tests, bei Website-Änderungen durchklicken, `/ponytail-review`. Beim Testen: **Screenshots nur bei fehlgeschlagenen Prüfungen.**
 6. **Abschluss:** `docs/STATUS.md` aktualisieren, bei Bedarf auch diese Datei. Mir in wenigen Sätzen sagen, was jetzt geht und was ich tun muss.
 
 **Bei Fehlern:** Ich beschreibe, was passiert ist, oder kopiere die Meldung. Du suchst systematisch die Ursache, bevor du etwas änderst, und erklärst sie mir in einem Satz.
