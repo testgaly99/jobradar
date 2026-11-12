@@ -6,6 +6,7 @@ export type Karte = {
   id: string; firma: string | null; titel: string | null; status: Status; ergebnis: string | null; interesse: number | null;
   beworben_am: string | null; erstellt_am: string; runde: number | null; kommentar: string | null; logo_url: string | null;
   gehalt: string | null; letzterSchritt: string; naechsterTermin: { datum: string; text: string } | null;
+  schrittFaellig: string | null; // naechster_schritt_faellig, auch wenn überfällig (Vorauswahl)
 };
 export type Ereignis = { datum: string; neuer_status: string | null };
 export type Termin = { datum: string | null; aufgabe: string | null; aufgabe_frist: string | null };
@@ -34,6 +35,7 @@ export function baueKarte(a: Zeile, events: Ereignis[], interviews: Termin[], he
     beworben_am: a.beworben_am ?? null, erstellt_am: a.erstellt_am, runde: a.runde ?? null, kommentar: a.kommentar ?? null,
     logo_url: a.jobs?.companies?.logo_url ?? null, gehalt: gehaltText(a, a.jobs?.steckbrief ?? null),
     letzterSchritt: letzt ? (label ? `${label} · ${tage}` : tage) : "", naechsterTermin: naechsterTermin(termine, heute),
+    schrittFaellig: a.naechster_schritt_faellig ?? null,
   };
 }
 
@@ -57,11 +59,13 @@ export function naechsteSpalte<T>(spalten: { id: T; left: number }[], aktuell: T
   return i < 0 ? null : ids[i + richtung] ?? null;
 }
 
-// Meine Bewerbungen: gewünschte id, wenn sichtbar; sonst frühester nächster Termin (bei Gleichstand die obere); sonst die oberste.
+// Meine Bewerbungen: gewünschte id, wenn sichtbar; sonst frühestes Fälligkeitsdatum (bei Gleichstand die obere); sonst die oberste.
 export function vorauswahl(karten: Karte[], gewuenscht: string | undefined): Karte | null {
   const treffer = gewuenscht ? karten.find((k) => k.id === gewuenscht) : undefined;
   if (treffer) return treffer;
+  // Überfällige Schritte zählen mit (naechsterTermin kennt nur Künftiges), sie sind am dringendsten.
+  const datum = (k: Karte) => [k.schrittFaellig, k.naechsterTermin?.datum].filter((d): d is string => !!d).sort()[0];
   let best: Karte | null = null;
-  for (const k of karten) if (k.naechsterTermin && (!best?.naechsterTermin || k.naechsterTermin.datum < best.naechsterTermin.datum)) best = k;
+  for (const k of karten) { const d = datum(k); if (d && (!best || d < datum(best)!)) best = k; }
   return best ?? karten[0] ?? null;
 }

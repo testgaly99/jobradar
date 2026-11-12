@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { STATUS, STATUS_LABEL, leseTabelle, type SortSpalte } from "@/lib/bewerbung";
+import { STATUS, STATUS_LABEL, leseTabelle, mitArchiv, type SortSpalte } from "@/lib/bewerbung";
 import { ladeDetail, ladeKarten } from "@/lib/tracker-daten";
 import { vorauswahl } from "@/lib/tracker-karte";
 import FilterClient from "../stellen/filter-client";
@@ -20,7 +20,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const sp = await searchParams;
   const f = leseTabelle(sp);
   const sb = await createClient();
-  const { karten, ohneSpalten, fehler } = await ladeKarten(sb, f);
+  const archiv = mitArchiv(f);
+  const { karten, ohneSpalten, fehler } = await ladeKarten(sb, { ...f, archiv });
   const gewaehlt = vorauswahl(karten, eins(sp.id));
   const detail = gewaehlt ? await ladeDetail(sb, gewaehlt.id) : null;
   const aktiv = f.status.length > 0 || !!f.firma || !!f.interesse || f.archiv;
@@ -42,7 +43,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       </p>
       {fehler
         ? <p className="meldung fehler" role="alert">Bewerbungen konnten nicht geladen werden.</p>
-        : <Board karten={karten} ohneSpalten={ohneSpalten} archiv={f.archiv} />}
+        : <Board karten={karten} ohneSpalten={ohneSpalten} archiv={archiv} />}
       <h2>Alle Bewerbungen</h2>
       <div className="karte block">
         <FilterClient aktion="/bewerbungen" listeId="bewerbungsliste" textFelder={["firma"]}>

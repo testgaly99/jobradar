@@ -101,6 +101,8 @@ export function leseTabelle(sp: SP): TabellenFilter {
     dir: d === "asc" || d === "desc" ? d : standardRichtung(s),
   };
 }
+// Ausdrücklich gewählter Status „Abgeschlossen“ gilt immer: dann zeigen Board und Liste das Archiv mit.
+export const mitArchiv = (f: TabellenFilter): boolean => f.archiv || f.status.includes("abgeschlossen");
 // Ohne ausdrückliche Richtung: Texte und Fälligkeit aufsteigend (A zuerst, Dringendes zuerst), sonst Neuestes zuerst.
 export const standardRichtung = (sort: SortSpalte): "asc" | "desc" =>
   sort === "firma" || sort === "titel" || sort === "status" || sort === "naechster_schritt_faellig" ? "asc" : "desc";
