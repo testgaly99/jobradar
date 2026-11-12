@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { aktuellerNutzer } from "@/lib/nutzer";
 import { firmenFarbe } from "@/lib/farbe";
 import { datumDe } from "@/lib/bewerbung";
 import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
@@ -9,6 +10,7 @@ import { merken, entmerken } from "./actions";
 import FilterBlock from "./filterblock";
 import FilterClient from "./filter-client";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
+import FirmenLogo from "../firmenlogo";
 
 const TITEL: Record<Gruppe, string> = {
   groesse: "Größe", kategorie: "Branche", level: "Erfahrungslevel", modell: "Arbeitsmodell",
@@ -32,7 +34,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   // Facetten zuerst: ohne Migration 005 fehlt "land", dann wird ein ?land= ignoriert statt die Abfrage zu sprengen.
   const fac = await sb.rpc("facetten"); // fehlt die Funktion noch (002_facetten.sql), gibt es Filter ohne Zahlen
   const fa: Facetten = fac.error ? {} : (fac.data ?? {});
-  const f = landNurMitFacette(roh, !!fa.land);
+  const nutzer = await aktuellerNutzer();
+  // Besucher ohne Konto dürfen den Anzeigentext nicht lesen (Migration 007): Suche und Ausschluss nur im Titel.
+  const f = { ...landNurMitFacette(roh, !!fa.land), ...(nutzer ? {} : { volltext: false }) };
   const [ergebnis, lauf, erster] = await Promise.all([
     stellenAbfrage(sb, f),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
@@ -45,21 +49,24 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const letzterLauf: string | null = lauf.data?.datum ?? null;
   const veraltet = letzterLauf !== null && letzterLauf < tagePlus(heuteLokal(), -2);
   const jetzt = new Date();
-  const hatZahlen = !fac.error;
   const seiten = Math.max(1, Math.ceil(gesamt / PRO_SEITE));
   const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.ohne ? 1 : 0) + (f.seit ? 1 : 0);
   // Eine Abfrage für alle angezeigten Stellen: welche sind schon gemerkt oder beworben? (RLS liefert nur eigene Zeilen)
   const status = new Map<string, { status: string; id: string }>();
   const steckbriefe = new Map<string, unknown>();
   // Steckbrief-Spalte und Felder-Tabelle gibt es erst nach Migration 005: Fehler ergibt leeren Steckbrief bzw. Standardfelder.
-  const felderZeile = await sb.from("listen_felder").select("felder").maybeSingle();
+  const felderZeile = nutzer ? await sb.from("listen_felder").select("felder").maybeSingle() : { data: null, error: null };
   const felder = waehleFelder(felderZeile.error ? null : felderZeile.data?.felder);
+  const logos = new Map<string, string>();
   if (jobs.length) {
     const ids = jobs.map((j) => j.id);
-    const [apps, sbr] = await Promise.all([
-      sb.from("applications").select("id,job_id,status").in("job_id", ids),
+    const [apps, sbr, lg] = await Promise.all([
+      nutzer ? sb.from("applications").select("id,job_id,status").in("job_id", ids) : { data: [] },
       sb.from("jobs").select("id,steckbrief").in("id", ids),
+      // Besucher ohne Konto dürfen logo_url nicht lesen (Migration 007): dann Fehler, also nur Buchstaben-Kreise.
+      sb.from("companies").select("name,logo_url").not("logo_url", "is", null),
     ]);
+    for (const c of lg.error ? [] : (lg.data ?? [])) logos.set(c.name, c.logo_url);
     for (const a of apps.data ?? []) status.set(a.job_id, { status: a.status, id: a.id });
     for (const s of sbr.error ? [] : (sbr.data ?? [])) steckbriefe.set(s.id, s.steckbrief);
   }
@@ -92,12 +99,14 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 <label>Stellen ohne diese Wörter
                   <input type="search" name="ohne" defaultValue={f.ohne} placeholder="z. B. Praktikum, Sales…" />
                 </label>
-                <p className="gedaempft klein">Mehrere durch Komma trennen. Gilt für den Titel, mit Häkchen unten auch für den Anzeigentext. Enter oder „Suchen“ wendet an.</p>
+                <p className="gedaempft klein">Mehrere durch Komma trennen. Gilt für den Titel{nutzer && ", mit Häkchen unten auch für den Anzeigentext"}. Enter oder „Suchen“ wendet an.</p>
               </details>
-              <label className="option">
-                <input type="checkbox" name="volltext" value="1" defaultChecked={f.volltext} />
-                <span>Auch im Anzeigentext suchen</span>
-              </label>
+              {nutzer && (
+                <label className="option">
+                  <input type="checkbox" name="volltext" value="1" defaultChecked={f.volltext} />
+                  <span>Auch im Anzeigentext suchen</span>
+                </label>
+              )}
               <label>Sortieren nach
                 <select key={f.sort} name="sort" defaultValue={f.sort}>
                   <option value="neu">Online seit (neueste zuerst)</option>
@@ -120,7 +129,6 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               <div className="filteraktionen">
                 <Link className="knopf knopf-rand" href="/stellen">Filter zurücksetzen</Link>
               </div>
-              {hatZahlen && <p className="gedaempft klein">Anzahl gesamt, nicht nach aktuellem Filter.</p>}
               {GRUPPEN.map((g) => {
                 const werte = fa[g] ?? {};
                 // Gewählte Werte bleiben sichtbar, auch wenn sie in den Zahlen fehlen
@@ -135,7 +143,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       {namen.map((n) => (
                         <label key={n} className="option">
                           <input type="checkbox" name={g} value={n} defaultChecked={f[g].includes(n)} />
-                          <span>{g === "level" ? levelText(n) : g === "groesse" ? n + " Mitarbeitende" : n}{werte[n] !== undefined && ` (${werte[n]})`}</span>
+                          <span>{g === "level" ? levelText(n) : g === "groesse" ? n + " Mitarbeitende" : n}</span>
                         </label>
                       ))}
                     </div>
@@ -162,6 +170,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               const st = app?.status;
               return (
                 <li key={j.id} className="stelle" style={{ "--firma-h": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
+                  <FirmenLogo firma={j.unternehmen} url={logos.get(j.unternehmen)} gross />
                   <div className="stelle-text">
                     <h2><Link href={"/stellen/" + encodeURIComponent(j.id)}>{j.titel}</Link></h2>
                     <p className="meta">
@@ -175,7 +184,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       </ul>
                     )}
                   </div>
-                  {st === "gemerkt" ? (
+                  {!nutzer ? (
+                    <Link className="knopf knopf-rand knopf-schmal" href="/login">Anmelden zum Merken</Link>
+                  ) : st === "gemerkt" ? (
                     <form action={entmerken.bind(null, j.id)}>
                       <SendeKnopf text="Gemerkt ✓" klasse="knopf knopf-zustand knopf-schmal ist-gemerkt" gedrueckt title="Klicken, um nicht mehr zu merken" />
                     </form>

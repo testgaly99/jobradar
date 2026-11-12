@@ -80,3 +80,18 @@ export async function ladeAuswertung(sb: SupabaseClient) {
   if (error) { console.error("ladeAuswertung:", error.message); return { zeilen: [], fehler: LADEFEHLER }; }
   return { zeilen: (data ?? []) as unknown as Parameters<typeof kennzahlen>[0], fehler: undefined };
 }
+
+// Meine Bewerbungen: Zusatzangaben nur für die gewählte Bewerbung (eine Abfrage samt Personen und Interviews).
+export type Detail = {
+  standort: string | null; praesenzmodell: string | null; link: string | null; job_id: string | null;
+  naechster_schritt: string | null; naechster_schritt_faellig: string | null;
+  personen: { name: string | null; rolle: string | null }[]; interviews: { datum: string | null; format: string | null }[];
+};
+export async function ladeDetail(sb: SupabaseClient, id: string): Promise<Detail | null> {
+  const { data, error } = await sb.from("applications")
+    .select("standort,praesenzmodell,link,job_id,naechster_schritt,naechster_schritt_faellig,personen:contacts(name,rolle),interviews(datum,format)")
+    .eq("id", id).maybeSingle();
+  if (error || !data) { if (error) console.error("ladeDetail:", error.message); return null; }
+  const d = data as unknown as Detail;
+  return { ...d, personen: d.personen ?? [], interviews: [...(d.interviews ?? [])].sort((a, b) => (a.datum ?? "").localeCompare(b.datum ?? "")) };
+}

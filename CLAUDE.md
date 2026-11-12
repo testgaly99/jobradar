@@ -232,6 +232,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Wer sich mit E-Mail anmeldet, bekommt keine Gmail- und Kalender-Anbindung.
 - **Zugang:**
   - Ich teile den Link zur Website. Wer sich mit Google anmeldet, ist sofort drin. Es gibt keine Einladungsliste.
+  - **Ohne Konto (Entscheidung 2026-11-11, Paket „Öffentlicher Zugang“):** Stellenliste und Stellenseiten sind ohne Anmeldung lesbar, aber nur Liste, Filter und Steckbrief; Anzeigentext, Logos, Ranglisten und alles Persönliche nur angemeldet. Die Datenbank erzwingt das (Migration 007). Nicht auffindbar (noindex), Impressum aus Umgebungsvariablen.
   - Solange die Google-App im Testmodus ist, kommen nur Google-Konten hinein, die ich in der Google Cloud Console als Testnutzer eingetragen habe (höchstens 100).
   - Erst mit eigener Domain wird die App veröffentlicht. Dann kann sich jeder mit dem Link anmelden (siehe Backlog).
 - **Größe:** zuerst 1–5 Freunde, perspektivisch bis 20.
@@ -356,6 +357,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
      - Klick auf eine Stelle öffnet eine eigene Detailseite mit Aufgaben, Anforderungen und Benefits als Stichpunkte, ohne KI aus den Zwischenüberschriften zerlegt, dazu „Original-Anzeige öffnen“ und „Ich habe mich beworben“.
      - Dieselbe Gliederung ersetzt den Fließtext-Snapshot in Bewerbungen.
    - **Navigation:** Reiter „Dokumente“ entfällt, der Export zieht nach „Konto“.
+   - **Bewerbungen (2026-11-12):** Reiter „Meine Bewerbungen“ (oben Kanban-Board, darunter Liste links und Detailspalte rechts, Auswahl als `?id=` in der Adresse, am Handy klappt das Detail unter der Zeile auf; bearbeitet wird im Seitenfenster), „+ Bewerbung hinzufügen“ (Formular) und „Auswertung“. `/bewerbungen/kanban` leitet auf `/bewerbungen` um.
    - **Konto:** Name, E-Mail, Anmeldeart, dabei seit, Bewerbungen nach Status, Export. „Konto löschen“ klein unten.
    - **Admin „Nutzer“:**
      - Übersichtlicher, „Entfernen“ im „…“-Menü.
@@ -394,6 +396,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
   - Eigene Fragerunde in einer späteren Phase.
 - **Login für Freunde:** E-Mail und Passwort zusätzlich zu Google (braucht das Mail-Paket).
 - **„In Jobradar speichern“ per Lesezeichen (Wunsch 2026-11-12, aus der Wettbewerbsanalyse):** Ein Browser-Lesezeichen, das auf jeder Stellenseite die Adresse an „Manuell anlegen“ übergibt. Kein Plugin, keine fremden Daten.
+- **Geschätztes Gehalt für jede Stelle (Wunsch 2026-11-12, Phase 4 bei „Passung und Analyse“):** Spanne je Stelle, möglichst stellen-, firmen- und landesspezifisch, mit Quellenangabe („geschätzt aus …“) und klar getrennt von Gehältern aus der Anzeige. Reihenfolge der Quellen: (1) Anzeige selbst, (2) andere Anzeigen derselben Firma, (3) Anzeigen mit ähnlichem Titel im selben Land, (4) Entgeltatlas der Bundesagentur für Arbeit nach Beruf und Region. kununu, Glassdoor und levels.fyi nur als Link (Nutzungsbedingungen verbieten automatisches Auslesen). Vor dem Bau prüfen: Stand der deutschen Umsetzung der EU-Entgelttransparenzrichtlinie (Gehaltsspannen in Anzeigen).
 - **Nachweis der Eigenbemühungen (nur bei Bedarf):** Export aller Bewerbungen für die Arbeitsagentur (Datum, Firma, Stelle, Weg, Ergebnis) als PDF/CSV. Die Daten liegen im Tracker vor; aktuell kein Thema für mich.
 - **Automatisch bewerben (Wunsch 2026-11-12, später bewerten):** Bots wie LazyApply schicken Bewerbungen selbst ab. Vor einer Entscheidung prüfen: Nutzungsbedingungen der ATS und Jobbörsen (Kontosperren), Qualität, Datenschutz, Regel 5 „legal und fair“.
 - **E-Mail-Registrierung absichern:** Der Knopf „Registrieren“ (E-Mail und Passwort) ist bis zum Mail-Paket bewusst offen (Entscheidung 2026-11-08). Dann: sperren (Hook, der neue E-Mail-Registrierungen ablehnt) oder mit Bestätigungsmail absichern.

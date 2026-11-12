@@ -94,3 +94,13 @@ def test_erfahrungslevel(titel, level):
 ])
 def test_deutsche_staedte(ort, staedte):
     assert deutsche_staedte(ort) == staedte
+
+
+@pytest.mark.parametrize("titel,jahre,level", [
+    ("Head of Data", 3, "Mid"), ("Junior Analyst", 6, "Senior"), ("Engineer", 0, "Junior"), ("Engineer", 1, "Junior"),
+    ("Engineer", 2, "Mid"), ("Engineer", 4, "Mid"), ("Engineer", 5, "Senior"), ("Engineer", 7, "Senior"),
+    ("Engineer", 8, "Lead"), ("Senior Engineer", None, "Senior"),
+])
+def test_erfahrungslevel_aus_jahren(titel, jahre, level):
+    """Jahre aus der Anzeige gewinnen; nur ohne Angabe wird aus dem Titel geschätzt."""
+    assert erfahrungslevel(titel, jahre) == level

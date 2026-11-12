@@ -122,6 +122,7 @@ Jeder Nutzer kann sein Konto selbst unter „Konto“ löschen. Das Admin-Konto 
 3. Unter „Environment Variables“ `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_ANON_KEY` eintragen. Trage außerdem Server-Variablen ein, beide **ohne** `NEXT_PUBLIC_` am Anfang:
    - `SUPABASE_SERVICE_KEY`: der Secret Key aus Supabase → Project Settings → API Keys. *Warum:* Nur damit kann die Website ein Konto samt Daten löschen. Ohne `NEXT_PUBLIC_` bleibt er auf dem Server und gelangt nie in den Browser.
    - `ADMIN_EMAIL`: deine E-Mail-Adresse (mehrere durch Komma getrennt). *Warum:* Wer hier steht, sieht die Admin-Seite „Nutzer“. Das Admin-Konto lässt sich nicht löschen.
+   - `IMPRESSUM_NAME`, `IMPRESSUM_STRASSE`, `IMPRESSUM_ORT` (PLZ und Ort), `IMPRESSUM_EMAIL`: deine Impressumsangaben. *Warum:* Die Stellenliste ist ohne Anmeldung lesbar, dafür braucht die Seite ein Impressum; die Angaben gehören nicht ins öffentliche Repo. Fehlt einer, steht auf `/impressum` „noch nicht eingerichtet“.
 
 
    Dann „Deploy“. Erfolg: Vercel zeigt eine Adresse, die Seite lädt. Dieselben zwei Variablen brauchst du auch in `web/.env.local`, wenn du lokal arbeitest.

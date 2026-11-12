@@ -52,7 +52,10 @@ _SENIOR_RE = re.compile(r"(?<!\w)(senior|sr\.)(?!\w)", re.IGNORECASE)
 _JUNIOR_RE = re.compile(r"(?<!\w)(junior|jr\.|trainee|graduate|entry|berufseinsteiger)(?!\w)", re.IGNORECASE)
 
 
-def erfahrungslevel(titel: str) -> str:
+def erfahrungslevel(titel: str, jahre: int | None = None) -> str:
+    """Stufe aus den Jahren der Anzeige (Junior 0-1, Mid 2-4, Senior 5-7, Lead ab 8); nur ohne Angabe aus dem Titel geschaetzt."""
+    if jahre is not None:
+        return "Junior" if jahre < 2 else "Mid" if jahre < 5 else "Senior" if jahre < 8 else "Lead"
     for level, rx in (("Lead", _LEAD_RE), ("Senior", _SENIOR_RE), ("Junior", _JUNIOR_RE)):
         if rx.search(titel):
             return level

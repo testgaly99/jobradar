@@ -10,8 +10,9 @@ export default async function Woche() {
   const { zeilen, fehler } = await ladeWoche(await createClient());
   const liste = wochenListe(zeilen, heuteLokal());
   return (
-    <details open className="karte block woche">
-      <summary><h2>Diese Woche</h2></summary>
+    // Eingeklappt (Wunsch 2026-11-12); die Zahl im Titel zeigt, ob sich das Aufklappen lohnt.
+    <details className="karte block woche">
+      <summary><h2>Diese Woche fällig{!fehler && ` (${liste.length})`}</h2></summary>
       {fehler ? <p className="meldung fehler" role="alert">{fehler}</p>
         : liste.length === 0 ? <p className="leer">Nichts Fälliges in den nächsten 7 Tagen.</p>
         : (

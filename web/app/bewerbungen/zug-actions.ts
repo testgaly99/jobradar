@@ -26,7 +26,6 @@ async function start(id: string) {
 }
 function neuLaden(id: string) {
   revalidatePath("/bewerbungen");
-  revalidatePath("/bewerbungen/kanban");
   revalidatePath(`/bewerbung/${id}`);
   revalidatePath("/stellen");
 }

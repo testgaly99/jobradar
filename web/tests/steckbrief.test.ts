@@ -28,7 +28,7 @@ const daten: KurzDaten = {
 
 test("Kurzzeile: nur gewählte Felder, fehlende Werte entfallen still", () => {
   const e = kurzzeile(daten, waehleFelder(["gehalt", "modell", "level", "vertrag", "groesse"]));
-  assert.deepEqual(e.map((x) => x.text), ["50–249 Mitarbeitende", "Senior (5–8 Jahre)", "70–85k €"]);
+  assert.deepEqual(e.map((x) => x.text), ["50–249 Mitarbeitende", "Senior (ab 5 Jahren)", "70–85k €"]);
   const alle = kurzzeile(daten, waehleFelder(["sicherheit", "sprachen", "erfahrung", "online_seit", "branche"]));
   assert.deepEqual(alle.map((x) => x.text), ["Online seit 07.11.2026", "ab 5 Jahren Erfahrung", "Deutsch C1", "Sicherheitsüberprüfung", "Tech"]);
 });
@@ -50,4 +50,15 @@ test("Modell und Remote erscheinen beide, ohne Doppelung", () => {
   assert.equal(modellText("unbekannt", true), "Remote");
   assert.equal(modellText("Hybrid", false), "Hybrid");
   assert.equal(modellText(null, null), null);
+});
+
+test("Kurzzeile: Stufe trägt die Jahre aus der Anzeige, sonst die geschätzte Spanne", () => {
+  const beide = kurzzeile(daten, waehleFelder(["level", "erfahrung"]));
+  assert.deepEqual(beide.map((x) => x.text), ["Senior (ab 5 Jahren)"]);
+  const ohneJahre = kurzzeile({ ...daten, steckbrief: { ...daten.steckbrief, erfahrungJahre: null } }, waehleFelder(["level", "erfahrung"]));
+  assert.deepEqual(ohneJahre.map((x) => x.text), ["Senior (5–8 Jahre)"]);
+  const nurJahre = kurzzeile(daten, waehleFelder(["erfahrung"]));
+  assert.deepEqual(nurJahre.map((x) => x.text), ["ab 5 Jahren Erfahrung"]);
+  const einJahr = kurzzeile({ ...daten, level: "Junior", steckbrief: { ...daten.steckbrief, erfahrungJahre: 1 } }, waehleFelder(["level"]));
+  assert.deepEqual(einJahr.map((x) => x.text), ["Junior (ab 1 Jahr)"]);
 });

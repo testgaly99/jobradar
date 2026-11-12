@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useRef, useState, type CSSProperties, type MouseEvent, type TouchEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type TouchEvent } from "react";
 import Link from "next/link";
 import { useDraggable } from "@dnd-kit/core";
 import { ERGEBNIS_LABEL, tagDe, type Status } from "@/lib/bewerbung";
-import { firmenFarbe } from "@/lib/farbe";
+import FirmenLogo from "../../firmenlogo";
 import { rundePatch } from "@/lib/zug";
 import { BOARD_SPALTEN, naechsteSpalte, type Karte } from "@/lib/tracker-karte";
 
@@ -18,14 +18,7 @@ export type KartenAktionen = {
 // Klicks in Eingabefeldern sollen tippen/auswählen, nicht ziehen.
 const inFeld = (t: EventTarget) => t instanceof Element && !!t.closest("input, select, textarea");
 
-export function Logo({ karte }: { karte: Karte }) {
-  const [kaputt, setKaputt] = useState(false);
-  const name = karte.firma || "?";
-  if (karte.logo_url && !kaputt) {
-    return <img className="firmenlogo" src={karte.logo_url} alt="" width={24} height={24} draggable={false} referrerPolicy="no-referrer" onError={() => setKaputt(true)} />;
-  }
-  return <span className="firmenlogo firmenlogo-kreis" aria-hidden="true" style={{ "--firma-h": firmenFarbe(name) } as CSSProperties}>{name.trim().charAt(0).toUpperCase()}</span>;
-}
+export const Logo = ({ karte }: { karte: Karte }) => <FirmenLogo firma={karte.firma ?? ""} url={karte.logo_url} />;
 
 export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen }: { karte: Karte; ohneSpalten: boolean; neu: boolean; fokus: number; aktionen: KartenAktionen }) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, isDragging } = useDraggable({ id: karte.id, data: { karte } });

@@ -90,15 +90,22 @@ export function leseTabelle(sp: SP): TabellenFilter {
   const roh = sp.status === undefined ? [] : Array.isArray(sp.status) ? sp.status : [sp.status];
   const i = Number(eins(sp.interesse));
   const sort = eins(sp.sort);
+  const s: SortSpalte = (SORT_SPALTEN as readonly string[]).includes(sort) ? (sort as SortSpalte) : "geaendert_am";
+  const d = eins(sp.dir);
   return {
     status: [...new Set(roh.filter(istStatus))],
     firma: eins(sp.firma).trim(),
     interesse: Number.isInteger(i) && i >= 1 && i <= 5 ? i : null,
     archiv: eins(sp.archiv) === "1",
-    sort: (SORT_SPALTEN as readonly string[]).includes(sort) ? (sort as SortSpalte) : "geaendert_am",
-    dir: eins(sp.dir) === "asc" ? "asc" : "desc",
+    sort: s,
+    dir: d === "asc" || d === "desc" ? d : standardRichtung(s),
   };
 }
+// Ausdrücklich gewählter Status „Abgeschlossen“ gilt immer: dann zeigen Board und Liste das Archiv mit.
+export const mitArchiv = (f: TabellenFilter): boolean => f.archiv || f.status.includes("abgeschlossen");
+// Ohne ausdrückliche Richtung: Texte und Fälligkeit aufsteigend (A zuerst, Dringendes zuerst), sonst Neuestes zuerst.
+export const standardRichtung = (sort: SortSpalte): "asc" | "desc" =>
+  sort === "firma" || sort === "titel" || sort === "status" || sort === "naechster_schritt_faellig" ? "asc" : "desc";
 export function tabelleZuUrl(f: TabellenFilter): string {
   const p = new URLSearchParams();
   f.status.forEach((s) => p.append("status", s));
@@ -106,7 +113,7 @@ export function tabelleZuUrl(f: TabellenFilter): string {
   if (f.interesse) p.set("interesse", String(f.interesse));
   if (f.archiv) p.set("archiv", "1");
   if (f.sort !== "geaendert_am") p.set("sort", f.sort);
-  if (f.dir === "asc") p.set("dir", "asc");
+  if (f.dir !== standardRichtung(f.sort)) p.set("dir", f.dir);
   const q = p.toString();
   return q ? `/bewerbungen?${q}` : "/bewerbungen";
 }
