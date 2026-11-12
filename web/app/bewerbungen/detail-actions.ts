@@ -54,7 +54,7 @@ export async function abschnittSpeichern(id: string, abschnitt: Abschnitt, f: Fo
     notFound();
   }
   revalidatePath(`/bewerbung/${id}`);
-  if (vonStatus) for (const p of ["/bewerbungen", "/bewerbungen/kanban", "/stellen"]) revalidatePath(p);
+  if (vonStatus) for (const p of ["/bewerbungen", "/stellen"]) revalidatePath(p);
   zurueck(id);
 }
 

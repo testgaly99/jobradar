@@ -1,6 +1,17 @@
-import { redirect, RedirectType } from "next/navigation";
+import { LinkFormular } from "../knoepfe";
+import UnterNav from "../unternav";
+import Woche from "../woche";
 
-// Früherer Reiter "Manuell anlegen": das Formular steckt jetzt unter "Bewerbung anlegen" in der Tabelle.
 export default function Seite() {
-  redirect("/bewerbungen", RedirectType.replace);
+  return (
+    <>
+      <h1>Bewerbungen</h1>
+      <Woche />
+      <UnterNav aktiv="neu" />
+      <section className="karte block" aria-labelledby="anlegen-titel">
+        <h2 id="anlegen-titel">Bewerbung hinzufügen</h2>
+        <LinkFormular />
+      </section>
+    </>
+  );
 }
