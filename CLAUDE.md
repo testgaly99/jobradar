@@ -232,6 +232,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Wer sich mit E-Mail anmeldet, bekommt keine Gmail- und Kalender-Anbindung.
 - **Zugang:**
   - Ich teile den Link zur Website. Wer sich mit Google anmeldet, ist sofort drin. Es gibt keine Einladungsliste.
+  - **Ohne Konto (Entscheidung 2026-11-11, Paket „Öffentlicher Zugang“):** Stellenliste und Stellenseiten sind ohne Anmeldung lesbar, aber nur Liste, Filter und Steckbrief; Anzeigentext, Logos, Ranglisten und alles Persönliche nur angemeldet. Die Datenbank erzwingt das (Migration 007). Nicht auffindbar (noindex), Impressum aus Umgebungsvariablen.
   - Solange die Google-App im Testmodus ist, kommen nur Google-Konten hinein, die ich in der Google Cloud Console als Testnutzer eingetragen habe (höchstens 100).
   - Erst mit eigener Domain wird die App veröffentlicht. Dann kann sich jeder mit dem Link anmelden (siehe Backlog).
 - **Größe:** zuerst 1–5 Freunde, perspektivisch bis 20.
