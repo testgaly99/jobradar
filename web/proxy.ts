@@ -3,9 +3,6 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  // Next prüft die abfangende Route /bewerbungen/(.)[id] vor statischen Seiten (kanban, neu, …): abfangen nur bei UUID-Segmenten, sonst 404 im Fenster.
-  const seg = /^\/bewerbungen\/([^/]+)\/?$/.exec(request.nextUrl.pathname)?.[1];
-  if (seg && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(seg)) request.headers.delete("next-url");
   let response = NextResponse.next({ request });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -28,7 +28,7 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
     (await sb.from("applications").select("id").eq(spalte, wert).limit(1).maybeSingle()).data?.id as string | undefined;
 
   const dupLink = await vorhandenZu("link", link);
-  if (dupLink) redirect(`/bewerbungen/${dupLink}`);
+  if (dupLink) redirect(`/bewerbung/${dupLink}`);
 
   // Verknüpfung nur über die Firma des Boards (companies.ats_typ/ats_id) und die exakte id "<firma>:<ext_id>".
   const ausStelle = async (s: Stelle, typ: string, boardId: string): Promise<Ziel> => {
@@ -94,12 +94,12 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   if (ziel.job) {
     const r = await anlegenAusJob(sb, ziel.job, { quelle: ziel.quelle, text });
     if ("fehler" in r) return { fehler: "Bewerbung konnte nicht angelegt werden." };
-    redirect(`/bewerbungen/${r.id}`);
+    redirect(`/bewerbung/${r.id}`);
   }
   const { data, error } = await sb.from("applications").insert({
     firma: ziel.firma ?? null, titel: ziel.titel ?? null, link: ziel.link, quelle: ziel.quelle,
     standort: ziel.ort || null, snapshot_text: ziel.text || text || null, status: "gemerkt",
   }).select("id").single();
   if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
-  redirect(`/bewerbungen/${data.id}`);
+  redirect(`/bewerbung/${data.id}`);
 }

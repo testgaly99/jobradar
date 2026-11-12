@@ -181,7 +181,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                     </form>
                   ) : app ? (
                     // Ab "beworben" kein Umschalter mehr: ein Klick würde Status zurücksetzen, ein zweiter die Bewerbung samt Eingaben löschen.
-                    <Link className="knopf knopf-zustand knopf-schmal" href={`/bewerbungen/${app.id}`} title="Zur Bewerbung">Beworben ✓</Link>
+                    <Link className="knopf knopf-zustand knopf-schmal" href={`/bewerbung/${app.id}`} title="Zur Bewerbung">Beworben ✓</Link>
                   ) : (
                     <form action={merken.bind(null, j.id)}>
                       <SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" />

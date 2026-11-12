@@ -41,7 +41,7 @@ export async function beworben(jobId: string) {
     if (error) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Der Status konnte nicht gespeichert werden. Bitte erneut versuchen.")}`);
   }
   revalidatePath("/stellen");
-  redirect(`/bewerbungen/${r.id}`);
+  redirect(`/bewerbung/${r.id}`);
 }
 
 // Merken zurücknehmen: löscht die Bewerbung nur im Status gemerkt (Kontakte, Interviews, Verlauf fallen per cascade mit weg).
@@ -60,7 +60,7 @@ export async function entmerken(jobId: string) {
     ]);
     const weitere = (k.count ?? 0) + (i.count ?? 0) + (n.count ?? 0);
     if (hatEigeneEingaben(a, weitere)) {
-      redirect(`/bewerbungen/${a.id}?fehler=${encodeURIComponent("Diese gemerkte Stelle enthält schon deine Eingaben und wurde deshalb nicht gelöscht. Wenn du sie wirklich entfernen willst: unten „Bewerbung löschen“.")}`);
+      redirect(`/bewerbung/${a.id}?fehler=${encodeURIComponent("Diese gemerkte Stelle enthält schon deine Eingaben und wurde deshalb nicht gelöscht. Wenn du sie wirklich entfernen willst: unten „Bewerbung löschen“.")}`);
     }
     const { error } = await sb.from("applications").delete().eq("id", a.id).eq("status", "gemerkt");
     if (error) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Das Merken konnte nicht zurückgenommen werden. Bitte erneut versuchen.")}`);

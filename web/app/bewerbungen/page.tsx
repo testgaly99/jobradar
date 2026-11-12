@@ -104,7 +104,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
             <tbody>
               {zeilen.map((z) => (
                 <tr key={z.id}>
-                  <td><Link href={`/bewerbungen/${z.id}`}>{z.firma || "(ohne Firma)"}</Link></td>
+                  <td><Link href={`/bewerbung/${z.id}`}>{z.firma || "(ohne Firma)"}</Link></td>
                   <td>{z.titel}</td>
                   <td><span className="chip" data-status={z.status}>{STATUS_LABEL[z.status]}</span></td>
                   <td className="nur-breit">{z.interesse && <span className="sterne" role="img" aria-label={`Interesse ${z.interesse} von 5`}>{"★".repeat(z.interesse)}{"☆".repeat(5 - z.interesse)}</span>}</td>

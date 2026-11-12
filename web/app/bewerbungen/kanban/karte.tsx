@@ -49,7 +49,7 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
     >
       <div className="karte-kopf">
         {!ohneSpalten && <Logo karte={karte} />}
-        <h3><Link href={`/bewerbungen/${karte.id}`} draggable={false}>{firma}</Link></h3>
+        <h3><Link href={`/bewerbung/${karte.id}`} draggable={false}>{firma}</Link></h3>
         <button type="button" ref={(el) => { setActivatorNodeRef(el); griff.current = el; }} className="griff" {...attributes} onKeyDown={(e) => {
             // Pfeil links/rechts verschiebt direkt um eine Spalte (ohne vorher Leertaste); Leertaste/Enter bleibt Ziehen mit dnd-kit.
             const richtung = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
@@ -107,7 +107,7 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
             </label>
           </details>
       </div>
-      {ohneSpalten && <Link className="klein" href={`/bewerbungen/${karte.id}`} draggable={false}>Bewerbung öffnen</Link>}
+      {ohneSpalten && <Link className="klein" href={`/bewerbung/${karte.id}`} draggable={false}>Bewerbung öffnen</Link>}
     </article>
   );
 }

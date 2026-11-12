@@ -59,10 +59,10 @@ export default async function Seite({ params, searchParams }: { params: Promise<
             <form action={entmerken.bind(null, j.id)}>
               <SendeKnopf text="Gemerkt ✓" klasse="knopf knopf-zustand knopf-schmal ist-gemerkt" gedrueckt title="Klicken, um nicht mehr zu merken" />
             </form>
-            <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Zur Bewerbung</Link>
+            <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbung/${app.data.id}`}>Zur Bewerbung</Link>
           </>
         ) : app.data ? (
-          <Link className="knopf knopf-zustand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Beworben ✓ · Zur Bewerbung</Link>
+          <Link className="knopf knopf-zustand knopf-schmal" href={`/bewerbung/${app.data.id}`}>Beworben ✓ · Zur Bewerbung</Link>
         ) : (
           <form action={merken.bind(null, j.id)}><SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" /></form>
         )}

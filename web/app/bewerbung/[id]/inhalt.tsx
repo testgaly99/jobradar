@@ -6,10 +6,10 @@ import {
 } from "@/lib/bewerbung";
 import {
   abschnittSpeichern, bewerbungLoeschen, eintragLoeschen, interviewAnlegen, notizAnlegen, personAnlegen,
-} from "../detail-actions";
+} from "@/app/bewerbungen/detail-actions";
 import Abschnitte from "../../abschnitte";
 import { leseAbschnitte } from "@/lib/anzeige";
-import { DruckKnopf, LoeschForm, SendeKnopf } from "../knoepfe";
+import { DruckKnopf, LoeschForm, SendeKnopf } from "@/app/bewerbungen/knoepfe";
 import Ungespeichert from "./ungespeichert";
 
 type Row = Record<string, string | number | string[] | null>;

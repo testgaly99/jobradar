@@ -1,6 +1,7 @@
-import BewerbungInhalt from "./inhalt";
+import { redirect, RedirectType } from "next/navigation";
 
-export default async function Seite({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ fehler?: string }> }) {
+// Alte Adresse /bewerbungen/<id> (Lesezeichen) führt zur neuen /bewerbung/<id>.
+export default async function AlteAdresse({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ fehler?: string }> }) {
   const [{ id }, { fehler }] = await Promise.all([params, searchParams]);
-  return <BewerbungInhalt id={id} fehler={fehler} />;
+  redirect(`/bewerbung/${encodeURIComponent(id)}${fehler ? `?fehler=${encodeURIComponent(fehler)}` : ""}`, RedirectType.replace);
 }

@@ -27,7 +27,7 @@ async function start(id: string) {
 function neuLaden(id: string) {
   revalidatePath("/bewerbungen");
   revalidatePath("/bewerbungen/kanban");
-  revalidatePath(`/bewerbungen/${id}`);
+  revalidatePath(`/bewerbung/${id}`);
   revalidatePath("/stellen");
 }
 // 1 s Spielraum für die Uhr der Datenbank (datum = now() dort).

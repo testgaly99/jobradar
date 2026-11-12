@@ -18,7 +18,7 @@ async function start(id?: string) {
 }
 const zurueck = (id: string, fehler?: string): never =>
   // replace: Speichern legt keinen History-Eintrag an, sonst führt "Schließen" (router.back) erst durch alle Speicherstände.
-  redirect(`/bewerbungen/${id}${fehler ? `?fehler=${encodeURIComponent(fehler)}` : ""}`, RedirectType.replace);
+  redirect(`/bewerbung/${id}${fehler ? `?fehler=${encodeURIComponent(fehler)}` : ""}`, RedirectType.replace);
 const DB_FEHLER = "Das hat leider nicht geklappt. Bitte versuche es erneut.";
 
 export async function bewerbungManuell(f: FormData) {
@@ -29,7 +29,7 @@ export async function bewerbungManuell(f: FormData) {
   if ("fehler" in r) redirect(`/bewerbungen/neu?fehler=${encodeURIComponent(r.fehler)}`);
   const { data, error } = await sb.from("applications").insert({ ...r.daten, status: r.daten.status ?? "gemerkt" }).select("id").single();
   if (error || !data) redirect(`/bewerbungen/neu?fehler=${encodeURIComponent(DB_FEHLER)}`);
-  redirect(`/bewerbungen/${data.id}`);
+  redirect(`/bewerbung/${data.id}`);
 }
 
 export async function abschnittSpeichern(id: string, abschnitt: Abschnitt, f: FormData) {
@@ -64,7 +64,7 @@ export async function abschnittSpeichern(id: string, abschnitt: Abschnitt, f: Fo
     if (vonStatus) zurueck(id, "Der Status wurde inzwischen geändert (z. B. im Board). Bitte prüfe ihn und speichere erneut.");
     notFound();
   }
-  revalidatePath(`/bewerbungen/${id}`);
+  revalidatePath(`/bewerbung/${id}`);
   if (vonStatus) for (const p of ["/bewerbungen", "/bewerbungen/kanban", "/stellen"]) revalidatePath(p);
   zurueck(id);
 }
@@ -75,7 +75,7 @@ export async function personAnlegen(id: string, f: FormData) {
   if ("fehler" in r) return zurueck(id, r.fehler);
   const { error } = await sb.from("contacts").insert({ ...r.daten, application_id: id });
   if (error) zurueck(id, DB_FEHLER);
-  revalidatePath(`/bewerbungen/${id}`);
+  revalidatePath(`/bewerbung/${id}`);
   zurueck(id);
 }
 
@@ -85,7 +85,7 @@ export async function interviewAnlegen(id: string, f: FormData) {
   if ("fehler" in r) return zurueck(id, r.fehler);
   const { error } = await sb.from("interviews").insert({ ...r.daten, application_id: id });
   if (error) zurueck(id, DB_FEHLER);
-  revalidatePath(`/bewerbungen/${id}`);
+  revalidatePath(`/bewerbung/${id}`);
   zurueck(id);
 }
 
@@ -95,7 +95,7 @@ export async function eintragLoeschen(id: string, tabelle: "contacts" | "intervi
   if (!istUuid(zeile) || (tabelle !== "contacts" && tabelle !== "interviews")) notFound();
   const { error } = await sb.from(tabelle).delete().eq("id", zeile).eq("application_id", id);
   if (error) zurueck(id, DB_FEHLER);
-  revalidatePath(`/bewerbungen/${id}`);
+  revalidatePath(`/bewerbung/${id}`);
   zurueck(id);
 }
 
@@ -105,7 +105,7 @@ export async function notizAnlegen(id: string, f: FormData) {
   if (!notiz) zurueck(id, "Die Notiz ist leer.");
   const { error } = await sb.from("application_events").insert({ application_id: id, notiz });
   if (error) zurueck(id, DB_FEHLER);
-  revalidatePath(`/bewerbungen/${id}`);
+  revalidatePath(`/bewerbung/${id}`);
   zurueck(id);
 }
 
