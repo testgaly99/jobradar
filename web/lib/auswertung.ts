@@ -5,7 +5,8 @@ import { tagVon, tageZwischen } from "./karte.ts";
 
 type B = { status: Status; ergebnis: string | null; beworben_am: string | null; erstellt_am: string; events: { datum: string; neuer_status: Status | null }[] };
 const ab = (s: Status | null) => !!s && STATUS.indexOf(s) >= STATUS.indexOf("beworben");
-const ANTWORT: (Status | null)[] = ["eingang_bestaetigt", "im_gespraech", "abgeschlossen"];
+// "eingang_bestaetigt" gibt es seit Migration 008 nicht mehr als Status, alte Verlaufseinträge zählen aber weiter als Antwort.
+const ANTWORT: (string | null)[] = ["eingang_bestaetigt", "im_gespraech", "abgeschlossen"];
 
 // Bewerbungsdatum laut Spec Regel 1; null = nie beworben.
 function bewerbungsdatum(b: B): string | null {

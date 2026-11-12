@@ -38,10 +38,10 @@ export function baueKarte(a: Zeile, events: Ereignis[], interviews: Termin[], he
 }
 
 // Board: sichtbare Spalten (abgeschlossen ist das Archiv) und Gruppierung in Server-Reihenfolge.
-export const BOARD_SPALTEN = ["gemerkt", "beworben", "eingang_bestaetigt", "im_gespraech", "angebot"] as const satisfies readonly Status[];
+export const BOARD_SPALTEN = ["gemerkt", "beworben", "im_gespraech", "angebot"] as const satisfies readonly Status[];
 export function nachSpalten(karten: Karte[]): Record<Status, Karte[]> {
-  const g = { gemerkt: [], beworben: [], eingang_bestaetigt: [], im_gespraech: [], angebot: [], abgeschlossen: [] } as Record<Status, Karte[]>;
-  for (const k of karten) g[k.status].push(k);
+  const g = { gemerkt: [], beworben: [], im_gespraech: [], angebot: [], abgeschlossen: [] } as Record<Status, Karte[]>;
+  for (const k of karten) (g[k.status] ?? g.beworben).push(k); // alte „Eingang bestätigt“-Zeilen vor Migration 008
   return g;
 }
 // Geänderte Karte nach vorn: wie die Server-Sortierung "zuletzt geändert oben", sonst springt sie nach dem Neuladen.

@@ -6,7 +6,7 @@ const fd = (o: Record<string, string>) => ({ get: (k: string) => (k in o ? o[k] 
 
 test("jeder Status hat ein deutsches Label", () => {
   for (const s of STATUS) assert.ok(STATUS_LABEL[s]);
-  assert.equal(STATUS.length, 6);
+  assert.equal(STATUS.length, 5);
 });
 
 test("uuid-Pruefung", () => {

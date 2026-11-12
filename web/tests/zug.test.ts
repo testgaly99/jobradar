@@ -43,7 +43,7 @@ test("rueckgaengigErlaubt: jünger als 10 Minuten", () => {
 
 test("STATUS_RANG", () => {
   assert.equal(STATUS_RANG.gemerkt, 0);
-  assert.equal(STATUS_RANG.abgeschlossen, 5);
+  assert.equal(STATUS_RANG.abgeschlossen, 4);
 });
 
 test("zurueckZuGemerkt: nach einer Bewerbung nie zurück auf Gemerkt", () => {

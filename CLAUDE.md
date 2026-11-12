@@ -205,7 +205,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Grund für ein Zurückziehen
   - Angebot angenommen oder abgelehnt
 - **Einschätzung:** Interesse 1–5, Tags, Notizen
-- **Status:** Gemerkt → Beworben → Eingang bestätigt → Im Gespräch → Angebot → Abgeschlossen (Zusage, Absage, zurückgezogen)
+- **Status:** Gemerkt → Beworben → Im Gespräch → Angebot → Abgeschlossen (Zusage, Absage, zurückgezogen)
 - **Erinnerungen:**
   - Nachfassen nach 14 Tagen ohne Antwort
   - Antwortfrist bei einem Angebot

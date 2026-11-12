@@ -1,8 +1,8 @@
 // Reine Helfer für den Bewerbungs-Tracker (keine Next-Importe, damit testbar).
-export const STATUS = ["gemerkt", "beworben", "eingang_bestaetigt", "im_gespraech", "angebot", "abgeschlossen"] as const;
+export const STATUS = ["gemerkt", "beworben", "im_gespraech", "angebot", "abgeschlossen"] as const;
 export type Status = (typeof STATUS)[number];
 export const STATUS_LABEL: Record<Status, string> = {
-  gemerkt: "Gemerkt", beworben: "Beworben", eingang_bestaetigt: "Eingang bestätigt",
+  gemerkt: "Gemerkt", beworben: "Beworben",
   im_gespraech: "Im Gespräch", angebot: "Angebot", abgeschlossen: "Archiv", // B9: gleicher Begriff wie die Board-Spalte
 };
 export const ERGEBNIS_LABEL: Record<string, string> = {
