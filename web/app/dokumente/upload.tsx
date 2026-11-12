@@ -50,7 +50,7 @@ export function UploadFormular() {
         </select>
       </label>
       <label>Versionsname
-        <input name="name" required maxLength={120} placeholder="z. B. CV Produktmanagement v3" />
+        <input name="name" required maxLength={120} placeholder="z. B. CV Produktmanagement v3…" />
       </label>
       <label>Versionsdatum
         <input name="version_datum" type="date" required defaultValue={new Date().toISOString().slice(0, 10)} />

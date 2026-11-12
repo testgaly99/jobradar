@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { AUSGEBLENDET_BRANCHE, ID_FORM } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, ID_FORM, heuteLokal } from "@/lib/filter";
+import { datumDe } from "@/lib/bewerbung";
+import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
+import { firmenTrend } from "@/lib/firmentrend";
 import { modellText, FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
 import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
-import { merken, beworben, entmerken, bewerbungZuruecknehmen } from "../actions";
+import { merken, beworben, entmerken } from "../actions";
 import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
 
@@ -23,12 +26,18 @@ export default async function Seite({ params, searchParams }: { params: Promise<
     .eq("id", id).maybeSingle();
   if (!j) notFound();
   // Alles Folgende toleriert fehlende Migration 005: Fehler ergibt leere Daten statt Absturz.
-  const [ab, sbr, wp, app] = await Promise.all([
+  const firma = j.unternehmen ?? "";
+  const [ab, sbr, wp, app, lf, schonBeworben] = await Promise.all([
     sb.from("jobs").select("abschnitte").eq("id", id).maybeSingle(),
     sb.from("jobs").select("steckbrief").eq("id", id).maybeSingle(),
     sb.from("wichtige_punkte").select("begriff"),
     sb.from("applications").select("id,status").eq("job_id", id).limit(1).maybeSingle(),
+    sb.from("laeufe").select("datum,bericht").order("datum", { ascending: false }).limit(120),
+    bewerbungenBei(sb, firma),
   ]);
+  const trend = firmenTrend(lf.data ?? [], firma, heuteLokal());
+  const maxOffen = Math.max(1, ...trend.punkte.map((p) => p.offen));
+  const q = encodeURIComponent(firma);
   const abschnitte = leseAbschnitte(ab.data?.abschnitte);
   const begriffe = wp.error ? [] : (wp.data ?? []).map((p: { begriff: string }) => p.begriff);
   const alleText = abschnitte ? abschnitte.flatMap((a) => [a.titel, ...a.punkte]).join("\n") : (j.text ?? "");
@@ -45,11 +54,38 @@ export default async function Seite({ params, searchParams }: { params: Promise<
     <>
       <p><Link href="/stellen">Alle Stellen</Link></p>
       <h1>{j.titel}</h1>
-      <p className="firma" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>{j.unternehmen}</p>
+      <p className="firma" style={{ "--firma-h": firmenFarbe(j.unternehmen) } as React.CSSProperties}>{j.unternehmen}</p>
       {eintraege.length > 0 && (
         <section className="steckbrief karte" aria-labelledby="steckbrief-titel">
           <h2 id="steckbrief-titel">Steckbrief</h2>
           <dl>{eintraege.map((e) => <div key={e.feld}><dt>{FELD_TITEL[e.feld]}</dt><dd>{e.text}</dd></div>)}</dl>
+        </section>
+      )}
+      {firma && (
+        <section className="karte block" aria-labelledby="firma-titel">
+          <h2 id="firma-titel">Über {firma}</h2>
+          {schonBeworben > 0 && (
+            <p className="meldung hinweis">Du hast dich bei {firma} schon {schonBeworben}× beworben. <Link href={bewerbungenLink(firma)}>Bewerbungen ansehen</Link></p>
+          )}
+          <p>Bewertungen suchen:{" "}
+            <a href={`https://www.kununu.com/de/search?q=${q}`} target="_blank" rel="noopener noreferrer">kununu</a>{" · "}
+            <a href={`https://www.glassdoor.de/Suche/results.htm?keyword=${q}`} target="_blank" rel="noopener noreferrer">Glassdoor</a>
+          </p>
+          {trend.punkte.length > 0 && (
+            <>
+              <h3>Offene Stellen über die Zeit</h3>
+              <ul className="wochenbalken">
+                {trend.punkte.map((p) => (
+                  <li key={p.datum} aria-label={`Stand ${datumDe(p.datum)}: ${p.offen} offene Stellen`}>
+                    <span className="num">Stand {datumDe(p.datum).slice(0, 6)}</span>
+                    <span className="balkenfeld"><span className="balkenfuell" style={{ width: `${(p.offen / maxOffen) * 100}%` }} /></span>
+                    <span className="num">{p.offen}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="gedaempft">Letzte 30 Tage: {trend.neu} neu ausgeschrieben, {trend.geschlossen} geschlossen{trend.seit ? ` (Daten seit ${datumDe(trend.seit)})` : ""}. Gezählt werden nur Stellen, die zu den Jobradar-Regeln passen.</p>
+            </>
+          )}
         </section>
       )}
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
@@ -59,17 +95,10 @@ export default async function Seite({ params, searchParams }: { params: Promise<
             <form action={entmerken.bind(null, j.id)}>
               <SendeKnopf text="Gemerkt ✓" klasse="knopf knopf-zustand knopf-schmal ist-gemerkt" gedrueckt title="Klicken, um nicht mehr zu merken" />
             </form>
-            <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Zur Bewerbung</Link>
-          </>
-        ) : app.data?.status === "beworben" ? (
-          <>
-            <form action={bewerbungZuruecknehmen.bind(null, j.id)}>
-              <SendeKnopf text="Beworben ✓" klasse="knopf knopf-zustand knopf-schmal" gedrueckt title="Klicken, um zurückzunehmen" />
-            </form>
-            <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Zur Bewerbung</Link>
+            <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbung/${app.data.id}`}>Zur Bewerbung</Link>
           </>
         ) : app.data ? (
-          <Link className="knopf knopf-rand knopf-schmal" href={`/bewerbungen/${app.data.id}`}>Zur Bewerbung</Link>
+          <Link className="knopf knopf-zustand knopf-schmal" href={`/bewerbung/${app.data.id}`}>Beworben ✓ · Zur Bewerbung</Link>
         ) : (
           <form action={merken.bind(null, j.id)}><SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" /></form>
         )}

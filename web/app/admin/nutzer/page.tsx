@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { istAdmin } from "@/lib/admin";
+import { datumDe } from "@/lib/bewerbung";
 import { nutzerZeilen } from "@/lib/nutzerliste";
 import { LoeschForm } from "../../bewerbungen/knoepfe";
 import { nutzerEntfernen } from "./actions";
@@ -43,7 +44,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
             <tbody>
               {wochen.map((w) => (
                 <tr key={w.woche}>
-                  <th scope="row">{w.woche.split("-").reverse().join(".")}</th>
+                  <th scope="row">{datumDe(w.woche)}</th>
                   <td><div className="balken" style={{ width: `${(w.anzahl / max) * 100}%` }} /></td>
                   <td className="num">{w.anzahl}</td>
                 </tr>

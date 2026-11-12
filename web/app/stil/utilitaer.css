@@ -48,6 +48,7 @@
 
   /* Firmenfarbe aus firmenFarbe(): Anteil der Firmenfarbe in der Mischung mit der Tinte, damit jeder Farbton AA erreicht */
   --firma-anteil: 50%;
+  --firma-l: 55%; --firma-c: 0.15;
 
   /* Farben, hell. Anker: Apothekengrün 160, nur für Aktion, Fokus und "gemerkt" */
   --color-paper: oklch(97.6% 0.011 88);

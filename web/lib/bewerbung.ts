@@ -3,7 +3,7 @@ export const STATUS = ["gemerkt", "beworben", "eingang_bestaetigt", "im_gespraec
 export type Status = (typeof STATUS)[number];
 export const STATUS_LABEL: Record<Status, string> = {
   gemerkt: "Gemerkt", beworben: "Beworben", eingang_bestaetigt: "Eingang bestätigt",
-  im_gespraech: "Im Gespräch", angebot: "Angebot", abgeschlossen: "Abgeschlossen",
+  im_gespraech: "Im Gespräch", angebot: "Angebot", abgeschlossen: "Archiv", // B9: gleicher Begriff wie die Board-Spalte
 };
 export const ERGEBNIS_LABEL: Record<string, string> = {
   zusage: "Zusage", absage: "Absage", zurueckgezogen: "Abgebrochen", angebot_abgelehnt: "Angebot abgelehnt",
@@ -112,7 +112,12 @@ export function tabelleZuUrl(f: TabellenFilter): string {
 }
 export const escapeLike = (s: string) => s.replace(/[\\%_]/g, "\\$&");
 
-export const datumDe = (iso: string | null) => (iso ? iso.slice(0, 10).split("-").reverse().join(".") : "");
+// A8: eine Datumsfunktion für die ganze Seite, über Intl statt von Hand. UTC, weil ein reines Datum (YYYY-MM-DD) keine Uhrzeit hat.
+const tagFormat = new Intl.DateTimeFormat("de-DE", { timeZone: "UTC", day: "2-digit", month: "2-digit", year: "numeric" });
+export function datumDe(iso: string | null): string {
+  const d = iso ? new Date(`${iso.slice(0, 10)}T00:00:00Z`) : null;
+  return d && !Number.isNaN(d.getTime()) ? tagFormat.format(d) : "";
+}
 export const zeitDe = (iso: string) =>
   new Date(iso).toLocaleString("de-DE", { timeZone: "Europe/Berlin", dateStyle: "short", timeStyle: "short" });
 export const tagDe = (iso: string) => new Date(iso).toLocaleDateString("de-DE", { timeZone: "Europe/Berlin" });

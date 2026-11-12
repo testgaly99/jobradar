@@ -20,7 +20,7 @@ export default async function Woche() {
               <li key={`${e.id}-${e.art}-${e.datum}-${e.text}`} className={e.ueberfaellig ? "ueberfaellig" : undefined}>
                 <span className="num">{datumDe(e.datum)}</span>
                 <span className="num">{e.zeit ?? ""}</span>
-                <Link href={`/bewerbungen/${e.id}`}>{e.firma || "(ohne Firma)"}</Link>
+                <Link href={`/bewerbung/${e.id}`}>{e.firma || "(ohne Firma)"}</Link>
                 <span>{e.text}{e.ueberfaellig && " (überfällig)"}</span>
                 {e.art === "schritt" && (
                   <ErledigtForm id={e.id} label={`Erledigt: ${e.text} bei ${e.firma}`} />

@@ -1,18 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { kennzahlen } from "@/lib/auswertung";
 import { datumDe } from "@/lib/bewerbung";
-import { heuteLokal } from "@/lib/filter";
+import { heuteLokal, tagePlus } from "@/lib/filter";
 import { ladeAuswertung } from "@/lib/tracker-daten";
 import UnterNav from "../unternav";
 import Woche from "../woche";
 
-// Kalenderwoche nach ISO 8601 aus dem Montag (YYYY-MM-DD).
-function kw(montag: string) {
-  const d = new Date(`${montag}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + 3); // Donnerstag der Woche
-  const jan1 = Date.UTC(d.getUTCFullYear(), 0, 1);
-  return Math.floor((d.getTime() - jan1) / 864e5 / 7) + 1;
-}
+// "09.11.–15.11." aus dem Montag (YYYY-MM-DD).
+const tagMonat = (iso: string) => datumDe(iso).slice(0, 6);
+const zeitraum = (montag: string) => `${tagMonat(montag)}–${tagMonat(tagePlus(montag, 6))}`;
 const prozent = (n: number | null) => (n === null ? "–" : `${n} %`);
 
 export default async function Seite() {
@@ -40,10 +36,10 @@ export default async function Seite() {
           </div>
           <section className="karte block">
             <h2>Bewerbungen pro Woche</h2>
-            <ul className="balken">
+            <ul className="wochenbalken">
               {k.proWoche.map((w) => (
-                <li key={w.woche} aria-label={`KW ${kw(w.woche)}: ${w.anzahl} Bewerbungen`} title={`ab ${datumDe(w.woche)}`}>
-                  <span className="num">KW {kw(w.woche)}</span>
+                <li key={w.woche} aria-label={`${zeitraum(w.woche)}: ${w.anzahl} Bewerbungen`}>
+                  <span className="num">{zeitraum(w.woche)}</span>
                   <span className="balkenfeld"><span className="balkenfuell" style={{ width: `${(w.anzahl / max) * 100}%` }} /></span>
                   <span className="num">{w.anzahl}</span>
                 </li>

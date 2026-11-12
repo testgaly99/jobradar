@@ -37,29 +37,26 @@ export function LinkFormular() {
     },
     null,
   );
-  // Felder und Meldung gelten nur für den Link, für den gefragt wurde (sonst blockieren sie einen neuen Link).
+  // Die Meldung gilt nur für den Link, für den gefragt wurde.
   const brauchtEingabe = zustand !== null && "brauchtEingabe" in zustand && zustand.fuer === url;
   return (
     <form action={aktion} className="formular linkform">
-      <label>Link einfügen
-        <input type="url" required value={url} onChange={(e) => { setUrl(e.target.value); setFirma(""); setTitel(""); }} placeholder="https://…" />
+      <label>Link zur Anzeige
+        <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
       </label>
-      {brauchtEingabe && (
-        <>
-          <p className="meldung info">Aus dem Link ist nichts erkennbar. Bitte Firma und Titel eintragen.</p>
-          <label>Firma
-            <input required value={firma} onChange={(e) => setFirma(e.target.value)} />
-          </label>
-          <label>Titel
-            <input required value={titel} onChange={(e) => setTitel(e.target.value)} />
-          </label>
-        </>
-      )}
+      {brauchtEingabe && <p className="meldung info">Aus dem Link ist nichts erkennbar. Bitte Firma und Titel eintragen.</p>}
+      <p className="gedaempft">Mit Link wird übernommen, was sich daraus erkennen lässt; was du einträgst, geht vor. Ohne Link sind Firma und Titel Pflicht.</p>
+      <label>Firma
+        <input value={firma} required={!url.trim() || brauchtEingabe} onChange={(e) => setFirma(e.target.value)} />
+      </label>
+      <label>Titel
+        <input value={titel} required={!url.trim() || brauchtEingabe} onChange={(e) => setTitel(e.target.value)} />
+      </label>
       <label>Anzeigentext (optional)
-        <textarea value={text} onChange={(e) => setText(e.target.value)} maxLength={MAX_TEXT} rows={4} placeholder="Am Handy: Text der Anzeige kopieren und hier einfügen" />
+        <textarea value={text} onChange={(e) => setText(e.target.value)} maxLength={MAX_TEXT} rows={4} placeholder="Den ganzen Text der Anzeige hier einfügen…" />
       </label>
       {zustand && "fehler" in zustand && <p className="meldung fehler" role="alert">{zustand.fehler}</p>}
-      <SendeKnopf text={brauchtEingabe ? "Bewerbung anlegen" : "Anlegen"} />
+      <SendeKnopf text="Anlegen" />
     </form>
   );
 }

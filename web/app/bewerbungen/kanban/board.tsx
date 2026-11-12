@@ -7,7 +7,7 @@ import {
 import { ERGEBNIS_LABEL, STATUS_LABEL, type Status } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { BOARD_SPALTEN, karteAendern, nachSpalten, naechsteSpalte, type Karte } from "@/lib/tracker-karte";
-import { rundePatch, zugPatch } from "@/lib/zug";
+import { GEMERKT_GESPERRT, rundePatch, zugPatch, zurueckZuGemerkt } from "@/lib/zug";
 import { kommentarSpeichern, rundeAendern, zugAusfuehren, zugRueckgaengig, type ZugVorher } from "../zug-actions";
 import ArchivDialog from "./archiv-dialog";
 import KarteAnsicht, { Logo, type KartenAktionen } from "./karte";
@@ -23,15 +23,16 @@ const ansagen: Announcements = {
   onDragCancel: ({ active }) => `Ziehen abgebrochen. ${nameVon(active)} bleibt an ihrem Platz.`,
 };
 // Tastatur: ←/→ setzt die Karte auf die vorige/nächste Spalte (auch das Archiv am Ende); andere Tasten bewegen nichts.
-const spaltenSprung: KeyboardCoordinateGetter = (event, { context: { active, over, droppableRects } }) => {
+// Nur waagerecht springen: Mit r.top flog die Karte an den Spaltenanfang, und bei gescrollter Seite scrollte dnd-kit die Seite mit.
+const spaltenSprung: KeyboardCoordinateGetter = (event, { currentCoordinates, context: { active, over, droppableRects } }) => {
   const richtung = event.code === "ArrowRight" ? 1 : event.code === "ArrowLeft" ? -1 : 0;
   if (!richtung || !active) return;
   event.preventDefault();
   const ziel = naechsteSpalte([...droppableRects].map(([id, r]) => ({ id, left: r.left })), over?.id ?? karteVon(active).status, richtung);
   const r = ziel == null ? undefined : droppableRects.get(ziel);
-  return r && { x: r.left, y: r.top };
+  return r && { x: r.left, y: currentCoordinates.y };
 };
-const anleitung ="Zum Aufnehmen Leertaste oder Enter drücken. Mit den Pfeiltasten eine andere Spalte wählen, mit Leertaste oder Enter ablegen, mit Escape abbrechen.";
+const anleitung = "Pfeil links oder rechts verschiebt die Karte sofort um eine Spalte. Alternativ: Leertaste zum Aufnehmen, Pfeiltasten zum Wählen, Leertaste zum Ablegen, Escape zum Abbrechen.";
 
 function Spalte({ id, titel, anzahl, leer, children }: { id: Status; titel: string; anzahl: number; leer?: string; children?: ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id });
@@ -96,6 +97,7 @@ export default function Board({ karten, ohneSpalten, archiv }: { karten: Karte[]
 
   const zug = (k: Karte, ziel: { status: Status; ergebnis?: string }) => {
     if (k.status === ziel.status) return;
+    if (zurueckZuGemerkt(k.status, ziel.status)) { setMeldung(null); setFehler(GEMERKT_GESPERRT); return; }
     setZuletzt(k.id);
     const wohin = ziel.ergebnis ? `Archiv (${ERGEBNIS_LABEL[ziel.ergebnis]})` : STATUS_LABEL[ziel.status];
     schritt(k.id, zugPatch(k, ziel, heuteLokal()), () => zugAusfuehren(k.id, k.status, ziel),

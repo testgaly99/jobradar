@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { zugPatch, rundePatch, rueckgaengigErlaubt, STATUS_RANG } from "../lib/zug.ts";
+import { zugPatch, rundePatch, rueckgaengigErlaubt, STATUS_RANG, zurueckZuGemerkt } from "../lib/zug.ts";
 
 const basis = { status: "gemerkt" as const, runde: null, ergebnis: null, beworben_am: null };
 
@@ -44,4 +44,12 @@ test("rueckgaengigErlaubt: jünger als 10 Minuten", () => {
 test("STATUS_RANG", () => {
   assert.equal(STATUS_RANG.gemerkt, 0);
   assert.equal(STATUS_RANG.abgeschlossen, 5);
+});
+
+test("zurueckZuGemerkt: nach einer Bewerbung nie zurück auf Gemerkt", () => {
+  assert.equal(zurueckZuGemerkt("beworben", "gemerkt"), true);
+  assert.equal(zurueckZuGemerkt("abgeschlossen", "gemerkt"), true);
+  assert.equal(zurueckZuGemerkt("gemerkt", "gemerkt"), false);
+  assert.equal(zurueckZuGemerkt("gemerkt", "beworben"), false);
+  assert.equal(zurueckZuGemerkt("angebot", "beworben"), false);
 });

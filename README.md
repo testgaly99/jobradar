@@ -123,7 +123,6 @@ Jeder Nutzer kann sein Konto selbst unter „Konto“ löschen. Das Admin-Konto 
    - `SUPABASE_SERVICE_KEY`: der Secret Key aus Supabase → Project Settings → API Keys. *Warum:* Nur damit kann die Website ein Konto samt Daten löschen. Ohne `NEXT_PUBLIC_` bleibt er auf dem Server und gelangt nie in den Browser.
    - `ADMIN_EMAIL`: deine E-Mail-Adresse (mehrere durch Komma getrennt). *Warum:* Wer hier steht, sieht die Admin-Seite „Nutzer“. Das Admin-Konto lässt sich nicht löschen.
 
-   - `TZ`: `Europe/Berlin`. *Warum:* Sonst zeigt „Diese Woche“ die Uhrzeiten in der falschen Zeitzone.
 
    Dann „Deploy“. Erfolg: Vercel zeigt eine Adresse, die Seite lädt. Dieselben zwei Variablen brauchst du auch in `web/.env.local`, wenn du lokal arbeitest.
 4. Supabase → Authentication → URL Configuration: die Vercel-Adresse als „Site URL“ eintragen und unter „Redirect URLs“ `https://<deine-adresse>/**` hinzufügen. *Warum:* Sonst schickt dich der Login auf die falsche Seite zurück.

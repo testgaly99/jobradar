@@ -80,7 +80,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
       <section className="abschnitt">
         <h2>Meine Daten exportieren</h2>
         <p>Wir empfehlen dir, deine Bewerbungen vorher zu exportieren. Nach dem Löschen sind sie nicht wiederherstellbar.</p>
-        <p><a className="knopf knopf-rand knopf-schmal" href="/export">Excel-Tabelle (CSV) herunterladen</a></p>
+        <p><a className="knopf knopf-rand knopf-schmal" href="/export">Als Excel-Tabelle herunterladen</a></p>
         {verboten ? (
           <p className="klein gedaempft">{verboten}{n?.admin && " Es endet erst, wenn die Website und die Datenbank entfernt werden."}</p>
         ) : (

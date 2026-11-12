@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useDraggable } from "@dnd-kit/core";
 import { ERGEBNIS_LABEL, STATUS_LABEL, tagDe, type Status } from "@/lib/bewerbung";
 import { firmenFarbe } from "@/lib/farbe";
-import { rundePatch } from "@/lib/zug";
-import { BOARD_SPALTEN, type Karte } from "@/lib/tracker-karte";
+import { rundePatch, zurueckZuGemerkt } from "@/lib/zug";
+import { BOARD_SPALTEN, naechsteSpalte, type Karte } from "@/lib/tracker-karte";
+
+const REIHENFOLGE = [...BOARD_SPALTEN, "abgeschlossen" as const].map((id, left) => ({ id, left }));
 
 export type KartenAktionen = {
   status: (k: Karte, ziel: Status) => void;
@@ -20,9 +22,9 @@ export function Logo({ karte }: { karte: Karte }) {
   const [kaputt, setKaputt] = useState(false);
   const name = karte.firma || "?";
   if (karte.logo_url && !kaputt) {
-    return <img className="logo" src={karte.logo_url} alt="" width={24} height={24} draggable={false} referrerPolicy="no-referrer" onError={() => setKaputt(true)} />;
+    return <img className="firmenlogo" src={karte.logo_url} alt="" width={24} height={24} draggable={false} referrerPolicy="no-referrer" onError={() => setKaputt(true)} />;
   }
-  return <span className="logo logo-kreis" aria-hidden="true" style={{ "--firma": firmenFarbe(name) } as CSSProperties}>{name.trim().charAt(0).toUpperCase()}</span>;
+  return <span className="firmenlogo firmenlogo-kreis" aria-hidden="true" style={{ "--firma-h": firmenFarbe(name) } as CSSProperties}>{name.trim().charAt(0).toUpperCase()}</span>;
 }
 
 export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen }: { karte: Karte; ohneSpalten: boolean; neu: boolean; fokus: number; aktionen: KartenAktionen }) {
@@ -47,8 +49,18 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
     >
       <div className="karte-kopf">
         {!ohneSpalten && <Logo karte={karte} />}
-        <h3><Link href={`/bewerbungen/${karte.id}`} draggable={false}>{firma}</Link></h3>
-        <button type="button" ref={(el) => { setActivatorNodeRef(el); griff.current = el; }} className="griff" {...attributes} onKeyDown={(e) => listeners?.onKeyDown?.(e)} aria-label={`${firma} verschieben`}>
+        <h3><Link href={`/bewerbung/${karte.id}`} draggable={false}>{firma}</Link></h3>
+        <button type="button" ref={(el) => { setActivatorNodeRef(el); griff.current = el; }} className="griff" {...attributes} onKeyDown={(e) => {
+            // Pfeil links/rechts verschiebt direkt um eine Spalte (ohne vorher Leertaste); Leertaste/Enter bleibt Ziehen mit dnd-kit.
+            const richtung = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+            if (richtung && !isDragging && !ohneSpalten) {
+              e.preventDefault();
+              const ziel = naechsteSpalte(REIHENFOLGE, karte.status, richtung);
+              if (ziel) aktionen.status(karte, ziel);
+              return;
+            }
+            listeners?.onKeyDown?.(e);
+          }} aria-label={`${firma} verschieben (Pfeil links/rechts)`}>
           <span aria-hidden="true">⠿</span>
         </button>
       </div>
@@ -72,24 +84,30 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
           <button type="button" className="knopf knopf-leise" disabled={!rundePatch(karte.runde, 1)} onClick={() => aktionen.runde(karte, 1)}>+ Runde</button>
         </div>
       )}
-      {!ohneSpalten && (bearbeiten
-        ? <input className="kommentar-feld" aria-label={`Kommentar zu ${firma}`} maxLength={140} autoFocus defaultValue={karte.kommentar ?? ""}
-            onBlur={(e) => speichern(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") e.currentTarget.blur();
-              if (e.key === "Escape") { e.currentTarget.value = karte.kommentar ?? ""; e.currentTarget.blur(); }
-            }} />
-        : <button type="button" className={`kommentar${karte.kommentar ? "" : " gedaempft"}`} onClick={() => setBearbeiten(true)}
-            aria-label={karte.kommentar ? `Kommentar ändern: ${karte.kommentar}` : `Kommentar zu ${firma} hinzufügen`}>
-            {karte.kommentar || "+ Kommentar"}
-          </button>)}
-      <label className="klein karte-status">Status
-        <select value={karte.status} onChange={(e) => aktionen.status(karte, e.currentTarget.value as Status)}>
-          {BOARD_SPALTEN.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
-          <option value="abgeschlossen">Archiv…</option>
-        </select>
-      </label>
-      {ohneSpalten && <Link className="klein" href={`/bewerbungen/${karte.id}`} draggable={false}>Bewerbung öffnen</Link>}
+      <div className="karte-fuss">
+        {!ohneSpalten && (bearbeiten
+          ? <input className="kommentar-feld" aria-label={`Kommentar zu ${firma}`} maxLength={140} autoFocus defaultValue={karte.kommentar ?? ""}
+              onBlur={(e) => speichern(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+                if (e.key === "Escape") { e.currentTarget.value = karte.kommentar ?? ""; e.currentTarget.blur(); }
+              }} />
+          : <button type="button" className={`kommentar${karte.kommentar ? "" : " gedaempft"}`} onClick={() => setBearbeiten(true)}
+              aria-label={karte.kommentar ? `Kommentar ändern: ${karte.kommentar}` : `Kommentar zu ${firma} hinzufügen`}>
+              {karte.kommentar || "+ Kommentar"}
+            </button>)}
+        {/* B7 (unten, damit der Firmenname im Kopf Platz hat): Status-Auswahl im ⋯-Menü statt immer sichtbar (Karten halb so hoch); bleibt für Handy und Bildschirmleser erreichbar */}
+          <details className="menue karte-menue">
+            <summary aria-label={`Status von ${firma} ändern`}><span aria-hidden="true">⋯</span></summary>
+            <label className="klein karte-status">Status
+              <select value={karte.status} onChange={(e) => { (e.currentTarget.closest("details") as HTMLDetailsElement).open = false; aktionen.status(karte, e.currentTarget.value as Status); }}>
+                {BOARD_SPALTEN.map((s) => <option key={s} value={s} disabled={zurueckZuGemerkt(karte.status, s)}>{STATUS_LABEL[s]}</option>)}
+                <option value="abgeschlossen">Archiv…</option>
+              </select>
+            </label>
+          </details>
+      </div>
+      {ohneSpalten && <Link className="klein" href={`/bewerbung/${karte.id}`} draggable={false}>Bewerbung öffnen</Link>}
     </article>
   );
 }

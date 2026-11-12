@@ -1,6 +1,7 @@
-// Stabile Akzentfarbe pro Firma: gleicher Name, gleiche Farbe. Mittlere Helligkeit, damit der Streifen in Hell und Dunkel sichtbar bleibt.
-export function firmenFarbe(name: string): string {
+// Stabiler Farbton (0-359) pro Firma: gleicher Name, gleiche Farbe. Helligkeit und Sättigung kommen als Token
+// aus stil/utilitaer.css (A3: keine festen Farbwerte im Code, Dunkelmodus anpassbar). Gesetzt als style="--firma-h: …".
+export function firmenFarbe(name: string): number {
   let h = 0;
   for (const c of name.trim().toLowerCase()) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  return `hsl(${h % 360}, 65%, 45%)`;
+  return h % 360;
 }

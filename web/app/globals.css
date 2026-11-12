@@ -3,7 +3,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html, body { overflow-x: clip; }
-html { scroll-padding-top: var(--space-3xl); }
+html { scroll-padding-top: var(--space-3xl); scrollbar-color: var(--color-muted) var(--color-paper); -webkit-tap-highlight-color: transparent; } /* A7: Scrollbalken in Seitenfarben, kein grauer Antipp-Blitz (Knöpfe haben eigene :active-Zustände) */
 body {
   margin: 0;
   background: var(--color-paper);
@@ -37,6 +37,10 @@ a:hover { text-decoration-thickness: 2px; }
 a:active { color: var(--color-ink); }
 
 :focus-visible { outline: var(--fokus-ring); outline-offset: 2px; }
+
+/* A6: Tastatur-Nutzer springen am Menü vorbei; unsichtbar, bis er per Tab den Fokus bekommt */
+.skiplink { position: absolute; z-index: calc(var(--z-sticky-nav) + 1); left: var(--space-sm); top: var(--space-sm); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-control); background: var(--color-ink); color: var(--color-paper); transform: translateY(-200%); }
+.skiplink:focus-visible { transform: none; }
 
 .gedaempft { color: var(--color-muted); }
 .klein { font-size: var(--text-sm); }
@@ -80,7 +84,11 @@ a:active { color: var(--color-ink); }
 .nav form { margin: 0; }
 /* In scrollbaren Zeilen den Fokusring nach innen legen, sonst schneidet der Rand ihn ab */
 .nav a:focus-visible, .nav button:focus-visible, .unternav a:focus-visible { outline-offset: -2px; }
-@media (max-width: 40rem) { .nav { flex: 1 0 100%; margin-inline: calc(-1 * var(--space-sm)); } }
+@media (max-width: 40rem) {
+  /* A1: am Handy umbrechen statt seitlich scrollen, sonst wird „Abmelden“ abgeschnitten */
+  .nav { flex: 1 0 100%; flex-wrap: wrap; overflow-x: visible; margin-inline: calc(-1 * var(--space-xs)); }
+  .nav a, .nav button { padding-inline: var(--space-xs); }
+}
 
 /* Karten: eine Ebene, nie ineinander */
 .karte {
@@ -217,6 +225,22 @@ input[type="checkbox"], input[type="radio"] { width: 1.1rem; height: 1.1rem; mar
 details.karte > summary { cursor: pointer; min-height: var(--control-h); display: flex; align-items: center; border-radius: var(--radius-control); }
 details.karte > summary h2 { margin: 0; }
 details.karte[open] > summary { margin-bottom: var(--space-md); }
+/* Aufklappbar sichtbar machen (display:flex blendet das Browser-Dreieck aus). Nach NN/g, UX Movement, GOV.UK:
+   Winkel direkt LINKS vor der Beschriftung (kurzer Blickweg), zu ▸ / offen ▾, ganze Zeile klickbar mit Hover-Fläche. */
+details.karte > summary, .filterblock > summary, .gruppe > summary {
+  list-style: none; gap: var(--space-xs); margin-inline: calc(-1 * var(--space-xs)); padding-inline: var(--space-xs);
+  border-radius: var(--radius-control); transition: background var(--dur-short) var(--ease-out);
+}
+details.karte > summary::-webkit-details-marker, .filterblock > summary::-webkit-details-marker, .gruppe > summary::-webkit-details-marker { display: none; }
+details.karte > summary::before, .filterblock > summary::before, .gruppe > summary::before {
+  content: ""; flex: none; width: 0.45rem; height: 0.45rem; margin-inline: 0.15rem 0.2rem;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg); transition: transform var(--dur-short) var(--ease-out); color: var(--color-ink-2);
+}
+details[open].karte > summary::before, .filterblock[open] > summary::before, .gruppe[open] > summary::before { transform: translateY(-20%) rotate(45deg); }
+details.karte > summary { font-weight: var(--weight-strong); }
+details.karte > summary:hover, .filterblock > summary:hover, .gruppe > summary:hover { background: var(--color-paper-2); }
+details.karte > summary:hover::before, .filterblock > summary:hover::before, .gruppe > summary:hover::before { color: var(--color-ink); }
 .filterblock[open] > summary { margin-bottom: var(--space-xs); }
 .filterform { display: grid; gap: var(--space-md); padding-bottom: var(--space-md); }
 .filteraktionen { display: grid; gap: var(--space-xs); }
@@ -243,14 +267,17 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 .stelle h2 { font-size: var(--text-lg); }
 .stelle h2 a { color: var(--color-ink); text-decoration: none; }
 .stelle h2 a:hover { text-decoration: underline; }
-.firma { font-weight: var(--weight-strong); color: color-mix(in oklch, var(--akzent, var(--color-ink)) var(--firma-anteil), var(--color-ink)); }
+/* A3: Firmenfarbe aus dem Farbton im style-Attribut plus Helligkeit/Sättigung als Token */
+[style*="--firma-h"] { --firma: oklch(var(--firma-l) var(--firma-c) var(--firma-h)); }
+.firma { font-weight: var(--weight-strong); color: color-mix(in oklch, var(--firma, var(--color-ink)) var(--firma-anteil), var(--color-ink)); }
 .meta { display: flex; flex-wrap: wrap; gap: var(--space-2xs) var(--space-md); }
 .meta:empty, .stellenliste:empty { display: none; }
 .seiten { display: flex; justify-content: space-between; align-items: center; gap: var(--space-xs); }
 .seiten .knopf { width: auto; }
 
 /* Unternavigation als Reiter: Zustand über Linie und Farbe, nie gefüllt */
-.unternav { display: flex; gap: var(--space-2xs); overflow-x: auto; border-bottom: var(--karte-rand); }
+/* Umbrechen statt Scrollen: overflow-x würde wegen des -1px-Überstands der Reiter einen senkrechten Scroller zeigen */
+.unternav { display: flex; flex-wrap: wrap; gap: var(--space-2xs); border-bottom: var(--karte-rand); }
 .unternav a {
   display: inline-flex;
   align-items: center;
@@ -264,18 +291,21 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
   white-space: nowrap;
 }
 .unternav a:hover { color: var(--color-ink); }
+@media (max-width: 40rem) { .unternav a { padding-inline: var(--space-xs); } }
 .unternav a[aria-current="page"] { color: var(--color-ink); border-bottom-color: var(--color-accent); }
 
 /* Bewerbungen: Filter und Tabelle */
 .statuswahl { display: flex; flex-wrap: wrap; gap: 0 var(--space-lg); margin: 0; padding: var(--space-xs) var(--space-md); border: var(--rule-hair) solid var(--color-rule); border-radius: var(--radius-control); }
 .statuswahl legend { padding: 0 var(--space-2xs); font-weight: var(--weight-strong); font-size: var(--text-sm); }
-.filterreihe { display: grid; gap: var(--space-md); }
+.filterreihe { display: grid; gap: var(--space-md); align-items: end; } /* B6: Felder auf einer Grundlinie, gleiche Höhe */
+.filterreihe .suchzeile { grid-template-columns: minmax(0, 1fr) auto; align-items: end; } /* B6: „Suchen“ neben dem Feld statt als Balken */
 @media (min-width: 44rem) {
   .filterreihe { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .aktionsreihe { grid-template-columns: auto auto; justify-content: start; }
 }
 .tabelle-rahmen { overflow-x: auto; background: var(--karte-flaeche); border: var(--karte-rand); border-radius: var(--radius-card); }
 .tabelle { width: 100%; min-width: 45rem; border-collapse: collapse; }
+@media (max-width: 40rem) { .tabelle { min-width: 0; } .tabelle .nur-breit { display: none; } } /* B11 */
 .tabelle th, .tabelle td { padding: var(--space-xs) var(--space-sm); border-bottom: var(--rule-hair) solid var(--color-rule); text-align: left; vertical-align: top; }
 .tabelle tbody tr:last-child > * { border-bottom: 0; }
 .tabelle th { font-size: var(--text-sm); font-weight: var(--weight-strong); white-space: nowrap; color: var(--color-ink-2); }
@@ -288,8 +318,10 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 /* Das Board nutzt die ganze Fensterbreite statt der Seitenbreite */
 main.seite:has(> .kanban-bereich) { max-width: none; }
 .kanban-bereich > * + * { margin-top: var(--space-md); }
-.kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 1fr); gap: var(--space-sm); overflow-x: auto; padding-bottom: var(--space-md); align-items: stretch; }
+.kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(180px, 1fr); /* B8: alle 6 Spalten passen ab ca. 1200 px */ gap: var(--space-sm); overflow-x: auto; padding-bottom: var(--space-md); align-items: stretch; }
 .spalte { display: flex; flex-direction: column; gap: var(--space-sm); min-height: 12rem; padding: var(--space-xs); border-radius: var(--radius-card); transition: background-color var(--uebergang), outline-color var(--uebergang); outline: 2px solid transparent; outline-offset: -2px; }
+/* A2: Fokusring sofort (Hallmark 15); das Aufleuchten als Ablageziel behält seinen Übergang */
+.spalte:focus-visible { transition: background-color var(--uebergang); }
 .spalte[data-ziel] { background: var(--spalte-ziel); outline-color: var(--color-accent); }
 .spalte > h2 { display: flex; align-items: center; gap: var(--space-xs); padding-bottom: var(--space-xs); border-bottom: var(--rule-hair) solid var(--color-rule); font-size: var(--text-md); }
 .spalte-archiv { background: var(--archiv-flaeche); border: var(--archiv-rand); }
@@ -301,10 +333,17 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 @keyframes karte-ankunft { from { opacity: 0.4; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 .karte-schwebt { cursor: grabbing; box-shadow: var(--karte-schatten-zieht); transform: rotate(var(--karte-schwebt-drehung)); }
 .kanbankarte > * + * { margin-top: var(--space-xs); }
-.kanbankarte h3 { font-size: var(--text-md); min-width: 0; overflow-wrap: anywhere; flex: 1; }
+.kanbankarte h3 { font-size: var(--text-md); min-width: 0; overflow-wrap: break-word; flex: 1; } /* B8: erst an Leerzeichen umbrechen, Wörter nur wenn nötig */
 .karte-kopf { display: flex; align-items: center; gap: var(--space-xs); }
-.logo { flex: 0 0 24px; width: 24px; height: 24px; border-radius: var(--radius-mark); object-fit: contain; }
-.logo-kreis { display: inline-grid; place-items: center; border-radius: 50%; font-size: var(--text-xs); font-weight: var(--weight-strong); color: var(--color-accent-ink); background: color-mix(in oklch, var(--firma) var(--firma-anteil), var(--color-ink)); }
+/* B7: ⋯-Menü der Karte; die Auswahl klappt als kleine Fläche unter dem Knopf auf */
+.karte-fuss { display: flex; align-items: center; gap: var(--space-2xs); }
+.karte-fuss > .kommentar, .karte-fuss > .kommentar-feld { flex: 1; min-width: 0; }
+.karte-menue { position: relative; margin-left: auto; }
+.karte-menue summary { min-width: 2rem; min-height: 2rem; list-style: none; }
+.karte-menue summary::-webkit-details-marker { display: none; }
+.karte-menue[open] > .karte-status { position: absolute; z-index: 2; right: 0; top: 100%; min-width: 12rem; padding: var(--space-xs); background: var(--karte-flaeche); border: var(--karte-rand); border-radius: var(--radius-control); box-shadow: var(--karte-schatten-hover); }
+.firmenlogo { flex: 0 0 24px; width: 24px; height: 24px; border-radius: var(--radius-mark); object-fit: contain; }
+.firmenlogo-kreis { display: inline-grid; place-items: center; border-radius: 50%; font-size: var(--text-xs); font-weight: var(--weight-strong); color: var(--color-accent-ink); background: color-mix(in oklch, var(--firma) var(--firma-anteil), var(--color-ink)); }
 .griff { flex: 0 0 auto; min-width: 2rem; min-height: 2rem; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--color-muted); cursor: grab; transition: background-color var(--uebergang), color var(--uebergang); }
 .griff:hover { background: var(--color-paper-2); color: var(--color-ink); }
 .sterne { color: var(--color-ink-2); letter-spacing: 0.1em; }
@@ -313,7 +352,7 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 .runde .menue summary { min-width: auto; min-height: 2rem; list-style: none; }
 .runde .menue[open] > button { position: absolute; z-index: 1; top: 100%; left: 0; white-space: nowrap; background: var(--karte-flaeche); border: var(--karte-rand); }
 .runde .knopf-leise { min-height: 2rem; padding-inline: var(--space-xs); }
-.kommentar { display: block; width: 100%; padding: var(--space-3xs) var(--space-2xs); border: 0; border-radius: var(--radius-mark); background: transparent; color: inherit; font: inherit; font-size: var(--text-sm); text-align: left; cursor: text; transition: background-color var(--uebergang); }
+.kommentar { display: block; width: 100%; min-height: 2rem; /* A9: Trefffläche */ padding: var(--space-3xs) var(--space-2xs); border: 0; border-radius: var(--radius-mark); background: transparent; color: inherit; font: inherit; font-size: var(--text-sm); text-align: left; cursor: text; transition: background-color var(--uebergang); }
 .kommentar:hover { background: var(--color-paper-2); }
 .kommentar-feld { width: 100%; font-size: var(--text-sm); }
 .karte-status { display: grid; gap: var(--space-3xs); }
@@ -326,8 +365,14 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 .statusform .knopf { width: auto; }
 
 /* Bewerbung im Detail */
+/* B2: eine Spalte in Lesebreite statt zwei Spalten mit Löchern */
 .detail { display: grid; gap: var(--space-md); }
-@media (min-width: 60rem) { .detail { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+.bewerbung-seite { max-width: 52rem; }
+.bewerbung-seite > * + * { margin-top: var(--space-md); }
+/* B1: „+ Person/Interview hinzufügen“ als Knopf; das Formular erscheint erst nach dem Klick */
+.hinzufuegen > summary { list-style: none; width: auto; }
+.hinzufuegen > summary::-webkit-details-marker { display: none; }
+.hinzufuegen[open] > summary { margin-bottom: var(--space-md); }
 .eintraege { list-style: none; padding: 0; display: grid; }
 .eintraege li { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-sm); padding-block: var(--space-sm); border-bottom: var(--rule-hair) solid var(--color-rule); }
 .eintraege li > div:first-child { min-width: 0; overflow-wrap: anywhere; }
@@ -373,7 +418,7 @@ mark { background: var(--color-mark); color: var(--color-mark-ink); padding: 0 v
 /* Lesetext */
 .prosa { max-width: 70ch; line-height: var(--leading-prose); }
 /* Seitenfenster (abgefangene Route): rechts, 40 % ab 1100 px, sonst volle Breite */
-.fenster { margin: 0 0 0 auto; width: 100%; max-width: none; height: 100dvh; max-height: none; padding: 0; border: 0; border-left: var(--karte-rand); background: var(--color-paper); color: var(--color-ink); animation: fenster-rein var(--uebergang); }
+.fenster { overscroll-behavior: contain; /* A5: Seite dahinter scrollt nicht mit */ margin: 0 0 0 auto; width: 100%; max-width: none; height: 100dvh; max-height: none; padding: 0; border: 0; border-left: var(--karte-rand); background: var(--color-paper); color: var(--color-ink); animation: fenster-rein var(--uebergang); }
 .fenster::backdrop { background: var(--dialog-hintergrund); }
 .fenster-innen { min-height: 100%; padding: var(--space-md); } /* füllt das Fenster, damit nur der abgedunkelte Rand "daneben" ist */
 .fenster-innen > * + * { margin-top: var(--space-md); }
@@ -415,7 +460,7 @@ mark { background: var(--color-mark); color: var(--color-mark-ink); padding: 0 v
 .kacheln { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: var(--space-md); margin-block: var(--space-md); }
 .kachel p { margin: 0; }
 .kachelwert { font-size: var(--text-xl, 1.75rem); font-weight: var(--weight-strong); }
-.balken { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2xs); }
-.balken li { display: grid; grid-template-columns: 4.5rem 1fr 2rem; align-items: center; gap: var(--space-sm); }
+.wochenbalken { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2xs); }
+.wochenbalken li { display: grid; grid-template-columns: 7.5rem 1fr 2rem; align-items: center; gap: var(--space-sm); }
 .balkenfeld { background: var(--color-paper-2); border-radius: var(--radius-control); height: 0.9rem; overflow: hidden; }
 .balkenfuell { display: block; height: 100%; background: var(--color-accent); }

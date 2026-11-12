@@ -9,6 +9,8 @@ import FilterClient from "../stellen/filter-client";
 import UnterNav from "./unternav";
 import Woche from "./woche";
 
+// B11: diese Spalten fallen am Handy weg, damit die Tabelle ohne seitliches Wischen passt
+const NUR_BREIT = new Set<SortSpalte>(["interesse", "beworben_am", "naechster_schritt_faellig", "geaendert_am"]);
 const SPALTEN: [SortSpalte, string][] = [
   ["firma", "Firma"], ["titel", "Titel"], ["status", "Status"], ["interesse", "Interesse"],
   ["beworben_am", "Beworben am"], ["naechster_schritt_faellig", "Nächster Schritt"], ["geaendert_am", "Geändert"],
@@ -39,9 +41,11 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       <h1>Bewerbungen</h1>
       <Woche />
       <UnterNav aktiv="tabelle" sp={sp} />
-      <div className="karte block">
+      {/* Anlegen steht zuerst und ist offen (Wunsch 2026-11-12); zuklappbar, wenn nur die Liste gebraucht wird */}
+      <details className="karte block" open>
+        <summary>Bewerbung anlegen</summary>
         <LinkFormular />
-      </div>
+      </details>
       <div className="karte block">
         <FilterClient aktion="/bewerbungen" listeId="bewerbungsliste" textFelder={["firma"]}>
           <fieldset className="statuswahl">
@@ -63,7 +67,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
             <label>Interesse mindestens
               <select key={f.interesse ?? ""} name="interesse" defaultValue={f.interesse ?? ""}>
                 <option value="">egal</option>
-                {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
+                {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{"★".repeat(n)}{n < 5 ? " oder mehr" : ""}</option>)}
               </select>
             </label>
           </div>
@@ -79,7 +83,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       <div id="bewerbungsliste">
       {error && <p className="meldung fehler" role="alert">Bewerbungen konnten nicht geladen werden.</p>}
       {!error && zeilen.length === 0 && (
-        <p className="leer">{aktiv ? "Keine Bewerbungen für diese Auswahl." : "Noch keine Bewerbungen. Lege eine aus einer Stelle, per Link oder manuell an."}</p>
+        <p className="leer">{aktiv ? "Keine Bewerbungen für diese Auswahl." : "Noch keine Bewerbungen. Lege eine aus einer Stelle oder über „Bewerbung anlegen“ an."}</p>
       )}
       {zeilen.length > 0 && (
         <div className="tabelle-rahmen">
@@ -90,7 +94,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   const hier = f.sort === key;
                   const neu = tabelleZuUrl({ ...f, sort: key, dir: hier && f.dir === "desc" ? "asc" : "desc" });
                   return (
-                    <th key={key} scope="col" aria-sort={hier ? (f.dir === "asc" ? "ascending" : "descending") : "none"}>
+                    <th key={key} scope="col" className={NUR_BREIT.has(key) ? "nur-breit" : undefined} aria-sort={hier ? (f.dir === "asc" ? "ascending" : "descending") : "none"}>
                       <Link href={neu}>{name}{hier ? (f.dir === "asc" ? " ▲" : " ▼") : ""}</Link>
                     </th>
                   );
@@ -100,13 +104,13 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
             <tbody>
               {zeilen.map((z) => (
                 <tr key={z.id}>
-                  <td><Link href={`/bewerbungen/${z.id}`}>{z.firma || "(ohne Firma)"}</Link></td>
+                  <td><Link href={`/bewerbung/${z.id}`}>{z.firma || "(ohne Firma)"}</Link></td>
                   <td>{z.titel}</td>
                   <td><span className="chip" data-status={z.status}>{STATUS_LABEL[z.status]}</span></td>
-                  <td className="num">{z.interesse ?? ""}</td>
-                  <td className="num">{datumDe(z.beworben_am)}</td>
-                  <td>{z.naechster_schritt}{z.naechster_schritt_faellig && ` (bis ${datumDe(z.naechster_schritt_faellig)})`}</td>
-                  <td className="num">{tagDe(z.geaendert_am)}</td>
+                  <td className="nur-breit">{z.interesse && <span className="sterne" role="img" aria-label={`Interesse ${z.interesse} von 5`}>{"★".repeat(z.interesse)}{"☆".repeat(5 - z.interesse)}</span>}</td>
+                  <td className="num nur-breit">{datumDe(z.beworben_am)}</td>
+                  <td className="nur-breit">{z.naechster_schritt}{z.naechster_schritt_faellig && ` (bis ${datumDe(z.naechster_schritt_faellig)})`}</td>
+                  <td className="num nur-breit">{tagDe(z.geaendert_am)}</td>
                 </tr>
               ))}
             </tbody>

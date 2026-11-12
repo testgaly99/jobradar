@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { firmenFarbe } from "@/lib/farbe";
+import { datumDe } from "@/lib/bewerbung";
 import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
 import { kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, nachGroesse, stellenAbfrage } from "@/lib/stellen";
-import { merken, entmerken, bewerbungZuruecknehmen } from "./actions";
+import { merken, entmerken } from "./actions";
 import FilterBlock from "./filterblock";
 import FilterClient from "./filter-client";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
@@ -22,7 +23,6 @@ type Job = {
 };
 
 const bekannt = (s: string | null) => (s && s.toLowerCase() !== "unbekannt" ? s : null);
-const datumDe = (iso: string) => iso.split("-").reverse().join(".");
 
 export default async function Seite({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
@@ -47,9 +47,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const jetzt = new Date();
   const hatZahlen = !fac.error;
   const seiten = Math.max(1, Math.ceil(gesamt / PRO_SEITE));
-  const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.seit ? 1 : 0);
+  const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.ohne ? 1 : 0) + (f.seit ? 1 : 0);
   // Eine Abfrage für alle angezeigten Stellen: welche sind schon gemerkt oder beworben? (RLS liefert nur eigene Zeilen)
-  const status = new Map<string, string>();
+  const status = new Map<string, { status: string; id: string }>();
   const steckbriefe = new Map<string, unknown>();
   // Steckbrief-Spalte und Felder-Tabelle gibt es erst nach Migration 005: Fehler ergibt leeren Steckbrief bzw. Standardfelder.
   const felderZeile = await sb.from("listen_felder").select("felder").maybeSingle();
@@ -57,10 +57,10 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   if (jobs.length) {
     const ids = jobs.map((j) => j.id);
     const [apps, sbr] = await Promise.all([
-      sb.from("applications").select("job_id,status").in("job_id", ids),
+      sb.from("applications").select("id,job_id,status").in("job_id", ids),
       sb.from("jobs").select("id,steckbrief").in("id", ids),
     ]);
-    for (const a of apps.data ?? []) status.set(a.job_id, a.status);
+    for (const a of apps.data ?? []) status.set(a.job_id, { status: a.status, id: a.id });
     for (const s of sbr.error ? [] : (sbr.data ?? [])) steckbriefe.set(s.id, s.steckbrief);
   }
 
@@ -87,6 +87,13 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 </label>
                 <button className="knopf" type="submit">Suchen</button>
               </div>
+              <details className="gruppe ausschluss" open={!!f.ohne}>
+                <summary>Wörter ausschließen{f.ohne && " (aktiv)"}</summary>
+                <label>Stellen ohne diese Wörter
+                  <input type="search" name="ohne" defaultValue={f.ohne} placeholder="z. B. Praktikum, Sales…" />
+                </label>
+                <p className="gedaempft klein">Mehrere durch Komma trennen. Gilt für den Titel, mit Häkchen unten auch für den Anzeigentext. Enter oder „Suchen“ wendet an.</p>
+              </details>
               <label className="option">
                 <input type="checkbox" name="volltext" value="1" defaultChecked={f.volltext} />
                 <span>Auch im Anzeigentext suchen</span>
@@ -94,8 +101,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               <label>Sortieren nach
                 <select key={f.sort} name="sort" defaultValue={f.sort}>
                   <option value="neu">Online seit (neueste zuerst)</option>
-                  <option value="firma">Firma A–Z</option>
-                  <option value="titel">Titel A–Z</option>
+                  <option value="firma">Firma A bis Z</option>
+                  <option value="titel">Titel A bis Z</option>
                   <option value="groesse">Größe</option>
                 </select>
               </label>
@@ -151,9 +158,10 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 erstmalsGesehen: j.erstmals_gesehen, steckbrief: leseSteckbrief(steckbriefe.get(j.id)),
                 branchen: (j.companies?.kategorie ?? []).filter((k) => k !== AUSGEBLENDET_BRANCHE),
               }, felder);
-              const st = status.get(j.id);
+              const app = status.get(j.id);
+              const st = app?.status;
               return (
-                <li key={j.id} className="stelle" style={{ "--akzent": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
+                <li key={j.id} className="stelle" style={{ "--firma-h": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
                   <div className="stelle-text">
                     <h2><Link href={"/stellen/" + encodeURIComponent(j.id)}>{j.titel}</Link></h2>
                     <p className="meta">
@@ -171,12 +179,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                     <form action={entmerken.bind(null, j.id)}>
                       <SendeKnopf text="Gemerkt ✓" klasse="knopf knopf-zustand knopf-schmal ist-gemerkt" gedrueckt title="Klicken, um nicht mehr zu merken" />
                     </form>
-                  ) : st === "beworben" ? (
-                    <form action={bewerbungZuruecknehmen.bind(null, j.id)}>
-                      <SendeKnopf text="Beworben ✓" klasse="knopf knopf-zustand knopf-schmal" gedrueckt title="Klicken, um zurückzunehmen" />
-                    </form>
-                  ) : st ? (
-                    <button className="knopf knopf-zustand knopf-schmal" type="button" disabled>Beworben</button>
+                  ) : app ? (
+                    // Ab "beworben" kein Umschalter mehr: ein Klick würde Status zurücksetzen, ein zweiter die Bewerbung samt Eingaben löschen.
+                    <Link className="knopf knopf-zustand knopf-schmal" href={`/bewerbung/${app.id}`} title="Zur Bewerbung">Beworben ✓</Link>
                   ) : (
                     <form action={merken.bind(null, j.id)}>
                       <SendeKnopf text="Merken" klasse="knopf knopf-rand knopf-schmal" />

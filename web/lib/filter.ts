@@ -5,7 +5,7 @@ export const SEIT_WERTE = ["heute", "3", "7", "30"] as const;
 export type Seit = (typeof SEIT_WERTE)[number];
 export const SORTIERUNG = ["neu", "firma", "titel", "groesse"] as const;
 export type Sortierung = (typeof SORTIERUNG)[number];
-export type Filter = Record<Gruppe, string[]> & { q: string; volltext: boolean; seit: Seit | ""; seite: number; sort: Sortierung };
+export type Filter = Record<Gruppe, string[]> & { q: string; ohne: string; volltext: boolean; seit: Seit | ""; seite: number; sort: Sortierung };
 type Params = Record<string, string | string[] | undefined>;
 
 
@@ -13,7 +13,7 @@ const liste = (v: string | string[] | undefined) =>
   [...new Set((Array.isArray(v) ? v : v === undefined ? [] : [v]).map((s) => s.trim()).filter(Boolean))];
 
 export function leseFilter(p: Params): Filter {
-  const f = { q: liste(p.q)[0] ?? "", volltext: liste(p.volltext)[0] === "1", seit: "", seite: 1, sort: "neu" } as Filter;
+  const f = { q: liste(p.q)[0] ?? "", ohne: liste(p.ohne)[0] ?? "", volltext: liste(p.volltext)[0] === "1", seit: "", seite: 1, sort: "neu" } as Filter;
   for (const g of GRUPPEN) f[g] = liste(p[g]);
   const seit = liste(p.seit)[0] as Seit;
   if (SEIT_WERTE.includes(seit)) f.seit = seit;
@@ -28,6 +28,7 @@ export function filterZuUrl(f: Filter): string {
   const u = new URLSearchParams();
   for (const g of GRUPPEN) for (const v of f[g]) u.append(g, v);
   if (f.q) u.set("q", f.q);
+  if (f.ohne) u.set("ohne", f.ohne);
   if (f.volltext) u.set("volltext", "1");
   if (f.seit) u.set("seit", f.seit);
   if (f.sort !== "neu") u.set("sort", f.sort);
@@ -100,6 +101,21 @@ export function suchBedingung(q: string, volltext: boolean): string {
   return volltext ? `titel.ilike.${m},text.ilike.${m}` : `titel.ilike.${m}`;
 }
 
+// Ausschluss-Suche: Wörter durch Komma oder Leerzeichen getrennt; Einzelzeichen und Doppelte fallen weg, höchstens 10.
+export function ausschlussWoerter(ohne: string): string[] {
+  const gesehen = new Set<string>();
+  return ohne.split(/[\s,;]+/).filter((w) => w.length > 1 && !gesehen.has(w.toLowerCase()) && gesehen.add(w.toLowerCase())).slice(0, 10);
+}
+
+// Je Bedingung ein .or()-Baustein (mehrere .or() werden UND-verknüpft). "is.null" behält Stellen ohne Titel/Text,
+// sonst würde "not ilike" auf NULL sie stillschweigend wegfiltern.
+export function ausschlussBedingungen(woerter: string[], volltext: boolean): string[] {
+  return woerter.flatMap((w) => {
+    const m = escapeIlike(w);
+    return volltext ? [`titel.is.null,titel.not.ilike.${m}`, `text.is.null,text.not.ilike.${m}`] : [`titel.is.null,titel.not.ilike.${m}`];
+  });
+}
+
 export const AUSGEBLENDET_BRANCHE = "Startup / Venture-finanziert";
 
 // Ohne Land-Facette (Migration 005 fehlt) gibt es keine Spalte jobs.land: Land-Filter wird ignoriert.
@@ -110,7 +126,7 @@ export const ID_FORM = /^[^:]{1,100}:\S{1,200}$/;
 
 // Formular -> Adresse. Leere Werte, seite und sort=neu entfallen. Suchfeld (q, volltext) kommt nur beim Absenden
 // der Suche aus dem Formular, sonst bleibt der Stand aus der aktuellen Adresse.
-export function formZuUrl(aktion: string, form: URLSearchParams, aktuell: URLSearchParams, mitSuche: boolean, textFelder: string[] = ["q", "volltext"]): string {
+export function formZuUrl(aktion: string, form: URLSearchParams, aktuell: URLSearchParams, mitSuche: boolean, textFelder: string[] = ["q", "ohne", "volltext"]): string {
   const u = new URLSearchParams();
   const suche = (k: string) => textFelder.includes(k);
   for (const [k, v] of form) if (v.trim() !== "" && k !== "seite" && !(k === "sort" && v === "neu") && (mitSuche || !suche(k))) u.append(k, v.trim());

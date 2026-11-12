@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, facettenSortieren, LEVEL_REIHENFOLGE, stadtAnzeige, suchBedingung, formZuUrl, landNurMitFacette, ID_FORM } from "../lib/filter.ts";
+import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, facettenSortieren, LEVEL_REIHENFOLGE, stadtAnzeige, suchBedingung, ausschlussWoerter, ausschlussBedingungen, formZuUrl, landNurMitFacette, ID_FORM } from "../lib/filter.ts";
 
 test("leerer Filter gibt /stellen", () => {
   const f = leseFilter({});
@@ -129,4 +129,23 @@ test("formZuUrl mit textFelder [firma]: ungesendeter Firmentext kommt aus der Ad
   const aktuell = new URLSearchParams("firma=alt");
   assert.equal(formZuUrl("/bewerbungen", form, aktuell, false, ["firma"]), "/bewerbungen?status=beworben&firma=alt");
   assert.equal(formZuUrl("/bewerbungen", form, aktuell, true, ["firma"]), "/bewerbungen?firma=neu&status=beworben");
+});
+
+test("Ausschluss: Woerter aus Komma/Leerzeichen, ohne Duplikate und Einzelzeichen, hoechstens 10", () => {
+  assert.deepEqual(ausschlussWoerter(" Praktikum,  Werkstudent praktikum , a "), ["Praktikum", "Werkstudent"]);
+  assert.deepEqual(ausschlussWoerter(""), []);
+  assert.equal(ausschlussWoerter(Array.from({ length: 15 }, (_, i) => "w" + i).join(" ")).length, 10);
+});
+
+test("Ausschluss: Titel immer, Anzeigentext nur mit Volltext; leere Felder bleiben drin", () => {
+  assert.deepEqual(ausschlussBedingungen(["sales"], false), ['titel.is.null,titel.not.ilike."%sales%"']);
+  assert.deepEqual(ausschlussBedingungen(["sales"], true), ['titel.is.null,titel.not.ilike."%sales%"', 'text.is.null,text.not.ilike."%sales%"']);
+  assert.deepEqual(ausschlussBedingungen([], true), []);
+});
+
+test("Ausschluss: Rundreise ueber die Adresse", () => {
+  const f = leseFilter({ ohne: "Praktikum, Sales" });
+  assert.equal(f.ohne, "Praktikum, Sales");
+  assert.equal(filterZuUrl(f), "/stellen?ohne=Praktikum%2C+Sales");
+  assert.equal(leseFilter({}).ohne, "");
 });

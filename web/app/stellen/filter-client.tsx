@@ -5,7 +5,7 @@ import { formZuUrl } from "@/lib/filter";
 
 // Umschließt das serverseitig gerenderte Filterformular: Änderungen an Häkchen/Auswahl und Enter/"Suchen" navigieren
 // per router.replace ohne Seiten-Neuladen. Ohne JavaScript bleibt es ein normales GET-Formular.
-export default function FilterClient({ aktion, listeId, textFelder = ["q", "volltext"], children }: { aktion: string; listeId: string; textFelder?: string[]; children: React.ReactNode }) {
+export default function FilterClient({ aktion, listeId, textFelder = ["q", "ohne", "volltext"], children }: { aktion: string; listeId: string; textFelder?: string[]; children: React.ReactNode }) {
   const router = useRouter();
   const sp = useSearchParams();
   const [laedt, start] = useTransition();
