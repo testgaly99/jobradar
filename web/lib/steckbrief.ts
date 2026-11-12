@@ -77,7 +77,7 @@ export type Eintrag = { feld: Feld; text: string };
 function feldText(f: Feld, d: KurzDaten): string | null {
   switch (f) {
     case "groesse": { const g = bekannt(d.groesse); return g && `${g} Mitarbeitende`; }
-    case "level": { const l = bekannt(d.level); return l && levelText(l); }
+    case "level": { const l = bekannt(d.level); const j = d.steckbrief.erfahrungJahre; return l && (j ? `${l} (ab ${j} ${j === 1 ? "Jahr" : "Jahren"})` : levelText(l)); }
     case "modell": return bekannt(d.modell);
     case "vertrag": return bekannt(d.vertrag);
     case "ort": return bekannt(d.ort);
@@ -91,11 +91,11 @@ function feldText(f: Feld, d: KurzDaten): string | null {
 }
 
 // Die gewählten Felder in fester Reihenfolge.
-// Steht die geforderte Erfahrung in der Anzeige, entfällt die nur geschätzte Stufe (sonst doppelt und oft widersprüchlich).
+// Mit Jahren aus der Anzeige trägt die Stufe die Zahl ("Senior (ab 5 Jahren)"); die Erfahrung extra wäre dann doppelt.
 export const kurzzeile = (d: KurzDaten, felder: Feld[]): Eintrag[] => {
-  const ohneStufe = felder.includes("erfahrung") && !!d.steckbrief.erfahrungJahre;
+  const doppelt = felder.includes("level") && !!bekannt(d.level) && !!d.steckbrief.erfahrungJahre;
   return felder.flatMap((feld) => {
-    if (feld === "level" && ohneStufe) return [];
+    if (feld === "erfahrung" && doppelt) return [];
     const text = feldText(feld, d); return text ? [{ feld, text }] : [];
   });
 };

@@ -49,7 +49,7 @@ def _firma(f, heute):
                 except Exception as e:  # eine Anzeige darf nie die ganze Firma kippen
                     print(f"Hinweis: Steckbrief fehlgeschlagen ({name}): {type(e).__name__}: {e}")
                     sbr = None
-                behalten.append({**s, "erfahrungslevel": erfahrungslevel(s["titel"]),
+                behalten.append({**s, "erfahrungslevel": erfahrungslevel(s["titel"], (sbr or {}).get("erfahrung_jahre")),
                                  "staedte": deutsche_staedte(s["ort"]), "land": land(s["ort"]),
                                  "steckbrief": sbr})
             else:
