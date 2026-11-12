@@ -2,9 +2,9 @@
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent, type TouchEvent } from "react";
 import Link from "next/link";
 import { useDraggable } from "@dnd-kit/core";
-import { ERGEBNIS_LABEL, STATUS_LABEL, tagDe, type Status } from "@/lib/bewerbung";
+import { ERGEBNIS_LABEL, tagDe, type Status } from "@/lib/bewerbung";
 import { firmenFarbe } from "@/lib/farbe";
-import { rundePatch, zurueckZuGemerkt } from "@/lib/zug";
+import { rundePatch } from "@/lib/zug";
 import { BOARD_SPALTEN, naechsteSpalte, type Karte } from "@/lib/tracker-karte";
 
 const REIHENFOLGE = [...BOARD_SPALTEN, "abgeschlossen" as const].map((id, left) => ({ id, left }));
@@ -96,16 +96,6 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
               aria-label={karte.kommentar ? `Kommentar ändern: ${karte.kommentar}` : `Kommentar zu ${firma} hinzufügen`}>
               {karte.kommentar || "+ Kommentar"}
             </button>)}
-        {/* B7 (unten, damit der Firmenname im Kopf Platz hat): Status-Auswahl im ⋯-Menü statt immer sichtbar (Karten halb so hoch); bleibt für Handy und Bildschirmleser erreichbar */}
-          <details className="menue karte-menue">
-            <summary aria-label={`Status von ${firma} ändern`}><span aria-hidden="true">⋯</span></summary>
-            <label className="klein karte-status">Status
-              <select value={karte.status} onChange={(e) => { (e.currentTarget.closest("details") as HTMLDetailsElement).open = false; aktionen.status(karte, e.currentTarget.value as Status); }}>
-                {BOARD_SPALTEN.map((s) => <option key={s} value={s} disabled={zurueckZuGemerkt(karte.status, s)}>{STATUS_LABEL[s]}</option>)}
-                <option value="abgeschlossen">Archiv…</option>
-              </select>
-            </label>
-          </details>
       </div>
       {ohneSpalten && <Link className="klein" href={`/bewerbung/${karte.id}`} draggable={false}>Bewerbung öffnen</Link>}
     </article>

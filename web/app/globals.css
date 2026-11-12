@@ -337,13 +337,8 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 .kanbankarte > * + * { margin-top: var(--space-xs); }
 .kanbankarte h3 { font-size: var(--text-md); min-width: 0; overflow-wrap: break-word; flex: 1; } /* B8: erst an Leerzeichen umbrechen, Wörter nur wenn nötig */
 .karte-kopf { display: flex; align-items: center; gap: var(--space-xs); }
-/* B7: ⋯-Menü der Karte; die Auswahl klappt als kleine Fläche unter dem Knopf auf */
 .karte-fuss { display: flex; align-items: center; gap: var(--space-2xs); }
 .karte-fuss > .kommentar, .karte-fuss > .kommentar-feld { flex: 1; min-width: 0; }
-.karte-menue { position: relative; margin-left: auto; }
-.karte-menue summary { min-width: 2rem; min-height: 2rem; list-style: none; }
-.karte-menue summary::-webkit-details-marker { display: none; }
-.karte-menue[open] > .karte-status { position: absolute; z-index: 2; right: 0; top: 100%; min-width: 12rem; padding: var(--space-xs); background: var(--karte-flaeche); border: var(--karte-rand); border-radius: var(--radius-control); box-shadow: var(--karte-schatten-hover); }
 .firmenlogo { flex: 0 0 24px; width: 24px; height: 24px; border-radius: var(--radius-mark); object-fit: contain; }
 .firmenlogo-kreis { display: inline-grid; place-items: center; border-radius: 50%; font-size: var(--text-xs); font-weight: var(--weight-strong); color: var(--color-accent-ink); background: color-mix(in oklch, var(--firma) var(--firma-anteil), var(--color-ink)); }
 .griff { flex: 0 0 auto; min-width: 2rem; min-height: 2rem; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--color-muted); cursor: grab; transition: background-color var(--uebergang), color var(--uebergang); }
@@ -357,7 +352,6 @@ main.seite:has(> .kanban-bereich) { max-width: none; }
 .kommentar { display: block; width: 100%; min-height: 2rem; /* A9: Trefffläche */ padding: var(--space-3xs) var(--space-2xs); border: 0; border-radius: var(--radius-mark); background: transparent; color: inherit; font: inherit; font-size: var(--text-sm); text-align: left; cursor: text; transition: background-color var(--uebergang); }
 .kommentar:hover { background: var(--color-paper-2); }
 .kommentar-feld { width: 100%; font-size: var(--text-sm); }
-.karte-status { display: grid; gap: var(--space-3xs); }
 .board-meldungen { position: fixed; z-index: var(--z-meldung); left: 50%; bottom: var(--space-lg); transform: translateX(-50%); display: grid; gap: var(--space-xs); width: min(32rem, calc(100% - 2 * var(--space-md))); }
 .toast { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); box-shadow: var(--karte-schatten-hover); animation: karte-ankunft var(--dur-short) ease-out; }
 .archiv-dialog { max-width: 24rem; border: var(--karte-rand); color: var(--color-ink); }
