@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { aktuellerNutzer } from "@/lib/nutzer";
 import { firmenFarbe } from "@/lib/farbe";
 import { datumDe } from "@/lib/bewerbung";
 import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
@@ -32,7 +33,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   // Facetten zuerst: ohne Migration 005 fehlt "land", dann wird ein ?land= ignoriert statt die Abfrage zu sprengen.
   const fac = await sb.rpc("facetten"); // fehlt die Funktion noch (002_facetten.sql), gibt es Filter ohne Zahlen
   const fa: Facetten = fac.error ? {} : (fac.data ?? {});
-  const f = landNurMitFacette(roh, !!fa.land);
+  const nutzer = await aktuellerNutzer();
+  // Besucher ohne Konto dürfen den Anzeigentext nicht lesen (Migration 007): Suche und Ausschluss nur im Titel.
+  const f = { ...landNurMitFacette(roh, !!fa.land), ...(nutzer ? {} : { volltext: false }) };
   const [ergebnis, lauf, erster] = await Promise.all([
     stellenAbfrage(sb, f),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
@@ -52,12 +55,12 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const status = new Map<string, { status: string; id: string }>();
   const steckbriefe = new Map<string, unknown>();
   // Steckbrief-Spalte und Felder-Tabelle gibt es erst nach Migration 005: Fehler ergibt leeren Steckbrief bzw. Standardfelder.
-  const felderZeile = await sb.from("listen_felder").select("felder").maybeSingle();
+  const felderZeile = nutzer ? await sb.from("listen_felder").select("felder").maybeSingle() : { data: null, error: null };
   const felder = waehleFelder(felderZeile.error ? null : felderZeile.data?.felder);
   if (jobs.length) {
     const ids = jobs.map((j) => j.id);
     const [apps, sbr] = await Promise.all([
-      sb.from("applications").select("id,job_id,status").in("job_id", ids),
+      nutzer ? sb.from("applications").select("id,job_id,status").in("job_id", ids) : { data: [] },
       sb.from("jobs").select("id,steckbrief").in("id", ids),
     ]);
     for (const a of apps.data ?? []) status.set(a.job_id, { status: a.status, id: a.id });
@@ -92,12 +95,14 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 <label>Stellen ohne diese Wörter
                   <input type="search" name="ohne" defaultValue={f.ohne} placeholder="z. B. Praktikum, Sales…" />
                 </label>
-                <p className="gedaempft klein">Mehrere durch Komma trennen. Gilt für den Titel, mit Häkchen unten auch für den Anzeigentext. Enter oder „Suchen“ wendet an.</p>
+                <p className="gedaempft klein">Mehrere durch Komma trennen. Gilt für den Titel{nutzer && ", mit Häkchen unten auch für den Anzeigentext"}. Enter oder „Suchen“ wendet an.</p>
               </details>
-              <label className="option">
-                <input type="checkbox" name="volltext" value="1" defaultChecked={f.volltext} />
-                <span>Auch im Anzeigentext suchen</span>
-              </label>
+              {nutzer && (
+                <label className="option">
+                  <input type="checkbox" name="volltext" value="1" defaultChecked={f.volltext} />
+                  <span>Auch im Anzeigentext suchen</span>
+                </label>
+              )}
               <label>Sortieren nach
                 <select key={f.sort} name="sort" defaultValue={f.sort}>
                   <option value="neu">Online seit (neueste zuerst)</option>
@@ -175,7 +180,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       </ul>
                     )}
                   </div>
-                  {st === "gemerkt" ? (
+                  {!nutzer ? (
+                    <Link className="knopf knopf-rand knopf-schmal" href="/login">Anmelden zum Merken</Link>
+                  ) : st === "gemerkt" ? (
                     <form action={entmerken.bind(null, j.id)}>
                       <SendeKnopf text="Gemerkt ✓" klasse="knopf knopf-zustand knopf-schmal ist-gemerkt" gedrueckt title="Klicken, um nicht mehr zu merken" />
                     </form>

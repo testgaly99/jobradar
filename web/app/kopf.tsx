@@ -12,7 +12,18 @@ async function abmelden() {
 
 export default async function Kopf() {
   const nutzer = await aktuellerNutzer();
-  if (!nutzer) return null; // Login-Seiten haben keine Navigation
+  if (!nutzer) {
+    // Besucher ohne Konto: nur die öffentliche Stellenliste und der Weg zur Anmeldung.
+    return (
+      <header className="kopf">
+        <Link href="/stellen" className="logo">Jobradar</Link>
+        <nav aria-label="Hauptmenü" className="nav">
+          <Link href="/stellen">Stellen</Link>
+          <Link href="/login">Anmelden</Link>
+        </nav>
+      </header>
+    );
+  }
   return (
     <header className="kopf">
       <Link href="/stellen" className="logo">Jobradar</Link>
