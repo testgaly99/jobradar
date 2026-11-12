@@ -10,6 +10,7 @@ import {
 import Abschnitte from "../../abschnitte";
 import { leseAbschnitte } from "@/lib/anzeige";
 import { zurueckZuGemerkt } from "@/lib/zug";
+import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
 import { DruckKnopf, LoeschForm, SendeKnopf } from "@/app/bewerbungen/knoepfe";
 import Ungespeichert from "./ungespeichert";
 
@@ -36,11 +37,12 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   const sb = await createClient();
   const { data: a } = await sb.from("applications").select("*").eq("id", id).maybeSingle();
   if (!a) notFound();
-  const [ev, pe, iv, dok] = await Promise.all([
+  const [ev, pe, iv, dok, weitere] = await Promise.all([
     sb.from("application_events").select("id,datum,alter_status,neuer_status,notiz").eq("application_id", id).order("datum", { ascending: false }),
     sb.from("contacts").select("*").eq("application_id", id).order("name"),
     sb.from("interviews").select("*").eq("application_id", id).order("datum", { ascending: false }),
     sb.from("documents").select("id,name,art,version_datum").order("version_datum", { ascending: false }),
+    bewerbungenBei(sb, a.firma as string | null, id),
   ]);
   const row = a as Row;
   const events = (ev.data ?? []) as Ereignis[];
@@ -80,6 +82,9 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         {link && <a href={link} target="_blank" rel="noopener noreferrer">Anzeige öffnen</a>}
       </p>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+      {weitere > 0 && (
+        <p className="meldung hinweis kein-druck">Bei {v(row.firma)} hast du dich noch {weitere}× beworben. <Link href={bewerbungenLink(v(row.firma))}>Alle ansehen</Link></p>
+      )}
       {blick.length > 0 && (
         <section className="steckbrief karte kein-druck" aria-labelledby="blick-titel">
           <h2 id="blick-titel">Auf einen Blick</h2>

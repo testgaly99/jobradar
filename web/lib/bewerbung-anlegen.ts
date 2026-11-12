@@ -1,6 +1,6 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { beworbenPatch } from "./bewerbung";
+import { beworbenPatch, escapeLike } from "./bewerbung";
 
 export type JobZeile = { id: string; unternehmen: string | null; titel: string | null; url: string | null; ort: string | null; arbeitsmodell: string | null; text: string | null; abschnitte?: unknown };
 
@@ -35,3 +35,14 @@ export async function aufBeworben(sb: SupabaseClient, id: string, heute: string)
   if (!Object.keys(patch).length) return true;
   return !(await sb.from("applications").update(patch).eq("id", id)).error;
 }
+
+// Wie oft hat sich der Nutzer bei dieser Firma beworben (ohne "gemerkt", Archiv zählt mit)? ohneId: die gerade offene Bewerbung.
+// shortcut: Vergleich über den Firmennamen (Groß/klein egal); verschieden geschriebene Namen zählen getrennt, bis Firmen verknüpft sind (Phase 4).
+export async function bewerbungenBei(sb: SupabaseClient, firma: string | null, ohneId?: string): Promise<number> {
+  if (!firma?.trim()) return 0;
+  let q = sb.from("applications").select("id", { count: "exact", head: true }).ilike("firma", escapeLike(firma.trim())).neq("status", "gemerkt");
+  if (ohneId) q = q.neq("id", ohneId);
+  return (await q).count ?? 0;
+}
+
+export const bewerbungenLink = (firma: string) => `/bewerbungen?firma=${encodeURIComponent(firma.trim())}&archiv=1`;
