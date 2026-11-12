@@ -49,7 +49,6 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const letzterLauf: string | null = lauf.data?.datum ?? null;
   const veraltet = letzterLauf !== null && letzterLauf < tagePlus(heuteLokal(), -2);
   const jetzt = new Date();
-  const hatZahlen = !fac.error;
   const seiten = Math.max(1, Math.ceil(gesamt / PRO_SEITE));
   const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.ohne ? 1 : 0) + (f.seit ? 1 : 0);
   // Eine Abfrage für alle angezeigten Stellen: welche sind schon gemerkt oder beworben? (RLS liefert nur eigene Zeilen)
@@ -130,7 +129,6 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               <div className="filteraktionen">
                 <Link className="knopf knopf-rand" href="/stellen">Filter zurücksetzen</Link>
               </div>
-              {hatZahlen && <p className="gedaempft klein">Anzahl gesamt, nicht nach aktuellem Filter.</p>}
               {GRUPPEN.map((g) => {
                 const werte = fa[g] ?? {};
                 // Gewählte Werte bleiben sichtbar, auch wenn sie in den Zahlen fehlen
@@ -145,7 +143,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       {namen.map((n) => (
                         <label key={n} className="option">
                           <input type="checkbox" name={g} value={n} defaultChecked={f[g].includes(n)} />
-                          <span>{g === "level" ? levelText(n) : g === "groesse" ? n + " Mitarbeitende" : n}{werte[n] !== undefined && ` (${werte[n]})`}</span>
+                          <span>{g === "level" ? levelText(n) : g === "groesse" ? n + " Mitarbeitende" : n}</span>
                         </label>
                       ))}
                     </div>
