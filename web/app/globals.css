@@ -276,7 +276,8 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
 .seiten .knopf { width: auto; }
 
 /* Unternavigation als Reiter: Zustand über Linie und Farbe, nie gefüllt */
-.unternav { display: flex; gap: var(--space-2xs); overflow-x: auto; border-bottom: var(--karte-rand); }
+/* Umbrechen statt Scrollen: overflow-x würde wegen des -1px-Überstands der Reiter einen senkrechten Scroller zeigen */
+.unternav { display: flex; flex-wrap: wrap; gap: var(--space-2xs); border-bottom: var(--karte-rand); }
 .unternav a {
   display: inline-flex;
   align-items: center;
@@ -290,6 +291,7 @@ fieldset.gruppe legend { padding: 0 var(--space-xs) 0 0; font-weight: var(--weig
   white-space: nowrap;
 }
 .unternav a:hover { color: var(--color-ink); }
+@media (max-width: 40rem) { .unternav a { padding-inline: var(--space-xs); } }
 .unternav a[aria-current="page"] { color: var(--color-ink); border-bottom-color: var(--color-accent); }
 
 /* Bewerbungen: Filter und Tabelle */
