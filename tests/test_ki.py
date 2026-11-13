@@ -162,15 +162,16 @@ def test_waehle_probe_mischt():
     assert p == waehle_probe(list(reversed(stellen)))
 
 
-def test_waehle_probe_versatz_andere_stichprobe_gleiche_mischung():
+def test_waehle_probe_andere_stichprobe_gleiche_mischung():
     from scraper.ki_probe import waehle_probe
     stellen = _fake_stellen()
-    a, b = waehle_probe(stellen), waehle_probe(stellen, versatz=30)
+    a, b = waehle_probe(stellen), waehle_probe(stellen, stichprobe=1)
     assert len(b) == 20 and len({s["unternehmen"] for s in b}) >= 5
     assert sum(s["text"].count(" the ") >= 5 for s in b) >= 4
     for wort in ("Werkstudent", "Assistenz", "Sales"):
         assert any(wort in s["titel"] for s in b)
     assert len({s["id"] for s in a} & {s["id"] for s in b}) <= 8
+    assert b == waehle_probe(list(reversed(stellen)), stichprobe=1)
 
 
 def _stelle(i, titel="T"):

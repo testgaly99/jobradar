@@ -1,5 +1,6 @@
 """Probe: 20 gemischte offene Stellen an Groq schicken und die unveraenderten Antworten als HTML-Seite schreiben.
-Nur lesend (keine Schreibzugriffe auf die Datenbank). Aufruf: py -m scraper.ki_probe <ausgabe.html> [--versatz N]"""
+Nur lesend (keine Schreibzugriffe auf die Datenbank). Aufruf: py -m scraper.ki_probe <ausgabe.html> [--stichprobe N]"""
+import hashlib
 import html
 import json
 import sys
@@ -18,13 +19,12 @@ def _englisch(s):
     return (s.get("text") or "").count(" the ") >= 5
 
 
-def waehle_probe(stellen: list[dict], n: int = 20, versatz: int = 0) -> list[dict]:
+def waehle_probe(stellen: list[dict], n: int = 20, stichprobe: int = 0) -> list[dict]:
     """Deterministische Mischung: je Grenzfall-Titel eine, mind. 4 englische, Rest reihum ueber die Firmen.
-    `versatz` dreht die sortierte Liste vorher, damit eine andere Stichprobe mit denselben Regeln entsteht."""
-    alle = sorted(stellen, key=lambda s: str(s["id"]))
-    if alle:
-        v = versatz % len(alle)
-        alle = alle[v:] + alle[:v]
+    `stichprobe` > 0 ordnet die Stellen vorher per Pruefsumme neu, damit eine andere Auswahl mit denselben Regeln entsteht
+    (ein blosses Verschieben aendert kaum etwas, weil die IDs je Firma zusammenliegen)."""
+    alle = sorted(stellen, key=lambda s: str(s["id"]) if not stichprobe
+                  else hashlib.md5(f'{stichprobe}:{s["id"]}'.encode()).hexdigest())
     gew = {}
 
     def nimm(s):
@@ -128,5 +128,5 @@ def probe(stellen, ausgabe, post=requests.post, schlaf=time.sleep):
 
 
 if __name__ == "__main__":
-    versatz = int(sys.argv[sys.argv.index("--versatz") + 1]) if "--versatz" in sys.argv else 0
-    probe(waehle_probe(_lade_offene(), versatz=versatz), sys.argv[1])
+    nr = int(sys.argv[sys.argv.index("--stichprobe") + 1]) if "--stichprobe" in sys.argv else 0
+    probe(waehle_probe(_lade_offene(), stichprobe=nr), sys.argv[1])
