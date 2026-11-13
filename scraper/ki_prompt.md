@@ -5,11 +5,11 @@ Regeln:
 - Nur was in der Anzeige steht. Nichts erfinden. Nie einen Ort oder eine Stadt, in keinem Feld.
 - sprache: Sprache des Fließtexts (nicht des Titels). ALLE Texte in dieser Sprache: englische Anzeige = englische Texte. Nie übersetzen.
 - aufgaben: fachliche Aufgaben aus dem Arbeitsalltag. Nichts Banales wie präsentieren, Termine vereinbaren, mit Kunden sprechen, Teamarbeit. Kein Rahmen.
-- rahmen: kurz, nur diese Arten, wenn genannt (auch im Profil): Befristung, Reisen, Sicherheitsüberprüfung, Büro-Tage/Präsenz, Gehalt. Nie Vollzeit, Urlaubstage, Unbefristet, Ort. Sonst leer.
+- rahmen: kurz, nur diese Arten, wenn genannt (auch im Profil): befristet, Reisen, Sicherheitsüberprüfung, Büro-Tage/Präsenz, Gehalt. Nie Vollzeit, Urlaubstage, unbefristet, Flexibilität, Ort. Sonst leer.
 - abschluss: geforderter Abschluss kurz, auch Berufsausbildung (vocational training), sonst null.
 - erfahrung: JEDE geforderte Berufserfahrung in einer Rolle oder einem Fachgebiet, mit Jahren falls genannt, auch ohne Jahre (z. B. "Have delivered…", "Demonstrated experience…", "Berufserfahrung im Vertrieb"). Mehrere kurz zusammenfassen. null nur, wenn keine gefordert oder nur wünschenswert.
 - muss: bis zu 3 weitere fachliche PFLICHT-Kenntnisse (Wissen, Werkzeuge, Führerschein). Nie hinein: alles mit nice to have, ideally, a plus, preferred, wünschenswert, von Vorteil, idealerweise; Sprachkenntnisse; Abschluss; Rollen-Erfahrung; Rahmen; Soft Skills und Charakter (Auftreten, Verhandlung, negotiation, Kommunikation, Teamgeist, Arbeitsweise, Mindset). Lieber leer.
-- benefits: höchstens 2 herausragende Vorteile, z. B. 4-Tage-Woche, Sabbatical, Mitarbeiterbeteiligung, deutlich mehr als 30 Urlaubstage. Nie Standard wie Obst, Laptop, Team-Events, Weiterbildung, flexible Zeiten, Altersvorsorge, Jobrad, "wettbewerbsfähiges Gehalt". Lieber leer.
+- benefits: höchstens 2, NUR diese Arten: 4-Tage-Woche, Sabbatical, Mitarbeiterbeteiligung (equity, VSOP), mehr als 30 Urlaubstage, außergewöhnlich lange bezahlte Elternzeit. Alles andere nie (Obst, Laptop, Events, Weiterbildung, Flexibilität, Altersvorsorge, Bike-Leasing, Umzugshilfe, "wettbewerbsfähiges Gehalt"). Sonst leer.
 - studium: "ja", sobald die Anzeige ein Studium/Bachelor/Master/degree nennt, auch mit "oder vergleichbare Qualifikation" oder "oder Ausbildung". "unklar", wenn die Anzeige nichts zum Abschluss sagt und die Tätigkeit anspruchsvoll ist. "nein" nur, wenn ausschließlich eine Ausbildung oder kein Abschluss verlangt wird oder die Tätigkeit einfach ist. Keine Angabe ist NIE "nein".
 - taetigkeit: "anspruchsvoll" = qualifizierte Facharbeit (z. B. Entwicklung, Beratung, Analyse, Vertrieb komplexer Produkte). "einfach" = z. B. Lager, Empfang, Kasse, einfache Handarbeit.
 
