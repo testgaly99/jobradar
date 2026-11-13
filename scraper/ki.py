@@ -18,7 +18,7 @@ VERSUCHE = 5
 PROMPTS = {m: (Path(__file__).parent / datei).read_text(encoding="utf-8")
            for m, datei in ((GROSS, "ki_prompt.md"), (QWEN, "ki_prompt_qwen.md"))}
 # qwen lehnt bei Groq (Free Tier) Anfragen ab, deren erwartete Ausgabe ueber 1000 Tokens/Minute liegt
-MAX_AUSGABE = {QWEN: 900}
+MAX_AUSGABE = {QWEN: 600}  # ohne Denken reichen ~250-400 Tokens; die Grenze zaehlt voll gegen das Minutenlimit
 
 
 class Erschoepft(Exception):
@@ -107,7 +107,9 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
     nachrichten = [{"role": "user", "content": text[:MAX_ZEICHEN]}] if isinstance(text, str) else text
     body = {"model": modell, "messages": [{"role": "system", "content": PROMPTS[modell]}, *nachrichten],
             "response_format": {"type": "json_object"}, "temperature": 0.2,
-            "max_completion_tokens": MAX_AUSGABE.get(modell, 1500), "reasoning_effort": "low"}
+            "max_completion_tokens": MAX_AUSGABE.get(modell, 1500)}
+    if modell.startswith("openai/gpt-oss"):
+        body["reasoning_effort"] = "low"  # qwen denkt ohne die Angabe nicht mit; mit ihr sprengt das Denken die Ausgabegrenze
     kopf = {"Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"}
     pausen = [5, 15, 30]  # Wartezeiten bei Verbindungsabbruch/Timeout/5xx, danach GroqWeg
     for _ in range(VERSUCHE):

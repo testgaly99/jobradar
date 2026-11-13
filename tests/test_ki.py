@@ -367,7 +367,8 @@ def test_anfrage_ausgabegrenze_je_modell():
     post = poster(Antwort(content="a"), Antwort(content="b"))
     ki.anfrage("Text", ki.GROSS, post=post, schlaf=lambda s: None)
     ki.anfrage("Text", ki.QWEN, post=post, schlaf=lambda s: None)
-    assert [a["json"]["max_completion_tokens"] for a in post.aufrufe] == [1500, 900]
+    assert [a["json"]["max_completion_tokens"] for a in post.aufrufe] == [1500, 600]
+    assert [a["json"].get("reasoning_effort") for a in post.aufrufe] == ["low", None]
 
 
 def _fehler400(code, **mehr):
