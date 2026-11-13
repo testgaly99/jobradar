@@ -52,6 +52,8 @@ Gehen Punkt 5 oben vor, wo sie widersprechen.
 
 11. **Jedes Modell hat seine eigene Anleitung (Nutzer 2026-11-13):** `ki_prompt.md` für `gpt-oss-120b`, `ki_prompt_qwen.md` für das Backup `qwen/qwen3.8-27b`; eine Anleitung wird nur für ihr Modell optimiert und geprüft. Ein Modell ohne eigene, bestandene Anleitung wird nicht benutzt.
 
+12. **Darstellung festgelegt (Klick-Entwurf, Variante C „Mix“, Nutzer 2026-11-14):** Kasten „Auf einen Blick“ mit Stern-Symbol, Hinweis „KI-Zusammenfassung“ und Pfeil zum Einklappen; darunter eine Reihe Marken: grau für `rahmen`, grün mit ★ für `benefits`. Darunter zwei Spalten (etwa 3:2): links „Das machst du“ (Aufzählungspunkte, `aufgaben`), rechts „Das bringst du mit“ (Häkchen-Liste in fester Reihenfolge: `abschluss`, `erfahrung`, dann `muss`). Am Handy untereinander. Entwurf: https://claude.ai/artifact/3quaNXAnSNJGQzYx43pBJS (Brett „C · Mix“).
+
 ## Nicht-Ziele
 CV-Abgleich, Filter nach Studium, Zusammenfassung für Gäste, Löschen von „nein“-Stellen, Prestige-Ausnahme anwenden, Zusammenfassung in der Stellenliste.
 
