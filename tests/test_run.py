@@ -157,9 +157,11 @@ def test_lauf_ohne_key_blendet_trotzdem_aus(aufbau, monkeypatch):
 def test_lauf_mit_key_wertet_aus(aufbau, monkeypatch):
     d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: []})
     monkeypatch.setenv("GROQ_API_KEY", "k")
-    monkeypatch.setattr(run.ki, "auswerten", lambda heute: {"ausgewertet": 2, "fehler": 0, "wartend": 5})
+    fristen = []
+    monkeypatch.setattr(run.ki, "auswerten", lambda heute, **k: fristen.append(k.get("frist_s")) or {"ausgewertet": 2, "fehler": 0, "wartend": 5})
     monkeypatch.setattr(run.ki, "nachfuellen", lambda: 1)
     ki_ = run.lauf("2026-11-07", d)["ki"]
+    assert fristen == [3600]  # Nacht-Frist: 60 Min ab KI-Start, Scraping braucht bis ~80 von 180 Min
     assert ki_ == {"ausgewertet": 2, "fehler": 0, "wartend": 5, "nachgefuellt": 1, "ausgeblendet": 0}
     assert "ausgewertet: 2" in (d / "bericht.md").read_text(encoding="utf-8")
 

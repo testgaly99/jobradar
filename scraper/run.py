@@ -102,7 +102,7 @@ def _ki(heute):
         if not os.environ.get("GROQ_API_KEY"):
             erg["hinweis"] = "GROQ_API_KEY fehlt, keine KI-Auswertung"
         else:
-            for name, schritt in (("auswerten", lambda: erg.update(ki.auswerten(heute))),
+            for name, schritt in (("auswerten", lambda: erg.update(ki.auswerten(heute, frist_s=3600))),
                                   ("nachfuellen", lambda: erg.update(nachgefuellt=ki.nachfuellen()))):
                 try:
                     schritt()

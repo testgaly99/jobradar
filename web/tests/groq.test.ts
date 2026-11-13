@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { erkenneFirmaTitel, PROMPT_FIRMA } from "../lib/groq.ts";
+import { erkenneFirmaTitel, PROMPT_FIRMA } from "../lib/groq-kern.ts";
 
 const antwort = (inhalt: unknown, status = 200) =>
   new Response(JSON.stringify({ choices: [{ message: { content: typeof inhalt === "string" ? inhalt : JSON.stringify(inhalt) } }] }), { status });

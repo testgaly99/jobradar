@@ -24,7 +24,7 @@ export default async function Woche() {
                 <Link href={`/bewerbung/${e.id}`}>{e.firma || "(ohne Firma)"}</Link>
                 <span>{e.text}{e.ueberfaellig && " (überfällig)"}</span>
                 {e.art === "schritt" && (
-                  <ErledigtForm id={e.id} label={`Erledigt: ${e.text} bei ${e.firma}`} />
+                  <ErledigtForm id={e.id} label={`Erledigt: ${e.text} bei ${e.firma || "(ohne Firma)"}`} />
                 )}
               </li>
             ))}
