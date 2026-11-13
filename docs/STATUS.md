@@ -50,6 +50,8 @@ Stand: 2026-11-11
 
 22. ~~**GitHub-Werkzeug anmelden**~~ **Erledigt 2026-11-13**, geprüft; (`gh auth login`, Anmeldung im Browser; Checkliste Aufgabe 17). Warum: Claude kann Lauf-Protokolle selbst lesen. Optional danach: Vercel nur lesend, erst nach Prüfung der aktuellen Vercel-Doku durch Claude.
 
+23. **Migration `009_ki.sql` ausführen** (Ordner `jobradar-entwurf`, Supabase SQL Editor, wie 008). Warum: Felder für die Groq-Zusammenfassungen. Erfolg: „Success. No rows returned“; dann Claude „009 ist drin“ sagen.
+
 ## Offene To-dos für spätere Phasen
 - **Phase 4, Mistral prüfen (Wunsch Nutzer 2026-11-13), als Alternative oder Ergänzung zu Groq:**
   1. *Bedingungen an der Quelle prüfen* (offizielle Mistral-Doku und Nutzungsbedingungen, kein Vorwissen): Gratis-Tarif „Experiment“ noch vorhanden? Echte Grenzen (Anfragen/Sekunde, Tokens/Minute und /Monat) aus dem eigenen Konto ablesen. Training mit Eingaben, Speicherdauer, Serverstandort, erlaubte Nutzung (automatisiert, privat, nicht-kommerziell), Pausierung bei Inaktivität, Ablauf von Schlüsseln (CLAUDE.md 3.3).
