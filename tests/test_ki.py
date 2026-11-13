@@ -5,8 +5,9 @@ import requests
 
 from scraper import ki
 
-GUT = {"aufgaben": ["a", "b", "c"], "abschluss": "Studium Informatik o. ä.", "erfahrung": None, "muss": ["x"],
-       "studium": "ja", "taetigkeit": "anspruchsvoll", "sprache": "de"}
+GUT = {"aufgaben": ["a", "b", "c"], "rahmen": ["Befristet auf 2 Jahre"], "abschluss": "Studium Informatik o. ä.",
+       "erfahrung": None, "muss": ["x"], "benefits": ["4-Tage-Woche"], "studium": "ja", "taetigkeit": "anspruchsvoll",
+       "sprache": "de"}
 
 
 class Antwort:
@@ -42,6 +43,9 @@ def test_pruefe_gueltig_und_trimmt():
     assert r["aufgaben"] == ["a", "b", "c"] and r["muss"] == ["x"]
     assert r["abschluss"] == "Studium Informatik o. ä." and r["erfahrung"] == "3+ Jahre B2B-Vertrieb"
     assert ki.pruefe({**GUT, "abschluss": None, "muss": []})["abschluss"] is None
+    r = ki.pruefe({**GUT, "rahmen": [" Reisen ", "Sicherheitsüberprüfung"], "benefits": []})
+    assert r["rahmen"] == ["Reisen", "Sicherheitsüberprüfung"] and r["benefits"] == []
+    assert list(r) == list(ki.SCHLUESSEL) and len(ki.SCHLUESSEL) == 9
 
 
 @pytest.mark.parametrize("kaputt", [
@@ -49,7 +53,9 @@ def test_pruefe_gueltig_und_trimmt():
     {**GUT, "studium": "vielleicht"}, {**GUT, "taetigkeit": "mittel"}, {**GUT, "sprache": "fr"},
     {**GUT, "aufgaben": ["a", "", "c"]}, {k: v for k, v in GUT.items() if k != "muss"},
     {k: v for k, v in GUT.items() if k != "erfahrung"}, {**GUT, "abschluss": ""}, {**GUT, "erfahrung": 3},
-    {**GUT, "extra": "x"}, ["kein", "objekt"],
+    {**GUT, "extra": "x"}, ["kein", "objekt"], {**GUT, "rahmen": ["r"] * 5}, {**GUT, "benefits": ["b"] * 3},
+    {**GUT, "rahmen": "Reisen"}, {**GUT, "benefits": [""]}, {k: v for k, v in GUT.items() if k != "rahmen"},
+    {k: v for k, v in GUT.items() if k != "benefits"},
 ])
 def test_pruefe_ungueltig(kaputt):
     with pytest.raises(ki.Ungueltig):
@@ -61,12 +67,58 @@ def test_pruefe_ungueltig(kaputt):
     ({**GUT, "muss": ["x"] * 4}, "muss hat 4 Einträge, erlaubt sind 0–3."),
     ({**GUT, "studium": "vielleicht"}, 'studium ist "vielleicht", erlaubt sind: "ja", "nein", "unklar".'),
     ({**GUT, "abschluss": ""}, "abschluss muss ein nicht-leerer Text oder null sein."),
+    ({**GUT, "rahmen": ["r"] * 5}, "rahmen hat 5 Einträge, erlaubt sind 0–4."),
+    ({**GUT, "benefits": ["b"] * 3}, "benefits hat 3 Einträge, erlaubt sind 0–2."),
+    ({**GUT, "benefits": None}, "benefits muss eine Liste aus nicht-leeren Texten sein."),
     ({**{k: v for k, v in GUT.items() if k != "erfahrung"}, "extra": 1}, "fehlend: erfahrung; überzählig: extra"),
 ])
 def test_pruefe_meldet_genau(kaputt, meldung):
     with pytest.raises(ki.Ungueltig) as e:
         ki.pruefe(kaputt)
     assert meldung in str(e.value)
+
+
+LANG = "x" * 450
+
+
+def test_kuerze_laesst_firma_und_recht_weg():
+    abschn = [{"titel": "Über uns", "punkte": ["Wir sind toll"]},
+              {"titel": "Deine Aufgaben", "punkte": ["Dashboards bauen", LANG]},
+              {"titel": "Dein Profil", "punkte": ["SQL"]},
+              {"titel": "Das bieten wir", "punkte": ["4-Tage-Woche"]},
+              {"titel": "Wer wir sind", "punkte": ["Firmenwerbung"]},
+              {"titel": "Datenschutz", "punkte": ["DSGVO"]},
+              {"titel": "Chancengleichheit", "punkte": ["Gleichbehandlung"]},
+              {"titel": "IMPRESSUM", "punkte": ["Anschrift"]},
+              {"titel": "Kontakt", "punkte": ["Frau Muster"]},
+              {"titel": "Unser Unternehmen", "punkte": ["Gegründet 1900"]},
+              {"titel": "Über die Stelle", "punkte": ["Rolle im Team"]},
+              {"titel": "Deine Rolle in unserem Unternehmen", "punkte": ["Prozesse verbessern"]}]
+    t = ki.kuerze_fuer_ki(abschn, "ganzer Text")
+    assert t.startswith("Deine Aufgaben:\n- Dashboards bauen\n- x")
+    assert "\n\nDein Profil:\n- SQL\n\nDas bieten wir:\n- 4-Tage-Woche" in t and "Über die Stelle:\n- Rolle im Team" in t
+    assert "- Prozesse verbessern" in t
+    for weg in ("toll", "Firmenwerbung", "DSGVO", "Gleichbehandlung", "Anschrift", "Muster", "1900", "ganzer Text"):
+        assert weg not in t
+
+
+def test_kuerze_englisch_und_about_firma():
+    abschn = [{"titel": "About Acme", "punkte": ["Acme is great"]}, {"titel": "About us", "punkte": ["us"]},
+              {"titel": "Who we are", "punkte": ["we"]}, {"titel": "About the role", "punkte": ["Build APIs", LANG]},
+              {"titel": "What you bring", "punkte": ["Go"]}, {"titel": "Equal Opportunity Employer", "punkte": ["eeo"]},
+              {"titel": "Privacy Notice", "punkte": ["gdpr"]}, {"titel": "Our Diversity Statement", "punkte": ["div"]},
+              {"titel": "Contact", "punkte": ["mail"]}, {"titel": "The Company", "punkte": ["co"]},
+              {"titel": "About you", "punkte": ["curious"]}]
+    t = ki.kuerze_fuer_ki(abschn, "voll")
+    assert "About the role:" in t and "What you bring:\n- Go" in t and "About you:\n- curious" in t
+    for weg in ("Acme", "About us", "Who we are", "eeo", "gdpr", "div", "mail", "- co", "voll"):
+        assert weg not in t
+
+
+@pytest.mark.parametrize("abschn", [None, [], [{"titel": "Aufgaben", "punkte": ["kurz"]}],
+                                    [{"titel": "Über uns", "punkte": [LANG]}, {"titel": "Aufgaben", "punkte": ["a"]}]])
+def test_kuerze_faellt_auf_ganzen_text_zurueck(abschn):
+    assert ki.kuerze_fuer_ki(abschn, "ganzer Text") == "ganzer Text"
 
 
 def test_frage_groq_gueltig():
@@ -77,7 +129,7 @@ def test_frage_groq_gueltig():
 def test_frage_groq_wartet_bei_minutengrenze():
     schlaefe = []
     post = poster(Antwort(429, header={"retry-after": "2"}, text="rate limit"), Antwort(content=json.dumps(GUT)))
-    ki.frage_groq("Text", ki.KLEIN, post=post, schlaf=schlaefe.append)
+    ki.frage_groq("Text", ki.GROSS, post=post, schlaf=schlaefe.append)
     assert schlaefe == [2]
 
 
@@ -141,7 +193,7 @@ def test_anfrage_gibt_roh_und_modell():
 def test_anfrage_nach_fuenf_429_erschoepft():
     post = poster(*[Antwort(429, header={"retry-after": "1"}) for _ in range(5)])
     with pytest.raises(ki.Erschoepft):
-        ki.anfrage("Text", ki.KLEIN, post=post, schlaf=lambda s: None)
+        ki.anfrage("Text", ki.GROSS, post=post, schlaf=lambda s: None)
 
 
 def _fake_stellen():
@@ -189,6 +241,22 @@ def test_probe_html_unveraendert_und_ungueltig(tmp_path):
     assert len(zeilen) == 3 and "modell-A" in h and "modell-B" in h and "T&lt;b&gt;" in h
     assert "ungültig" in h and "kein &lt;json&gt; 2" in h and "Tageslimit" in h
     assert "<th>Abschluss</th>" in h and "<th>Erfahrung</th>" in h and "Studium Informatik o. ä." in h
+    assert "<th>Rahmen</th>" in h and "<th>Benefits</th>" in h
+    assert "<li>Befristet auf 2 Jahre</li>" in h and "<li>4-Tage-Woche</li>" in h
+
+
+def test_probe_sendet_gekuerzten_text(tmp_path):
+    from scraper.ki_probe import probe
+    abschn = [{"titel": "Über uns", "punkte": ["Werbung <toll>"]}, {"titel": "Aufgaben", "punkte": ["APIs & mehr", LANG]}]
+    stelle = {**_stelle(1), "text": "ganzer Text", "abschnitte": abschn}
+    post = poster(Antwort(content=json.dumps({**GUT, "rahmen": [" Reisen "], "benefits": []})))
+    out = tmp_path / "p.html"
+    probe([stelle], out, post=post, schlaf=lambda s: None)
+    gesendet = post.aufrufe[0]["json"]["messages"][1]["content"]
+    assert gesendet == ki.kuerze_fuer_ki(abschn, "ganzer Text") and "Werbung" not in gesendet
+    h = out.read_text(encoding="utf-8")
+    assert "An Groq gesendet" in h and "APIs &amp; mehr" in h and "Werbung" not in h and "ganzer Text" not in h
+    assert "<li> Reisen </li>" in h
 
 
 def test_probe_zeigt_roh_unnormalisiert(tmp_path):

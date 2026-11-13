@@ -1,6 +1,7 @@
 """Groq-Aufruf fuer die Stellen-Zusammenfassung. HTTP laeuft ueber das Argument `post`, damit Tests ihn ersetzen koennen."""
 import json
 import os
+import re
 import time
 from pathlib import Path
 
@@ -9,7 +10,6 @@ import requests
 from . import db
 
 GROSS = "openai/gpt-oss-120b"
-KLEIN = "openai/gpt-oss-20b"
 URL = "https://api.groq.com/openai/v1/chat/completions"
 MAX_ZEICHEN = 12000
 VERSUCHE = 5
@@ -32,7 +32,24 @@ class Ungueltig(Exception):
         self.roh = roh
 
 
-SCHLUESSEL = ("aufgaben", "abschluss", "erfahrung", "muss", "studium", "taetigkeit", "sprache")
+SCHLUESSEL = ("aufgaben", "rahmen", "abschluss", "erfahrung", "muss", "benefits", "studium", "taetigkeit", "sprache")
+MIN_GEKUERZT = 400
+
+# Ueberschriften mit Firmenwerbung oder Rechtstext; Teilwort-Treffer, Gross-/Kleinschreibung egal.
+_WEG = re.compile(r"über uns|wer wir sind|about us|who we are|^(das |unser |the |our )?(unternehmen|company)"
+                  r"|datenschutz|privacy|data protection"
+                  r"|chancengleich|gleichstellung|gleichbehandlung|equal opportunit|equal employment|diversity|vielfalt"
+                  r"|impressum|kontakt|contact")
+# "Über <Firma>" / "About <Company>" weg, aber "Über die Stelle", "About the role", "About you" bleiben.
+_UEBER_FIRMA = re.compile(r"(über|about)\s(?!.*\b(stelle|job|rolle|role|position|you|dich|ihnen|aufgabe|task|team))")
+
+
+def kuerze_fuer_ki(abschnitte: list | None, text: str) -> str:
+    """Nur die fuer die Zusammenfassung relevanten Abschnitte; zu wenig uebrig oder keine Abschnitte: ganzer Text."""
+    teile = [a["titel"] + ":\n" + "\n".join(f"- {p}" for p in a["punkte"]) for a in abschnitte or []
+             if not (_WEG.search(a["titel"].lower().strip()) or _UEBER_FIRMA.match(a["titel"].lower().strip()))]
+    kurz = "\n\n".join(teile)
+    return kurz if len(kurz) >= MIN_GEKUERZT else text
 
 
 # Die Meldungen gehen bei der Rueckfrage woertlich an Groq, daher kurz und konkret.
@@ -58,8 +75,9 @@ def pruefe(roh: dict) -> dict:
     fehlt, zuviel = [k for k in SCHLUESSEL if k not in roh], [k for k in roh if k not in SCHLUESSEL]
     if fehlt or zuviel:
         raise Ungueltig(f"Falsche Schlüssel (fehlend: {', '.join(fehlt) or '-'}; überzählig: {', '.join(zuviel) or '-'}).")
-    erg = {"aufgaben": _liste(roh, "aufgaben", 3, 5), "abschluss": _text(roh, "abschluss"),
-           "erfahrung": _text(roh, "erfahrung"), "muss": _liste(roh, "muss", 0, 3)}
+    erg = {"aufgaben": _liste(roh, "aufgaben", 3, 5), "rahmen": _liste(roh, "rahmen", 0, 4),
+           "abschluss": _text(roh, "abschluss"), "erfahrung": _text(roh, "erfahrung"),
+           "muss": _liste(roh, "muss", 0, 3), "benefits": _liste(roh, "benefits", 0, 2)}
     for name, erlaubt in (("studium", ("ja", "nein", "unklar")), ("taetigkeit", ("anspruchsvoll", "einfach")),
                           ("sprache", ("de", "en"))):
         if roh[name] not in erlaubt:

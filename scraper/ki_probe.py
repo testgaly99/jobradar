@@ -1,4 +1,4 @@
-"""Probe: 20 gemischte offene Stellen an Groq schicken und die unveraenderten Antworten als HTML-Seite schreiben.
+"""Probe: 20 gemischte offene Stellen (gekuerzt per ki.kuerze_fuer_ki) an Groq schicken und die unveraenderten Antworten als HTML-Seite schreiben.
 Nur lesend (keine Schreibzugriffe auf die Datenbank). Aufruf: py -m scraper.ki_probe <ausgabe.html> [--stichprobe N]"""
 import hashlib
 import html
@@ -50,7 +50,7 @@ def waehle_probe(stellen: list[dict], n: int = 20, stichprobe: int = 0) -> list[
 def _lade_offene():
     zeilen = []
     while True:
-        teil = db._req("GET", "jobs", params={"status": "eq.offen", "select": "id,unternehmen,titel,url,text",
+        teil = db._req("GET", "jobs", params={"status": "eq.offen", "select": "id,unternehmen,titel,url,text,abschnitte",
                                               "order": "id", "limit": db.SEITE, "offset": len(zeilen)})
         zeilen += teil
         if len(teil) < db.SEITE:
@@ -71,27 +71,27 @@ def _zeile(s, erg):
             f'<td>{e(s.get("unternehmen") or "")}</td>')
     antworten = erg["antworten"]
     if erg["fehler"]:
-        mitte = f'<td colspan="7"><b>Fehler:</b> {e(erg["fehler"])}</td>'
+        mitte = f'<td colspan="9"><b>Fehler:</b> {e(erg["fehler"])}</td>'
     elif erg["gueltig"]:
         f = erg["felder"]  # unveraendert aus Groqs letzter Antwort, nicht die normalisierte Fassung von pruefe
-        mitte = (f'<td>{_liste(f["aufgaben"])}</td><td>{_wert(f["abschluss"])}</td><td>{_wert(f["erfahrung"])}</td>'
-                 f'<td>{_liste(f["muss"])}</td><td>{e(f["studium"])}</td>'
-                 f'<td>{e(f["taetigkeit"])}</td><td>{e(f["sprache"])}</td>')
+        mitte = (f'<td>{_liste(f["aufgaben"])}</td><td>{_liste(f["rahmen"])}</td><td>{_wert(f["abschluss"])}</td>'
+                 f'<td>{_wert(f["erfahrung"])}</td><td>{_liste(f["muss"])}</td><td>{_liste(f["benefits"])}</td>'
+                 f'<td>{e(f["studium"])}</td><td>{e(f["taetigkeit"])}</td><td>{e(f["sprache"])}</td>')
     else:
-        mitte = f'<td colspan="7"><b>ungültig</b><pre>{e(antworten[-1][0] if antworten else "")}</pre></td>'
+        mitte = f'<td colspan="9"><b>ungültig</b><pre>{e(antworten[-1][0] if antworten else "")}</pre></td>'
     modell = e(antworten[-1][1]) if antworten else ""
     if len(antworten) > 1:
         modell += "<br><b>nach Rückfrage</b>"
     namen = ("Erste Antwort", "Nach Rückfrage") if len(antworten) > 1 else ("Rohantwort von Groq",)
     roh = "".join(f"<details><summary>{n}</summary><pre>{e(r)}</pre></details>" for n, (r, _) in zip(namen, antworten))
     ende = (f'<td>{modell}</td><td>{e(erg["zeit"])}</td>'
-            f'<td>{roh}<details><summary>Text</summary><pre>{e(s.get("text") or "")}</pre></details></td>')
+            f'<td>{roh}<details><summary>An Groq gesendet</summary><pre>{e(erg["gesendet"])}</pre></details></td>')
     return f"<tr>{kopf}{mitte}{ende}</tr>"
 
 
 def baue_html(zeilen) -> str:
-    kopf = "".join(f"<th>{h}</th>" for h in ("Titel", "Firma", "Aufgaben", "Abschluss", "Erfahrung", "Muss", "Studium",
-                                              "Tätigkeit", "Sprache", "Modell", "Zeitpunkt", "Original"))
+    kopf = "".join(f"<th>{h}</th>" for h in ("Titel", "Firma", "Aufgaben", "Rahmen", "Abschluss", "Erfahrung", "Muss",
+                                              "Benefits", "Studium", "Tätigkeit", "Sprache", "Modell", "Zeitpunkt", "Original"))
     return ('<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Groq-Probe</title>'
             '<style>:root{color-scheme:light dark}body{font:14px system-ui;margin:1rem}'
             'table{border-collapse:collapse}td,th{border:1px solid #8888;padding:.3rem;vertical-align:top;text-align:left}'
@@ -102,12 +102,13 @@ def baue_html(zeilen) -> str:
 def probe(stellen, ausgabe, post=requests.post, schlaf=time.sleep):
     zeilen = []
     for s in stellen:
-        erg = {"fehler": "", "gueltig": False, "antworten": [], "felder": None,
+        erg = {"fehler": "", "gueltig": False, "antworten": [], "felder": None, "gesendet": "",
                "zeit": datetime.now(timezone.utc).isoformat(timespec="seconds")}
         stopp = False
         try:
             try:
-                ki.frage_groq(s.get("text") or "", ki.GROSS, post=post, schlaf=schlaf, protokoll=erg["antworten"])
+                erg["gesendet"] = ki.kuerze_fuer_ki(s.get("abschnitte"), s.get("text") or "")
+                ki.frage_groq(erg["gesendet"], ki.GROSS, post=post, schlaf=schlaf, protokoll=erg["antworten"])
                 erg["felder"] = json.loads(erg["antworten"][-1][0])
                 erg["gueltig"] = True
             except ki.Ungueltig:
