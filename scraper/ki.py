@@ -130,7 +130,14 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
             schlaf(min(warte, 60))
             continue
         if r.status_code >= 400:
-            raise GroqWeg(f"HTTP {r.status_code}")
+            try:
+                fehler = r.json().get("error") or {}
+            except ValueError:
+                fehler = {}
+            # Groq verwirft Ausgaben, die kein JSON sind, mit 400; das ist eine ungueltige Antwort (Rueckfrage), kein Ausfall
+            if fehler.get("code") == "json_validate_failed":
+                return fehler.get("failed_generation", ""), modell
+            raise GroqWeg(f"HTTP {r.status_code} {fehler.get('code', '')}".strip())
         j = r.json()
         return j["choices"][0]["message"]["content"], j.get("model", modell)
     raise Erschoepft(modell)

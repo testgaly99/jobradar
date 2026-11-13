@@ -368,3 +368,22 @@ def test_anfrage_ausgabegrenze_je_modell():
     ki.anfrage("Text", ki.GROSS, post=post, schlaf=lambda s: None)
     ki.anfrage("Text", ki.QWEN, post=post, schlaf=lambda s: None)
     assert [a["json"]["max_completion_tokens"] for a in post.aufrufe] == [1500, 900]
+
+
+def _fehler400(code, **mehr):
+    a = Antwort(400)
+    a._body = {"error": {"message": "x", "code": code, **mehr}}
+    return a
+
+
+def test_json_validate_failed_fuehrt_zur_rueckfrage():
+    post = poster(_fehler400("json_validate_failed", failed_generation='{"kaputt": '), Antwort(content=json.dumps(GUT)))
+    protokoll = []
+    assert ki.frage_groq("Text", ki.QWEN, post=post, schlaf=lambda s: None, protokoll=protokoll)["sprache"] == "de"
+    assert protokoll[0] == ('{"kaputt": ', ki.QWEN)
+    assert post.aufrufe[1]["json"]["messages"][2] == {"role": "assistant", "content": '{"kaputt": '}
+
+
+def test_anderer_400_nennt_code():
+    with pytest.raises(ki.GroqWeg, match="HTTP 400 model_decommissioned"):
+        ki.anfrage("Text", ki.GROSS, post=poster(_fehler400("model_decommissioned")), schlaf=lambda s: None)
