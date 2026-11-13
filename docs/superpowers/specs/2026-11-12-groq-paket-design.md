@@ -46,6 +46,10 @@ Gehen Punkt 5 oben vor, wo sie widersprechen.
 5. **System-Prompt so kompakt wie möglich**, weil das Modell schwächer ist als Claude: kurze Regeln, ein Beispiel statt zwei, keine Wiederholungen.
 6. **Darstellung:** Aufgaben und Voraussetzungen (Abschluss, Erfahrung, Muss) **nebeneinander**, kompakt, einklappbar, modern nach aktuellen UI/UX-Vorbildern („sieht aus wie von einem Profi gebaut“). Vor dem Bau ein Klick-Entwurf zur Freigabe.
 
+8. **Nur gute Modelle (Nutzer 2026-11-13):** ausschließlich `openai/gpt-oss-120b`. Kein Überlauf auf `gpt-oss-20b` (zu schwach); ist das Tageskontingent erschöpft, folgt der Rest am nächsten Tag. Ein weiteres Modell nur nach eigener, bestandener Probe. Gilt auch für Teil C: ohne großes Modell wird die Bewerbung gespeichert und später nachgefüllt.
+9. **Nur relevante Teile der Anzeige senden (Nutzer 2026-11-13):** Abschnitte mit Firmenwerbung („Über uns“, „About us“) und Rechtstext (Datenschutz, Gleichstellung, Impressum) werden per Regel weggelassen; Aufgaben, Profil und Benefits gehen an Groq. Fallback auf den ganzen Text, wenn danach zu wenig übrig bleibt. Spart Kontingent.
+10. **Herausstechende Benefits:** neues Feld `benefits` (0–2), nur Ungewöhnliches (z. B. 4-Tage-Woche, Sabbatical, Mitarbeiterbeteiligung, deutlich mehr als 30 Urlaubstage), nie Standard wie Obst, Laptop, Team-Events. Sprache der Anzeige.
+
 ## Nicht-Ziele
 CV-Abgleich, Filter nach Studium, Zusammenfassung für Gäste, Löschen von „nein“-Stellen, Prestige-Ausnahme anwenden, Zusammenfassung in der Stellenliste.
 

@@ -42,7 +42,7 @@ Wichtigste Filter, in dieser Reihenfolge:
 1. **Kostenlos.** Keine Dienste, die Geld kosten oder eine Kreditkarte verlangen, ohne meine ausdrückliche Zustimmung. Grenzen von Gratis-Tarifen nennst du mir, bevor wir uns festlegen.
 2. **Keine API-Kosten für KI.**
    - KI im laufenden Betrieb ist erlaubt, nur auf zwei Wegen (Stand 2026-11-09):
-     - **Öffentliche Stellenanzeigen zusammenfassen:** Groq im Gratis-Tarif (`gpt-oss-120b`; ist dessen Tageskontingent erschöpft, vorläufig `gpt-oss-20b`, am Folgetag mit dem großen Modell nachgebessert; Entscheidung 2026-11-12, Llama 70B gibt es nicht mehr), Secret `GROQ_API_KEY`. An Groq gehen **nur Anzeigentexte**, nie persönliche Daten. Ist das Tageslimit erreicht, folgt der Rest am nächsten Tag. Kein Ausweichen auf Claude.
+     - **Öffentliche Stellenanzeigen zusammenfassen:** Groq im Gratis-Tarif (nur `gpt-oss-120b`; nur gute Modelle, kein Ausweichen auf kleinere; Rest am nächsten Tag; Entscheidung 2026-11-13, Llama 70B gibt es nicht mehr), Secret `GROQ_API_KEY`. An Groq gehen **nur Anzeigentexte**, nie persönliche Daten. Ist das Tageslimit erreicht, folgt der Rest am nächsten Tag. Kein Ausweichen auf Claude.
      - **Alles mit persönlichen Daten** (Lebenslauf-Abgleich, CV-Empfehlung, Anschreiben): nur über meinen Claude-Abo-Token (`claude setup-token`, in GitHub Actions als Secret `CLAUDE_CODE_OAUTH_TOKEN`).
    - Es gibt keine Ausweichlösung. GitHub Models wurde am 30.07.2026 abgeschaltet.
    - Ist das Kontingent erschöpft, wird der Rest in der nächsten Nacht ausgewertet.
@@ -302,7 +302,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 |---|---|---|
 | Datenbank, Login, Dateien | Supabase, Region Frankfurt | Pausiert nach ca. 1 Woche ohne Datenbank-Aktivität. Der tägliche Scraper-Lauf schreibt in die Datenbank und hält sie wach. Limits: 500 MB Datenbank, 1 GB Dateien, 50 MB pro Datei, 2 Projekte. |
 | Scraper und Hintergrundjobs | Python, zeitgesteuert per GitHub Actions (Digest, Alarme, Briefings, Gmail-Abgleich, Erinnerungen) | Im öffentlichen Repo unbegrenzt gratis. Abschaltung nach 60 Tagen ohne Aktivität; der tägliche Commit verhindert sie. |
-| KI-Auswertung der Anzeigen | Groq Gratis-Tarif (`gpt-oss-120b`, Überlauf `gpt-oss-20b`) | Je Modell 1.000 Anfragen und ca. 200.000 Tokens pro Tag, 8.000 Tokens pro Minute (≈ 100 Anzeigen/Tag); Rest am nächsten Tag. Nur öffentliche Texte. |
+| KI-Auswertung der Anzeigen | Groq Gratis-Tarif (`gpt-oss-120b`) | 1.000 Anfragen und ca. 200.000 Tokens pro Tag, 8.000 Tokens pro Minute (≈ 100–200 Anzeigen/Tag, nur relevante Abschnitte); Rest am nächsten Tag. Nur öffentliche Texte. |
 | KI mit persönlichen Daten und Reparatur | Claude Code Action mit Abo-Token | Der Verbrauch zählt gegen das Abo-Kontingent. |
 | Website | Next.js auf Vercel (Hobby) | Nur private, nicht-kommerzielle Nutzung. Zeitgesteuerte Jobs laufen deshalb über GitHub Actions statt über Vercel. |
 | Benachrichtigung | Telegram-Bot, später zusätzlich Google Kalender (kein Teams). E-Mail erst mit dem Mail-Paket. | – |
