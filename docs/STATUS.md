@@ -48,6 +48,8 @@ Stand: 2026-11-11
 
 21. **Groq-Probe ansehen** (Stand 2026-11-13 abends: bester Lauf 2 Fehler von 20, Tageskontingent erschöpft, Feinarbeit geht am 2026-11-14 weiter; erste Probe am 2026-11-13 angesehen, Rückmeldung im Design unter „Änderungen nach der Probe“; offen: zweite Probe) (Groq-Paket angehalten, Plan `docs/superpowers/plans/2026-11-12-groq-paket.md`, Task 2): Übersicht mit Groqs unveränderten Antworten zu 20 Anzeigen lesen und „passt“ sagen oder Änderungen nennen. Offen: Claudes Vorschlag (bei zu vielen Punkten erneut fragen, „muss“ in Anzeigensprache) plus vierter Probelauf.
 
+22. **GitHub-Werkzeug anmelden** (`gh auth login`, Anmeldung im Browser; Checkliste Aufgabe 17). Warum: Claude kann Lauf-Protokolle selbst lesen. Optional danach: Vercel nur lesend, erst nach Prüfung der aktuellen Vercel-Doku durch Claude.
+
 ## Offene To-dos für spätere Phasen
 - **Weitere Groq-Modelle prüfen (Auftrag Nutzer 2026-11-13, sobald Kapazität frei):** Mit der fertigen Anleitung dieselbe Probe (Stichprobe A und B, je 20 Anzeigen) für andere Groq-Modelle laufen lassen, z. B. `qwen/qwen3.8-27b`. Bestanden = höchstens 1 echter Fehler je Stichprobe. Nur bestandene Modelle dürfen als zusätzliches Kontingent dazukommen. Jedes Modell hat ein eigenes Tageslimit, die Probe kostet also kein Kontingent des großen Modells.
 - **Phase 4, KI-Durchsatz (Frage 2026-11-13):** Bei rund 10.000 Stellen reicht das Groq-Gratis-Kontingent (≈ 100 Anzeigen/Tag mit `gpt-oss-120b`) nicht für den Erstbestand. Zu Beginn von Phase 4 klären: nur relevante Abschnitte senden (Aufgaben/Profil statt ganzer Text), Vorrang nach Filterprofil, Auswertung beim Öffnen einer Stelle, weitere Groq-Modelle mit eigenem Kontingent nach eigener Probe, Batch-API im Gratis-Tarif prüfen.
