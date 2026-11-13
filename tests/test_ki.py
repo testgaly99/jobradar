@@ -570,3 +570,28 @@ def test_400_ohne_dict_ist_groqweg(body):
     a._body = body
     with pytest.raises(ki.GroqWeg, match="HTTP 400"):
         ki.anfrage("Text", ki.GROSS, post=poster(a), schlaf=lambda s: None)
+
+
+def test_content_null_wird_leerer_text_und_rueckfrage_hat_string():
+    post = poster(Antwort(content=None), Antwort(content=json.dumps(GUT)))
+    assert ki.frage_groq("Text", ki.GROSS, post=post, schlaf=lambda s: None)["sprache"] == "de"
+    assert post.aufrufe[1]["json"]["messages"][2] == {"role": "assistant", "content": ""}
+
+
+def test_400_in_der_rueckfrage_ist_ungueltig_nicht_groqweg():
+    post = poster(Antwort(content="kein json"), _fehler400("invalid_request_error"))
+    with pytest.raises(ki.Ungueltig):
+        ki.frage_groq("Text", ki.GROSS, post=post, schlaf=lambda s: None)
+
+
+def test_401_in_der_rueckfrage_bleibt_groqweg():
+    post = poster(Antwort(content="kein json"), Antwort(401))
+    with pytest.raises(ki.GroqWeg):
+        ki.frage_groq("Text", ki.GROSS, post=post, schlaf=lambda s: None)
+
+
+def test_429_meldung_enthaelt_keinen_rohtext():
+    post = poster(*[Antwort(429, text="Limit for organization org_ABC tokens per minute") for _ in range(5)])
+    with pytest.raises(ki.GroqWeg) as e:
+        ki.anfrage("Text", ki.GROSS, post=post, schlaf=lambda s: None)
+    assert "org_ABC" not in str(e.value) and "429" in str(e.value)

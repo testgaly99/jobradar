@@ -30,7 +30,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
       const a = createAdminClient();
       const [offen, weg, anzahl] = await Promise.all([
         ladeAlle(async (von, bis) => {
-          const r = await a.from("jobs").select("text_hash,ki_hash,ki_modell").eq("status", "offen").order("id").range(von, bis);
+          const r = await a.from("jobs").select("text_hash,ki_hash,ki_modell").eq("status", "offen").neq("text", "").order("id").range(von, bis);
           if (r.error) throw r.error;
           return r.data;
         }),

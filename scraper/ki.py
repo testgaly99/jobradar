@@ -31,7 +31,9 @@ class Erschoepft(Exception):
 
 
 class GroqWeg(Exception):
-    pass
+    def __init__(self, text, status=None):
+        super().__init__(text)
+        self.status = status
 
 
 class Ungueltig(Exception):
@@ -114,7 +116,6 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep, prompts=PROMPTS
     if modell.startswith("openai/gpt-oss"):
         body["reasoning_effort"] = "low"  # qwen denkt ohne die Angabe nicht mit; mit ihr sprengt das Denken die Ausgabegrenze
     kopf = {"Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"}
-    letzte429 = ""
     pausen = [5, 15, 30]  # Wartezeiten bei Verbindungsabbruch/Timeout/5xx, danach GroqWeg
     for versuch in range(1, VERSUCHE + 1):
         try:
@@ -129,7 +130,6 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep, prompts=PROMPTS
         if r.status_code == 429:
             if re.search(r"per day|\b[TR]PD\b", r.text, re.I):  # nur das Tageslimit beendet die Auswertung; Minutenlimits sind voruebergehend
                 raise Erschoepft(modell)
-            letzte429 = r.text[:200]
             try:
                 warte = float(r.headers.get("retry-after", 10))
             except ValueError:
@@ -151,10 +151,10 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep, prompts=PROMPTS
                 if not fehler.get("failed_generation"):  # ohne Inhalt gibt es nichts zum Zurueckfragen
                     raise Ungueltig("Groq hat keine Antwort geliefert (json_validate_failed ohne Inhalt).")
                 return fehler["failed_generation"], modell
-            raise GroqWeg(f"HTTP {r.status_code} {fehler.get('code', '')}".strip())
+            raise GroqWeg(f"HTTP {r.status_code} {fehler.get('code', '')}".strip(), r.status_code)
         j = r.json()
-        return j["choices"][0]["message"]["content"], j.get("model", modell)
-    raise GroqWeg(f"HTTP 429 {letzte429}".strip())
+        return j["choices"][0]["message"]["content"] or "", j.get("model", modell)
+    raise GroqWeg("HTTP 429 (Minutenlimit)", 429)  # nie den Rohtext: er enthaelt die Organisations-ID
 
 
 def _auswerten(roh):
@@ -173,7 +173,12 @@ def frage_groq(text, modell, post=requests.post, schlaf=time.sleep, protokoll=No
     protokoll = [] if protokoll is None else protokoll
     nachrichten = [{"role": "user", "content": text[:MAX_ZEICHEN]}]
     for runde in range(2):
-        protokoll.append(anfrage(nachrichten, modell, post, schlaf))
+        try:
+            protokoll.append(anfrage(nachrichten, modell, post, schlaf))
+        except GroqWeg as e:  # Groq lehnt die Rueckfrage ab (z. B. 400): nur diese Stelle ist kaputt, nicht Groq
+            if runde and e.status and 400 <= e.status < 500 and e.status not in (401, 429):
+                raise Ungueltig(f"Groq lehnt die Rückfrage ab ({e}).") from e
+            raise
         roh = protokoll[-1][0]
         try:
             return _auswerten(roh)

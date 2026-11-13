@@ -258,6 +258,7 @@ def test_ki_kandidaten_und_lade_anzeige(fake):
     stelle(fake, "acme:1", abschnitte=[{"titel": "Aufgaben", "punkte": ["a"]}])
     stelle(fake, "acme:2", status="geschlossen")
     stelle(fake, "acme:3", text=None)
+    stelle(fake, "acme:4", text="")  # leerer Text bliebe ewig wartend
     assert [z["id"] for z in db.ki_kandidaten()] == ["acme:1"]
     assert db.lade_anzeige("acme:1") == ("T", [{"titel": "Aufgaben", "punkte": ["a"]}])
     assert db.lade_anzeige("acme:2") == ("T", None)

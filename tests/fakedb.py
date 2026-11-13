@@ -51,8 +51,8 @@ class FakeDB:
                 raise RuntimeError("Supabase GET jobs: 400 column jobs.ki does not exist")
             return []
         elif method == "GET" and pfad == "jobs" and params.get("select", "").startswith("id,text_hash"):
-            assert params["status"] == "eq.offen" and params["text"] == "not.is.null"
-            rows = [z for z in self.t["jobs"].values() if z["status"] == "offen" and z.get("text") is not None]
+            assert params["status"] == "eq.offen" and params["text"] == "neq."
+            rows = [z for z in self.t["jobs"].values() if z["status"] == "offen" and z.get("text") not in (None, "")]
             rows.sort(key=lambda z: z["id"])
             rows = rows[params["offset"]:params["offset"] + params["limit"]]
             return [{k: z.get(k) for k in params["select"].split(",")} for z in rows]

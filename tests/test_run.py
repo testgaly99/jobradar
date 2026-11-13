@@ -154,6 +154,17 @@ def test_lauf_ohne_key_blendet_trotzdem_aus(aufbau, monkeypatch):
     assert "KI:" in (d / "bericht.md").read_text(encoding="utf-8")
 
 
+def test_ausblenden_vor_der_ki(aufbau, monkeypatch):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: []})
+    monkeypatch.setenv("GROQ_API_KEY", "k")
+    reihe = []
+    monkeypatch.setattr(db, "nein_ausblenden", lambda: reihe.append("aus") or 0)
+    monkeypatch.setattr(run.ki, "auswerten", lambda *a, **k: reihe.append("auswerten") or {})
+    monkeypatch.setattr(run.ki, "nachfuellen", lambda: reihe.append("nachfuellen") or 0)
+    run.lauf("2026-11-07", d)
+    assert reihe == ["aus", "auswerten", "nachfuellen"]
+
+
 def test_lauf_mit_key_wertet_aus(aufbau, monkeypatch):
     d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: []})
     monkeypatch.setenv("GROQ_API_KEY", "k")

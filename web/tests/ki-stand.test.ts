@@ -40,3 +40,8 @@ test("sichererLink lässt nur http und https durch", () => {
   assert.equal(sichererLink(null), null);
   assert.equal(sichererLink("kein link"), null);
 });
+
+test("kiStand: leerer Text (Hash von \"\") zählt nirgends, sonst bliebe er ewig wartend", () => {
+  const leer = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+  assert.deepEqual(kiStand([{ text_hash: leer, ki_hash: null, ki_modell: null }]), { wartend: 0, fehler: 0 });
+});

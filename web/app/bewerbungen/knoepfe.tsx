@@ -35,7 +35,7 @@ export function LinkFormular() {
   const erkennen = () => starte(async () => {
     const r = await firmaTitelVorschlag(text);
     if ("fehler" in r) return setVorschlagFehler(r.fehler);
-    setVorschlagFehler(""); setFirma(r.firma); setTitel(r.titel);
+    setVorschlagFehler(""); setFirma((f) => f || r.firma); setTitel((t) => t || r.titel); // Eingetipptes bleibt
   });
   const [zustand, aktion] = useActionState<Zustand, FormData>(
     async () => {

@@ -68,11 +68,11 @@ def ki_spalten_da():
 
 
 def ki_kandidaten():
-    """Offene Stellen mit Text, seitenweise gelesen."""
+    """Offene Stellen mit nicht-leerem Text, seitenweise gelesen."""
     zeilen = []
     while True:
         teil = _req("GET", "jobs", params={"select": "id,text_hash,ki_hash,ki_modell,erstmals_gesehen", "status": "eq.offen",
-                                           "text": "not.is.null", "order": "id", "limit": SEITE, "offset": len(zeilen)})
+                                           "text": "neq.", "order": "id", "limit": SEITE, "offset": len(zeilen)})
         zeilen += teil
         if len(teil) < SEITE:
             return zeilen

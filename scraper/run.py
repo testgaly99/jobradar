@@ -99,16 +99,17 @@ def _ki(heute):
     try:
         if not db.ki_spalten_da():
             return {"hinweis": "Migration 009 fehlt, KI übersprungen"}
+        schritte = [("ausblenden", lambda: erg.update(ausgeblendet=db.nein_ausblenden()))]  # zuerst: wieder sichtbar gesetzte "nein"-Stellen sofort weg
         if not os.environ.get("GROQ_API_KEY"):
             erg["hinweis"] = "GROQ_API_KEY fehlt, keine KI-Auswertung"
         else:
-            for name, schritt in (("auswerten", lambda: erg.update(ki.auswerten(heute, frist_s=3600))),
-                                  ("nachfuellen", lambda: erg.update(nachgefuellt=ki.nachfuellen()))):
-                try:
-                    schritt()
-                except Exception as e:
-                    print(f"Hinweis: KI {name} fehlgeschlagen: {type(e).__name__}: {e}")
-        erg["ausgeblendet"] = db.nein_ausblenden()
+            schritte += [("auswerten", lambda: erg.update(ki.auswerten(heute, frist_s=3600))),
+                         ("nachfuellen", lambda: erg.update(nachgefuellt=ki.nachfuellen()))]
+        for name, schritt in schritte:
+            try:
+                schritt()
+            except Exception as e:
+                print(f"Hinweis: KI {name} fehlgeschlagen: {type(e).__name__}: {e}")
     except Exception as e:
         print(f"Hinweis: KI-Schritt fehlgeschlagen: {type(e).__name__}: {e}")
     return erg
