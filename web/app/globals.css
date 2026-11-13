@@ -254,6 +254,8 @@ details.karte.ueberblick > summary::before { order: 1; }
 @media (min-width: 40rem) { .ueberblick-spalten { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } }
 .ueberblick-spalten h3 { margin-bottom: var(--space-xs); font-size: var(--text-xs); font-weight: var(--weight-strong); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-muted); }
 .ueberblick-spalten ul { padding-left: 1.25em; }
+.ueberblick-spalten li { overflow-wrap: anywhere; }
+.ausgeblendet { padding-left: 1.25em; overflow-wrap: anywhere; }
 .ueberblick-spalten li + li { margin-top: var(--space-2xs); }
 .ueberblick-spalten li::marker { color: var(--color-accent); }
 .ueberblick-spalten .haken { list-style: none; padding-left: 0; }

@@ -79,19 +79,19 @@ export default async function Seite({ params, searchParams }: { params: Promise<
             <div lang={ki.sprache}>
               {ki.rahmen.length + ki.benefits.length > 0 && (
                 <ul className="chips">
-                  {ki.rahmen.map((r) => <li key={r} className="chip">{r}</li>)}
-                  {ki.benefits.map((b) => <li key={b} className="chip chip-benefit">★ {b}</li>)}
+                  {ki.rahmen.map((r, i) => <li key={`${i}-${r}`} className="chip">{r}</li>)}
+                  {ki.benefits.map((b, i) => <li key={`${i}-${b}`} className="chip chip-benefit"><span aria-hidden="true">★ </span>{b}</li>)}
                 </ul>
               )}
               <div className="ueberblick-spalten">
                 <section aria-labelledby="ki-aufgaben">
                   <h3 id="ki-aufgaben" lang="de">Das machst du</h3>
-                  <ul>{ki.aufgaben.map((a) => <li key={a}>{a}</li>)}</ul>
+                  <ul>{ki.aufgaben.map((a, i) => <li key={`${i}-${a}`}>{a}</li>)}</ul>
                 </section>
                 {mitbringen.length > 0 && (
                   <section aria-labelledby="ki-mitbringen">
                     <h3 id="ki-mitbringen" lang="de">Das bringst du mit</h3>
-                    <ul className="haken">{mitbringen.map((m) => <li key={m}>{m}</li>)}</ul>
+                    <ul className="haken">{mitbringen.map((m, i) => <li key={`${i}-${m}`}>{m}</li>)}</ul>
                   </section>
                 )}
               </div>
