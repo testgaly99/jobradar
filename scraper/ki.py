@@ -32,33 +32,49 @@ class Ungueltig(Exception):
         self.roh = roh
 
 
+SCHLUESSEL = ("aufgaben", "abschluss", "erfahrung", "muss", "studium", "taetigkeit", "sprache")
+
+
+# Die Meldungen gehen bei der Rueckfrage woertlich an Groq, daher kurz und konkret.
 def _liste(roh, name, lo, hi):
-    v = roh.get(name)
+    v = roh[name]
     if not isinstance(v, list) or not all(isinstance(x, str) and x.strip() for x in v):
-        raise Ungueltig(f"{name}: keine Liste aus Texten")
-    v = [x.strip() for x in v]
+        raise Ungueltig(f"{name} muss eine Liste aus nicht-leeren Texten sein.")
     if not lo <= len(v) <= hi:
-        raise Ungueltig(f"{name}: {len(v)} Eintraege, erlaubt {lo}-{hi}")
-    return v
+        raise Ungueltig(f"{name} hat {len(v)} Einträge, erlaubt sind {lo}–{hi}.")
+    return [x.strip() for x in v]
+
+
+def _text(roh, name):
+    v = roh[name]
+    if v is not None and not (isinstance(v, str) and v.strip()):
+        raise Ungueltig(f"{name} muss ein nicht-leerer Text oder null sein.")
+    return v and v.strip()
 
 
 def pruefe(roh: dict) -> dict:
     if not isinstance(roh, dict):
-        raise Ungueltig("kein Objekt")
-    erg = {"aufgaben": _liste(roh, "aufgaben", 3, 5), "muss": _liste(roh, "muss", 0, 3)}
+        raise Ungueltig("Die Antwort muss ein JSON-Objekt sein.")
+    fehlt, zuviel = [k for k in SCHLUESSEL if k not in roh], [k for k in roh if k not in SCHLUESSEL]
+    if fehlt or zuviel:
+        raise Ungueltig(f"Falsche Schlüssel (fehlend: {', '.join(fehlt) or '-'}; überzählig: {', '.join(zuviel) or '-'}).")
+    erg = {"aufgaben": _liste(roh, "aufgaben", 3, 5), "abschluss": _text(roh, "abschluss"),
+           "erfahrung": _text(roh, "erfahrung"), "muss": _liste(roh, "muss", 0, 3)}
     for name, erlaubt in (("studium", ("ja", "nein", "unklar")), ("taetigkeit", ("anspruchsvoll", "einfach")),
                           ("sprache", ("de", "en"))):
-        if roh.get(name) not in erlaubt:
-            raise Ungueltig(f"{name}: {roh.get(name)!r}")
+        if roh[name] not in erlaubt:
+            werte = ", ".join(f'"{w}"' for w in erlaubt)
+            raise Ungueltig(f"{name} ist {json.dumps(roh[name], ensure_ascii=False)}, erlaubt sind: {werte}.")
         erg[name] = roh[name]
     return erg
 
 
 def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
-    """Schickt den Text an Groq und gibt (rohe Antwort, Modellname laut Groq) zurueck."""
+    """Schickt den Text (oder eine fertige Nachrichtenliste ohne System-Prompt) an Groq
+    und gibt (rohe Antwort, Modellname laut Groq) zurueck."""
     db._lade_env()
-    body = {"model": modell, "messages": [{"role": "system", "content": PROMPT},
-                                          {"role": "user", "content": text[:MAX_ZEICHEN]}],
+    nachrichten = [{"role": "user", "content": text[:MAX_ZEICHEN]}] if isinstance(text, str) else text
+    body = {"model": modell, "messages": [{"role": "system", "content": PROMPT}, *nachrichten],
             "response_format": {"type": "json_object"}, "temperature": 0.2,
             "max_completion_tokens": 1500, "reasoning_effort": "low"}
     kopf = {"Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"}
@@ -83,12 +99,28 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
     raise Erschoepft(modell)
 
 
-def frage_groq(text, modell, post=requests.post, schlaf=time.sleep):
-    roh, _ = anfrage(text, modell, post, schlaf)
+def _auswerten(roh):
     try:
         return pruefe(json.loads(roh))
     except (ValueError, TypeError) as e:
-        raise Ungueltig(f"kein JSON: {e}", roh) from e
+        raise Ungueltig(f"Die Antwort ist kein gültiges JSON ({e}).", roh) from e
     except Ungueltig as e:
         e.roh = roh
         raise
+
+
+def frage_groq(text, modell, post=requests.post, schlaf=time.sleep, protokoll=None):
+    """Ist die Antwort ungueltig, wird Groq einmal im selben Gespraech mit dem konkreten Fehler zurueckgefragt.
+    `protokoll` (Liste) bekommt jede Antwort als (roh, modell), z. B. fuer die Probe-Seite."""
+    protokoll = [] if protokoll is None else protokoll
+    nachrichten = [{"role": "user", "content": text[:MAX_ZEICHEN]}]
+    for runde in range(2):
+        protokoll.append(anfrage(nachrichten, modell, post, schlaf))
+        roh = protokoll[-1][0]
+        try:
+            return _auswerten(roh)
+        except Ungueltig as e:
+            if runde:
+                raise
+            nachrichten += [{"role": "assistant", "content": roh},
+                            {"role": "user", "content": f"{e} Antworte erneut nur mit dem korrigierten JSON."}]

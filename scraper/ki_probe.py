@@ -3,8 +3,11 @@ Nur lesend (keine Schreibzugriffe auf die Datenbank). Aufruf: py -m scraper.ki_p
 import html
 import json
 import sys
+import time
 from datetime import datetime, timezone
 from itertools import zip_longest
+
+import requests
 
 from . import db, ki
 
@@ -54,27 +57,37 @@ def _liste(v):
     return "<ul>" + "".join(f"<li>{html.escape(x)}</li>" for x in v) + "</ul>"
 
 
+def _wert(v):
+    return "null" if v is None else html.escape(v)
+
+
 def _zeile(s, erg):
     e = html.escape
     kopf = (f'<td><a href="{e(s.get("url") or "", quote=True)}">{e(s.get("titel") or "")}</a></td>'
             f'<td>{e(s.get("unternehmen") or "")}</td>')
+    antworten = erg["antworten"]
     if erg["fehler"]:
-        mitte = f'<td colspan="5"><b>Fehler:</b> {e(erg["fehler"])}</td>'
+        mitte = f'<td colspan="7"><b>Fehler:</b> {e(erg["fehler"])}</td>'
     elif erg["gueltig"]:
-        f = erg["felder"]  # unveraendert aus Groqs JSON, nicht die normalisierte Fassung von pruefe
-        mitte = (f'<td>{_liste(f["aufgaben"])}</td><td>{_liste(f["muss"])}</td><td>{e(f["studium"])}</td>'
+        f = erg["felder"]  # unveraendert aus Groqs letzter Antwort, nicht die normalisierte Fassung von pruefe
+        mitte = (f'<td>{_liste(f["aufgaben"])}</td><td>{_wert(f["abschluss"])}</td><td>{_wert(f["erfahrung"])}</td>'
+                 f'<td>{_liste(f["muss"])}</td><td>{e(f["studium"])}</td>'
                  f'<td>{e(f["taetigkeit"])}</td><td>{e(f["sprache"])}</td>')
     else:
-        mitte = f'<td colspan="5"><b>ungültig</b><pre>{e(erg["roh"])}</pre></td>'
-    ende = (f'<td>{e(erg["modell"])}</td><td>{e(erg["zeit"])}</td>'
-            f'<td><details><summary>Rohantwort von Groq</summary><pre>{e(erg["roh"])}</pre></details>'
-            f'<details><summary>Text</summary><pre>{e(s.get("text") or "")}</pre></details></td>')
+        mitte = f'<td colspan="7"><b>ungültig</b><pre>{e(antworten[-1][0] if antworten else "")}</pre></td>'
+    modell = e(antworten[-1][1]) if antworten else ""
+    if len(antworten) > 1:
+        modell += "<br><b>nach Rückfrage</b>"
+    namen = ("Erste Antwort", "Nach Rückfrage") if len(antworten) > 1 else ("Rohantwort von Groq",)
+    roh = "".join(f"<details><summary>{n}</summary><pre>{e(r)}</pre></details>" for n, (r, _) in zip(namen, antworten))
+    ende = (f'<td>{modell}</td><td>{e(erg["zeit"])}</td>'
+            f'<td>{roh}<details><summary>Text</summary><pre>{e(s.get("text") or "")}</pre></details></td>')
     return f"<tr>{kopf}{mitte}{ende}</tr>"
 
 
 def baue_html(zeilen) -> str:
-    kopf = "".join(f"<th>{h}</th>" for h in ("Titel", "Firma", "Aufgaben", "Muss", "Studium", "Tätigkeit",
-                                              "Sprache", "Modell", "Zeitpunkt", "Original"))
+    kopf = "".join(f"<th>{h}</th>" for h in ("Titel", "Firma", "Aufgaben", "Abschluss", "Erfahrung", "Muss", "Studium",
+                                              "Tätigkeit", "Sprache", "Modell", "Zeitpunkt", "Original"))
     return ('<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Groq-Probe</title>'
             '<style>:root{color-scheme:light dark}body{font:14px system-ui;margin:1rem}'
             'table{border-collapse:collapse}td,th{border:1px solid #8888;padding:.3rem;vertical-align:top;text-align:left}'
@@ -82,21 +95,20 @@ def baue_html(zeilen) -> str:
             f'<h1>Groq-Probe</h1><table><tr>{kopf}</tr>{"".join(_zeile(s, e) for s, e in zeilen)}</table></body></html>')
 
 
-def probe(stellen, ausgabe, anfrage=ki.anfrage):
+def probe(stellen, ausgabe, post=requests.post, schlaf=time.sleep):
     zeilen = []
     for s in stellen:
-        erg = {"fehler": "", "gueltig": False, "roh": "", "felder": None, "modell": "",
+        erg = {"fehler": "", "gueltig": False, "antworten": [], "felder": None,
                "zeit": datetime.now(timezone.utc).isoformat(timespec="seconds")}
         stopp = False
         try:
-            erg["roh"], erg["modell"] = anfrage(s.get("text") or "", ki.GROSS)
-            erg["zeit"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
             try:
-                erg["felder"] = json.loads(erg["roh"])
-                ki.pruefe(erg["felder"])  # nur zur Entscheidung gueltig/ungueltig
+                ki.frage_groq(s.get("text") or "", ki.GROSS, post=post, schlaf=schlaf, protokoll=erg["antworten"])
+                erg["felder"] = json.loads(erg["antworten"][-1][0])
                 erg["gueltig"] = True
-            except (ValueError, TypeError, ki.Ungueltig):
+            except ki.Ungueltig:
                 pass
+            erg["zeit"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
         except ki.Erschoepft as e:
             erg["fehler"], stopp = f"Tageslimit erschöpft ({e.modell})", True
         except ki.GroqWeg as e:

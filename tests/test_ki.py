@@ -5,7 +5,8 @@ import requests
 
 from scraper import ki
 
-GUT = {"aufgaben": ["a", "b", "c"], "muss": ["x"], "studium": "ja", "taetigkeit": "anspruchsvoll", "sprache": "de"}
+GUT = {"aufgaben": ["a", "b", "c"], "abschluss": "Studium Informatik o. ä.", "erfahrung": None, "muss": ["x"],
+       "studium": "ja", "taetigkeit": "anspruchsvoll", "sprache": "de"}
 
 
 class Antwort:
@@ -37,18 +38,35 @@ def poster(*antworten):
 
 
 def test_pruefe_gueltig_und_trimmt():
-    r = ki.pruefe({**GUT, "aufgaben": [" a ", "b", "c"]})
+    r = ki.pruefe({**GUT, "aufgaben": [" a ", "b", "c"], "erfahrung": " 3+ Jahre B2B-Vertrieb "})
     assert r["aufgaben"] == ["a", "b", "c"] and r["muss"] == ["x"]
+    assert r["abschluss"] == "Studium Informatik o. ä." and r["erfahrung"] == "3+ Jahre B2B-Vertrieb"
+    assert ki.pruefe({**GUT, "abschluss": None, "muss": []})["abschluss"] is None
 
 
 @pytest.mark.parametrize("kaputt", [
     {**GUT, "aufgaben": ["a", "b"]}, {**GUT, "aufgaben": ["a"] * 6}, {**GUT, "muss": ["x"] * 4},
     {**GUT, "studium": "vielleicht"}, {**GUT, "taetigkeit": "mittel"}, {**GUT, "sprache": "fr"},
     {**GUT, "aufgaben": ["a", "", "c"]}, {k: v for k, v in GUT.items() if k != "muss"},
+    {k: v for k, v in GUT.items() if k != "erfahrung"}, {**GUT, "abschluss": ""}, {**GUT, "erfahrung": 3},
+    {**GUT, "extra": "x"}, ["kein", "objekt"],
 ])
 def test_pruefe_ungueltig(kaputt):
     with pytest.raises(ki.Ungueltig):
         ki.pruefe(kaputt)
+
+
+@pytest.mark.parametrize("kaputt, meldung", [
+    ({**GUT, "aufgaben": ["a"] * 6}, "aufgaben hat 6 Einträge, erlaubt sind 3–5."),
+    ({**GUT, "muss": ["x"] * 4}, "muss hat 4 Einträge, erlaubt sind 0–3."),
+    ({**GUT, "studium": "vielleicht"}, 'studium ist "vielleicht", erlaubt sind: "ja", "nein", "unklar".'),
+    ({**GUT, "abschluss": ""}, "abschluss muss ein nicht-leerer Text oder null sein."),
+    ({**{k: v for k, v in GUT.items() if k != "erfahrung"}, "extra": 1}, "fehlend: erfahrung; überzählig: extra"),
+])
+def test_pruefe_meldet_genau(kaputt, meldung):
+    with pytest.raises(ki.Ungueltig) as e:
+        ki.pruefe(kaputt)
+    assert meldung in str(e.value)
 
 
 def test_frage_groq_gueltig():
@@ -77,9 +95,32 @@ def test_frage_groq_serverfehler_ist_weg(fehler):
 
 
 def test_frage_groq_kaputtes_json_ist_ungueltig():
+    post = poster(Antwort(content="kein json"), Antwort(content="immer noch kein json"))
     with pytest.raises(ki.Ungueltig) as e:
-        ki.frage_groq("Text", ki.GROSS, post=poster(Antwort(content="kein json")), schlaf=lambda s: None)
-    assert e.value.roh == "kein json"
+        ki.frage_groq("Text", ki.GROSS, post=post, schlaf=lambda s: None)
+    assert e.value.roh == "immer noch kein json" and len(post.aufrufe) == 2
+    assert "kein gültiges JSON" in post.aufrufe[1]["json"]["messages"][-1]["content"]
+
+
+def test_frage_groq_rueckfrage_repariert():
+    sechs = json.dumps({**GUT, "aufgaben": ["a"] * 6})
+    post = poster(Antwort(content=sechs), Antwort(content=json.dumps(GUT)))
+    protokoll = []
+    assert ki.frage_groq("Text", ki.GROSS, post=post, schlaf=lambda s: None, protokoll=protokoll) == GUT
+    assert len(post.aufrufe) == 2 and [r for r, _ in protokoll] == [sechs, json.dumps(GUT)]
+    m = post.aufrufe[1]["json"]["messages"]
+    assert [x["role"] for x in m] == ["system", "user", "assistant", "user"]
+    assert m[1]["content"] == "Text" and m[2]["content"] == sechs
+    assert "aufgaben hat 6 Einträge, erlaubt sind 3–5." in m[3]["content"]
+    assert "nur mit dem korrigierten JSON" in m[3]["content"]
+
+
+def test_frage_groq_rueckfrage_bleibt_ungueltig():
+    post = poster(Antwort(content=json.dumps({**GUT, "aufgaben": ["a"] * 6})),
+                  Antwort(content=json.dumps({**GUT, "sprache": "fr"})))
+    with pytest.raises(ki.Ungueltig) as e:
+        ki.frage_groq("Text", ki.GROSS, post=post, schlaf=lambda s: None)
+    assert len(post.aufrufe) == 2 and '"fr"' in e.value.roh and "sprache" in str(e.value)
 
 
 def test_frage_groq_schickt_nur_text():
@@ -121,48 +162,50 @@ def test_waehle_probe_mischt():
     assert p == waehle_probe(list(reversed(stellen)))
 
 
+def _stelle(i, titel="T"):
+    return {"id": str(i), "unternehmen": "F", "titel": titel, "url": f"http://x/{i}", "text": "t"}
+
+
 def test_probe_html_unveraendert_und_ungueltig(tmp_path):
     from scraper.ki_probe import probe
-    stellen = [{"id": "1", "unternehmen": "F", "titel": "T<b>", "url": "http://x", "text": "t"},
-               {"id": "2", "unternehmen": "F", "titel": "U", "url": "http://y", "text": "t"},
-               {"id": "3", "unternehmen": "F", "titel": "V", "url": "http://z", "text": "t"}]
-    antw = iter([(json.dumps(GUT), "modell-A"), ("kein <json>", "modell-B"), ki.Erschoepft("m")])
-
-    def fake(text, modell):
-        a = next(antw)
-        if isinstance(a, Exception):
-            raise a
-        return a
-
+    post = poster(Antwort(content=json.dumps(GUT), modell="modell-A"),
+                  Antwort(content="kein <json>"), Antwort(content="kein <json> 2", modell="modell-B"),
+                  Antwort(429, text="tokens per day"))
     out = tmp_path / "p.html"
-    zeilen = probe(stellen, out, anfrage=fake)
+    zeilen = probe([_stelle(1, "T<b>"), _stelle(2), _stelle(3)], out, post=post, schlaf=lambda s: None)
     h = out.read_text(encoding="utf-8")
-    assert len(zeilen) == 3 and "modell-A" in h and "T&lt;b&gt;" in h
-    assert "ungültig" in h and "kein &lt;json&gt;" in h and "Tageslimit" in h
+    assert len(zeilen) == 3 and "modell-A" in h and "modell-B" in h and "T&lt;b&gt;" in h
+    assert "ungültig" in h and "kein &lt;json&gt; 2" in h and "Tageslimit" in h
+    assert "<th>Abschluss</th>" in h and "<th>Erfahrung</th>" in h and "Studium Informatik o. ä." in h
 
 
 def test_probe_zeigt_roh_unnormalisiert(tmp_path):
     from scraper.ki_probe import probe
-    roh = json.dumps({**GUT, "aufgaben": ["  mit Leerraum  ", "b", "c"], "extra": "zusatz"})
+    roh = json.dumps({**GUT, "aufgaben": ["  mit Leerraum  ", "b", "c"], "erfahrung": "3+ <Jahre>"})
     out = tmp_path / "p.html"
-    probe([{"id": "1", "unternehmen": "F", "titel": "T", "url": "u", "text": "t"}], out, anfrage=lambda t, m: (roh, "m"))
+    probe([_stelle(1)], out, post=poster(Antwort(content=roh)), schlaf=lambda s: None)
     h = out.read_text(encoding="utf-8")
-    assert "<li>  mit Leerraum  </li>" in h
-    assert "Rohantwort von Groq" in h and "&quot;extra&quot;: &quot;zusatz&quot;" in h
+    assert "<li>  mit Leerraum  </li>" in h and "3+ &lt;Jahre&gt;" in h
+    assert "Rohantwort von Groq" in h and "nach Rückfrage" not in h
+
+
+def test_probe_zeigt_rueckfrage(tmp_path):
+    from scraper.ki_probe import probe
+    erst = json.dumps({**GUT, "aufgaben": ["erste"] * 6})
+    zweit = json.dumps({**GUT, "aufgaben": ["  final  ", "b", "c"]})
+    out = tmp_path / "p.html"
+    zeilen = probe([_stelle(1)], out, post=poster(Antwort(content=erst), Antwort(content=zweit)),
+                   schlaf=lambda s: None)
+    h = out.read_text(encoding="utf-8")
+    assert zeilen[0][1]["gueltig"] and "nach Rückfrage" in h
+    assert "Erste Antwort" in h and "Nach Rückfrage" in h and "&quot;erste&quot;" in h
+    assert "<li>  final  </li>" in h and "<li>erste</li>" not in h
 
 
 def test_probe_faengt_beliebige_fehler(tmp_path):
     from scraper.ki_probe import probe
-    antw = iter([(json.dumps(GUT), "m")])
-
-    def fake(t, m):
-        try:
-            return next(antw)
-        except StopIteration:
-            raise KeyError("GROQ_API_KEY")
-
-    stellen = [{"id": str(i), "unternehmen": "F", "titel": f"T{i}", "url": "u", "text": "t"} for i in range(3)]
     out = tmp_path / "p.html"
-    zeilen = probe(stellen, out, anfrage=fake)
+    zeilen = probe([_stelle(i, f"T{i}") for i in range(3)], out,
+                   post=poster(Antwort(content=json.dumps(GUT)), KeyError("GROQ_API_KEY")), schlaf=lambda s: None)
     h = out.read_text(encoding="utf-8")
     assert len(zeilen) == 2 and "KeyError" in h and ">T0<" in h and ">T2<" not in h
