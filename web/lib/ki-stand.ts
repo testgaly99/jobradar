@@ -20,3 +20,6 @@ export async function ladeAlle<T>(hole: (von: number, bis: number) => Promise<T[
     if (seite.length < 1000) return alle;
   }
 }
+
+// Nur http(s)-Adressen dürfen als Link erscheinen (Anzeigen-URLs sind fremde Daten).
+export const sichererLink = (url: string | null): string | null => (url && /^https?:\/\//i.test(url) ? url : null);

@@ -29,3 +29,14 @@ test("ladeAlle: genau 1000 Zeilen kostet eine leere Folgeseite", async () => {
   const alle = Array.from({ length: 1000 }, (_, i) => i);
   assert.equal((await ladeAlle(async (von, bis) => alle.slice(von, bis + 1))).length, 1000);
 });
+
+import { sichererLink } from "../lib/ki-stand.ts";
+
+test("sichererLink lässt nur http und https durch", () => {
+  assert.equal(sichererLink("https://a.de/x"), "https://a.de/x");
+  assert.equal(sichererLink("http://a.de"), "http://a.de");
+  assert.equal(sichererLink("javascript:alert(1)"), null);
+  assert.equal(sichererLink("JAVASCRIPT:alert(1)"), null);
+  assert.equal(sichererLink(null), null);
+  assert.equal(sichererLink("kein link"), null);
+});

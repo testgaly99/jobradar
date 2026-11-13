@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { kiStand, ladeAlle } from "@/lib/ki-stand";
+import { kiStand, ladeAlle, sichererLink } from "@/lib/ki-stand";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 import { selbstLoeschenErlaubt, nutzerZeilen } from "@/lib/nutzerliste";
@@ -109,8 +109,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
                 {ki.weg.length ? (
                   <ul className="ausgeblendet">
                     {ki.weg.map((j) => (
-                      <li key={j.id}>{j.unternehmen}: {j.url && /^https?:///i.test(j.url)
-                        ? <a href={j.url} target="_blank" rel="noopener noreferrer">{j.titel ?? j.url}</a> : j.titel}</li>
+                      <li key={j.id}>{j.unternehmen}: {sichererLink(j.url)
+                        ? <a href={sichererLink(j.url)!} target="_blank" rel="noopener noreferrer">{j.titel ?? j.url}</a> : j.titel}</li>
                     ))}
                   </ul>
                 ) : <p className="gedaempft">Keine.</p>}
