@@ -78,9 +78,10 @@ def ki_kandidaten():
             return zeilen
 
 
-def lade_text(job_id):
-    z = _req("GET", "jobs", params={"select": "text", "id": f"eq.{job_id}"})
-    return z[0]["text"] if z else None
+def lade_anzeige(job_id):
+    """(text, abschnitte) einer Stelle; (None, None), wenn es sie nicht gibt."""
+    z = _req("GET", "jobs", params={"select": "text,abschnitte", "id": f"eq.{job_id}"})
+    return (z[0]["text"], z[0]["abschnitte"]) if z else (None, None)
 
 
 def speichere_ki(job_id, ergebnis, modell, text_hash):

@@ -33,6 +33,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       - name: Änderungen committen
         run: |
           git config user.name "github-actions[bot]"

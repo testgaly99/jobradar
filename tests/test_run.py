@@ -19,6 +19,7 @@ def stelle(i, titel="Engineer", ort="Berlin"):
 def aufbau(tmp_path, monkeypatch):
     fake = FakeDB()
     monkeypatch.setattr(db, "_req", fake)
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)  # Tests rufen Groq nie wirklich
 
     def setze(firmen, adapter):
         monkeypatch.setattr(run, "lade_unternehmen", lambda *a: firmen)
@@ -141,3 +142,46 @@ def test_logo_spalte_fehlt_oder_fehler_kippt_lauf_nicht(aufbau, monkeypatch, cap
     monkeypatch.setattr(run, "hole_logo", lambda u: 1 / 0)
     assert run.lauf("2026-11-08", d)["firmen"][0]["fehler"] == ""
     assert "Logos fehlgeschlagen" in capsys.readouterr().out
+
+
+def test_lauf_ohne_key_blendet_trotzdem_aus(aufbau, monkeypatch):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: []})
+    t["jobs"]["X:1"] = {"id": "X:1", "unternehmen": "X", "status": "offen", "sichtbar": True, "studium": "nein"}
+    monkeypatch.setattr(run.ki, "auswerten", lambda *a, **k: 1 / 0)
+    bericht = run.lauf("2026-11-07", d)
+    assert t["jobs"]["X:1"]["sichtbar"] is False
+    assert "GROQ_API_KEY" in bericht["ki"]["hinweis"] and bericht["ki"]["ausgeblendet"] == 1
+    assert "KI:" in (d / "bericht.md").read_text(encoding="utf-8")
+
+
+def test_lauf_mit_key_wertet_aus(aufbau, monkeypatch):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: []})
+    monkeypatch.setenv("GROQ_API_KEY", "k")
+    monkeypatch.setattr(run.ki, "auswerten", lambda heute: {"ausgewertet": 2, "fehler": 0, "wartend": 5})
+    monkeypatch.setattr(run.ki, "nachfuellen", lambda: 1)
+    ki_ = run.lauf("2026-11-07", d)["ki"]
+    assert ki_ == {"ausgewertet": 2, "fehler": 0, "wartend": 5, "nachgefuellt": 1, "ausgeblendet": 0}
+    assert "ausgewertet: 2" in (d / "bericht.md").read_text(encoding="utf-8")
+
+
+def test_lauf_ohne_ki_spalten_wertet_nicht_aus(aufbau, monkeypatch):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: []})
+    monkeypatch.setenv("GROQ_API_KEY", "k")
+    monkeypatch.setattr(db, "_req", fake := FakeDB())
+    fake.ohne_ki_spalten = True
+    monkeypatch.setattr(run.ki, "auswerten", lambda *a, **k: 1 / 0)
+    assert "009" in run.lauf("2026-11-07", d)["ki"]["hinweis"]
+
+
+def test_ki_fehler_kippt_lauf_nicht(aufbau, monkeypatch, capsys):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1")]})
+    monkeypatch.setenv("GROQ_API_KEY", "k")
+
+    def kaputt(*a, **k):
+        raise RuntimeError("boom")
+    monkeypatch.setattr(run.ki, "auswerten", kaputt)
+    monkeypatch.setattr(run.ki, "nachfuellen", kaputt)
+    monkeypatch.setattr(db, "nein_ausblenden", kaputt)
+    bericht = run.lauf("2026-11-07", d)
+    assert bericht["firmen"][0]["fehler"] == "" and "A:1" in t["jobs"] and t["laeufe"]
+    assert capsys.readouterr().out.count("RuntimeError: boom") == 3

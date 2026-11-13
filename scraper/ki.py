@@ -3,6 +3,7 @@ import json
 import os
 import re
 import time
+from datetime import date, timedelta
 from pathlib import Path
 
 import requests
@@ -17,6 +18,8 @@ VERSUCHE = 5
 # Jedes Modell hat seinen eigenen, darauf abgestimmten System-Prompt
 PROMPTS = {m: (Path(__file__).parent / datei).read_text(encoding="utf-8")
            for m, datei in ((GROSS, "ki_prompt.md"), (QWEN, "ki_prompt_qwen.md"))}
+# Teil C (Firma/Titel aus eingefuegter Anzeige): eigener kurzer Prompt, bisher nur fuer das grosse Modell geprueft
+PROMPTS_FIRMA = {GROSS: (Path(__file__).parent / "ki_prompt_firma.md").read_text(encoding="utf-8")}
 # qwen lehnt bei Groq (Free Tier) Anfragen ab, deren erwartete Ausgabe ueber 1000 Tokens/Minute liegt
 MAX_AUSGABE = {QWEN: 600}  # ohne Denken reichen ~250-400 Tokens; die Grenze zaehlt voll gegen das Minutenlimit
 
@@ -98,14 +101,14 @@ def pruefe(roh: dict) -> dict:
     return erg
 
 
-def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
+def anfrage(text, modell, post=requests.post, schlaf=time.sleep, prompts=PROMPTS):
     """Schickt den Text (oder eine fertige Nachrichtenliste ohne System-Prompt) an Groq
     und gibt (rohe Antwort, Modellname laut Groq) zurueck."""
-    if modell not in PROMPTS:
-        raise ValueError(f"Kein System-Prompt für Modell {modell!r} (bekannt: {', '.join(PROMPTS)})")
+    if modell not in prompts:
+        raise ValueError(f"Kein System-Prompt für Modell {modell!r} (bekannt: {', '.join(prompts)})")
     db._lade_env()
     nachrichten = [{"role": "user", "content": text[:MAX_ZEICHEN]}] if isinstance(text, str) else text
-    body = {"model": modell, "messages": [{"role": "system", "content": PROMPTS[modell]}, *nachrichten],
+    body = {"model": modell, "messages": [{"role": "system", "content": prompts[modell]}, *nachrichten],
             "response_format": {"type": "json_object"}, "temperature": 0.2,
             "max_completion_tokens": MAX_AUSGABE.get(modell, 1500)}
     if modell.startswith("openai/gpt-oss"):
@@ -113,7 +116,7 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
     kopf = {"Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"}
     letzte429 = ""
     pausen = [5, 15, 30]  # Wartezeiten bei Verbindungsabbruch/Timeout/5xx, danach GroqWeg
-    for _ in range(VERSUCHE):
+    for versuch in range(1, VERSUCHE + 1):
         try:
             r = post(URL, headers=kopf, json=body, timeout=60)
             if r.status_code >= 500:
@@ -124,25 +127,30 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
             schlaf(pausen.pop(0))
             continue
         if r.status_code == 429:
-            if re.search(r"per day|\b[TR]PD\b", r.text):  # nur das Tageslimit beendet die Auswertung; Minutenlimits sind voruebergehend
+            if re.search(r"per day|\b[TR]PD\b", r.text, re.I):  # nur das Tageslimit beendet die Auswertung; Minutenlimits sind voruebergehend
                 raise Erschoepft(modell)
             letzte429 = r.text[:200]
             try:
                 warte = float(r.headers.get("retry-after", 10))
             except ValueError:
                 warte = 10
-            schlaf(min(warte, 60))
+            if versuch < VERSUCHE:  # nach dem letzten Versuch nicht mehr warten
+                schlaf(min(warte, 60))
             continue
         if r.status_code == 413:  # eine einzelne Stelle ist zu gross: ueberspringen (Ungueltig), nicht abbrechen
             raise Ungueltig("Anfrage zu groß für das Modell (HTTP 413).")
         if r.status_code >= 400:
             try:
-                fehler = r.json().get("error") or {}
-            except ValueError:
+                fehler = r.json()["error"]
+            except (ValueError, KeyError, TypeError, IndexError):
+                fehler = {}
+            if not isinstance(fehler, dict):
                 fehler = {}
             # Groq verwirft Ausgaben, die kein JSON sind, mit 400; das ist eine ungueltige Antwort (Rueckfrage), kein Ausfall
             if fehler.get("code") == "json_validate_failed":
-                return fehler.get("failed_generation", ""), modell
+                if not fehler.get("failed_generation"):  # ohne Inhalt gibt es nichts zum Zurueckfragen
+                    raise Ungueltig("Groq hat keine Antwort geliefert (json_validate_failed ohne Inhalt).")
+                return fehler["failed_generation"], modell
             raise GroqWeg(f"HTTP {r.status_code} {fehler.get('code', '')}".strip())
         j = r.json()
         return j["choices"][0]["message"]["content"], j.get("model", modell)
@@ -174,3 +182,78 @@ def frage_groq(text, modell, post=requests.post, schlaf=time.sleep, protokoll=No
                 raise
             nachrichten += [{"role": "assistant", "content": roh},
                             {"role": "user", "content": f"{e} Antworte erneut nur mit dem korrigierten JSON."}]
+
+
+def firma_titel(text, modell=GROSS, post=requests.post, schlaf=time.sleep):
+    """Teil C: (firma, titel) aus einer eingefuegten Anzeige; je None, wenn sie nicht drinsteht."""
+    roh = anfrage(text, modell, post, schlaf, prompts=PROMPTS_FIRMA)[0]
+    try:
+        j = json.loads(roh)
+    except (ValueError, TypeError) as e:
+        raise Ungueltig("Die Antwort ist kein gültiges JSON.", roh) from e
+    if not isinstance(j, dict) or set(j) != {"firma", "titel"}:
+        raise Ungueltig("Falsche Schlüssel.", roh)
+    if not all(v is None or isinstance(v, str) for v in j.values()):
+        raise Ungueltig("firma/titel müssen Text oder null sein.", roh)
+    return (j["firma"] or "").strip() or None, (j["titel"] or "").strip() or None
+
+
+def warteschlange(zeilen, heute):
+    """[(id, gruppe)] aller Stellen ohne aktuelle Auswertung. Gruppe 1: neu (letzte 2 Tage) oder Text geaendert,
+    Gruppe 2: uebriger Rueckstand. Je Gruppe neueste zuerst, dann id."""
+    grenze = (date.fromisoformat(heute) - timedelta(days=2)).isoformat()
+    offen = [z for z in zeilen if z["ki_hash"] != z["text_hash"]]  # gleicher Hash = fertig, auch bei ki_modell "fehler"
+    gruppe = {z["id"]: 1 if (z["erstmals_gesehen"] or "") >= grenze or z["ki_hash"] is not None else 2 for z in offen}
+    offen.sort(key=lambda z: z["id"])
+    offen.sort(key=lambda z: z["erstmals_gesehen"] or "", reverse=True)  # stabil: id-Reihenfolge bleibt
+    offen.sort(key=lambda z: gruppe[z["id"]])
+    return [(z["id"], gruppe[z["id"]]) for z in offen]
+
+
+def auswerten(heute, frage=frage_groq, frist_s=5400, uhr=time.monotonic):
+    """Wertet die Warteschlange mit dem grossen Modell aus, bis sie leer ist, das Tageskontingent erschoepft ist,
+    Groq ausfaellt oder frist_s um ist. Eine einzelne Stelle kippt nie den Lauf."""
+    start, zeilen = uhr(), db.ki_kandidaten()
+    hashes, schlange = {z["id"]: z["text_hash"] for z in zeilen}, warteschlange(zeilen, heute)
+    erg = {"ausgewertet": 0, "fehler": 0}
+    for job_id, _ in schlange:
+        if uhr() - start > frist_s:
+            print("Hinweis: KI-Frist abgelaufen, Rest folgt beim nächsten Lauf.")
+            break
+        try:
+            text, abschnitte = db.lade_anzeige(job_id)
+            if not text:
+                continue
+            try:
+                ergebnis = frage(kuerze_fuer_ki(abschnitte, text), GROSS)
+            except Ungueltig:
+                db.speichere_ki(job_id, None, "fehler", hashes[job_id])
+                erg["fehler"] += 1
+                continue
+            db.speichere_ki(job_id, ergebnis, GROSS, hashes[job_id])
+            erg["ausgewertet"] += 1
+        except (Erschoepft, GroqWeg) as e:
+            print(f"Hinweis: KI-Auswertung beendet ({type(e).__name__}: {e}), Rest folgt beim nächsten Lauf.")
+            break
+        except Exception as e:  # nur diese Stelle auslassen; sie bleibt in der Warteschlange
+            print(f"Hinweis: KI-Auswertung {job_id} fehlgeschlagen: {type(e).__name__}")
+    erg["wartend"] = len(schlange) - erg["ausgewertet"] - erg["fehler"]
+    return erg
+
+
+def nachfuellen(frage_ft=firma_titel):
+    """Teil C: Bewerbungen ohne Firma und Titel bekommen beides aus dem eingefuegten Anzeigentext. Gibt die Anzahl zurueck."""
+    n = 0
+    for a in db.bewerbungen_ohne_firma():
+        try:
+            firma, titel = frage_ft(a["snapshot_text"])
+        except (Erschoepft, GroqWeg) as e:
+            print(f"Hinweis: Nachfüllen beendet ({type(e).__name__}: {e}).")
+            break
+        except Exception as e:  # Ungueltig o. Ae.: der naechste Lauf versucht es erneut
+            print(f"Hinweis: Nachfüllen {a['id']} fehlgeschlagen: {type(e).__name__}")
+            continue
+        if firma or titel:
+            db.setze_firma_titel(a["id"], firma, titel)
+            n += 1
+    return n

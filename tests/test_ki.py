@@ -247,7 +247,7 @@ def test_anfrage_fuenf_minuten_429_ist_groqweg_nicht_erschoepft(text):
     with pytest.raises(ki.GroqWeg) as e:
         ki.anfrage("Text", ki.GROSS, post=post, schlaf=waits.append)
     assert not isinstance(e.value, ki.Erschoepft) and "429" in str(e.value) and "test-key" not in str(e.value)
-    assert waits == [60] * 5
+    assert waits == [60] * 4  # nach dem letzten Versuch keine Pause mehr
 
 
 @pytest.mark.parametrize("text", ["tokens per day (TPD)", "requests per day (RPD)"])
@@ -412,3 +412,161 @@ def test_json_validate_failed_fuehrt_zur_rueckfrage():
 def test_anderer_400_nennt_code():
     with pytest.raises(ki.GroqWeg, match="HTTP 400 model_decommissioned"):
         ki.anfrage("Text", ki.GROSS, post=poster(_fehler400("model_decommissioned")), schlaf=lambda s: None)
+
+
+# --- Warteschlange, Auswertung, Nachfuellen (Task 4) ---
+
+def test_warteschlange_reihenfolge():
+    h = "2026-11-12"
+    z = [dict(id="alt", text_hash="1", ki_hash=None, ki_modell=None, erstmals_gesehen="2026-11-01"),
+         dict(id="neu", text_hash="3", ki_hash=None, ki_modell=None, erstmals_gesehen=h),
+         dict(id="grenze", text_hash="7", ki_hash=None, ki_modell=None, erstmals_gesehen="2026-11-10"),
+         dict(id="geaendert", text_hash="4", ki_hash="alt", ki_modell=ki.GROSS, erstmals_gesehen="2026-10-01"),
+         dict(id="fertig", text_hash="5", ki_hash="5", ki_modell=ki.GROSS, erstmals_gesehen=h),
+         dict(id="kaputt", text_hash="6", ki_hash="6", ki_modell="fehler", erstmals_gesehen=h),
+         dict(id="b", text_hash="8", ki_hash=None, ki_modell=None, erstmals_gesehen="2026-11-01"),
+         dict(id="a", text_hash="9", ki_hash=None, ki_modell=None, erstmals_gesehen="2026-11-01")]
+    assert ki.warteschlange(z, h) == [("neu", 1), ("grenze", 1), ("geaendert", 1), ("a", 2), ("alt", 2), ("b", 2)]
+
+
+@pytest.fixture
+def kidb(monkeypatch):
+    from scraper import db
+    from tests.fakedb import FakeDB
+    fake = FakeDB()
+    monkeypatch.setattr(db, "_req", fake)
+
+    def stelle(id_, erstmals="2026-11-12", **kw):
+        fake.t["jobs"][id_] = {"id": id_, "unternehmen": "acme", "status": "offen", "sichtbar": True, "text": f"Text {id_}",
+                               "text_hash": f"h{id_}", "ki_hash": None, "ki_modell": None, "erstmals_gesehen": erstmals, **kw}
+    fake.stelle = stelle
+    return fake
+
+
+def test_auswerten_speichert_und_kuerzt(kidb):
+    abschn = [{"titel": "Aufgaben", "punkte": ["x" * 500]}, {"titel": "Über uns", "punkte": ["Werbung"]}]
+    kidb.stelle("1", abschnitte=abschn)
+    gesendet = []
+    erg = ki.auswerten("2026-11-12", frage=lambda t, m: gesendet.append((t, m)) or GUT)
+    assert erg == {"ausgewertet": 1, "fehler": 0, "wartend": 0}
+    assert gesendet == [(ki.kuerze_fuer_ki(abschn, "Text 1"), ki.GROSS)] and "Werbung" not in gesendet[0][0]
+    z = kidb.t["jobs"]["1"]
+    assert (z["ki_modell"], z["ki_hash"], z["studium"]) == (ki.GROSS, "h1", "ja")
+
+
+def test_auswerten_ungueltig_wird_fehler(kidb):
+    kidb.stelle("1")
+    kidb.stelle("2", erstmals="2026-11-11")
+
+    def frage(t, m):
+        if t == "Text 1":
+            raise ki.Ungueltig("kaputt")
+        return GUT
+    assert ki.auswerten("2026-11-12", frage=frage) == {"ausgewertet": 1, "fehler": 1, "wartend": 0}
+    z = kidb.t["jobs"]["1"]
+    assert (z["ki"], z["ki_modell"], z["ki_hash"]) == (None, "fehler", "h1")
+
+
+@pytest.mark.parametrize("ausnahme", [ki.Erschoepft(ki.GROSS), ki.GroqWeg("HTTP 401")])
+def test_auswerten_erschoepft_oder_weg_stoppt(kidb, ausnahme):
+    for i in "123":
+        kidb.stelle(i)
+    aufrufe = []
+
+    def frage(t, m):
+        aufrufe.append(t)
+        if len(aufrufe) == 2:
+            raise ausnahme
+        return GUT
+    assert ki.auswerten("2026-11-12", frage=frage) == {"ausgewertet": 1, "fehler": 0, "wartend": 2}
+    assert len(aufrufe) == 2 and kidb.t["jobs"]["2"]["ki_hash"] is None
+
+
+def test_auswerten_andere_ausnahme_naechste_stelle(kidb, capsys):
+    kidb.stelle("1")
+    kidb.stelle("2", erstmals="2026-11-11")
+
+    def frage(t, m):
+        if t == "Text 1":
+            raise KeyError("x")
+        return GUT
+    assert ki.auswerten("2026-11-12", frage=frage) == {"ausgewertet": 1, "fehler": 0, "wartend": 1}
+    assert "KeyError" in capsys.readouterr().out and kidb.t["jobs"]["1"]["ki_hash"] is None
+
+
+def test_auswerten_frist(kidb):
+    for i in "123":
+        kidb.stelle(i)
+    zeit = iter([0, 0, 50, 101, 200])
+    aufrufe = []
+    erg = ki.auswerten("2026-11-12", frage=lambda t, m: aufrufe.append(t) or GUT, frist_s=100, uhr=lambda: next(zeit))
+    assert len(aufrufe) == 2 and erg == {"ausgewertet": 2, "fehler": 0, "wartend": 1}
+
+
+def test_firma_titel_eigener_prompt():
+    post = poster(Antwort(content='{"firma": " Acme GmbH ", "titel": "Data Analyst (m/w/d)"}'))
+    assert ki.firma_titel("Anzeige", post=post, schlaf=lambda s: None) == ("Acme GmbH", "Data Analyst (m/w/d)")
+    body = post.aufrufe[0]["json"]
+    assert body["model"] == ki.GROSS and body["messages"][0]["content"] == ki.PROMPTS_FIRMA[ki.GROSS]
+    assert body["messages"][1] == {"role": "user", "content": "Anzeige"}
+    assert "firma" in ki.PROMPTS_FIRMA[ki.GROSS] and "titel" in ki.PROMPTS_FIRMA[ki.GROSS]
+
+
+@pytest.mark.parametrize("roh", ['{"firma": null}', '{"firma": 3, "titel": null}', "kein json", "[1]"])
+def test_firma_titel_ungueltig(roh):
+    with pytest.raises(ki.Ungueltig):
+        ki.firma_titel("Anzeige", post=poster(Antwort(content=roh)), schlaf=lambda s: None)
+
+
+def test_firma_titel_unbekanntes_modell():
+    with pytest.raises(ValueError, match="Kein System-Prompt"):
+        ki.firma_titel("Anzeige", ki.QWEN, post=poster(), schlaf=lambda s: None)
+
+
+def test_nachfuellen(kidb):
+    kidb.t["applications"] = [
+        {"id": "a1", "firma": None, "titel": None, "snapshot_text": "Anzeige 1"},
+        {"id": "a2", "firma": None, "titel": None, "snapshot_text": "Anzeige 2"},
+        {"id": "a3", "firma": None, "titel": None, "snapshot_text": "Anzeige 3"},
+        {"id": "a4", "firma": "Selbst", "titel": None, "snapshot_text": "Anzeige 4"}]
+    gesendet = []
+
+    def ft(text):
+        gesendet.append(text)
+        if text == "Anzeige 2":
+            raise ki.Ungueltig("x")
+        return ("Acme", "Dev") if text == "Anzeige 1" else (None, None)
+    assert ki.nachfuellen(frage_ft=ft) == 1
+    assert gesendet == ["Anzeige 1", "Anzeige 2", "Anzeige 3"]
+    assert kidb.t["applications"][0] == {"id": "a1", "firma": "Acme", "titel": "Dev", "snapshot_text": "Anzeige 1"}
+    assert kidb.t["applications"][2]["firma"] is None
+
+
+def test_nachfuellen_erschoepft_stoppt(kidb):
+    kidb.t["applications"] = [{"id": f"a{i}", "firma": None, "titel": None, "snapshot_text": f"A{i}"} for i in (1, 2)]
+    gesendet = []
+
+    def ft(text):
+        gesendet.append(text)
+        raise ki.Erschoepft(ki.GROSS)
+    assert ki.nachfuellen(frage_ft=ft) == 0 and gesendet == ["A1"]
+
+
+def test_json_validate_failed_ohne_inhalt_ist_ungueltig():
+    post = poster(_fehler400("json_validate_failed"), Antwort(content=json.dumps(GUT)))
+    with pytest.raises(ki.Ungueltig):
+        ki.frage_groq("Text", ki.GROSS, post=post, schlaf=lambda s: None)
+    assert len(post.aufrufe) == 1
+
+
+def test_tageslimit_gross_klein_egal():
+    with pytest.raises(ki.Erschoepft):
+        ki.anfrage("Text", ki.GROSS, post=poster(Antwort(429, text="Limit Tokens Per Day reached")), schlaf=lambda s: None)
+
+
+@pytest.mark.parametrize("body", [["kaputt"], "text", {"error": "nur text"}])
+def test_400_ohne_dict_ist_groqweg(body):
+    a = Antwort(400)
+    a._body = body
+    with pytest.raises(ki.GroqWeg, match="HTTP 400"):
+        ki.anfrage("Text", ki.GROSS, post=poster(a), schlaf=lambda s: None)

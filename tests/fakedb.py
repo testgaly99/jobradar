@@ -56,8 +56,8 @@ class FakeDB:
             rows.sort(key=lambda z: z["id"])
             rows = rows[params["offset"]:params["offset"] + params["limit"]]
             return [{k: z.get(k) for k in params["select"].split(",")} for z in rows]
-        elif method == "GET" and pfad == "jobs" and params.get("select") == "text":
-            return [{"text": z.get("text")} for z in self.t["jobs"].values() if z["id"] == params["id"][3:]]
+        elif method == "GET" and pfad == "jobs" and params.get("select") == "text,abschnitte":
+            return [{"text": z.get("text"), "abschnitte": z.get("abschnitte")} for z in self.t["jobs"].values() if z["id"] == params["id"][3:]]
         elif method == "PATCH" and pfad == "jobs" and "studium" in params:
             assert {k: v for k, v in params.items() if k != "select"} == {"studium": "eq.nein", "status": "eq.offen",
                                                                           "sichtbar": "eq.true"}

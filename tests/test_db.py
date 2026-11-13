@@ -254,13 +254,14 @@ def test_setze_firma_titel_ueberschreibt_getippten_titel_nicht(fake):
     assert fake.t["applications"][0] == {"id": "a1", "firma": None, "titel": "Getippt", "snapshot_text": "S"}
 
 
-def test_ki_kandidaten_und_lade_text(fake):
-    stelle(fake, "acme:1")
+def test_ki_kandidaten_und_lade_anzeige(fake):
+    stelle(fake, "acme:1", abschnitte=[{"titel": "Aufgaben", "punkte": ["a"]}])
     stelle(fake, "acme:2", status="geschlossen")
     stelle(fake, "acme:3", text=None)
     assert [z["id"] for z in db.ki_kandidaten()] == ["acme:1"]
-    assert db.lade_text("acme:1") == "T"
-    assert db.lade_text("acme:9") is None
+    assert db.lade_anzeige("acme:1") == ("T", [{"titel": "Aufgaben", "punkte": ["a"]}])
+    assert db.lade_anzeige("acme:2") == ("T", None)
+    assert db.lade_anzeige("acme:9") == (None, None)
 
 
 def test_ki_kandidaten_liest_seitenweise(fake, monkeypatch):

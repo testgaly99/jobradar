@@ -7,7 +7,7 @@ from datetime import date
 from pathlib import Path
 
 from scraper.ats import ADAPTER
-from scraper import db
+from scraper import db, ki
 from scraper.companies import lade_unternehmen
 from scraper.logo import hole_logo
 from scraper.steckbrief import steckbrief
@@ -74,6 +74,8 @@ def _markdown(bericht):
     for f in bericht["firmen"]:
         if f["gruende"]:
             z.append(f"- {f['name']} gefiltert: " + ", ".join(f"{g}: {n}" for g, n in f["gruende"].items()))
+    if bericht.get("ki"):
+        z.append("- KI: " + ", ".join(f"{k}: {v}" for k, v in bericht["ki"].items()))
     return "\n".join(z) + "\n"
 
 
@@ -90,6 +92,28 @@ def _logos(firmen):
         print(f"Hinweis: Logos fehlgeschlagen: {type(e).__name__}: {e}")
 
 
+def _ki(heute):
+    """Groq-Auswertung und Nachfuellen nur mit Migration 009 und Schluessel; 'nein' wird immer ausgeblendet.
+    Kein Schritt darf den Lauf kippen."""
+    erg = {}
+    try:
+        if not db.ki_spalten_da():
+            return {"hinweis": "Migration 009 fehlt, KI übersprungen"}
+        if not os.environ.get("GROQ_API_KEY"):
+            erg["hinweis"] = "GROQ_API_KEY fehlt, keine KI-Auswertung"
+        else:
+            for name, schritt in (("auswerten", lambda: erg.update(ki.auswerten(heute))),
+                                  ("nachfuellen", lambda: erg.update(nachgefuellt=ki.nachfuellen()))):
+                try:
+                    schritt()
+                except Exception as e:
+                    print(f"Hinweis: KI {name} fehlgeschlagen: {type(e).__name__}: {e}")
+        erg["ausgeblendet"] = db.nein_ausblenden()
+    except Exception as e:
+        print(f"Hinweis: KI-Schritt fehlgeschlagen: {type(e).__name__}: {e}")
+    return erg
+
+
 def lauf(heute, datenordner="data"):
     datenordner = Path(datenordner)
     firmen = lade_unternehmen(datenordner / "companies.csv")
@@ -97,8 +121,9 @@ def lauf(heute, datenordner="data"):
     db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
     _logos(firmen)
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in firmen if f["aktiv"] == "ja"]}
-    _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
     db.snapshot_nachruesten()  # nach allen Firmen
+    bericht["ki"] = _ki(heute)
+    _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
     db.speichere_lauf(bericht)
     return bericht
 
