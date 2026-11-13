@@ -361,3 +361,10 @@ def test_anfrage_unbekanntes_modell_fehler():
     with pytest.raises(ValueError, match="Kein System-Prompt"):
         ki.anfrage("Text", "irgendein/modell", post=post, schlaf=lambda s: None)
     assert post.aufrufe == []
+
+
+def test_anfrage_ausgabegrenze_je_modell():
+    post = poster(Antwort(content="a"), Antwort(content="b"))
+    ki.anfrage("Text", ki.GROSS, post=post, schlaf=lambda s: None)
+    ki.anfrage("Text", ki.QWEN, post=post, schlaf=lambda s: None)
+    assert [a["json"]["max_completion_tokens"] for a in post.aufrufe] == [1500, 900]
