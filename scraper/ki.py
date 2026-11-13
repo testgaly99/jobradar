@@ -10,10 +10,13 @@ import requests
 from . import db
 
 GROSS = "openai/gpt-oss-120b"
+QWEN = "qwen/qwen3.8-27b"
 URL = "https://api.groq.com/openai/v1/chat/completions"
 MAX_ZEICHEN = 12000
 VERSUCHE = 5
-PROMPT = (Path(__file__).parent / "ki_prompt.md").read_text(encoding="utf-8")
+# Jedes Modell hat seinen eigenen, darauf abgestimmten System-Prompt
+PROMPTS = {m: (Path(__file__).parent / datei).read_text(encoding="utf-8")
+           for m, datei in ((GROSS, "ki_prompt.md"), (QWEN, "ki_prompt_qwen.md"))}
 
 
 class Erschoepft(Exception):
@@ -96,9 +99,11 @@ def pruefe(roh: dict) -> dict:
 def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
     """Schickt den Text (oder eine fertige Nachrichtenliste ohne System-Prompt) an Groq
     und gibt (rohe Antwort, Modellname laut Groq) zurueck."""
+    if modell not in PROMPTS:
+        raise ValueError(f"Kein System-Prompt für Modell {modell!r} (bekannt: {', '.join(PROMPTS)})")
     db._lade_env()
     nachrichten = [{"role": "user", "content": text[:MAX_ZEICHEN]}] if isinstance(text, str) else text
-    body = {"model": modell, "messages": [{"role": "system", "content": PROMPT}, *nachrichten],
+    body = {"model": modell, "messages": [{"role": "system", "content": PROMPTS[modell]}, *nachrichten],
             "response_format": {"type": "json_object"}, "temperature": 0.2,
             "max_completion_tokens": 1500, "reasoning_effort": "low"}
     kopf = {"Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"}

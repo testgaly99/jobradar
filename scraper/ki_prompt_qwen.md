@@ -1,0 +1,26 @@
+Fasse die Stellenanzeige zusammen. Antworte nur mit diesem JSON-Objekt:
+{"sprache": "de"|"en", "aufgaben": [3 bis 5 Texte], "rahmen": [0 bis 4 Texte], "abschluss": Text oder null, "erfahrung": Text oder null, "muss": [0 bis 3 Texte], "benefits": [0 bis 2 Texte], "studium": "ja"|"nein"|"unklar", "taetigkeit": "anspruchsvoll"|"einfach"}
+
+Regeln:
+- Nur was in der Anzeige steht. Nichts erfinden. Nie einen Ort oder eine Stadt, in keinem Feld.
+- sprache: Sprache des Fließtexts (nicht des Titels). ALLE Texte in dieser Sprache: englische Anzeige = englische Texte. Nie übersetzen.
+- aufgaben: fachliche Aufgaben aus dem Arbeitsalltag. Nichts Banales wie präsentieren, Termine vereinbaren, mit Kunden sprechen, Teamarbeit. Kein Rahmen.
+- rahmen: kurz, nur diese Arten, wenn genannt (auch im Profil): befristet, Reisen, Sicherheitsüberprüfung, Büro-Tage/Präsenz, Gehalt. Nie Vollzeit, Urlaubstage, unbefristet, Flexibilität, Ort. Sonst leer.
+- abschluss: geforderter Abschluss kurz, auch Berufsausbildung (vocational training), sonst null.
+- erfahrung: JEDE geforderte Berufserfahrung in einer Rolle oder einem Fachgebiet, mit Jahren falls genannt, auch ohne Jahre (z. B. "Have delivered…", "Demonstrated experience…", "Berufserfahrung im Vertrieb"). Mehrere kurz zusammenfassen. null nur, wenn keine gefordert oder nur wünschenswert.
+- muss: bis zu 3 weitere fachliche PFLICHT-Kenntnisse (Wissen, Werkzeuge, Führerschein). Nie hinein: alles mit nice to have, ideally, a plus, preferred, wünschenswert, von Vorteil, idealerweise; Sprachkenntnisse; Abschluss; Rollen-Erfahrung; Rahmen; Soft Skills und Charakter (Auftreten, Verhandlung, negotiation, Kommunikation, Teamgeist, Arbeitsweise, Mindset). Lieber leer.
+- benefits: höchstens 2, NUR diese Arten: 4-Tage-Woche, Sabbatical, Mitarbeiterbeteiligung (equity, VSOP), mehr als 30 Urlaubstage, außergewöhnlich lange bezahlte Elternzeit. Alles andere nie (Obst, Laptop, Events, Weiterbildung, Flexibilität, Altersvorsorge, Bike-Leasing, Umzugshilfe, "wettbewerbsfähiges Gehalt"). Sonst leer.
+- studium: "ja", sobald die Anzeige ein Studium/Bachelor/Master/degree nennt, auch mit "oder vergleichbare Qualifikation" oder "oder Ausbildung". "unklar", wenn die Anzeige nichts zum Abschluss sagt und die Tätigkeit anspruchsvoll ist. "nein" nur, wenn ausschließlich eine Ausbildung oder kein Abschluss verlangt wird oder die Tätigkeit einfach ist. Keine Angabe ist NIE "nein".
+- taetigkeit: "anspruchsvoll" = qualifizierte Facharbeit (z. B. Entwicklung, Beratung, Analyse, Vertrieb komplexer Produkte). "einfach" = z. B. Lager, Empfang, Kasse, einfache Handarbeit.
+
+Beispiel 1:
+Data Analyst (m/w/d), befristet auf 2 Jahre, Vollzeit. Du baust Dashboards in Power BI, modellierst Absatzprognosen in Python und bereinigst Vertriebsdaten. Studium der Statistik oder kaufmännische Ausbildung, mind. 3 Jahre Erfahrung in der Datenanalyse, sehr gute SQL-Kenntnisse, fließend Deutsch, Verhandlungsgeschick. Wünschenswert: Tableau. 3 Tage pro Woche im Büro in Köln. Wir bieten Obst, Jobrad und 40 Urlaubstage.
+{"sprache": "de", "aufgaben": ["Dashboards in Power BI bauen", "Absatzprognosen in Python modellieren", "Vertriebsdaten bereinigen"], "rahmen": ["Befristet auf 2 Jahre", "3 Büro-Tage pro Woche"], "abschluss": "Studium Statistik oder kaufm. Ausbildung", "erfahrung": "3+ Jahre Datenanalyse", "muss": ["Sehr gute SQL-Kenntnisse"], "benefits": ["40 Urlaubstage"], "studium": "ja", "taetigkeit": "anspruchsvoll"}
+
+Beispiel 2:
+Backend Engineer. You will design REST APIs in Go, run PostgreSQL on AWS, build CI pipelines, own on-call rotations and present at demo days. You have delivered backend services in production, have strong Kubernetes skills, fluent English, strong negotiation skills, an ownership mindset, and can travel and obtain security clearance. Ideally Rust. Hybrid, 2 days a week in our Berlin office. Perks: competitive salary, pension plan, team events, 4-day week.
+{"sprache": "en", "aufgaben": ["Design REST APIs in Go", "Run PostgreSQL on AWS", "Build CI pipelines", "Own on-call rotations"], "rahmen": ["Travel", "Security clearance", "2 office days per week"], "abschluss": null, "erfahrung": "Delivering production backend services", "muss": ["Strong Kubernetes skills"], "benefits": ["4-day week"], "studium": "unklar", "taetigkeit": "anspruchsvoll"}
+
+Beispiel 3:
+Production Technician. Assemble and test drones and document each production step. Completed vocational training in electronics. Good soldering skills, some initial experience in production. Benefits: company pension, bike leasing.
+{"sprache": "en", "aufgaben": ["Assemble drones", "Test drones", "Document production steps"], "rahmen": [], "abschluss": "Vocational training in electronics", "erfahrung": "Initial experience in production", "muss": ["Good soldering skills"], "benefits": [], "studium": "nein", "taetigkeit": "einfach"}

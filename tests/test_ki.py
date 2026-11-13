@@ -230,7 +230,7 @@ def test_frage_groq_schickt_nur_text():
     ki.frage_groq("Anzeige" + "x" * 20000, ki.GROSS, post=post, schlaf=lambda s: None)
     body = post.aufrufe[0]["json"]
     assert [m["role"] for m in body["messages"]] == ["system", "user"]
-    assert body["messages"][0]["content"] == ki.PROMPT
+    assert body["messages"][0]["content"] == ki.PROMPTS[ki.GROSS]
     assert body["messages"][1]["content"].startswith("Anzeige") and len(body["messages"][1]["content"]) == 12000
     assert body["model"] == ki.GROSS and "test-key" not in json.dumps(body)
 
@@ -339,3 +339,25 @@ def test_probe_faengt_beliebige_fehler(tmp_path):
                    post=poster(Antwort(content=json.dumps(GUT)), KeyError("GROQ_API_KEY")), schlaf=lambda s: None)
     h = out.read_text(encoding="utf-8")
     assert len(zeilen) == 2 and "KeyError" in h and ">T0<" in h and ">T2<" not in h
+
+
+def test_probe_nutzt_angegebenes_modell(tmp_path):
+    from scraper.ki_probe import probe
+    post = poster(Antwort(content=json.dumps(GUT)))
+    probe([_stelle(1)], tmp_path / "p.html", post=post, schlaf=lambda s: None, modell=ki.QWEN)
+    body = post.aufrufe[0]["json"]
+    assert body["model"] == ki.QWEN and body["messages"][0]["content"] == ki.PROMPTS[ki.QWEN]
+
+
+def test_jedes_modell_eigene_promptdatei():
+    from pathlib import Path
+    ordner = Path(ki.__file__).parent
+    assert ki.PROMPTS[ki.GROSS] == (ordner / "ki_prompt.md").read_text(encoding="utf-8")
+    assert ki.PROMPTS[ki.QWEN] == (ordner / "ki_prompt_qwen.md").read_text(encoding="utf-8")
+
+
+def test_anfrage_unbekanntes_modell_fehler():
+    post = poster()
+    with pytest.raises(ValueError, match="Kein System-Prompt"):
+        ki.anfrage("Text", "irgendein/modell", post=post, schlaf=lambda s: None)
+    assert post.aufrufe == []

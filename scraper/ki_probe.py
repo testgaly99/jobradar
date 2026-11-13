@@ -1,5 +1,5 @@
 """Probe: 20 gemischte offene Stellen (gekuerzt per ki.kuerze_fuer_ki) an Groq schicken und die unveraenderten Antworten als HTML-Seite schreiben.
-Nur lesend (keine Schreibzugriffe auf die Datenbank). Aufruf: py -m scraper.ki_probe <ausgabe.html> [--stichprobe N]"""
+Nur lesend (keine Schreibzugriffe auf die Datenbank). Aufruf: py -m scraper.ki_probe <ausgabe.html> [--stichprobe N] [--modell NAME]"""
 import hashlib
 import html
 import json
@@ -99,7 +99,7 @@ def baue_html(zeilen) -> str:
             f'<h1>Groq-Probe</h1><table><tr>{kopf}</tr>{"".join(_zeile(s, e) for s, e in zeilen)}</table></body></html>')
 
 
-def probe(stellen, ausgabe, post=requests.post, schlaf=time.sleep):
+def probe(stellen, ausgabe, post=requests.post, schlaf=time.sleep, modell=ki.GROSS):
     zeilen = []
     for s in stellen:
         erg = {"fehler": "", "gueltig": False, "antworten": [], "felder": None, "gesendet": "",
@@ -108,7 +108,7 @@ def probe(stellen, ausgabe, post=requests.post, schlaf=time.sleep):
         try:
             try:
                 erg["gesendet"] = ki.kuerze_fuer_ki(s.get("abschnitte"), s.get("text") or "")
-                ki.frage_groq(erg["gesendet"], ki.GROSS, post=post, schlaf=schlaf, protokoll=erg["antworten"])
+                ki.frage_groq(erg["gesendet"], modell, post=post, schlaf=schlaf, protokoll=erg["antworten"])
                 erg["felder"] = json.loads(erg["antworten"][-1][0])
                 erg["gueltig"] = True
             except ki.Ungueltig:
@@ -130,4 +130,5 @@ def probe(stellen, ausgabe, post=requests.post, schlaf=time.sleep):
 
 if __name__ == "__main__":
     nr = int(sys.argv[sys.argv.index("--stichprobe") + 1]) if "--stichprobe" in sys.argv else 0
-    probe(waehle_probe(_lade_offene(), stichprobe=nr), sys.argv[1])
+    modell = sys.argv[sys.argv.index("--modell") + 1] if "--modell" in sys.argv else ki.GROSS
+    probe(waehle_probe(_lade_offene(), stichprobe=nr), sys.argv[1], modell=modell)
