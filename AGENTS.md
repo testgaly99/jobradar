@@ -11,6 +11,7 @@ Dieses Projekt wird hauptsächlich mit Claude Code gebaut. Arbeitest du (ein and
 
 ## 2. Harte Verbote (keine Ausnahme ohne ausdrückliche Zustimmung des Nutzers im Chat)
 - **Persönliche Daten und Geheimnisse:** Öffne, lies oder gib **nie** aus: `.env`, `web/.env.local`, irgendeine `*.env*`-Datei, Schlüssel, Tokens. Frage die Live-Datenbank **nie** ab (auch nicht lesend): Sie enthält persönliche Daten, und die dürfen laut `CLAUDE.md` nur über das Claude-Abo verarbeitet werden. Damit sind für dich auch alle Groq-Proben und Live-Läufe tabu.
+  - **Verlass dich nicht darauf, dass dein Werkzeug `.env`-Dateien von selbst ausschließt** (das ist ungeprüft). Schließe sie aktiv aus: keine Suche, kein Auflisten von Inhalten, kein Öffnen dieser Dateien, auch nicht „nur kurz zum Nachsehen“. Brauchst du einen Wert daraus, frag den Nutzer, welche Einstellung gemeint ist, ohne den Wert zu nennen.
 - **Nichts Unumkehrbares:** kein Push, kein Merge nach `main`, kein Force-Push, keine umgeschriebene Historie, keine gelöschten Daten, keine Änderung an der Live-Datenbank, keine Migration ausführen (Migrationen schreibst du nur als Datei; der Nutzer spielt sie selbst ein).
 - **Git:** nie `git add -A`, `git add .`, `git commit -a` oder `git add -f`; Dateien immer einzeln mit Pfad hinzufügen. Nichts aus `.superpowers/` ins Repo. Commits klein, deutsche Nachricht.
 - **Keine neuen Dienste, Konten, kostenpflichtigen APIs oder Pakete** ohne Zustimmung (`CLAUDE.md` 3 und 10).
