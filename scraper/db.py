@@ -96,7 +96,7 @@ def speichere_ki(job_id, ergebnis, modell, text_hash):
 
 def nein_ausblenden():
     """Blendet offene Stellen mit studium=nein aus (z. B. nach Nutzer-Korrektur). Gibt die Anzahl zurück."""
-    r = _req("PATCH", "jobs", params={"studium": "eq.nein", "status": "eq.offen", "sichtbar": "eq.true"},
+    r = _req("PATCH", "jobs", params={"studium": "eq.nein", "status": "eq.offen", "sichtbar": "eq.true", "select": "id"},
              json={"sichtbar": False}, headers={"Prefer": "return=representation"})
     return len(r or [])
 
@@ -107,8 +107,8 @@ def bewerbungen_ohne_firma():
 
 
 def setze_firma_titel(app_id, firma, titel):
-    # firma=is.null: hat der Nutzer inzwischen selbst etwas eingetragen, bleibt das unberührt
-    _req("PATCH", "applications", params={"id": f"eq.{app_id}", "firma": "is.null"}, json={"firma": firma, "titel": titel})
+    # firma/titel=is.null: hat der Nutzer inzwischen selbst etwas eingetragen, bleibt das unberührt
+    _req("PATCH", "applications", params={"id": f"eq.{app_id}", "firma": "is.null", "titel": "is.null"}, json={"firma": firma, "titel": titel})
 
 
 def firmen_ohne_logo():

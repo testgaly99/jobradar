@@ -111,6 +111,7 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
     if modell.startswith("openai/gpt-oss"):
         body["reasoning_effort"] = "low"  # qwen denkt ohne die Angabe nicht mit; mit ihr sprengt das Denken die Ausgabegrenze
     kopf = {"Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"}
+    letzte429 = ""
     pausen = [5, 15, 30]  # Wartezeiten bei Verbindungsabbruch/Timeout/5xx, danach GroqWeg
     for _ in range(VERSUCHE):
         try:
@@ -123,14 +124,17 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
             schlaf(pausen.pop(0))
             continue
         if r.status_code == 429:
-            if "per day" in r.text:
+            if re.search(r"per day|\b[TR]PD\b", r.text):  # nur das Tageslimit beendet die Auswertung; Minutenlimits sind voruebergehend
                 raise Erschoepft(modell)
+            letzte429 = r.text[:200]
             try:
                 warte = float(r.headers.get("retry-after", 10))
             except ValueError:
                 warte = 10
             schlaf(min(warte, 60))
             continue
+        if r.status_code == 413:  # eine einzelne Stelle ist zu gross: ueberspringen (Ungueltig), nicht abbrechen
+            raise Ungueltig("Anfrage zu groß für das Modell (HTTP 413).")
         if r.status_code >= 400:
             try:
                 fehler = r.json().get("error") or {}
@@ -142,7 +146,7 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
             raise GroqWeg(f"HTTP {r.status_code} {fehler.get('code', '')}".strip())
         j = r.json()
         return j["choices"][0]["message"]["content"], j.get("model", modell)
-    raise Erschoepft(modell)
+    raise GroqWeg(f"HTTP 429 {letzte429}".strip())
 
 
 def _auswerten(roh):

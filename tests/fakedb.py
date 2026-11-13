@@ -59,7 +59,9 @@ class FakeDB:
         elif method == "GET" and pfad == "jobs" and params.get("select") == "text":
             return [{"text": z.get("text")} for z in self.t["jobs"].values() if z["id"] == params["id"][3:]]
         elif method == "PATCH" and pfad == "jobs" and "studium" in params:
-            assert params == {"studium": "eq.nein", "status": "eq.offen", "sichtbar": "eq.true"}
+            assert {k: v for k, v in params.items() if k != "select"} == {"studium": "eq.nein", "status": "eq.offen",
+                                                                          "sichtbar": "eq.true"}
+            self.letzte_params = params
             treffer = [z for z in self.t["jobs"].values()
                        if z.get("studium") == "nein" and z["status"] == "offen" and z["sichtbar"]]
             for z in treffer:
@@ -72,9 +74,9 @@ class FakeDB:
             return [{"id": a["id"], "snapshot_text": a["snapshot_text"]} for a in self.t["applications"]
                     if a["firma"] is None and a["titel"] is None]
         elif method == "PATCH" and pfad == "applications":
-            assert params["firma"] == "is.null"
+            assert params["firma"] == params["titel"] == "is.null"
             for a in self.t["applications"]:
-                if a["id"] == params["id"][3:] and a["firma"] is None:
+                if a["id"] == params["id"][3:] and a["firma"] is None and a["titel"] is None:
                     a.update(json)
         elif method == "GET" and pfad == "jobs" and params.get("select") == "abschnitte,land,steckbrief":
             self.pruefungen += 1

@@ -231,6 +231,7 @@ def test_nein_ausblenden_nur_offene_sichtbare(fake):
     stelle(fake, "acme:3", studium="ja")
     stelle(fake, "acme:4", studium="nein", sichtbar=False)
     assert db.nein_ausblenden() == 1
+    assert fake.letzte_params["select"] == "id"
     assert [z["sichtbar"] for z in fake.t["jobs"].values()] == [False, True, True, False]
 
 
@@ -247,6 +248,12 @@ def test_nachfuellen_ueberschreibt_nichts(fake):
     assert fake.t["applications"][2]["firma"] == "F"
 
 
+def test_setze_firma_titel_ueberschreibt_getippten_titel_nicht(fake):
+    fake.t["applications"] = [{"id": "a1", "firma": None, "titel": "Getippt", "snapshot_text": "S"}]
+    db.setze_firma_titel("a1", "KI", "KI-Titel")
+    assert fake.t["applications"][0] == {"id": "a1", "firma": None, "titel": "Getippt", "snapshot_text": "S"}
+
+
 def test_ki_kandidaten_und_lade_text(fake):
     stelle(fake, "acme:1")
     stelle(fake, "acme:2", status="geschlossen")
@@ -254,6 +261,13 @@ def test_ki_kandidaten_und_lade_text(fake):
     assert [z["id"] for z in db.ki_kandidaten()] == ["acme:1"]
     assert db.lade_text("acme:1") == "T"
     assert db.lade_text("acme:9") is None
+
+
+def test_ki_kandidaten_liest_seitenweise(fake, monkeypatch):
+    monkeypatch.setattr(db, "SEITE", 1)
+    for i in (1, 2, 3):
+        stelle(fake, f"acme:{i}")
+    assert [z["id"] for z in db.ki_kandidaten()] == ["acme:1", "acme:2", "acme:3"]
 
 
 def test_ki_spalten_fehlen_gibt_false(fake, capsys):

@@ -240,10 +240,34 @@ def test_anfrage_gibt_roh_und_modell():
     assert ki.anfrage("Text", ki.GROSS, post=post, schlaf=lambda s: None) == ("irgendwas", "m-1")
 
 
-def test_anfrage_nach_fuenf_429_erschoepft():
-    post = poster(*[Antwort(429, header={"retry-after": "1"}) for _ in range(5)])
+@pytest.mark.parametrize("text", ["Request too large ... tokens per minute (TPM)", "output tokens per minute", ""])
+def test_anfrage_fuenf_minuten_429_ist_groqweg_nicht_erschoepft(text):
+    waits = []
+    post = poster(*[Antwort(429, header={"retry-after": "100"}, text=text) for _ in range(5)])
+    with pytest.raises(ki.GroqWeg) as e:
+        ki.anfrage("Text", ki.GROSS, post=post, schlaf=waits.append)
+    assert not isinstance(e.value, ki.Erschoepft) and "429" in str(e.value) and "test-key" not in str(e.value)
+    assert waits == [60] * 5
+
+
+@pytest.mark.parametrize("text", ["tokens per day (TPD)", "requests per day (RPD)"])
+def test_anfrage_tageslimit_sofort_erschoepft(text):
+    post = poster(Antwort(429, text=text))
     with pytest.raises(ki.Erschoepft):
         ki.anfrage("Text", ki.GROSS, post=post, schlaf=lambda s: None)
+    assert len(post.aufrufe) == 1
+
+
+def test_anfrage_minuten_429_dann_ok():
+    post = poster(Antwort(429, header={"retry-after": "3"}, text="tokens per minute (TPM)"), Antwort(content="ok"))
+    assert ki.anfrage("Text", ki.GROSS, post=post, schlaf=lambda s: None)[0] == "ok"
+
+
+def test_anfrage_413_ist_ungueltig_ohne_wiederholung():
+    post = poster(Antwort(413, text="Request too large for model"))
+    with pytest.raises(ki.Ungueltig) as e:
+        ki.anfrage("Text", ki.GROSS, post=post, schlaf=lambda s: None)
+    assert "zu groß" in str(e.value) and len(post.aufrufe) == 1
 
 
 def _fake_stellen():
