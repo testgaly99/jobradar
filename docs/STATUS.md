@@ -69,6 +69,13 @@ Stand: 2026-11-11
 - **Phase 4, Zusatzfirmen:** Die Tabelle `laeufe` (Laufberichte mit Firmennamen) ist für alle lesbar; private Zusatzfirmen dürfen dort nicht für andere sichtbar werden.
 
 ## Nächster Schritt
+**Stand 2026-11-14 (Groq-Paket, Zweig `entwurf-ui`, nichts hochgeladen):** Plan `docs/superpowers/plans/2026-11-12-groq-paket.md`, Design `docs/superpowers/specs/2026-11-12-groq-paket-design.md` (Abschnitt „Änderungen nach der Probe“ 1–12 geht dem Plan vor). Arbeitsprotokoll mit allen Entscheidungen: `.superpowers/sdd/2026-11-12-groq-paket/progress.md` (lokal, nicht im Repo).
+- Fertig und geprüft: Task 1–3 (Groq-Aufruf, Probe-Skript, Migration 009 live eingespielt), Task 5 (Kasten „Auf einen Blick“, Variante C), Task 4 (Auswertung im täglichen Lauf, Commit 107355b, Prüfung lief zuletzt).
+- In Arbeit: Task 6 (KI-Stand auf der Konto-Seite, Website).
+- Offen: Task 7 (Firma/Titel aus eingefügtem Text, Website-Teil), Task 8 (Abschluss).
+- Anleitung `scraper/ki_prompt.md` (gpt-oss-120b): bester Lauf 2/20 Fehler auf Stichprobe A; Ziel ≤ 1 Fehler auf A **und** B (`--stichprobe 1`). Nächste Ideen: Benefit-Begriffe zweisprachig, Gegenbeispiel „unbefristet/Vollzeit/idealerweise“ (gehört nicht in rahmen/muss), temperature 0. Backup `scraper/ki_prompt_qwen.md`: 2/20, dann 4/4; B offen. Prüfberichte im Scratchpad sind flüchtig; Fehlerarten stehen im Arbeitsprotokoll.
+- **Halte vor dem Weitermachen:** Der Nutzer liest die finale Probe (nur unveränderte Groq-Antworten) und sagt „passt“. Vor dem ersten Live-Schreiben der Auswertung fragen. Erst danach: GitHub-Secret `GROQ_API_KEY` (Nutzer), Hochladen nur nach „Ja, hochladen“.
+
 **2026-11-12:** Tracker-Paket mit Design-Entwurf (inkl. Migration 008) hochgeladen. Danach „Meine Bewerbungen“ (Board + Liste mit Detailspalte, Plan `docs/superpowers/plans/2026-11-12-meine-bewerbungen.md`), Firmenlogos in der Stellenliste und Paket „Öffentlicher Zugang“ (Migration 007, Impressum) aus `entwurf-ui` nach `main` übernommen und hochgeladen. Lokal läuft nur `localhost:3002`.
 
 Phase 2, 2b und das Firmen-Paket sind am 2026-11-11 nach `main` gemergt und hochgeladen. Der erste tägliche Lauf mit 12 Firmen läuft am 2026-11-12 um 05:00 (dauert ca. 40 Minuten). Das Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`) ist am 2026-11-11 als Code fertig. Als Nächstes: Migration 006 und Klicktest (To-dos 3, 12–14), danach das Groq-Paket; parallel die restlichen To-dos oben (Klicktest, Vercel).
