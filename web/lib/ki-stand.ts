@@ -10,3 +10,13 @@ export function kiStand(zeilen: Zeile[]): { wartend: number; fehler: number } {
   }
   return { wartend, fehler };
 }
+
+// Holt alle Zeilen seitenweise (PostgREST kappt bei 1000, auch mit limit()). Der Holer wirft bei Fehlern.
+export async function ladeAlle<T>(hole: (von: number, bis: number) => Promise<T[]>): Promise<T[]> {
+  const alle: T[] = [];
+  for (let von = 0; ; von += 1000) {
+    const seite = await hole(von, von + 999);
+    alle.push(...seite);
+    if (seite.length < 1000) return alle;
+  }
+}

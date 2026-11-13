@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { kiStand } from "@/lib/ki-stand";
+import { kiStand, ladeAlle } from "@/lib/ki-stand";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 import { selbstLoeschenErlaubt, nutzerZeilen } from "@/lib/nutzerliste";
@@ -24,15 +24,20 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
   const fz = await sb.from("listen_felder").select("felder").maybeSingle();
   const gewaehlt = waehleFelder(fz.error ? null : fz.data?.felder);
   // Nur für Admins, nur serverseitig: der Service-Key verlässt diesen Code nie. Ohne "text" (zu groß, nicht nötig).
-  let ki: { stand: ReturnType<typeof kiStand>; weg: { id: string; unternehmen: string | null; titel: string | null; url: string | null }[] } | "fehler" | null = null;
+  let ki: { stand: ReturnType<typeof kiStand>; weg: { id: string; unternehmen: string | null; titel: string | null; url: string | null }[]; wegAnzahl: number } | "fehler" | null = null;
   if (n?.admin) {
     try {
       const a = createAdminClient();
-      const [offen, weg] = await Promise.all([
-        a.from("jobs").select("text_hash,ki_hash,ki_modell").eq("status", "offen").limit(5000),
+      const [offen, weg, anzahl] = await Promise.all([
+        ladeAlle(async (von, bis) => {
+          const r = await a.from("jobs").select("text_hash,ki_hash,ki_modell").eq("status", "offen").order("id").range(von, bis);
+          if (r.error) throw r.error;
+          return r.data;
+        }),
         a.from("jobs").select("id,unternehmen,titel,url").eq("status", "offen").eq("studium", "nein").order("unternehmen").limit(500),
+        a.from("jobs").select("id", { count: "exact", head: true }).eq("status", "offen").eq("studium", "nein"),
       ]);
-      ki = offen.error || weg.error ? "fehler" : { stand: kiStand(offen.data ?? []), weg: weg.data ?? [] };
+      ki = weg.error || anzahl.error ? "fehler" : { stand: kiStand(offen), weg: weg.data ?? [], wegAnzahl: anzahl.count ?? 0 };
     } catch { ki = "fehler"; }
   }
   return (
@@ -99,12 +104,13 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
               <p>Noch {ki.stand.wartend} Anzeigen warten auf Auswertung.</p>
               {ki.stand.fehler > 0 && <p>{ki.stand.fehler} Anzeigen nicht auswertbar.</p>}
               <details className="klein">
-                <summary>Ausgeblendet wegen Studium: nein ({ki.weg.length})</summary>
+                <summary>Ausgeblendet wegen Studium: nein ({ki.wegAnzahl})</summary>
+                {ki.wegAnzahl > ki.weg.length && <p className="gedaempft klein">(die ersten {ki.weg.length})</p>}
                 {ki.weg.length ? (
                   <ul className="ausgeblendet">
                     {ki.weg.map((j) => (
                       <li key={j.id}>{j.unternehmen}: {j.url && /^https?:///i.test(j.url)
-                        ? <a href={j.url} target="_blank" rel="noopener noreferrer">{j.titel}</a> : j.titel}</li>
+                        ? <a href={j.url} target="_blank" rel="noopener noreferrer">{j.titel ?? j.url}</a> : j.titel}</li>
                     ))}
                   </ul>
                 ) : <p className="gedaempft">Keine.</p>}

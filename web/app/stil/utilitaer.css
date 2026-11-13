@@ -131,3 +131,5 @@
     --karte-rand: 0 solid transparent; --karte-innen: 0;
   }
 }
+
+.ausgeblendet { padding-left: 1.25em; overflow-wrap: anywhere; }
