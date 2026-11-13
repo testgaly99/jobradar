@@ -31,7 +31,8 @@ Nach **jeder** Änderung, im selben oder direkt folgenden Commit:
 2. `docs/ENTSCHEIDUNGEN.md`: jede Entscheidung mit Datum und einem Satz Begründung.
 3. Betrifft es Anforderungen oder Arbeitsweise: `CLAUDE.md` – aber **nur nach Rückfrage beim Nutzer**.
 4. Arbeitest du nach einem Plan: erledigte Schritte und Abweichungen im Plan bzw. im Arbeitsprotokoll vermerken (Abweichung immer mit Begründung).
-5. Ein Abschnitt **„Übergabe an Claude“** am Ende von `docs/STATUS.md`: welche Commits du gemacht hast, was getestet ist, was nicht, offene Fragen. Claude pflegt danach die Checkliste des Nutzers (ein Claude-Artifact, das du nicht ändern kannst).
+5. **Pflicht-Eintrag in `docs/agenten-protokoll.md`** (neueste oben, nach der Vorlage dort): Datum und Uhrzeit, Auftrag, alle Commits, geänderte Dateien, Tests mit Ergebnis, was nicht geprüft ist, jede Abweichung mit Begründung. Ohne diesen Eintrag gilt deine Arbeit als nicht abgegeben. Claude liest das Protokoll zu Beginn jeder Sitzung, prüft deine Commits und pflegt danach die Checkliste des Nutzers (ein Claude-Artifact, das du nicht ändern kannst).
+6. **Jede Commit-Nachricht endet mit der Zeile** `Agent: Codex` (bzw. deinem Namen). So findet Claude deine Commits auch, falls ein Protokoll-Eintrag fehlt.
 
 ## 5. Wie du mit dem Nutzer sprichst
 - Immer **Deutsch**. Der Nutzer ist Programmier-Anfänger.
