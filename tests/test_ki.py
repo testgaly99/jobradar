@@ -167,7 +167,33 @@ def test_frage_groq_tagesgrenze_ist_erschoepft():
 @pytest.mark.parametrize("fehler", [Antwort(503), requests.ConnectionError("weg"), requests.Timeout("lahm")])
 def test_frage_groq_serverfehler_ist_weg(fehler):
     with pytest.raises(ki.GroqWeg):
-        ki.frage_groq("Text", ki.GROSS, post=poster(fehler), schlaf=lambda s: None)
+        ki.frage_groq("Text", ki.GROSS, post=poster(*[fehler] * 4), schlaf=lambda s: None)
+
+
+def test_anfrage_wiederholt_bei_verbindungsabbruch():
+    post, waits = poster(requests.ConnectionError("x"), requests.ConnectionError("x"), Antwort(content="ok")), []
+    assert ki.anfrage("Text", ki.GROSS, post=post, schlaf=waits.append)[0] == "ok"
+    assert waits == [5, 15] and len(post.aufrufe) == 3
+
+
+def test_anfrage_gibt_nach_vier_abbruechen_auf():
+    post, waits = poster(*[requests.ConnectionError("x")] * 4), []
+    with pytest.raises(ki.GroqWeg):
+        ki.anfrage("Text", ki.GROSS, post=post, schlaf=waits.append)
+    assert len(post.aufrufe) == 4 and waits == [5, 15, 30]
+
+
+def test_anfrage_wiederholt_bei_5xx():
+    waits = []
+    assert ki.anfrage("Text", ki.GROSS, post=poster(Antwort(503), Antwort(content="ok")), schlaf=waits.append)[0] == "ok"
+    assert waits == [5]
+
+
+def test_anfrage_401_ohne_wiederholung():
+    post, waits = poster(Antwort(401)), []
+    with pytest.raises(ki.GroqWeg):
+        ki.anfrage("Text", ki.GROSS, post=post, schlaf=waits.append)
+    assert len(post.aufrufe) == 1 and waits == []
 
 
 def test_frage_groq_kaputtes_json_ist_ungueltig():

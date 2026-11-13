@@ -102,11 +102,17 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep):
             "response_format": {"type": "json_object"}, "temperature": 0.2,
             "max_completion_tokens": 1500, "reasoning_effort": "low"}
     kopf = {"Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"}
+    pausen = [5, 15, 30]  # Wartezeiten bei Verbindungsabbruch/Timeout/5xx, danach GroqWeg
     for _ in range(VERSUCHE):
         try:
             r = post(URL, headers=kopf, json=body, timeout=60)
+            if r.status_code >= 500:
+                raise requests.ConnectionError(f"HTTP {r.status_code}")
         except requests.RequestException as e:
-            raise GroqWeg(type(e).__name__) from e
+            if not pausen:
+                raise GroqWeg(type(e).__name__) from e
+            schlaf(pausen.pop(0))
+            continue
         if r.status_code == 429:
             if "per day" in r.text:
                 raise Erschoepft(modell)
