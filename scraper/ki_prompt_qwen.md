@@ -7,7 +7,7 @@ Regeln:
 - aufgaben: 3 bis 5 fachliche Aufgaben aus dem Arbeitsalltag. Nichts Banales (präsentieren, Termine, Teamarbeit, Seminare besuchen).
 - rahmen: NUR diese Arten, wenn genannt: befristet, Reisen, Sicherheitsüberprüfung, feste Zahl Büro-Tage, Gehalt. Nie: hybrid ohne Tageszahl, Vollzeit, unbefristet, Urlaubstage, Flexibilität, Hintergrundprüfung (background check), Ort. Sonst leer.
 - abschluss: geforderter Abschluss kurz, auch Berufsausbildung, sonst null.
-- erfahrung: jede geforderte Berufserfahrung in einer Rolle oder einem Fachgebiet, mit Jahren falls genannt, auch ohne Jahre ("Have delivered…", "Berufserfahrung im Vertrieb"). Nur das Pflicht-Teil, ohne "idealerweise …". null, wenn keine gefordert.
+- erfahrung: jede geforderte Berufserfahrung in einer Rolle oder einem Fachgebiet, mit Jahren falls genannt, auch ohne Jahre ("Have delivered…", "Berufserfahrung im Vertrieb"). Nur das Pflicht-Teil, ohne "idealerweise …". null, wenn keine gefordert. Interessen, Mindset oder "we are looking for someone who…" sind keine Erfahrung.
 - muss: bis zu 3 fachliche PFLICHT-Kenntnisse: Wissen, Werkzeuge, Technologien, Führerschein. Lieber leer als falsch. NIE in muss:
   - Sprachen (Deutsch, Englisch, fluent, Sprachkenntnisse, C1) – auch nicht, wenn Pflicht
   - Soft Skills und Charakter (Kommunikation, Auftreten, Verhandlung, business sense, Mindset, Arbeitsweise)
@@ -15,7 +15,10 @@ Regeln:
   - alles mit nice to have, ideally, a plus, preferred, wünschenswert, von Vorteil, idealerweise; bei "X, idealerweise Y" nur X nennen
   - Abschluss, Rahmen
 - benefits: höchstens 2, NUR: 4-Tage-Woche, Sabbatical, Mitarbeiterbeteiligung (equity, VSOP), mehr als 30 Urlaubstage, außergewöhnlich lange bezahlte Elternzeit. Alles andere nie. Sonst leer.
-- studium: "ja", sobald ein Studium/Bachelor/Master/degree genannt ist, auch "oder Ausbildung". "unklar", wenn die Anzeige nichts zum Abschluss sagt und die Tätigkeit anspruchsvoll ist. "nein" NUR, wenn ausschließlich Ausbildung oder kein Abschluss verlangt wird oder die Tätigkeit einfach ist. Steht nichts zum Abschluss da: NIE "nein".
+- studium, in dieser Reihenfolge prüfen:
+  1. Nennt die Anzeige ein Studium/Bachelor/Master/degree (auch "oder Ausbildung", "oder vergleichbar")? → "ja".
+  2. Verlangt sie ausdrücklich nur eine Ausbildung oder keinen Abschluss, oder ist taetigkeit "einfach"? → "nein".
+  3. Sonst, also wenn die Anzeige nichts zum Abschluss sagt (auch bei Vertrieb, Einstieg, "initial experience"): → "unklar".
 - taetigkeit: "anspruchsvoll" = qualifizierte Facharbeit (Entwicklung, Beratung, Analyse, Vertrieb). "einfach" = Lager, Empfang, Kasse, einfache Handarbeit.
 
 Beispiel 1:
