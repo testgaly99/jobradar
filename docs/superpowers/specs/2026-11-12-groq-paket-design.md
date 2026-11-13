@@ -50,6 +50,8 @@ Gehen Punkt 5 oben vor, wo sie widersprechen.
 9. **Nur relevante Teile der Anzeige senden (Nutzer 2026-11-13):** Abschnitte mit Firmenwerbung („Über uns“, „About us“) und Rechtstext (Datenschutz, Gleichstellung, Impressum) werden per Regel weggelassen; Aufgaben, Profil und Benefits gehen an Groq. Fallback auf den ganzen Text, wenn danach zu wenig übrig bleibt. Spart Kontingent.
 10. **Herausstechende Benefits:** neues Feld `benefits` (0–2), nur Ungewöhnliches (z. B. 4-Tage-Woche, Sabbatical, Mitarbeiterbeteiligung, deutlich mehr als 30 Urlaubstage), nie Standard wie Obst, Laptop, Team-Events. Sprache der Anzeige.
 
+11. **Jedes Modell hat seine eigene Anleitung (Nutzer 2026-11-13):** `ki_prompt.md` für `gpt-oss-120b`, `ki_prompt_qwen.md` für das Backup `qwen/qwen3.8-27b`; eine Anleitung wird nur für ihr Modell optimiert und geprüft. Ein Modell ohne eigene, bestandene Anleitung wird nicht benutzt.
+
 ## Nicht-Ziele
 CV-Abgleich, Filter nach Studium, Zusammenfassung für Gäste, Löschen von „nein“-Stellen, Prestige-Ausnahme anwenden, Zusammenfassung in der Stellenliste.
 
