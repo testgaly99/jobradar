@@ -35,21 +35,27 @@ class Ungueltig(Exception):
 SCHLUESSEL = ("aufgaben", "rahmen", "abschluss", "erfahrung", "muss", "benefits", "studium", "taetigkeit", "sprache")
 MIN_GEKUERZT = 400
 
-# Ueberschriften mit Firmenwerbung oder Rechtstext; Teilwort-Treffer, Gross-/Kleinschreibung egal.
-_WEG = re.compile(r"über uns|wer wir sind|about us|who we are|^(das |unser |the |our )?(unternehmen|company)"
-                  r"|datenschutz|privacy|data protection"
-                  r"|chancengleich|gleichstellung|gleichbehandlung|equal opportunit|equal employment|diversity|vielfalt"
-                  r"|impressum|kontakt|contact")
-# "Über <Firma>" / "About <Company>" weg, aber "Über die Stelle", "About the role", "About you" bleiben.
-_UEBER_FIRMA = re.compile(r"(über|about)\s(?!.*\b(stelle|job|rolle|role|position|you|dich|ihnen|aufgabe|task|team))")
+# Ueberschriften mit Firmenwerbung oder Rechtstext. Ganze Ueberschrift (fullmatch, klein, ohne Satzzeichen am Ende),
+# damit "Kundenkontakt", "Aufgabenvielfalt" oder "Company Benefits" erhalten bleiben.
+_WEG = re.compile(
+    r"(wir )?über uns|about us|wer wir sind|who we are"
+    r"|((das|unser) )?(unternehmen(sprofil)?|firma)|((the|our) )?company( profile)?"
+    r"|((our|unser|unsere) )?(datenschutz|privacy|data protection|impressum|chancengleichheit|gleichstellung"
+    r"|equal (employment )?opportunit|diversity|diversität).*"
+    r"|kontakt|contact( us)?|(ihr|dein|your) (kontakt|contact)|ansprechpartner(in)?"
+    # "Über <Firma>" / "About <Company>"; alles zu Stelle, Profil, Aufgaben oder Team bleibt
+    r"|(über|about) (?!.*\b(stelle|job|rolle|role|position|praktikum|internship|opportunity|profil|profile"
+    r"|aufgaben?|tasks?|team|you|dich|dir|ihnen|ihr|your)\b).+")
 
 
 def kuerze_fuer_ki(abschnitte: list | None, text: str) -> str:
-    """Nur die fuer die Zusammenfassung relevanten Abschnitte; zu wenig uebrig oder keine Abschnitte: ganzer Text."""
-    teile = [a["titel"] + ":\n" + "\n".join(f"- {p}" for p in a["punkte"]) for a in abschnitte or []
-             if not (_WEG.search(a["titel"].lower().strip()) or _UEBER_FIRMA.match(a["titel"].lower().strip()))]
-    kurz = "\n\n".join(teile)
-    return kurz if len(kurz) >= MIN_GEKUERZT else text
+    """Nur die fuer die Zusammenfassung relevanten Abschnitte. Ganzer Text, wenn es keine Abschnitte gibt, weniger als
+    MIN_GEKUERZT Zeichen uebrig bleiben oder mehr als die Haelfte der Punkte wegfiele (Sicherheitsnetz gegen Fehlgriffe)."""
+    abschnitte = abschnitte or []
+    behalten = [a for a in abschnitte if not _WEG.fullmatch(a["titel"].lower().strip().rstrip(":!?. "))]
+    alle, uebrig = (sum(len(a["punkte"]) for a in x) for x in (abschnitte, behalten))
+    kurz = "\n\n".join(a["titel"] + ":\n" + "\n".join(f"- {p}" for p in a["punkte"]) for a in behalten)
+    return kurz if len(kurz) >= MIN_GEKUERZT and uebrig * 2 >= alle else text
 
 
 # Die Meldungen gehen bei der Rueckfrage woertlich an Groq, daher kurz und konkret.

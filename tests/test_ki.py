@@ -83,7 +83,7 @@ LANG = "x" * 450
 
 def test_kuerze_laesst_firma_und_recht_weg():
     abschn = [{"titel": "Über uns", "punkte": ["Wir sind toll"]},
-              {"titel": "Deine Aufgaben", "punkte": ["Dashboards bauen", LANG]},
+              {"titel": "Deine Aufgaben", "punkte": ["Dashboards bauen", LANG, *"abcdefgh"]},
               {"titel": "Dein Profil", "punkte": ["SQL"]},
               {"titel": "Das bieten wir", "punkte": ["4-Tage-Woche"]},
               {"titel": "Wer wir sind", "punkte": ["Firmenwerbung"]},
@@ -104,7 +104,7 @@ def test_kuerze_laesst_firma_und_recht_weg():
 
 def test_kuerze_englisch_und_about_firma():
     abschn = [{"titel": "About Acme", "punkte": ["Acme is great"]}, {"titel": "About us", "punkte": ["us"]},
-              {"titel": "Who we are", "punkte": ["we"]}, {"titel": "About the role", "punkte": ["Build APIs", LANG]},
+              {"titel": "Who we are", "punkte": ["we"]}, {"titel": "About the role", "punkte": ["Build APIs", LANG, *"abdefgh"]},
               {"titel": "What you bring", "punkte": ["Go"]}, {"titel": "Equal Opportunity Employer", "punkte": ["eeo"]},
               {"titel": "Privacy Notice", "punkte": ["gdpr"]}, {"titel": "Our Diversity Statement", "punkte": ["div"]},
               {"titel": "Contact", "punkte": ["mail"]}, {"titel": "The Company", "punkte": ["co"]},
@@ -113,6 +113,30 @@ def test_kuerze_englisch_und_about_firma():
     assert "About the role:" in t and "What you bring:\n- Go" in t and "About you:\n- curious" in t
     for weg in ("Acme", "About us", "Who we are", "eeo", "gdpr", "div", "mail", "- co", "voll"):
         assert weg not in t
+
+
+@pytest.mark.parametrize("titel", [
+    "Kundenkontakt und Beratung", "Dein Kontakt zu Kunden", "Your contact at work", "Aufgabenvielfalt",
+    "Deine Vielfalt an Aufgaben", "Unternehmen & Aufgaben", "Company Benefits", "Über das Praktikum",
+    "About the opportunity", "Über Ihr Profil", "Dein Profil", "About the team", "Über den Job", "Beschreibung"])
+def test_kuerze_behaelt(titel):
+    assert ki.kuerze_fuer_ki([{"titel": titel, "punkte": [LANG]}], "voll").startswith(titel + ":\n- x")
+
+
+@pytest.mark.parametrize("titel", [
+    "Über uns", "Wir über uns", "Über das Unternehmen", "Über die Firma", "About us", "About the company", "About Acme",
+    "Über Acme GmbH", "Das Unternehmen", "Unser Unternehmen", "Unternehmensprofil", "The company", "Company",
+    "Wer wir sind:", "Who we are", "Datenschutz", "Datenschutzhinweise", "Privacy Notice", "Chancengleichheit",
+    "Equal Opportunity Employer", "Our Diversity Statement", "Diversität", "Impressum", "Kontakt", "Contact us",
+    "Dein Kontakt", "Ansprechpartnerin"])
+def test_kuerze_verwirft(titel):
+    assert ki.kuerze_fuer_ki([{"titel": titel, "punkte": [LANG]}], "voll") == "voll"
+
+
+def test_kuerze_mehr_als_haelfte_weg_ist_ganzer_text():
+    abschn = [{"titel": "Aufgaben", "punkte": [LANG, "a"]}, {"titel": "Über uns", "punkte": ["u1", "u2", "u3"]}]
+    assert ki.kuerze_fuer_ki(abschn, "voll") == "voll"
+    assert ki.kuerze_fuer_ki(abschn[:1] + [{"titel": "Über uns", "punkte": ["u1", "u2"]}], "voll") != "voll"
 
 
 @pytest.mark.parametrize("abschn", [None, [], [{"titel": "Aufgaben", "punkte": ["kurz"]}],
