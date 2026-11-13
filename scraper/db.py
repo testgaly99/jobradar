@@ -55,6 +55,62 @@ def _spalten_da():
     return _spalten
 
 
+def ki_spalten_da():
+    """Gibt es jobs.ki schon (Migration 009)? Sonst antwortet PostgREST mit 400."""
+    try:
+        _req("GET", "jobs", params={"select": "ki", "limit": 0})
+        return True
+    except RuntimeError as e:
+        if ": 400 " not in str(e):
+            raise
+        print("Hinweis: Spalte jobs.ki fehlt (Migration 009 offen), KI-Auswertung übersprungen.")
+        return False
+
+
+def ki_kandidaten():
+    """Offene Stellen mit Text, seitenweise gelesen."""
+    zeilen = []
+    while True:
+        teil = _req("GET", "jobs", params={"select": "id,text_hash,ki_hash,ki_modell,erstmals_gesehen", "status": "eq.offen",
+                                           "text": "not.is.null", "order": "id", "limit": SEITE, "offset": len(zeilen)})
+        zeilen += teil
+        if len(teil) < SEITE:
+            return zeilen
+
+
+def lade_text(job_id):
+    z = _req("GET", "jobs", params={"select": "text", "id": f"eq.{job_id}"})
+    return z[0]["text"] if z else None
+
+
+def speichere_ki(job_id, ergebnis, modell, text_hash):
+    """ergebnis=None (Fehler): nur Modell/Hash vermerken. studium/taetigkeit liegen in eigenen Spalten, 'nein' blendet aus."""
+    patch = {"ki": None, "ki_modell": modell, "ki_hash": text_hash}
+    if ergebnis:
+        patch["ki"] = {k: v for k, v in ergebnis.items() if k not in ("studium", "taetigkeit")}
+        patch["studium"], patch["taetigkeit"] = ergebnis["studium"], ergebnis["taetigkeit"]
+        if ergebnis["studium"] == "nein":
+            patch["sichtbar"] = False
+    _req("PATCH", "jobs", params={"id": f"eq.{job_id}"}, json=patch)
+
+
+def nein_ausblenden():
+    """Blendet offene Stellen mit studium=nein aus (z. B. nach Nutzer-Korrektur). Gibt die Anzahl zurück."""
+    r = _req("PATCH", "jobs", params={"studium": "eq.nein", "status": "eq.offen", "sichtbar": "eq.true"},
+             json={"sichtbar": False}, headers={"Prefer": "return=representation"})
+    return len(r or [])
+
+
+def bewerbungen_ohne_firma():
+    z = _req("GET", "applications", params={"select": "id,snapshot_text", "firma": "is.null", "titel": "is.null"})
+    return [a for a in z if a["snapshot_text"]]
+
+
+def setze_firma_titel(app_id, firma, titel):
+    # firma=is.null: hat der Nutzer inzwischen selbst etwas eingetragen, bleibt das unberührt
+    _req("PATCH", "applications", params={"id": f"eq.{app_id}", "firma": "is.null"}, json={"firma": firma, "titel": titel})
+
+
 def firmen_ohne_logo():
     """Namen aller Firmen ohne logo_url. Fehlt die Spalte (Migration 006 offen), Hinweis und leere Menge."""
     try:

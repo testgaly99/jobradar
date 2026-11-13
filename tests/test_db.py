@@ -192,3 +192,72 @@ def test_unveraendert_wird_in_paketen_gepatcht(fake, monkeypatch):
     assert db.schreibe("A", [], "2026-11-08", unveraendert=ids) == (0, 0)
     assert len(patches) == 3 and all(len(fake_in(p)) <= 2 for p in patches)
     assert {z["zuletzt_gesehen"] for z in fake.t["jobs"].values()} == {"2026-11-08"}
+
+
+ERG = {"aufgaben": ["a"], "rahmen": ["r"], "abschluss": "x", "erfahrung": "y", "muss": ["m"],
+       "benefits": ["b"], "studium": "ja", "taetigkeit": "einfach", "sprache": "de"}
+
+
+def stelle(fake, id_="acme:1", **kw):
+    fake.t["jobs"][id_] = {"id": id_, "unternehmen": "acme", "status": "offen", "sichtbar": True,
+                           "text": "T", "text_hash": "h", "erstmals_gesehen": "2026-11-01", **kw}
+
+
+def test_speichere_ki_ja_bleibt_sichtbar(fake):
+    stelle(fake)
+    db.speichere_ki("acme:1", ERG, "modell", "h")
+    z = fake.t["jobs"]["acme:1"]
+    assert z["ki"] == {k: v for k, v in ERG.items() if k not in ("studium", "taetigkeit")}
+    assert (z["studium"], z["taetigkeit"], z["ki_modell"], z["ki_hash"], z["sichtbar"]) == ("ja", "einfach", "modell", "h", True)
+
+
+def test_speichere_ki_nein_blendet_aus(fake):
+    stelle(fake)
+    db.speichere_ki("acme:1", {**ERG, "studium": "nein"}, "modell", "h")
+    assert fake.t["jobs"]["acme:1"]["sichtbar"] is False
+
+
+def test_speichere_ki_fehler_ohne_ergebnis(fake):
+    stelle(fake)
+    db.speichere_ki("acme:1", None, "fehler", "h")
+    z = fake.t["jobs"]["acme:1"]
+    assert (z["ki"], z["ki_modell"], z["ki_hash"], z["sichtbar"]) == (None, "fehler", "h", True)
+    assert "studium" not in z
+
+
+def test_nein_ausblenden_nur_offene_sichtbare(fake):
+    stelle(fake, "acme:1", studium="nein")
+    stelle(fake, "acme:2", studium="nein", status="geschlossen")
+    stelle(fake, "acme:3", studium="ja")
+    stelle(fake, "acme:4", studium="nein", sichtbar=False)
+    assert db.nein_ausblenden() == 1
+    assert [z["sichtbar"] for z in fake.t["jobs"].values()] == [False, True, True, False]
+
+
+def test_nachfuellen_ueberschreibt_nichts(fake):
+    fake.t["applications"] = [{"id": "a1", "firma": None, "titel": None, "snapshot_text": "S"},
+                              {"id": "a2", "firma": "Alt", "titel": "T", "snapshot_text": "S"},
+                              {"id": "a3", "firma": None, "titel": None, "snapshot_text": ""}]
+    assert [a["id"] for a in db.bewerbungen_ohne_firma()] == ["a1"]
+    fake.t["applications"][0]["firma"] = "Inzwischen"  # Nutzer war schneller
+    db.setze_firma_titel("a1", "KI", "KI-Titel")
+    assert fake.t["applications"][0]["firma"] == "Inzwischen"
+    assert fake.t["applications"][0]["titel"] is None
+    db.setze_firma_titel("a3", "F", "T")
+    assert fake.t["applications"][2]["firma"] == "F"
+
+
+def test_ki_kandidaten_und_lade_text(fake):
+    stelle(fake, "acme:1")
+    stelle(fake, "acme:2", status="geschlossen")
+    stelle(fake, "acme:3", text=None)
+    assert [z["id"] for z in db.ki_kandidaten()] == ["acme:1"]
+    assert db.lade_text("acme:1") == "T"
+    assert db.lade_text("acme:9") is None
+
+
+def test_ki_spalten_fehlen_gibt_false(fake, capsys):
+    assert db.ki_spalten_da() is True
+    fake.ohne_ki_spalten = True
+    assert db.ki_spalten_da() is False
+    assert "009" in capsys.readouterr().out
