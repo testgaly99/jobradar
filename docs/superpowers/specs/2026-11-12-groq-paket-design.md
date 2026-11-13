@@ -36,6 +36,15 @@ Anzeigen sind lange Textwände (Median rund 4.700 Zeichen). Der Nutzer will auf 
    - Groq gar nicht erreichbar → Bewerbung wird so gespeichert, wie sie ist (Firma/Titel leer, wenn nicht eingetragen); der tägliche Lauf füllt sie nach, sobald Groq wieder geht. *(vom Nutzer bestätigt 2026-11-12)*
 9. **Admin auf der Konto-Seite:** „Noch X Anzeigen warten auf Auswertung“, Anzahl vorläufiger Zusammenfassungen, Liste der wegen „Studium: nein“ ausgeblendeten Stellen zum Gegenprüfen.
 
+## Änderungen nach der Probe (Nutzer, 2026-11-13)
+Gehen Punkt 5 oben vor, wo sie widersprechen.
+1. **Antwortformat zum Überfliegen:** `aufgaben` (3–5), `abschluss` (geforderter Abschluss als eigener Stichpunkt, z. B. „Studium Informatik o. ä.“, sonst null), `erfahrung` (geforderte Berufserfahrung **mit Jahreszahl, wenn die Anzeige sie nennt**, sonst null), `muss` (0–3 weitere Muss-Anforderungen ohne Abschluss, Erfahrung und Sprachen), `studium`, `taetigkeit`, `sprache`. Erfahrungsjahre werden also doch wiederholt.
+2. **„Studium: unklar“ bleibt sichtbar** (nur „nein“ wird ausgeblendet; bestätigt).
+3. **Studium „ja“, sobald die Anzeige ein Studium ausdrücklich fordert**, auch wenn „oder vergleichbare Qualifikation“ folgt. Probe-Fehler: „Presales Solution Engineer“ und „Account Manager IT“ wurden trotz ausdrücklicher Studiumsforderung „unklar“.
+4. **„Ungültig“ erscheint nie auf der Website.** Ist eine Antwort ungültig, wird Groq einmal mit dem konkreten Fehler zurückgefragt („6 statt höchstens 5 Punkte“), dann das nächste Modell; erst danach gilt die Anzeige als nicht auswertbar und zeigt „Zusammenfassung folgt“-ähnlichen neutralen Text, nie das Wort „ungültig“.
+5. **System-Prompt so kompakt wie möglich**, weil das Modell schwächer ist als Claude: kurze Regeln, ein Beispiel statt zwei, keine Wiederholungen.
+6. **Darstellung:** Aufgaben und Voraussetzungen (Abschluss, Erfahrung, Muss) **nebeneinander**, kompakt, einklappbar, modern nach aktuellen UI/UX-Vorbildern („sieht aus wie von einem Profi gebaut“). Vor dem Bau ein Klick-Entwurf zur Freigabe.
+
 ## Nicht-Ziele
 CV-Abgleich, Filter nach Studium, Zusammenfassung für Gäste, Löschen von „nein“-Stellen, Prestige-Ausnahme anwenden, Zusammenfassung in der Stellenliste.
 
