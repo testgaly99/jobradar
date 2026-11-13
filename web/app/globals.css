@@ -242,6 +242,23 @@ details.karte > summary { font-weight: var(--weight-strong); }
 details.karte > summary:hover, .filterblock > summary:hover, .gruppe > summary:hover { background: var(--color-paper-2); }
 details.karte > summary:hover::before, .filterblock > summary:hover::before, .gruppe > summary:hover::before { color: var(--color-ink); }
 .filterblock[open] > summary { margin-bottom: var(--space-xs); }
+/* KI-Kasten "Auf einen Blick": Stern links, Hinweis und Winkel rechts; Chips, darunter Aufgaben | Voraussetzungen (3:2, schmal untereinander) */
+.ueberblick { margin-block: var(--space-md); }
+.ueberblick > summary h2 { font-size: var(--text-md); }
+details.karte.ueberblick > summary::before { order: 1; }
+.ueberblick-stern { color: var(--color-accent); }
+.ueberblick-hinweis { margin-left: auto; color: var(--color-muted); font-size: var(--text-sm); font-weight: var(--weight-regular); }
+.ueberblick .chip { white-space: normal; }
+.chip-benefit { background: var(--color-benefit); color: var(--color-benefit-ink); }
+.ueberblick-spalten { display: grid; gap: var(--space-md) var(--space-lg); margin-top: var(--space-md); }
+@media (min-width: 40rem) { .ueberblick-spalten { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } }
+.ueberblick-spalten h3 { margin-bottom: var(--space-xs); font-size: var(--text-xs); font-weight: var(--weight-strong); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-muted); }
+.ueberblick-spalten ul { padding-left: 1.25em; }
+.ueberblick-spalten li + li { margin-top: var(--space-2xs); }
+.ueberblick-spalten li::marker { color: var(--color-accent); }
+.ueberblick-spalten .haken { list-style: none; padding-left: 0; }
+.haken li { display: grid; grid-template-columns: 1.25em minmax(0, 1fr); }
+.haken li::before { content: "✓" / ""; color: var(--color-accent); font-weight: var(--weight-strong); }
 .filterform { display: grid; gap: var(--space-md); padding-bottom: var(--space-md); }
 .filteraktionen { display: grid; gap: var(--space-xs); }
 .gruppe { border-top: var(--rule-hair) solid var(--color-rule); }

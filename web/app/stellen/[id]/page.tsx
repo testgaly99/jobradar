@@ -9,6 +9,7 @@ import { firmenTrend } from "@/lib/firmentrend";
 import { modellText, FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
 import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
+import { leseKi, voraussetzungen } from "@/lib/zusammenfassung";
 import { merken, beworben, entmerken } from "../actions";
 import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
@@ -32,7 +33,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   // Anzeigentext, wichtige Punkte, Merk-Status und "Über <Firma>" nur für Angemeldete.
   const firma = j.unternehmen ?? "";
   const leer = { data: null, error: null };
-  const [tx, ab, sbr, wp, app, lf, schonBeworben] = await Promise.all([
+  const [tx, ab, sbr, wp, app, lf, schonBeworben, kr] = await Promise.all([
     nutzer ? sb.from("jobs").select("text").eq("id", id).maybeSingle() : leer,
     nutzer ? sb.from("jobs").select("abschnitte").eq("id", id).maybeSingle() : leer,
     sb.from("jobs").select("steckbrief").eq("id", id).maybeSingle(),
@@ -40,6 +41,8 @@ export default async function Seite({ params, searchParams }: { params: Promise<
     nutzer ? sb.from("applications").select("id,status").eq("job_id", id).limit(1).maybeSingle() : leer,
     nutzer ? sb.from("laeufe").select("datum,bericht").order("datum", { ascending: false }).limit(120) : { data: [] },
     nutzer ? bewerbungenBei(sb, firma) : 0,
+    // Gäste haben kein Leserecht auf ki (Migration 009); die Abfrage würde scheitern.
+    nutzer ? sb.from("jobs").select("ki,ki_modell").eq("id", id).maybeSingle() : leer,
   ]);
   const text: string | null = tx.data?.text ?? null;
   const heute = heuteLokal();
@@ -57,12 +60,47 @@ export default async function Seite({ params, searchParams }: { params: Promise<
     steckbrief: leseSteckbrief(sbr.error ? null : sbr.data?.steckbrief),
   }, [...FELDER]);
   const link = sicher(j.url);
+  const ki = leseKi(kr.data?.ki);
+  const mitbringen = ki ? voraussetzungen(ki) : [];
 
   return (
     <>
       <p><Link href="/stellen">Alle Stellen</Link></p>
       <h1>{j.titel}</h1>
       <p className="firma" style={{ "--firma-h": firmenFarbe(j.unternehmen) } as React.CSSProperties}>{j.unternehmen}</p>
+      {nutzer && (
+        <details className="karte ueberblick" open>
+          <summary>
+            <span className="ueberblick-stern" aria-hidden="true">★</span>
+            <h2>Auf einen Blick</h2>
+            <span className="ueberblick-hinweis">KI-Zusammenfassung</span>
+          </summary>
+          {ki ? (
+            <div lang={ki.sprache}>
+              {ki.rahmen.length + ki.benefits.length > 0 && (
+                <ul className="chips">
+                  {ki.rahmen.map((r) => <li key={r} className="chip">{r}</li>)}
+                  {ki.benefits.map((b) => <li key={b} className="chip chip-benefit">★ {b}</li>)}
+                </ul>
+              )}
+              <div className="ueberblick-spalten">
+                <section aria-labelledby="ki-aufgaben">
+                  <h3 id="ki-aufgaben" lang="de">Das machst du</h3>
+                  <ul>{ki.aufgaben.map((a) => <li key={a}>{a}</li>)}</ul>
+                </section>
+                {mitbringen.length > 0 && (
+                  <section aria-labelledby="ki-mitbringen">
+                    <h3 id="ki-mitbringen" lang="de">Das bringst du mit</h3>
+                    <ul className="haken">{mitbringen.map((m) => <li key={m}>{m}</li>)}</ul>
+                  </section>
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className="gedaempft">{kr.data?.ki_modell === "fehler" ? "Für diese Anzeige gibt es keine Zusammenfassung." : "Zusammenfassung folgt."}</p>
+          )}
+        </details>
+      )}
       {eintraege.length > 0 && (
         <section className="steckbrief karte" aria-labelledby="steckbrief-titel">
           <h2 id="steckbrief-titel">Steckbrief</h2>

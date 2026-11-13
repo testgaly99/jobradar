@@ -18,6 +18,9 @@
   --weight-regular: 400; --weight-strong: 600; --weight-display: 700;
   --leading-body: 1.5; --leading-head: 1.2; --leading-prose: 1.65;
   --tracking-display: -0.01em;
+  --tracking-label: 0.06em;
+  /* KI-Kasten "Auf einen Blick": Benefits im Grünton von "gemerkt" (dort schon auf Kontrast geprüft, hell und dunkel) */
+  --color-benefit: var(--color-gemerkt); --color-benefit-ink: var(--color-gemerkt-ink);
 
   /* Formen */
   --radius-control: 8px; --radius-card: 10px; --radius-chip: 999px; --radius-mark: 3px; --rule-hair: 1px;
