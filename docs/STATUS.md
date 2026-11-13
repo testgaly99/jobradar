@@ -51,6 +51,15 @@ Stand: 2026-11-11
 22. ~~**GitHub-Werkzeug anmelden**~~ **Erledigt 2026-11-13**, geprüft; (`gh auth login`, Anmeldung im Browser; Checkliste Aufgabe 17). Warum: Claude kann Lauf-Protokolle selbst lesen. Optional danach: Vercel nur lesend, erst nach Prüfung der aktuellen Vercel-Doku durch Claude.
 
 ## Offene To-dos für spätere Phasen
+- **Phase 4, Mistral prüfen (Wunsch Nutzer 2026-11-13), als Alternative oder Ergänzung zu Groq:**
+  1. *Bedingungen an der Quelle prüfen* (offizielle Mistral-Doku und Nutzungsbedingungen, kein Vorwissen): Gratis-Tarif „Experiment“ noch vorhanden? Echte Grenzen (Anfragen/Sekunde, Tokens/Minute und /Monat) aus dem eigenen Konto ablesen. Training mit Eingaben, Speicherdauer, Serverstandort, erlaubte Nutzung (automatisiert, privat, nicht-kommerziell), Pausierung bei Inaktivität, Ablauf von Schlüsseln (CLAUDE.md 3.3).
+  2. *Konto:* legt der Nutzer selbst an (Handynummer nötig, Zustimmung nach CLAUDE.md 10); Schlüssel `MISTRAL_API_KEY` nur in `.env` und als GitHub-Secret.
+  3. *Modelle:* passende Kandidaten (z. B. Mistral Medium/Large/Small) auswählen; jedes bekommt eine **eigene Anleitung** (`ki_prompt_<modell>.md`, Regel 2026-11-13).
+  4. *Qualität:* dieselbe Probe wie bei Groq, Stichprobe A und B mit je 20 Anzeigen; bestanden = höchstens 1 echter Fehler je Stichprobe. Der Nutzer liest die unveränderten Antworten.
+  5. *Durchsatz:* real messen, wie viele Anzeigen pro Tag gratis gehen, gegen den Bedarf (Erstbestand ~10.000, neue Anzeigen pro Tag).
+  6. *Zuverlässigkeit:* eine Woche Probebetrieb neben Groq (Fehlerquote, Ausfälle, Antwortzeit).
+  7. *Datenregel:* nur öffentliche Anzeigentexte an Mistral, **nie** Teil C (vom Nutzer eingefügter Text), solange Eingaben im Gratis-Tarif zum Training dienen dürfen.
+  8. *Entscheidung mit dem Nutzer* anhand einer Vergleichstabelle Groq vs. Mistral (Qualität, Durchsatz, Bedingungen, Risiken): ersetzen, ergänzen oder nein. Erst dann CLAUDE.md 3.2 und 5 anpassen.
 - **Weitere Groq-Modelle prüfen (Auftrag Nutzer 2026-11-13, sobald Kapazität frei):** Mit der fertigen Anleitung dieselbe Probe (Stichprobe A und B, je 20 Anzeigen) für andere Groq-Modelle laufen lassen, z. B. `qwen/qwen3.8-27b`. Bestanden = höchstens 1 echter Fehler je Stichprobe. Nur bestandene Modelle dürfen als zusätzliches Kontingent dazukommen. Jedes Modell hat ein eigenes Tageslimit, die Probe kostet also kein Kontingent des großen Modells.
 - **Phase 4, KI-Durchsatz (Frage 2026-11-13):** Bei rund 10.000 Stellen reicht das Groq-Gratis-Kontingent (≈ 100 Anzeigen/Tag mit `gpt-oss-120b`) nicht für den Erstbestand. Zu Beginn von Phase 4 klären: nur relevante Abschnitte senden (Aufgaben/Profil statt ganzer Text), Vorrang nach Filterprofil, Auswertung beim Öffnen einer Stelle, weitere Groq-Modelle mit eigenem Kontingent nach eigener Probe, Batch-API im Gratis-Tarif prüfen.
 - **Phase 3 (Gmail):** Erinnerungs-Mail an den Admin (`ADMIN_EMAIL`) einrichten, sobald die jährlichen Hand-Quellen der Rankings (trendence, Universum, LinkedIn) fällig sind. Bis dahin erinnert ein GitHub-Issue (Entscheidung 2026-11-10, CLAUDE.md 4.8).
