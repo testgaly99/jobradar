@@ -6,13 +6,14 @@ import { anlegenAusJob, aufBeworben, type JobZeile } from "@/lib/bewerbung-anleg
 import { heuteLokal } from "@/lib/filter";
 import { holeStelle, sucheTitel, type Stelle } from "@/lib/ats-abruf";
 import { textZuLang } from "@/lib/uebernahme";
+import { erkenneFirmaTitel } from "@/lib/groq";
 
 type Ergebnis = { brauchtEingabe: true } | { fehler: string };
 type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; job?: JobZeile | null };
 
 // text: eingefügter Anzeigentext, nur wenn es keinen Text aus Stellenliste oder ATS gibt. Es wird nichts abgerufen, was GESPERRT ist.
 // Neue Bewerbungen starten als beworben (gemerkt nur über "Merken" in der Stellenliste).
-// Ohne Link: Firma und Titel sind Pflicht. Mit Link: eingetragene Firma/Titel gehen vor, der Rest kommt aus dem Link.
+// Ohne Link: Firma und Titel sind Pflicht, außer es gibt Anzeigentext (dann Groq, sonst leer; der nächtliche Lauf füllt nach). Mit Link: eingetragene Firma/Titel gehen vor, der Rest kommt aus dem Link.
 export async function bewerbungAusLink(url: string, firma?: string, titel?: string, text?: string): Promise<Ergebnis> {
   text = text?.replace(/\r\n/g, "\n").trim();
   if (text && textZuLang(text)) return { fehler: "Der Anzeigentext ist zu lang (höchstens 50.000 Zeichen)." };
@@ -22,9 +23,14 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   const heute = heuteLokal();
   const NEU = { status: "beworben", beworben_am: heute };
   if (!url.trim()) {
-    if (!firma?.trim() || !titel?.trim()) return { fehler: "Bitte einen Link einfügen oder Firma und Titel eintragen." };
+    let f = firma?.trim() ?? "", t = titel?.trim() ?? "";
+    if ((!f || !t) && !text) return { fehler: "Bitte einen Link einfügen, Anzeigentext einfügen oder Firma und Titel eintragen." };
+    if ((!f || !t) && text) {
+      const e = await erkenneFirmaTitel(text);
+      f ||= e?.firma ?? ""; t ||= e?.titel ?? "";
+    }
     const { data, error } = await sb.from("applications")
-      .insert({ firma: firma.trim(), titel: titel.trim(), snapshot_text: text || null, ...NEU }).select("id").single();
+      .insert({ firma: f || null, titel: t || null, snapshot_text: text || null, ...NEU }).select("id").single();
     if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
     redirect(`/bewerbung/${data.id}`);
   }
@@ -119,4 +125,14 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   }).select("id").single();
   if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
   redirect(`/bewerbung/${data.id}`);
+}
+
+// Vorschlag für die Felder im Formular; nur für angemeldete Nutzer. Das Wort "ungültig" erscheint hier nie.
+export async function firmaTitelVorschlag(text: string): Promise<{ firma: string; titel: string } | { fehler: string }> {
+  const sb = await createClient();
+  const { data: claims } = await sb.auth.getClaims();
+  if (!claims?.claims) return { fehler: "Bitte melde dich an." };
+  const t = text?.trim();
+  const e = t && !textZuLang(t) ? await erkenneFirmaTitel(t) : null;
+  return e ?? { fehler: "Firma und Titel konnten nicht erkannt werden. Bitte selbst eintragen." };
 }
