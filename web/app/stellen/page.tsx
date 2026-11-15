@@ -11,8 +11,11 @@ import FilterBlock from "./filterblock";
 import FilterClient from "./filter-client";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 import FirmenLogo from "../firmenlogo";
+import Ranglisten from "../ranglisten";
+import { ladeRankingKatalog, ladeRankingZuordnungen, rankingFilter, rankingHinweis } from "@/lib/rankings";
 
 const TITEL: Record<Gruppe, string> = {
+  liste: "Liste",
   groesse: "Größe", kategorie: "Branche", level: "Erfahrungslevel", modell: "Arbeitsmodell",
   vertrag: "Vertragsart", bereich: "Funktion", firma: "Unternehmen", stadt: "Stadt", land: "Land",
 };
@@ -36,9 +39,12 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const fa: Facetten = fac.error ? {} : (fac.data ?? {});
   const nutzer = await aktuellerNutzer();
   // Besucher ohne Konto dürfen den Anzeigentext nicht lesen (Migration 007): Suche und Ausschluss nur im Titel.
-  const f = { ...landNurMitFacette(roh, !!fa.land), ...(nutzer ? {} : { volltext: false }) };
+  const katalog = await ladeRankingKatalog(sb, !!nutzer);
+  const f = rankingFilter(landNurMitFacette(roh, !!fa.land), !!nutzer);
+  const listenHinweis = rankingHinweis(f, katalog);
+  const listeGesperrt = !!listenHinweis && f.liste.length > 0;
   const [ergebnis, lauf, erster] = await Promise.all([
-    stellenAbfrage(sb, f),
+    listeGesperrt ? { data: [], count: 0, error: null } : stellenAbfrage(sb, f),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
     sb.from("laeufe").select("datum").order("datum", { ascending: true }).limit(1).maybeSingle(), // fehlt die Tabelle: nur 3-Tage-Regel
   ]);
@@ -57,6 +63,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   // Steckbrief-Spalte und Felder-Tabelle gibt es erst nach Migration 005: Fehler ergibt leeren Steckbrief bzw. Standardfelder.
   const felderZeile = nutzer ? await sb.from("listen_felder").select("felder").maybeSingle() : { data: null, error: null };
   const felder = waehleFelder(felderZeile.error ? null : felderZeile.data?.felder);
+  const ranglisten = await ladeRankingZuordnungen(sb, !!nutzer && katalog.verfuegbar, jobs.map((j) => j.unternehmen));
   const logos = new Map<string, string>();
   if (jobs.length) {
     const ids = jobs.map((j) => j.id);
@@ -83,6 +90,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
         </p>
       </div>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+      {listenHinweis && <p className="meldung hinweis" role="status">{listenHinweis} <Link href={filterZuUrl({ ...f, liste: [], sort: f.sort === "rang" ? "neu" : f.sort, seite: 1 })}>Listenfilter zurücksetzen</Link></p>}
+      {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
       {ergebnis.error && ergebnis.error.code !== "PGRST103" && <p className="meldung fehler">Stellen konnten nicht geladen werden.</p>}
       <div className="stellen-layout">
         <aside className="filterleiste">
@@ -113,6 +122,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   <option value="firma">Firma A bis Z</option>
                   <option value="titel">Titel A bis Z</option>
                   <option value="groesse">Größe</option>
+                  {nutzer && f.liste.length === 1 && !listeGesperrt && <option value="rang">Rang in der Liste</option>}
                 </select>
               </label>
               <fieldset className="gruppe">
@@ -129,7 +139,21 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               <div className="filteraktionen">
                 <Link className="knopf knopf-rand" href="/stellen">Filter zurücksetzen</Link>
               </div>
-              {GRUPPEN.map((g) => {
+              {nutzer && (katalog.listen.length > 0 || f.liste.length > 0) && (
+                <details className="gruppe" open>
+                  <summary>Liste{f.liste.length > 0 && ` (${f.liste.length})`}</summary>
+                  <div className="optionen">
+                    {[...new Set([...katalog.listen.map((l) => l.id), ...f.liste])].map((id) => {
+                      const l = katalog.listen.find((l) => l.id === id);
+                      return <label key={id} className="option">
+                        <input type="checkbox" name="liste" value={id} defaultChecked={f.liste.includes(id)} />
+                        <span>{l ? `${l.name} (${l.anzahl})` : `Nicht mehr verfügbar: ${id}`}</span>
+                      </label>;
+                    })}
+                  </div>
+                </details>
+              )}
+              {GRUPPEN.filter((g) => g !== "liste").map((g) => {
                 const werte = fa[g] ?? {};
                 // Gewählte Werte bleiben sichtbar, auch wenn sie in den Zahlen fehlen
                 const namen = facettenSortieren(g, [...new Set([...Object.keys(werte), ...f[g]])]
@@ -155,7 +179,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
         </aside>
 
         <section aria-label="Stellen">
-          {(!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
+          {!listeGesperrt && (!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
           <ul className="stellenliste" id="stellenliste">
             {jobs.map((j) => {
               const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;
@@ -178,6 +202,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       {bekannt(j.abteilung) && <span className="gedaempft">{j.abteilung}</span>}
                       {neu && <span className="chip chip-neu" title="Seit höchstens 3 Tagen online">Neu</span>}
                     </p>
+                    <Ranglisten zuordnungen={ranglisten.zuordnungen.filter((z) => z.unternehmen === j.unternehmen)} />
                     {kurz.length > 0 && (
                       <ul className="kurz" aria-label="Kurzbeschreibung">
                         {kurz.map((e) => <li key={e.feld}>{e.text}</li>)}

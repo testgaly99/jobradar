@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { GROESSEN_REIHENFOLGE, ausschlussBedingungen, ausschlussWoerter, onlineSeitGrenze, suchBedingung, type Filter } from "./filter";
+import { GROESSEN_REIHENFOLGE, ausschlussBedingungen, ausschlussWoerter, onlineSeitGrenze, suchBedingung, type Filter } from "./filter.ts";
 
 // Postgres-Array-Literal mit Anführungszeichen, damit Kommas in Werten ("Luft- & Raumfahrt, Verteidigung") nicht trennen.
 const arr = (l: string[]) => `{${l.map((s) => `"${s.replace(/[\\"]/g, "\\$&")}"`).join(",")}}`;
@@ -10,10 +10,15 @@ export const SPALTEN =
 
 // Eine Abfrage aus dem Filter. companies!inner + aktiv=true blendet Stellen inaktiver Firmen aus.
 export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
-  let q = sb.from("jobs").select(SPALTEN, { count: "exact" })
-    .eq("status", "offen").eq("sichtbar", true).eq("companies.aktiv", true);
-  if (f.groesse.length) q = q.in("companies.groesse_klasse", f.groesse);
-  if (f.kategorie.length) q = q.overlaps("companies.kategorie", arr(f.kategorie));
+  const mitListe = f.liste.length > 0;
+  // Die Funktion liefert eine Zeile je Stelle. PostgREST filtert, zählt und sortiert global, erst dann folgt range().
+  let q = mitListe
+    ? sb.rpc("ranking_stellen", { p_listen: f.liste }, { count: "exact" })
+      .select(SPALTEN.replace("companies!inner(groesse_klasse,kategorie,aktiv)", "companies"))
+    : sb.from("jobs").select(SPALTEN, { count: "exact" })
+      .eq("status", "offen").eq("sichtbar", true).eq("companies.aktiv", true);
+  if (f.groesse.length) q = q.in(mitListe ? "groesse_klasse" : "companies.groesse_klasse", f.groesse);
+  if (f.kategorie.length) q = q.overlaps(mitListe ? "kategorie" : "companies.kategorie", arr(f.kategorie));
   if (f.level.length) q = q.in("erfahrungslevel", f.level);
   if (f.modell.length) q = q.in("arbeitsmodell", f.modell);
   if (f.vertrag.length) q = q.in("vertragsart", f.vertrag);
@@ -30,7 +35,8 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   for (const b of ausschlussBedingungen(ausschlussWoerter(f.ohne), f.volltext)) q = q.or(b);
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
   const von = (f.seite - 1) * PRO_SEITE;
-  const o = f.sort === "firma" ? q.order("unternehmen").order("id")
+  const o = f.sort === "rang" && f.liste.length === 1 ? q.order("rang", { nullsFirst: false }).order("unternehmen").order("id")
+    : f.sort === "firma" ? q.order("unternehmen").order("id")
     : f.sort === "titel" ? q.order("titel").order("id")
     : q.order("erstmals_gesehen", { ascending: false }).order("id");
   return o.range(von, von + PRO_SEITE - 1);

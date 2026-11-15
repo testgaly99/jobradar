@@ -10,6 +10,19 @@
 
 **Spec:** `docs/superpowers/specs/2026-11-12-groq-paket-design.md`
 
+## Übergabestand 2026-11-14 (Codex)
+
+**2026-11-15:** Nutzer verschiebt die finale Probe auf später. Das Groq-Paket bleibt ohne Abschluss-/Live-Freigabe; unabhängig davon ist der technische Ranking-Unterbau freigegeben und lokal umgesetzt (Plan `docs/plans/2026-11-15-ranking-grundlage.md`, echte Quellen später mit Claude). Das ist keine Freigabe für Groq oder Live-Datenbankzugriffe.
+
+Dieser Abschnitt aktualisiert den Fortschritt; die ursprünglichen Einzelschritte unten bleiben als Bauanleitung erhalten. Maßgeblich für Format und Modellwahl sind die späteren Änderungen im Design.
+
+- Tasks 1, 3–7: Code vorhanden, einschließlich Abschluss-Fixes bis `7dc2941`; keine Funktionsänderungen in der Codex-Sitzung.
+- Task 2: finale Probe A+B und „passt“ fehlen weiterhin; vom Nutzer bestätigt. Groq-Proben und Live-Zugriffe erfolgen gemäß `AGENTS.md` durch Claude Code.
+- Task 4, Step 6: erster Live-Auswertungslauf weiter ohne Freigabe, nicht durchgeführt.
+- Tasks 5–7: Browser-Klicktests nach freigegebenem Live-Lauf offen.
+- Task 8: STATUS, Entscheidungen und Agentenprotokoll aktualisiert. 352 Python-Offline-Tests, 143 Website-Tests und Typprüfung grün. Produktions-Build, `/ponytail-review`, Browser-Klicktests und Claude-Artifact in dieser Sitzung nicht ausgeführt bzw. bearbeitet; kein vollständiger Paketabschluss.
+- Python-Prüfung abweichend vom ursprünglichen Befehl: Live-Testmodule per `--ignore` ausgeschlossen, Laden der Zugangsdaten deaktiviert, echte HTTP-Anfragen gesperrt; die Module lesen sonst Zugangsdaten bereits beim Import.
+
 ## Global Constraints
 
 - An Groq gehen nur Anzeigentexte (Stellen bzw. vom Nutzer eingefügter Anzeigentext), nie Namen, E-Mails, Notizen oder andere Nutzerdaten.

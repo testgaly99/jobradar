@@ -2,6 +2,9 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-15 | Ranking-Unterbau lokal mit künstlichen Daten geprüft; SQL-Ausführung vor Anwendung separat in isolierter Datenbank nachweisen. Noch keine Import-/Ersetzungsschnittstelle und keine echten Quellen. | Kein lokales PostgreSQL verfügbar; Browser- und HTTP-Ersatzantworten belegen weder Datenbankrechte noch SQL-Verhalten. Nutzungsumfang und fristgerechte Löschung gehören ins spätere Quellenpaket. |
+| 2026-11-15 | Nutzer gibt die Vorbereitung von Filterstruktur und Datenbank für Rankings frei; Auswahl konkreter Rankings wird auf später mit Claude verschoben. | Technischer Unterbau und Quellenauswahl lassen sich getrennt bearbeiten; ohne aktive Ranking-Daten bleibt die bisherige Stellenansicht nutzbar. |
+| 2026-11-15 | Nutzer verschiebt die finale Groq-Probe auf später und beauftragt den Beginn eines anderen Arbeitspakets. Vorbereitung von Phase 4 mit einem Planvorschlag für Ranglisten-Zuordnung und Filter; dessen Umsetzung noch nicht freigegeben. | Die Ranglisten-Grundlage lässt sich ohne Groq und ohne persönliche Daten vorbereiten; Groq-Freigaben werden dadurch nicht erteilt. |
 | 2026-11-07 | Repo **öffentlich**, Website über **GitHub Pages** | Kein zweiter Dienst. Actions sind für öffentliche Repos kostenlos. Im Repo stehen nur öffentliche Stellenanzeigen. |
 | 2026-11-07 | Seite für **Handy und Laptop** (passt sich der Bildschirmgröße an) | Beide Geräte werden gleich oft genutzt. |
 | 2026-11-07 | Abruf **1× täglich automatisch** (ca. 5–6 Uhr), dazu manueller Start | Reicht für die Jobsuche und schont die Unternehmensseiten. |
@@ -73,3 +76,4 @@
 | 2026-11-13 | **Groq: nur `gpt-oss-120b`, nur relevante Abschnitte, Feld für herausstechende Benefits.** Kein Überlauf auf das kleine Modell; Firmenwerbung und Rechtstext werden nicht gesendet. | Qualität vor Menge; weniger Text spart Kontingent (≈ doppelter Durchsatz). |
 | 2026-11-13 | **Mistral wird in Phase 4 als Alternative/Ergänzung zu Groq geprüft** (Kriterien in STATUS.md); OpenRouter nein (gratis nur 50 Anfragen/Tag, mehr erst nach Kauf von 10 $ Guthaben). | Mistrals Gratis-Tarif hat laut Drittquellen ein Vielfaches des Groq-Kontingents; Eingaben dürfen dort aber zum Training dienen, daher nur öffentliche Anzeigentexte. |
 | 2026-11-14 | **Andere KI-Agenten protokollieren, Claude prüft:** Einträge in `docs/agenten-protokoll.md`, Commit-Zeile `Agent: <Name>`; Claude prüft zu Beginn jeder Sitzung. | Sicherheitsnetz, falls z. B. Codex Regeln übersieht; Commit-Kennzeichnung findet Änderungen auch ohne Protokoll-Eintrag. |
+| 2026-11-14 | Codex prüft das Groq-Paket lokal ohne Zugangsdaten; Live-Testmodule werden vor dem Einsammeln ausgeschlossen und echte HTTP-Anfragen im Python-Lauf gesperrt. Finale Probe bleibt offen (vom Nutzer bestätigt). | Die Live-Testmodule laden lokale Zugangsdaten schon beim Import; bloßes Abwählen über den Testmarker genügt daher nicht für die Grenze aus AGENTS.md. |

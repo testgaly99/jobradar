@@ -1,9 +1,9 @@
 // Reine Funktionen: URL <-> Filter. Mehrfachwerte stehen als wiederholte Parameter (?stadt=A&stadt=B).
-export const GRUPPEN = ["groesse", "kategorie", "level", "modell", "vertrag", "bereich", "firma", "stadt", "land"] as const;
+export const GRUPPEN = ["liste", "groesse", "kategorie", "level", "modell", "vertrag", "bereich", "firma", "stadt", "land"] as const;
 export type Gruppe = (typeof GRUPPEN)[number];
 export const SEIT_WERTE = ["heute", "3", "7", "30"] as const;
 export type Seit = (typeof SEIT_WERTE)[number];
-export const SORTIERUNG = ["neu", "firma", "titel", "groesse"] as const;
+export const SORTIERUNG = ["neu", "firma", "titel", "groesse", "rang"] as const;
 export type Sortierung = (typeof SORTIERUNG)[number];
 export type Filter = Record<Gruppe, string[]> & { q: string; ohne: string; volltext: boolean; seit: Seit | ""; seite: number; sort: Sortierung };
 type Params = Record<string, string | string[] | undefined>;

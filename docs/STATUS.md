@@ -1,6 +1,6 @@
 # STATUS
 
-Stand: 2026-11-11
+Stand: 2026-11-15
 
 ## Was funktioniert (Phase 1, 2 und 2b, Code fertig)
 - Täglicher Lauf per GitHub Actions („Täglicher Lauf“, 04:00 UTC): ruft die Stellen von 4 Firmen ab (Helsing, The Exploration Company, Taktile, telli), schreibt sie in Supabase und legt `data/bericht.md` ab.
@@ -13,6 +13,19 @@ Stand: 2026-11-11
 - Tests: `py -m pytest` und `npm test` in `web/`.
 
 - Tracker-Paket (Code fertig 2026-11-11, braucht Migration 006): Board mit Drag-and-drop (Maus, Finger, Tastatur), Rückgängig-Hinweis (8 s), Archiv-Fläche mit Ergebnis-Fenster, Runden R1–R4, Kommentar, Seitenfenster für Bewerbungen, Filter ohne Knopf und Sortierung auf `/stellen`, „Diese Woche“, Reiter „Auswertung“, Firmenlogos (vom täglichen Lauf geholt).
+
+## Ranking-Unterbau (lokaler Code vorbereitet, Datenbankprüfung offen)
+- Plan `docs/plans/2026-11-15-ranking-grundlage.md`: Migration `010_rankings.sql` als Datei, drei Ranglistentabellen mit Gastschutz, getrennte Datenbankfunktionen für Listen/Zahlen/Firmenzuordnung und gefilterte Stellen. Keine Migration ausgeführt, keine echten Rankings eingetragen.
+- Neutraler Offline-Validator in `scraper/rankings.py`: ausdrückliche Zuordnung bekannter Firmen, eindeutige Ränge je Firma/Ausgabe, Datumsgrenzen und sichere normalisierte Quelladressen. Keine Import-/Schreibschnittstelle; diese folgt im Quellenpaket mit atomarer Ersetzung und Bereinigung.
+- Website: „Liste“ vor Größe/Branche, ODER bei mehreren Listen, Rangsortierung bei genau einer Liste, Quellen-/Lizenzangaben in Liste und Detailseite. Ohne aktive Daten bleibt der Filter unsichtbar; Gäste erhalten keine Ranking-Abfragen. Ungültige Liste oder fehlende Einrichtung ergibt einen Hinweis statt ungefilterter Treffer.
+- Neu geprüft am 2026-11-15: **430 Python-Offline-Tests, 153 Webtests, Typprüfung und isolierter Produktions-Build (Webpack) bestanden.** Chrome-Klicktests mit künstlichen Serverantworten auf Laptop-/Handygröße bestanden; unabhängige Codeprüfung abgeschlossen. Testserver beendet, keine Zugangsdaten geladen, keine Live-Zugriffe oder Veröffentlichung.
+- **Offen vor Anwendung:** `tests/sql/rankings.sql` in isolierter PostgreSQL-Testdatenbank ausführen; aktuelle Umgebung hat kein PostgreSQL/Docker. Tatsächliche Datenbankrechte, SQL-Ausgabewechsel und globale Rangsortierung sowie Zusammenspiel mit echtem PostgREST daher noch unbestätigt. Quellen später mit Claude auswählen; vor Aktivierung Nutzungskreis und fristgerechte Bereinigung absichern.
+
+## Groq-Paket (lokaler Code fertig, finale Probe offen)
+- Zusammenfassung auf der Stellenseite, Auswertung im täglichen Lauf, KI-Stand für Admins im Konto und Firma/Titel aus eingefügtem Anzeigentext sind eingebaut (Tasks 1, 3–7; letzter Code-Commit `7dc2941`). Ausschließlich `openai/gpt-oss-120b`; bei erschöpftem Kontingent wartet der Rest.
+- Abschlusskorrekturen: leere Groq-Antworten, frühzeitiges Ausblenden von „Studium: nein“, keine wartenden Anzeigen ohne Text, keine Organisations-ID aus 429-Rohantworten im Laufprotokoll und Schutz selbst eingetragener Firma/Titel.
+- Codex-Prüfung am 2026-11-14: 352 Python-Offline-Tests und 143 Website-Tests bestanden; Typprüfung ohne Fehler. Keine Prüfung der tatsächlichen KI-Qualität oder Live-Funktion. Der Nutzer bestätigt: finale Probe steht noch aus.
+- Offen: finale Probe A+B (höchstens 1 echter Fehler je 20 Anzeigen), „passt“, gesondert freigegebener erster Live-Auswertungslauf und Browser-Klicktests. Kein Hochladen erfolgt.
 
 ## Bekannte Probleme
 - 12 der 13 Firmen in `data/companies.csv` sind angebunden. Es fehlt die TK (Techniker Krankenkasse): ihre Stellenliste lässt sich nur per JSF-Nachladen (Seite lädt Inhalte per Skript nach) erreichen. Eine einfache Lösung wäre wackelig, ein Browser-Roboter (Playwright) braucht eine Entscheidung in Phase 4.
@@ -52,6 +65,8 @@ Stand: 2026-11-11
 
 23. ~~**Migration `009_ki.sql` ausführen**~~ **Erledigt 2026-11-14**, geprüft (Felder da, Gäste 401). (Ordner `jobradar-entwurf`, Supabase SQL Editor, wie 008). Warum: Felder für die Groq-Zusammenfassungen. Erfolg: „Success. No rows returned“; dann Claude „009 ist drin“ sagen.
 
+24. **Nach Freigabe der finalen Probe:** `GROQ_API_KEY` selbst als GitHub-Secret im Repo `jobradar` und für die Website in Vercel sowie lokal in `web/.env.local` eintragen, soweit noch nicht eingerichtet. Nie den Wert in Chat oder Repo übernehmen. Warum: Täglicher Lauf und Firma/Titel-Erkennung brauchen jeweils den Schlüssel. Erfolg: Nach einem ausdrücklich freigegebenen Live-Test wird eine Anzeige ausgewertet bzw. Firma/Titel werden erkannt. Einstellungen von Codex nicht geprüft.
+
 ## Offene To-dos für spätere Phasen
 - **Phase 4, Whitelist „Stellen ohne Studium trotzdem zeigen“ (Wunsch Nutzer 2026-11-14):** Der Admin pflegt selbst eine Liste von Firmen, bei denen „Studium: nein“ nicht ausblendet. Zu klären: (1) nur Tätigkeit „anspruchsvoll“ oder alle? (Vorschlag: nur anspruchsvoll, wie die Prestige-Regel in CLAUDE.md 2); (2) Pflege per Häkchen auf der Konto-Seite, sofort wirksam?; (3) Prestige-Listen ergänzen die Liste, überschreiben sie nie? Technisch: Feld an `companies` (Migration), `nein_ausblenden` berücksichtigt es. Die Einstufung `taetigkeit` wird schon heute gespeichert.
 - **Phase 4, Mistral prüfen (Wunsch Nutzer 2026-11-13), als Alternative oder Ergänzung zu Groq:**
@@ -70,12 +85,17 @@ Stand: 2026-11-11
 - **Phase 4, Zusatzfirmen:** Die Tabelle `laeufe` (Laufberichte mit Firmennamen) ist für alle lesbar; private Zusatzfirmen dürfen dort nicht für andere sichtbar werden.
 
 ## Nächster Schritt
-**Stand 2026-11-14 (Groq-Paket, Zweig `entwurf-ui`, nichts hochgeladen):** Plan `docs/superpowers/plans/2026-11-12-groq-paket.md`, Design `docs/superpowers/specs/2026-11-12-groq-paket-design.md` (Abschnitt „Änderungen nach der Probe“ 1–12 geht dem Plan vor). Arbeitsprotokoll mit allen Entscheidungen: `.superpowers/sdd/2026-11-12-groq-paket/progress.md` (lokal, nicht im Repo).
-- Fertig und geprüft: Task 1–3 (Groq-Aufruf, Probe-Skript, Migration 009 live eingespielt), Task 5 (Kasten „Auf einen Blick“, Variante C), Task 4 (Auswertung im täglichen Lauf, Commit 107355b, Prüfung lief zuletzt).
-- In Arbeit: Task 6 (KI-Stand auf der Konto-Seite, Website).
-- Offen: Task 7 (Firma/Titel aus eingefügtem Text, Website-Teil), Task 8 (Abschluss).
-- Anleitung `scraper/ki_prompt.md` (gpt-oss-120b): bester Lauf 2/20 Fehler auf Stichprobe A; Ziel ≤ 1 Fehler auf A **und** B (`--stichprobe 1`). Nächste Ideen: Benefit-Begriffe zweisprachig, Gegenbeispiel „unbefristet/Vollzeit/idealerweise“ (gehört nicht in rahmen/muss), temperature 0. Backup `scraper/ki_prompt_qwen.md`: 2/20, dann 4/4; B offen. Prüfberichte im Scratchpad sind flüchtig; Fehlerarten stehen im Arbeitsprotokoll.
-- **Halte vor dem Weitermachen:** Der Nutzer liest die finale Probe (nur unveränderte Groq-Antworten) und sagt „passt“. Vor dem ersten Live-Schreiben der Auswertung fragen. Erst danach: GitHub-Secret `GROQ_API_KEY` (Nutzer), Hochladen nur nach „Ja, hochladen“.
+**Aktualisierung 2026-11-15:** Freigegebener Ranking-Unterbau lokal umgesetzt und mit künstlichen Daten geprüft (siehe oben). **Nächster technischer Schritt:** isolierte PostgreSQL-Testumgebung bereitstellen und `tests/sql/rankings.sql` nach Migrationen prüfen; keine Live-Datenbank als Testersatz. Für den Nutzer aktuell nichts auszuführen. `010_rankings.sql` vorerst als vorbereitete Datei belassen. Danach Quellenauswahl gemeinsam mit Claude und gesondertes Quellen-/Importpaket mit Nutzungsumfang und Löschfristen. Keine Quellenaktivierung oder Veröffentlichung freigegeben.
+
+Finale Groq-Probe bleibt auf Nutzerauftrag vom 2026-11-15 verschoben; Groq-Freigaben und Haltepunkt gelten unabhängig weiter. Ranglisten-Grundlage benötigt keine erneute Planfreigabe, die technische Umsetzung war bereits bestätigt.
+
+**Stand 2026-11-14 (Groq-Paket, Zweig `entwurf-ui`, nichts hochgeladen):** Plan `docs/superpowers/plans/2026-11-12-groq-paket.md`, Design `docs/superpowers/specs/2026-11-12-groq-paket-design.md` („Änderungen nach der Probe“ 1–12 gehen dem ursprünglichen Plan vor). Arbeitsprotokoll: `.superpowers/sdd/2026-11-12-groq-paket/progress.md` (lokal, nicht im Repo).
+- **Code fertig:** Tasks 1, 3–7 einschließlich Abschlusskorrekturen `599f67d` und `7dc2941`. Task 6 und Task 7 sind bereits umgesetzt; die frühere Übergabe war veraltet.
+- **Lokal geprüft durch Codex:** 352 Python-Offline-Tests, 143 Website-Tests und Typprüfung grün. Python ohne Laden lokaler Zugangsdaten und mit gesperrten echten HTTP-Anfragen; Live-Testmodule vor dem Einsammeln ausgeschlossen. Kein Produktions-Build oder Browser-Klicktest in dieser Sitzung; ausschließlich Dokumentation geändert.
+- **Offen: Task 2 (finale Probe) und Task 8 (Abschluss).** Der Nutzer bestätigt am 2026-11-14: finale Probe noch nicht freigegeben. Nächster Schritt in Claude Code: Anleitung für `gpt-oss-120b` weiter prüfen, dann vollständige Läufe A und B (je 20 Anzeigen, höchstens 1 echter Fehler) und dem Nutzer unveränderte Groq-Antworten mit Modell und Zeitpunkt vorlegen. Codex darf nach `AGENTS.md` keine Live-Datenbank lesen oder Groq-Proben ausführen.
+- Bester dokumentierter Lauf für `scraper/ki_prompt.md`: 2/20 Fehler auf A; B offen. Ideen: Benefit-Begriffe zweisprachig, Gegenbeispiel „unbefristet/Vollzeit/idealerweise“, temperature 0 prüfen. Backup `scraper/ki_prompt_qwen.md` nicht freigegeben (kein vollständiges bestandenes A+B).
+- Bekannte Restpunkte aus dem bisherigen Abschlussreview: halb gefüllte Bewerbungen werden nicht nachgefüllt; Texte ohne erkennbare Firma/Titel werden nachts erneut versucht; Nachfüllen hat keine eigene Zeitgrenze; Ratenbegrenzung für `firmaTitelVorschlag` vor dem Einladen von Freunden klären.
+- **Halte vor dem Weitermachen:** Erst finale Probe und „passt“, dann gesonderte Zustimmung zum ersten Live-Schreiben. Danach Browser-Klicktests (Zusammenfassung angemeldet/Gast, KI-Stand Admin/Nicht-Admin, Firma/Titel-Erkennung und Speichern bei Ausfall). Schlüssel setzt der Nutzer selbst (To-do 24). Hochladen nur nach „Ja, hochladen“.
 
 **2026-11-12:** Tracker-Paket mit Design-Entwurf (inkl. Migration 008) hochgeladen. Danach „Meine Bewerbungen“ (Board + Liste mit Detailspalte, Plan `docs/superpowers/plans/2026-11-12-meine-bewerbungen.md`), Firmenlogos in der Stellenliste und Paket „Öffentlicher Zugang“ (Migration 007, Impressum) aus `entwurf-ui` nach `main` übernommen und hochgeladen. Lokal läuft nur `localhost:3002`.
 

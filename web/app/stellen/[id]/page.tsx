@@ -13,6 +13,8 @@ import { leseKi, voraussetzungen } from "@/lib/zusammenfassung";
 import { merken, beworben, entmerken } from "../actions";
 import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
+import Ranglisten from "../../ranglisten";
+import { ladeRankingZuordnungen } from "@/lib/rankings";
 
 const sicher = (u: string | null) => (u && /^https?:\/\//i.test(u) ? u : null);
 
@@ -32,6 +34,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   // Alles Folgende toleriert fehlende Migration 005: Fehler ergibt leere Daten statt Absturz.
   // Anzeigentext, wichtige Punkte, Merk-Status und "Über <Firma>" nur für Angemeldete.
   const firma = j.unternehmen ?? "";
+  const ranglisten = await ladeRankingZuordnungen(sb, !!nutzer, [firma]);
   const leer = { data: null, error: null };
   const [tx, ab, sbr, wp, app, lf, schonBeworben, kr] = await Promise.all([
     nutzer ? sb.from("jobs").select("text").eq("id", id).maybeSingle() : leer,
@@ -68,6 +71,8 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       <p><Link href="/stellen">Alle Stellen</Link></p>
       <h1>{j.titel}</h1>
       <p className="firma" style={{ "--firma-h": firmenFarbe(j.unternehmen) } as React.CSSProperties}>{j.unternehmen}</p>
+      <Ranglisten zuordnungen={ranglisten.zuordnungen} />
+      {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
       {nutzer && (
         <details className="karte ueberblick" open>
           <summary>
