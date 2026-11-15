@@ -1,0 +1,81 @@
+{
+  "hinweis": "Vollständig künstliche, reduzierte Eingaben. Kein API-/Datenbankschema, kein Import und keine echte Nutzerinformation. Neue Funktionserwartungen vor Verwendung klären.",
+  "filterdaten": [
+    {
+      "fall": "eur_jahr",
+      "steckbrief": {
+        "erfahrung_jahre": 3,
+        "sprachen": [{"sprache": "Deutsch", "niveau": "B2"}],
+        "gehalt": {"min": 70000, "max": 85000, "waehrung": "EUR", "zeitraum": "Jahr"},
+        "sicherheitsueberpruefung": false
+      }
+    },
+    {
+      "fall": "eur_monat",
+      "steckbrief": {
+        "erfahrung_jahre": 5,
+        "sprachen": [],
+        "gehalt": {"min": 6000, "max": 7000, "waehrung": "EUR", "zeitraum": "Monat"},
+        "sicherheitsueberpruefung": true
+      }
+    },
+    {
+      "fall": "chf_jahr",
+      "steckbrief": {
+        "erfahrung_jahre": 2,
+        "sprachen": [],
+        "gehalt": {"min": 85000, "max": 95000, "waehrung": "CHF", "zeitraum": "Jahr"},
+        "sicherheitsueberpruefung": false
+      }
+    },
+    {
+      "fall": "unbekannt",
+      "steckbrief": {
+        "erfahrung_jahre": null,
+        "sprachen": [],
+        "gehalt": null,
+        "sicherheitsueberpruefung": false
+      }
+    }
+  ],
+  "ki_zusammenfassung": {
+    "aufgaben": ["Kennzahlen auswerten", "Datenqualität prüfen", "Analysen dokumentieren"],
+    "rahmen": ["Hybrides Arbeitsmodell"],
+    "abschluss": "Abgeschlossenes fachlich passendes Studium",
+    "erfahrung": "Mindestens drei Jahre relevante Erfahrung",
+    "muss": ["SQL-Kenntnisse"],
+    "benefits": [],
+    "sprache": "de"
+  },
+  "bewerbungen": [
+    {"id": "a1", "nutzer": "a", "firma": "Synthetische Firma A", "domain": "firma-a.example.invalid", "referenz": "TEST-101", "status": "beworben"},
+    {"id": "a2", "nutzer": "a", "firma": "Synthetische Firma A", "domain": "firma-a.example.invalid", "referenz": "TEST-102", "status": "beworben"},
+    {"id": "b1", "nutzer": "b", "firma": "Synthetische Firma A", "domain": "firma-a.example.invalid", "referenz": "TEST-101", "status": "beworben"}
+  ],
+  "mailfaelle": [
+    {"fall": "referenz_vorhanden", "nutzer": "a", "nachricht_id": "m1", "von": "jobs@firma-a.example.invalid", "betreff": "Einladung zu TEST-101", "text": "Wir möchten ein Gespräch vereinbaren."},
+    {"fall": "mehrdeutig", "nutzer": "a", "nachricht_id": "m2", "von": "jobs@firma-a.example.invalid", "betreff": "Ihre Bewerbung", "text": "Wir möchten ein Gespräch vereinbaren."},
+    {"fall": "aehnliche_fremde_domain", "nutzer": "a", "nachricht_id": "m3", "von": "jobs@firma-a.example.invalid.evil.invalid", "betreff": "TEST-101", "text": "Synthetischer fremder Absender."},
+    {"fall": "doppelte_nachricht", "nutzer": "a", "nachricht_id": "m1", "von": "jobs@firma-a.example.invalid", "betreff": "Einladung zu TEST-101", "text": "Wir möchten ein Gespräch vereinbaren."},
+    {"fall": "fehlender_text", "nutzer": "a", "nachricht_id": "m4", "von": "jobs@firma-a.example.invalid", "betreff": "Ihre Bewerbung", "text": null}
+  ],
+  "kalenderfaelle": [
+    {"fall": "normal", "nutzer": "a", "event_id": "e1", "start": "2026-11-17T09:00:00Z", "zeitzone": "Europe/Berlin", "von_app_erstellt": false},
+    {"fall": "app_termin", "nutzer": "a", "event_id": "e2", "start": "2026-11-18T09:00:00Z", "zeitzone": "Europe/Berlin", "von_app_erstellt": true},
+    {"fall": "nicht_existierende_wanduhrzeit", "lokale_zeit": "2026-03-29T02:30", "zeitzone": "Europe/Berlin", "fachliche_behandlung": "offen"},
+    {"fall": "doppelte_wanduhrzeit", "lokale_zeit": "2026-10-25T02:30", "zeitzone": "Europe/Berlin", "fachliche_behandlung": "offen"}
+  ],
+  "cv_fall": {
+    "hinweis": "Frei erfundener Klartext, keine echte Datei und keine Bewertungsvorgabe.",
+    "cv_text": "Drei Jahre fiktive Tätigkeit in der Datenanalyse. Regelmäßige SQL-Abfragen und Dokumentation von Kennzahlen.",
+    "anforderungen": ["SQL-Kenntnisse", "Personalverantwortung"],
+    "offen": "Wie fehlende Erwähnung gegenüber belegter fehlender Fähigkeit dargestellt werden soll, muss vor Umsetzung geklärt werden."
+  },
+  "bestehende_invarianten": [
+    "Nutzerdaten nicht über Nutzergrenzen zusammenführen.",
+    "Status aus E-Mails zunächst nur vorschlagen, nicht automatisch ändern.",
+    "Fremde Kalendertermine nicht verändern.",
+    "Persönliche Texte nicht an Groq senden.",
+    "Aus unbekannten Werten keine belegten negativen Tatsachen ableiten."
+  ]
+}
