@@ -99,9 +99,11 @@ py -3.12 -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 py -m scraper.run      # braucht .env mit SUPABASE_URL und SUPABASE_SERVICE_KEY
-py -m pytest
+py -B -m pruefe_offline
 cd web; npm test
 ```
+
+Für die reine Python-Prüfung nach Installation der Abhängigkeiten genügt `py -B -m pruefe_offline`; der Scraper muss dafür nicht gestartet werden. Der Befehl schließt Live-Tests aus und sperrt das Öffnen von `*.env*`, Python-Netzwerkzugriffe und Prozessstarts. Erfolg: keine fehlgeschlagenen Tests und Exit-Code 0. Gezielte Auswahl und Grenzen stehen in [docs/pruefvorbereitung.md](docs/pruefvorbereitung.md).
 
 ## Freunde einladen
 

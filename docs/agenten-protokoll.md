@@ -18,6 +18,44 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-15 20:55 MEZ – Codex
+- Auftrag des Nutzers: „Okay, fahre fort“ zur entscheidungsunabhängigen Prüfvorbereitung. Abgesicherten, wiederverwendbaren Offline-Testeinstieg implementiert; Firmenportal-Plan nicht umgesetzt.
+- Commits: lokaler Abschluss-Commit „Offline-Prüfung dauerhaft absichern“, Schlusszeile `Agent: Codex`; dieser Eintrag gehört zum selben Commit. Vorhandene Dokumentationsvorbereitungen samt ausdrücklich vorläufigem Firmenportal-Entwurf eingeschlossen, ohne daraus eine Implementierungsfreigabe abzuleiten. Kein Push/Merge.
+- Geänderte Dateien: neu `pruefe_offline.py`, `tests/test_pruefe_offline.py`, `docs/plans/2026-11-15-offline-pruefung.md`; ergänzt `README.md`, `docs/pruefvorbereitung.md`, `docs/STATUS.md`, `docs/ENTSCHEIDUNGEN.md`, `docs/agenten-protokoll.md`. Bereits lokal vorbereiteter Entwurf `docs/plans/2026-11-15-firmenportal-erkennung.md` mit unverändertem Vorläufigkeits-/Fragenhinweis erhalten.
+- Ergebnis: `py -B -m pruefe_offline` als versionierter Standard. Kleine CLI für Testpfade, `-k`, `--collect-only`; Auswahlprüfung vor pytest-Import, feste Live-Ausschlüsse und Aliasprüfung, zusätzlicher Importblocker, ausgeschaltetes externes Plugin-Autoload/geerbte pytest-Optionen, deaktivierter Zugangsdaten-Lader und Sperren für Umgebungsdateien, Python-Sockets/DNS und Prozessstarts. Keine globale Sperre beim bloßen Import des Moduls.
+- Tests: Schutztests zuerst ohne Implementierung fehlgeschlagen. `py -B -m pruefe_offline` → **468 bestanden, keine Skips**, darunter 38 neue Schutztests. Gezielter tatsächlicher Audit-Schutztest → 1 bestanden, 33 abgewählt vor den letzten vier Regressionen. Pfad + `-k` + `--collect-only` → 1/38 gesammelt, 37 abgewählt. Ausdrückliche Live-Testauswahl → vor pytest-Import mit Fehlerstatus abgewiesen. Schutzproben ausschließlich mit synthetischen Audit-Ereignissen/Pfaden, keine echten geschützten Dateien geöffnet und keine Verbindung/Prozessaktion ausprobiert.
+- Weitere Prüfungen: `npm.cmd test` → **153 bestanden**; `.\node_modules\.bin\tsc.cmd --noEmit --incremental false` → Exit 0; isolierter Produktions-Build (Webpack) in frischer Quellenkopie ohne Zugangsdaten mit gesperrtem HTTP → bestanden. `git diff --check` ohne Fehler. Wegen unveränderter Website kein erneuter Browserlauf.
+- Review: Helfer nur lesend gemäß CLAUDE.md 7; Groß-/Kleinschreibung bei Live-Import unter Windows und direkte Fork-Ereignisse gefunden. Vier Regressionen zuerst rot; `casefold()` sowie `os.fork`/`os.forkpty` ergänzt, danach vollständige Suite grün und Abschlussreview ohne weitere belegte materielle Lücken. Anfangs unterschiedliche Exception-/Klassenidentität bei `__main__` und Modulimport korrigiert; aktiver Schutztest besteht jetzt ohne Skip.
+- Nicht geprüft / offene Fragen: keine eigene Linux-Ausführung; Python-Schutz ist keine Sicherheits-Sandbox für feindlichen Native-/Python-Code. Echte SQL-/PostgREST-/RLS-Abnahme, Groq-Probe, Anbieterbedingungen und echte Anmeldung bleiben offen. Kein neuer Dienst, kein Paket, keine Datenbankinstallation. Keine Zugangsdaten gelesen, keine Live-/Groq-Abfrage oder Migration; Anwendungscode, `pytest.ini`, Workflow und bestehende Live-Tests unverändert. `/ponytail-review` nicht ausgeführt; unabhängiges Code-Review dokumentiert.
+- Abweichungen von Plan oder Regeln: geschützter neuer Runner statt unbeschränktem pytest; Build in isolierter Kopie (keine lokalen Umgebungsdateien). Erweiterter Ausführungskontext für vorhandenen Python-Launcher, da dieser im Sandbox-Profil keine Installation findet. Kein Eingriff in CLAUDE.md oder alte lokale Prüfhilfen; lokale Protokolle bleiben ausgeschlossen.
+
+## 2026-11-15 20:39 MEZ – Codex
+- Auftrag des Nutzers: Weitere Vorbereitung, möglichst unabhängig von jeglichen Entscheidungen und ohnehin notwendig.
+- Commits: keine; vorhandene lokale Entwurfs-/Dokumentationsänderungen erhalten, Code-Stand weiter `ac78410`.
+- Geänderte Dateien: neu `docs/pruefvorbereitung.md`; ergänzt `docs/STATUS.md`, `docs/ENTSCHEIDUNGEN.md`, `docs/agenten-protokoll.md`.
+- Ergebnis: Vorhandene Testgruppen, Live-Imports, lokale Prüfhelfer, Web-Testkonfiguration und SQL-Testschutz geprüft. Konkrete Prüfzuordnung, festen Python-Offline-Befehl, Web-/Typprüfung, sicheren Build-/Browserweg und ausstehende SQL-/PostgREST-Nachweise dokumentiert. Befund: Argumente des lokalen Offline-Helfers ersetzen die Standard-Ausschlüsse; deshalb nur ohne Zusatzargumente verwenden bzw. festen dokumentierten Befehl. Kein neuer Testläufer implementiert, keine Funktionsentscheidung vorweggenommen.
+- Tests: Dokumentinhalt, Dateiverweise und `git diff --check` geprüft; keine Anwendungstests/Builds erneut ausgeführt, da ausschließlich Dokumentation. Historische 430/153 Prüfungen werden nicht als neuer Lauf ausgegeben.
+- Nicht geprüft / offene Fragen: keine vollständige Neubewertung aller Testassertionen, kein neuer Sicherheits-/Funktionsnachweis, keine isolierte Datenbank eingerichtet, keine SQL-/PostgREST-Ausführung. Keine Zugangsdaten gelesen, keine Live-/Groq-Abfragen, nichts installiert, keine CLAUDE.md-Änderung, kein Push/Merge.
+- Abweichungen von Plan oder Regeln: keine neue Implementierung; bestehende Prüfregeln lediglich dokumentiert. Keine Helfer für reine Bestands-/Dokumentationsvorbereitung und kein Commit.
+
+## 2026-11-15 20:30 MEZ – Codex
+- Auftrag des Nutzers: Im Firmenportal-Plan festhalten, dass er bis zu passenden Fragen und ausdrücklicher Freigabe vorläufig bleibt und nicht direkt übernommen werden soll.
+- Commits: keine; bestehende lokale Dokumentationsänderungen erhalten.
+- Geänderte Dateien: `docs/plans/2026-11-15-firmenportal-erkennung.md`, `docs/STATUS.md`, `docs/ENTSCHEIDUNGEN.md`, `docs/agenten-protokoll.md`.
+- Ergebnis: Verbindlichen Nutzerhinweis am Plananfang ergänzt; gilt für sämtliche Vorschläge und andere Agenten. Übergabe und STATUS auf Reihenfolge Fragen → Antworten einarbeiten → überarbeitete Fassung ausdrücklich freigeben abgestimmt.
+- Tests: Dokumentation geprüft, `git diff --check` ohne Fehler; keine Anwendungstests, da ausschließlich Text geändert.
+- Nicht geprüft / offene Fragen: Fachliche Fragerunde und Freigabe weiterhin ausstehend; kein Code oder Live-System verändert.
+- Abweichungen von Plan oder Regeln: keine; CLAUDE.md unverändert, da der Hinweis die bestehende Freigaberegel für diesen Entwurf konkretisiert.
+
+## 2026-11-15 20:26 MEZ – Codex
+- Auftrag des Nutzers: „Kannst du sonst schon etwas anderes vorbereiten?“
+- Commits: keine; ausschließlich lokale Dokumentationsänderungen auf `entwurf-ui`. Vorheriger Code-Stand `ac78410`, Arbeitsstand zu Beginn sauber.
+- Geänderte Dateien: neu `docs/plans/2026-11-15-firmenportal-erkennung.md`; ergänzt `docs/STATUS.md`, `docs/ENTSCHEIDUNGEN.md`, `docs/agenten-protokoll.md`.
+- Ergebnis: Bestehende Abrufmodule, Firmenkonfiguration, Website-Linkerkennung, HTTP-Zugang und Berichtspfad geprüft. Planvorschlag für reine Offline-Erkennung aus Karriere-Links und übergebenem HTML mit Ergebnisvertrag, vier Umsetzungsschritten, konkreten Abnahmefällen und abgegrenzten Folgepaketen erstellt. Recruitee-Sonderdomains, fehlender Lever-Firmenadapter, spätere Abrufsicherheit und Vertraulichkeit eigener Wunschfirmen ausdrücklich berücksichtigt.
+- Tests: keine Anwendungstests oder Builds erneut ausgeführt, da kein Anwendungscode geändert; Dokumentlinks/Inhalt geprüft und `git diff --check` ohne Fehler. Frühere 430/153 Tests und Build/Browserprobe gehören zu `ac78410`, nicht zu einer neuen Funktionsabnahme dieser Vorbereitung.
+- Nicht geprüft / offene Fragen: keine aktuelle externe Anbieter-/Nutzungsprüfung, keine echte Portal-Erkennung, keine Live-/Groq-/Datenbankabfragen, keine SQL-Ausführung. Anbieterumfang, private Firmenrechte und Planfreigabe bleiben offen. Keine Zugangsdaten gelesen, nichts installiert, keine CLAUDE.md-Änderung, kein Push/Merge.
+- Abweichungen von Plan oder Regeln: Keine Umsetzung vor Planfreigabe. Keine Helfer für reine Dokumentationsvorbereitung; unabhängiges Review als Schritt des späteren Implementierungsplans vorgesehen. Kein Commit; vorgeschriebene Prüfungen vor einem Code-Commit hier nicht erneut durchgeführt.
+
 ## 2026-11-15 20:04 MEZ – Codex
 - Auftrag des Nutzers: „Continue“; den bereits freigegebenen technischen Ranking-Unterbau fortsetzen. Konkrete Rankings weiterhin später mit Claude auswählen.
 - Commits: lokaler Abschluss-Commit mit Nachricht „Ranglisten-Unterbau lokal vorbereiten“, Schlusszeile `Agent: Codex`; dieser Eintrag gehört zum selben Commit. Kein Push oder Merge. Vorhandene lokale Änderungen aus der Vorbereitung übernommen und erhalten.

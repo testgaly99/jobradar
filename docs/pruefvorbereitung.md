@@ -1,0 +1,86 @@
+# Prüfgrundlage für die bestehende Anwendung
+
+Stand: 2026-11-15. Diese Bestandsaufnahme dokumentiert bereits notwendige Prüfungen und den nun versionierten Offline-Einstieg. Sie legt keine neuen Produktfunktionen, Anbieter oder Rankings fest und ersetzt keine Funktions- oder Veröffentlichungsfreigabe. Aktuelle Ergebnisse stehen zentral in `STATUS.md`; frühere grüne Tests gelten nicht automatisch für spätere Änderungen.
+
+## Vorbereiteter Prüfbestand
+
+| Bereich | Vorhandene Prüfungen | Was sie belegen | Was zusätzlich offen bleibt |
+|---|---|---|---|
+| Firmenabruf | `tests/test_greenhouse.py`, `test_ashby.py`, `test_personio.py`, `test_recruitee.py`, `test_sitemap.py` | Verarbeitung gespeicherter Beispielantworten, erwartete Felder und Filter | Tatsächliche Erreichbarkeit, neue Seitenformate und aktuelle Abrufbedingungen |
+| Abrufregeln | `tests/test_http.py` | Robots-Verbot, unerreichbare Robots-Datei, Abrufpause und User-Agent mit ersetzten HTTP-Antworten | Verhalten echter Zielserver und Schutz bei späteren frei eingegebenen Zieladressen |
+| Datenabgleich | `tests/test_db.py`, `test_run.py`, `test_umzug.py`, `tests/fakedb.py` | Neue, unveränderte und geschlossene Stellen; Ablauf und Fehlerbehandlung mit Datenbank-Ersatz | Tatsächliche SQL-Constraints, Rollenrechte und Transaktionen |
+| Anzeigenverarbeitung | `tests/test_filter.py`, `test_abschnitte.py`, `test_steckbrief.py` | Vorhandene Regeln, Gliederung und Steckbrief gegen Beispiele | Qualität auf unbekannten Anzeigenformaten |
+| KI-Schnittstelle | `tests/test_ki.py`, `web/tests/ki*.test.ts`, `web/tests/zusammenfassung.test.ts` | Formatprüfung, Grenz-/Fehlerfälle und Verarbeitung ersetzter Antworten | Tatsächliche Modellqualität und ausdrücklich freizugebende Groq-Probe |
+| Website | `web/tests/*.test.ts` | Vorhandene Filter-, Tracker-, Export- und Hilfsfunktionen; teilweise HTTP-Abfrageverträge | Echte Anmeldung, Datenbankrechte, vollständige Browserabläufe |
+| Ranglisten | `tests/test_rankings.py`, `web/tests/rankings.test.ts` | Eingabeprüfung und HTTP-Vertrag mit künstlichen Daten | Echte Datenbankausführung und PostgREST-Zusammenspiel |
+| Offline-Testbefehl | `tests/test_pruefe_offline.py` | Feste Ausschlüsse, Pfad-/Aliasprüfung, Importsperre, Pluginumgebung sowie Datei-/Netz-/Prozesssperren mit künstlichen Ereignissen | Keine Sicherheits-Sandbox für beliebigen bösartigen Python-/Native-Code; tatsächliche Ausführung bisher unter Windows geprüft |
+| Ranglistenrechte/SQL | `tests/sql/rankings.sql` | Vorbereitet: Gastschutz, Schreibschutz, Ausgabewechsel, Ablauf, Duplikate und Rangfolge | Skript wurde noch nicht ausgeführt; isolierte Datenbank fehlt |
+| Bestehende Live-Prüfungen | `tests/test_rls.py`, `test_konto_loeschen.py` | Sind für echte Datenbank-/Kontoprüfungen geschrieben | Für Codex nicht ausführen oder importieren; Live-Datenbank bleibt ausgeschlossen |
+
+Die Tabelle ist eine Zuordnung vorhandener Prüfungen, kein Nachweis vollständiger Testabdeckung. Angegebene Dateien und zentrale Anschlussstellen wurden für diese Vorbereitung gelesen; nicht jede einzelne Assertion erneut bewertet oder ausgeführt.
+
+## Reproduzierbare Offline-Prüfung
+
+### 1. Python ohne lokale Zugangsdaten
+
+**Was:** Im Projektordner `jobradar-entwurf` den versionierten Einstieg ausführen:
+
+```powershell
+py -B -m pruefe_offline
+```
+
+**Warum:** `tests/test_rls.py` lädt lokale Zugangsdaten schon beim Import. `test_konto_loeschen.py` importiert dieses Modul. Ein bloßes Abwählen über `-m "not supabase"` verhindert diesen Import nicht. Der neue Einstieg prüft die Auswahl vor pytest-Import, schließt beide Dateien fest von der Sammlung aus und sperrt auch indirekte gewöhnliche Imports. HTTP-Aufrufe über `requests`, Python-Socket-/DNS-Zugriffe, Python-Prozessstarts und das Öffnen von `*.env*` sind während des Laufs gesperrt; der vorhandene Zugangsdaten-Lader ist deaktiviert. Geerbte pytest-Optionen und externes Plugin-Autoload werden für diesen Lauf deaktiviert.
+
+**Erfolg:** Exit-Code 0, keine fehlgeschlagenen Tests. Ein gesperrter Zugriff ist ein Fehler zum Untersuchen; dafür weder Netzwerk freigeben noch Zugangsdaten nachladen. Der Befehl schützt gegen versehentliche Zugriffe der vorhandenen Tests und ist keine Sandbox für beliebigen bösartigen Python-/Native-Code. Bei neuen Testarten deren Zugriffe erneut prüfen.
+
+Gezielte Auswahl ist möglich; alle Schutzregeln bleiben dabei aktiv:
+
+```powershell
+py -B -m pruefe_offline tests/test_rankings.py
+py -B -m pruefe_offline -k rankings
+py -B -m pruefe_offline --collect-only
+```
+
+Erlaubt sind nur vorhandene Testpfade innerhalb `tests/`, optional mit `::Testname`, `-k` und `--collect-only`. Direkte Auswahl der Live-Module, Pfade außerhalb des Testordners sowie frei durchgereichte pytest-Optionen werden abgewiesen. Pfade werden vor der Auswahl aufgelöst; Hardlink-Aliase auf die bekannten Live-Dateien werden ebenfalls erkannt. Der alte lokale Helfer bleibt unverändert erhalten, ist wegen seiner ersetzbaren Standardargumente jedoch kein empfohlener Einstieg mehr.
+
+### 2. Website-Logik und Typprüfung
+
+**Was:** Im Unterordner `web`:
+
+```powershell
+npm.cmd test
+.\node_modules\.bin\tsc.cmd --noEmit --incremental false
+```
+
+**Warum:** Das prüft vorhandene Logik sowie passende Datentypen, ohne die Website mit ihren lokalen Einstellungen zu starten. Unter dieser Windows-Umgebung vermeidet `npm.cmd` die gesperrte PowerShell-Datei `npm.ps1`. Bestehende Abhängigkeiten verwenden, nichts nachinstallieren.
+
+**Erfolg:** Beide Befehle enden mit Exit-Code 0. Daraus folgt noch keine geprüfte Anmeldung, Browserbedienung oder Datenbankabschirmung.
+
+### 3. Produktions-Build und Browserprobe
+
+**Was:** Den bereits dokumentierten isolierten Prüfweg des Ranking-Plans verwenden: frische Kopie ausgewählter Quelldateien, keine `*.env*`, bereinigte Prozessumgebung und künstliche Einstellungen. Build mit gesperrten HTTP-Aufrufen; Browser ausschließlich auf `localhost:3002`, externe Anfragen blockiert und Datenbankantworten ersetzt. Nur Fehlerfälle mit Screenshots festhalten; Testserver anschließend beenden.
+
+**Warum:** Ein normaler Next.js-Build lädt lokale Umgebungsdateien automatisch. Die vorhandene sichere Probe wurde deshalb in einer frischen Kopie durchgeführt. Eine Browserprobe mit Ersatzdaten belegt Bedienabläufe, aber keine echte Datenbankabschirmung.
+
+**Erfolg:** Build endet erfolgreich; Browserprüfungen bestehen; keine echten Anbieter-/Datenbankaufrufe. Reproduktionsdetails und lokale Helfer stehen in `plans/2026-11-15-ranking-grundlage.md` sowie dem dort genannten lokalen Arbeitsprotokoll. Fehlende Helfer sind kein Anlass, ersatzweise einen normalen Build mit lokalen Zugangsdaten auszuführen.
+
+## Bereits vorbereitete Datenbankabnahme
+
+Für `tests/sql/rankings.sql` sind unabhängig von jeder Ranking-Auswahl folgende Nachweise nötig:
+
+- isolierte Testdatenbank mit ausschließlich künstlichen Daten, ausdrücklich als solche gekennzeichnet;
+- benötigte Schemaelemente und Rollen `anon`, `authenticated`, `service_role`, passend zu den vorhandenen Migrationen;
+- Kontrolle: Gäste lesen keine Ranglistentabellen und rufen keine Ranglistenfunktionen auf; angemeldete Nutzer schreiben keine Zuordnungen;
+- Ausgabewechsel, Entwurf/Zukunft, Abschaltung und Ablauf ohne Wiederaufleben alter Ausgaben;
+- ODER über Listen ohne doppelte Stellen, weitere Filter mit UND, stabile globale Rangfolge und mehr als 1.000 Zuordnungen;
+- zusätzlicher Nachweis über echtes PostgREST für Gesamtzahl, Filter, Sortierung und Seiteneinteilung. Das SQL-Skript allein deckt diese HTTP-Schicht nicht ab.
+
+Das Skript prüft vor seinen Testschritten den Datenbanknamen `jobradar_ranking_test` und die ausdrückliche Testkennung; Testdaten liegen in einer zurückgerollten Transaktion. Diese Schutzprüfung ersetzt keine vorherige Kontrolle des Verbindungsziels. Keine bestehende Live-Verbindung oder Sicherung echter Nutzerdaten verwenden.
+
+Eine passende lokale Umgebung ist noch nicht vorhanden. Dafür wurden weder Werkzeuge installiert noch ein Dienst oder Konto angelegt. Einrichtung und Ausführung bleiben gesondert offen; die Vorbereitung enthält bewusst keinen Befehl gegen eine unbekannte Datenbankverbindung.
+
+## Übergabe bei jeder tatsächlichen Prüfung
+
+Ergebnis immer mit Code-Stand, Datum, genauen Befehlen, Ersatz-/Offline-Grenzen, bestandenen und offenen Prüfungen dokumentieren. Geprüfte Anzeigeabläufe, Datenbankrechte und KI-Qualität getrennt benennen. Neue Tests sollen beobachtbares Verhalten und Fehlerfälle prüfen; keine Tests allein für diese Dokumentation hinzufügen.
+
+Die Fortsetzung ergänzt ausschließlich den Testeinstieg und dessen Schutztests. Anwendungscode, `pytest.ini`, täglicher Workflow und Live-Testmodule bleiben unverändert. Vorläufigkeit des Firmenportal-Plans sowie sämtliche bestehenden Live-/Groq-/Veröffentlichungsgrenzen bleiben bestehen.
