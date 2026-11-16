@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-16 | Nutzer beauftragt Paket 2: vorhandene Dokumentprüfung zentral als reine Funktion in der bestehenden Speicheraktion nutzen; UTC-Kalenderprüfung aus Bewerbungen wiederverwenden. | Unmögliche Versionsdaten und falsch typisierte Argumente werden vor dem Schreibversuch abgefangen, ohne neue Upload-/Dateitypregeln oder eine zweite Datumslogik einzuführen. |
 | 2026-11-16 | Paket 1 im vorhandenen KI-Leser umgesetzt: Listen vor Rückgabe kopieren und bei der Textprüfung Array-Lücken berücksichtigen; bestehende Ausgabe unverändert nutzen. | Verhindert gegenseitige Änderungen zwischen Rohdaten, Leseergebnissen und Feldern, ohne neue Bewertungsregeln oder KI-Aufrufe einzuführen. |
 | 2026-11-15 | Nutzer startet ausdrücklich ausschließlich Paket 1: vorhandene KI-Anforderungslisten unabhängig kopieren und validieren, bestehendes Format/Anzeige erhalten. | Verhindert unbeabsichtigte gegenseitige Datenänderungen als Grundlage für spätere Auswertung; sämtliche weiteren Pakete bleiben außerhalb des Auftrags. |
 | 2026-11-15 | Nutzer beauftragt Liste weiterer Codex-Arbeitspakete ohne neue fachliche Entscheidungen; Katalog mit elf lokalen Codepaketen und drei getrennt abzunehmenden Vorbereitungen erstellt. | Vorhandene Anschlussstellen und konkrete Grenzen erlauben gezielte Entlastung von Claude; offene CV-/Filter-/Anbieterentscheidungen werden nicht als technische Selbstverständlichkeiten ausgegeben. |

@@ -34,7 +34,7 @@ export const FELDER: Record<Abschnitt, Record<string, Typ>> = {
 const PFLICHT: Partial<Record<Abschnitt, string[]>> = { neu: ["firma", "titel"], stelle: ["firma", "titel"], ablauf: ["status"], person: ["name"] };
 const NAME: Record<string, string> = { firma: "Firma", titel: "Titel", status: "Status", name: "Name" };
 
-const datumOk = (s: string) => {
+export const datumOk = (s: string) => {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
   if (!m) return false;
   const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
