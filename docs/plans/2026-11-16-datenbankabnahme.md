@@ -20,3 +20,7 @@ Zuerst fehlender Prüfeinstieg rot, danach 17 Schutztests grün. Ganze geschütz
 Kein SQL-/RLS-/PostgREST-Test tatsächlich ausgeführt. Supabase-kompatibles auth/storage-Basisschema und Rollen werden vorausgesetzt, nicht durch Platzhalter ersetzt; konkrete Zielversion offen. Neue Umgebung/Installation und migrationsseitige Ausführung nicht freigegeben. Testkonfiguration enthält ausschließlich eine absichtlich öffentliche synthetische Signatur. Keine Live-/Umgebungsdatei gelesen, kein Konto/Server eingerichtet, kein Push/Merge.
 
 Ausführungsweg und Abnahmebestand vorbereitet statt echten DB-Lauf vorzutäuschen. SQL-Transaktion kann keine Daten für separate HTTP-Verbindungen liefern: deshalb ausdrücklich getrennte commitende künstliche Fixture, anschließend SQL-Probe erst wieder im neu leeren Testschema. Eigener Review, Claude-Prüfung separat.
+
+## Nachkorrektur nach Review am 2026-11-16
+
+Entfernbare Laufzeitasserts durch explizite Prüfungen ersetzt; notwendige Anfragen außerhalb von Assertions. Gemischte Größen-/Datums-Fixture als Datei, unabhängige feste Startgruppen für die erwartete Folge, Senior-/Berlin-Auswahl und Rangfolge separat erhalten. 62 reguläre Offline-Schutz-/Abnahmefälle prüfen normalen und optimiert kompilierten Code, tatsächliche Seitenaufrufe und absichtlich falsche Sortierung/Rechte/Count/Duplikate. Zuerst 35 rot/27 grün, nach Korrektur alle grün; Gesamtsuite 655 bestanden. Unabhängiger Review ohne Restbefunde, Plan `2026-11-16-reviewkorrekturen.md`. Kein SQL/PostgREST ausgeführt, ursprüngliche Umgebungs-/Freigabegrenzen gelten weiter.

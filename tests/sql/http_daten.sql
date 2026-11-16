@@ -4,12 +4,13 @@
 begin;
 \ir vorpruefung.sql
 insert into public.companies(name, aktiv, groesse_klasse, kategorie)
+-- Klassen zyklisch statt nach ID gebündelt: 201 Firmen je Klasse einschließlich unbekannt.
 select 'HTTP-Test ' || lpad(i::text,4,'0'), true,
-  case when i<=57 then '<50' when i<=109 then '50–249' when i=110 then '250–999' when i=111 then '1.000+' else null end,
+  case (i-1)%5 when 0 then '<50' when 1 then '50–249' when 2 then '250–999' when 3 then '1.000+' else null end,
   array['Technik'] from generate_series(1,1005) i;
 insert into public.jobs(id, unternehmen, titel, text, status, sichtbar, erstmals_gesehen, erfahrungslevel, staedte)
 select 'HTTP-Test ' || lpad(i::text,4,'0') || ':1', 'HTTP-Test ' || lpad(i::text,4,'0'),
-  'Künstliche Entwicklung', 'Ausschließlich künstlicher Anzeigentext', 'offen', true, current_date,
+  'Künstliche Entwicklung', 'Ausschließlich künstlicher Anzeigentext', 'offen', true, current_date-(i%3),
   case when i%2=0 then 'Senior' else 'Junior' end,
   case when i%2=0 then array['Berlin'] else array['Hamburg'] end from generate_series(1,1005) i;
 insert into public.ranking_listen(id,name,herausgeber,aktiv)

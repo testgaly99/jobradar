@@ -2,6 +2,8 @@
 
 Entwickleranleitung für Paket 12/13. Der Nutzer startet keine regelmäßigen Prüfungen von Hand. Die folgenden Verbindungs-/Einrichtungsschritte sind **nicht freigegeben oder ausgeführt**. Kein Werkzeug wurde installiert. Echte Supabase-Verbindung, lokale Zugangsdaten und Sicherungen echter Nutzerdaten bleiben ausgeschlossen.
 
+Korrektur vom 2026-11-16: Start-/Rechte-/Ergebnisprüfungen bleiben auch unter Python `-O`/`-OO` aktiv. Die vorbereitete HTTP-Fixture mischt jetzt alle fünf Größenklassen zyklisch über die IDs und verteilt die Stellen auf drei Erstdaten. Je Klasse entstehen 201, je Größen-/Datumsgruppe 67 Treffer. Der Prüfer erwartet diese Reihenfolge unabhängig durch feste Startgruppen; reine ID-/Datumssortierung reicht nicht mehr. Die vorhandenen 1005 Treffer, zwei Listen und 502 Senior-/Berlin-Treffer bleiben erhalten. Eine ältere künstliche Fixture nicht weiterverwenden; für die spätere Abnahme die korrigierte Datei im leeren isolierten Testschema anwenden. Noch kein SQL-/PostgREST-Lauf durchgeführt.
+
 ## Was ohne Verbindung geprüft werden kann
 
 1. Im Projektordner `python -B tests/sql/pruefe.py` ausführen (unter Windows gegebenenfalls den vorhandenen Interpreter direkt).

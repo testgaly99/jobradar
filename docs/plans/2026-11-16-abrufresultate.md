@@ -22,3 +22,7 @@ Gesamtes Ergebnis vor Filterung und db.schreibe geprüft; ungültige Firma verä
 Keine Live-Karriereseite oder Datenbank abgefragt, keine echten Daten/Zugangsdaten. Bestehende Detailseiten-Ausfallbehandlung im Sitemap-Adapter nicht neu entworfen; Mengen-/Historienüberwachung und Selbstreparatur außerhalb. Keine Migration, Installation oder Veröffentlichung. Paket 10 folgt, 11–14 separat.
 
 Prüfung an den vorhandenen JSON-/XML-Adaptergrenzen mit ergänzt, weil falsche leere Behälter sonst vor der zentralen Prüfung zu [] werden konnten; innerhalb des Paketumfangs und mit roten Tests belegt. Python direkt mit installiertem Interpreter und lokalem PYTEST_DEBUG_TEMPROOT wie zuvor. Eigener Review, unabhängige Claude-Prüfung separat.
+
+## Nachkorrektur nach Review am 2026-11-16
+
+Der frühere Schutz übersah beschädigte Sichtbarkeitsfelder vor dem fachlichen Überspringen. Auf Nutzerauftrag behoben: Ashby benötigt boolesches isListed, Recruitee einen nichtleeren Statusstring bei vorhandenem Feld; fehlender Recruitee-Status behält published. 40 neue Ende-zu-Ende-Regressionen über Adapter/Firmenlauf/FakeDB, zuerst 34 rot/6 grün, danach 117 gezielte Tests und gesamthaft 655 Offline-Tests bestanden. Auch teilweise gültige Antworten erhalten den exakten Bestand einschließlich Text/Hash/Sichtungsdatum. Gültig leer/ausdrücklich unveröffentlicht bleibt unverändert. Details im Plan `2026-11-16-reviewkorrekturen.md`; keine Live-Abnahme.

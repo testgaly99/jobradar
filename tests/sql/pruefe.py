@@ -74,48 +74,60 @@ def http_anfrage(pfad, *, params=None, daten=None, gast=False, methode=None):
         return response.status, {k.lower(): v for k, v in response.headers.items()}, json.loads(raw)
 
 
+def _pruefe(bedingung, hinweis):
+    # Laufzeit-Schutz bleibt auch bei -O/-OO und PYTHONOPTIMIZE aktiv.
+    if not bedingung:
+        raise AssertionError(hinweis)
+
+
 def seiten(anfrage, pfad, params, gesamt, **kw):
     ids = []
     for offset in range(0, gesamt, 50):
         status, headers, daten = anfrage(pfad, params={**params, "offset": offset, "limit": 50}, **kw)
-        assert status in (200, 206), "HTTP-Seitenstatus"
-        assert headers.get("content-range", "").endswith("/" + str(gesamt)), "Exakte Gesamtzahl"
-        assert isinstance(daten, list) and len(daten) == min(50, gesamt - offset), "Unvollständige Seite"
+        _pruefe(status in (200, 206), "HTTP-Seitenstatus")
+        _pruefe(headers.get("content-range", "").endswith("/" + str(gesamt)), "Exakte Gesamtzahl")
+        _pruefe(isinstance(daten, list) and len(daten) == min(50, gesamt - offset), "Unvollständige Seite")
         ids.extend(row["id"] for row in daten)
-    assert len(ids) == len(set(ids)) == gesamt, "Doppelte oder fehlende Stellen"
+    _pruefe(len(ids) == len(set(ids)) == gesamt, "Doppelte oder fehlende Stellen")
     return ids
 
 
 def http_pruefen(anfrage=http_anfrage):
     status, _, kennung = anfrage("/rpc/offline_testkennung", gast=True)
-    assert status == 200 and kennung == KENNUNG, "Isolierte Testkennung fehlt; Abbruch vor Datenabfragen"
+    _pruefe(status == 200 and kennung == KENNUNG, "Isolierte Testkennung fehlt; Abbruch vor Datenabfragen")
     for pfad, daten in [("/ranking_listen", None), ("/rpc/ranking_katalog", {}),
                         ("/rpc/ranking_stellen", {"p_listen": ["http-a"]})]:
         status, _, _ = anfrage(pfad, daten=daten, gast=True)
-        assert status in (401, 403), "Gast darf keine Rankings lesen"
+        _pruefe(status in (401, 403), "Gast darf keine Rankings lesen")
     status, _, _ = anfrage("/jobs", params={"select": "text", "limit": 1}, gast=True)
-    assert status in (401, 403), "Gast darf keinen Anzeigentext lesen"
+    _pruefe(status in (401, 403), "Gast darf keinen Anzeigentext lesen")
     status, _, _ = anfrage("/ranking_listen", params={"id": "eq.http-a"},
                           daten={"name": "Unerlaubte Änderung"}, methode="PATCH")
-    assert status == 403, "Angemeldeter Nutzer darf keine Rankings ändern"
+    _pruefe(status == 403, "Angemeldeter Nutzer darf keine Rankings ändern")
     status, _, katalog = anfrage("/rpc/ranking_katalog", daten={})
-    assert status == 200 and {r["id"]: r["anzahl"] for r in katalog} == {"http-a": 600, "http-b": 600}, "Katalogzahlen"
+    _pruefe(status == 200 and {r["id"]: r["anzahl"] for r in katalog} == {"http-a": 600, "http-b": 600}, "Katalogzahlen")
     rpc = "/rpc/ranking_stellen"
     auswahl = {"p_listen": ["http-a", "http-b"]}
-    erwartet = [f"HTTP-Test {i:04d}:1" for i in range(1, 1006)]
+    # Unabhängige Startgruppen zur SQL-Fixture: je Klasse neuestes/älteres/ältestes Datum,
+    # je Start 67 Stellen im Abstand 15. Richtige Folge beginnt 0006, nicht 0001 (ID) oder 0003 (Datum).
+    starts = ((6, 1, 11), (12, 7, 2), (3, 13, 8), (9, 4, 14), (15, 10, 5))
+    nummern = [i for klasse in starts for start in klasse for i in range(start, 1006, 15)]
+    erwartet = [f"HTTP-Test {i:04d}:1" for i in nummern]
     ranking = {"select": "id,companies", "order": "companies->groesse_rang.asc,erstmals_gesehen.desc,id.asc"}
-    assert seiten(anfrage, rpc, ranking, 1005, daten=auswahl) == erwartet, "Globale Ranking-Größenfolge"
+    erhalten = seiten(anfrage, rpc, ranking, 1005, daten=auswahl)
+    _pruefe(erhalten == erwartet, "Globale Ranking-Größenfolge")
     standard = {"select": "id,erstmals_gesehen,companies!inner(groesse_klasse,kategorie,aktiv)",
                 "status": "eq.offen", "sichtbar": "eq.true", "companies.aktiv": "eq.true",
                 "order": "companies(groesse_rang).asc,erstmals_gesehen.desc,id.asc"}
-    assert seiten(anfrage, "/jobs", standard, 1005, gast=True) == erwartet, "Globale Gast-Größenfolge"
+    erhalten = seiten(anfrage, "/jobs", standard, 1005, gast=True)
+    _pruefe(erhalten == erwartet, "Globale Gast-Größenfolge")
     gefiltert = seiten(anfrage, rpc, {**ranking, "erfahrungslevel": "in.(Senior)", "staedte": "ov.{Berlin}"}, 502, daten=auswahl)
-    assert gefiltert == erwartet[1::2], "Filter UND, Listen ODER ohne Duplikate"
+    _pruefe(gefiltert == [f"HTTP-Test {i:04d}:1" for i in nummern if i % 2 == 0], "Filter UND, Listen ODER ohne Duplikate")
     rang = seiten(anfrage, rpc, {"select": "id", "order": "rang.asc.nullslast,unternehmen.asc,id.asc"},
                   600, daten={"p_listen": ["http-a"]})
-    assert rang == list(reversed(erwartet[:600])), "Globale Rangfolge"
+    _pruefe(rang == [f"HTTP-Test {i:04d}:1" for i in range(600, 0, -1)], "Globale Rangfolge")
     status, _, _ = anfrage(rpc, daten={"p_listen": ["nicht-vorhanden"]})
-    assert status == 400, "Ungültige Liste muss fehlschlagen"
+    _pruefe(status == 400, "Ungültige Liste muss fehlschlagen")
     print("PostgREST: Gast-/Schreibschutz, Katalog, Größen-/Rangfolge, Filter und alle Seiten bestanden.")
 
 

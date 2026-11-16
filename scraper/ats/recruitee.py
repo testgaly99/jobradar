@@ -9,7 +9,10 @@ _VERTRAG = {"fulltime": "Vollzeit", "fulltime_permanent": "Vollzeit", "fulltime_
 def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[dict]:  # bekannte: ignoriert
     stellen = []
     for o in objekt_liste(http.hole(f"https://{ats_id}/api/offers/").json(), "offers"):
-        if o.get("status", "published") != "published":
+        status = o.get("status", "published")
+        if not isinstance(status, str) or not status.strip():
+            raise ValueError("Recruitee-Stelle benötigt nichtleeren Status")
+        if status != "published":
             continue
         roh = f"{o.get('description') or ''}{o.get('requirements') or ''}"
         text = text_aus_html(roh)

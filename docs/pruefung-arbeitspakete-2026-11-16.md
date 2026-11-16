@@ -2,7 +2,17 @@
 
 Stand: 2026-11-16. Geprüfter Code: `658696d`, Paketbasis `eeced3f`. Auftrag: Umsetzung aller bisherigen Katalogpakete prüfen. Dies ist ein Review, keine Umsetzung der gefundenen Korrekturen und keine Datenbank-/Installationsfreigabe.
 
-## Ergebnis
+## Aktueller Stand nach beauftragter Korrektur
+
+**Alle drei konkreten Befunde lokal behoben**, Nutzerauftrag „Behebe die offenen Punkte“. Plan: [Reviewkorrekturen](plans/2026-11-16-reviewkorrekturen.md). Die nachfolgenden ursprünglichen Befunde und roten Repros dokumentieren den Zustand vor der Korrektur.
+
+- Paket 9 prüft Ashbys `isListed` als Boolean sowie Recruitees vorhandenen Status als nichtleeren String vor dem Überspringen. Fehlender Recruitee-Status behält den bisherigen Default. 40 reguläre Ende-zu-Ende-Tests belegen vollständigen Bestandsschutz einschließlich Text bei vollständig/teilweise kaputten Antworten und erhalten die gültige Leer-/Unveröffentlicht-Regel.
+- Paket 13 nutzt explizite Laufzeitprüfungen statt entfernbarer Assertions. Kennung stoppt vor weiteren Anfragen, Rechte-/Seiten-/Count-Prüfungen bleiben unter Optimierung 0/1/2 aktiv. Beide 1005er-Größenabfragen werden nachweislich mit jeweils 21 Seiten ausgeführt.
+- Die SQL-Fixture ist nach Größe und Datum gemischt. Unabhängige Startgruppen bestimmen die Erwartung; Filter- und Rangfolge sind separat korrigiert. Tests lehnen ignorierte Größenordnung, falsche Größenrichtung, falsche Datums- oder ID-Reihenfolge ab.
+
+Zuerst 34 neue Bestandsschutzfälle rot/6 grün sowie 35 HTTP-Prüferfälle rot/27 grün. Nach Korrektur **655 reguläre Python-Offline-Tests bestanden**, darunter 40 neue Bestandsschutzfälle und insgesamt 62 SQL-Prüferfälle. Die früheren zehn Review-Gegenproben sind durch reguläre Regressionen abgedeckt. Unabhängiger Quellreview ohne konkrete Restbefunde. Web unverändert; die zuletzt hier dokumentierten 249 Webtests, Typprüfung, Build und Browserprobe wurden in der Korrektursitzung nicht erneut ausgeführt. Echte SQL-/PostgREST-/GitHub-Abnahme bleibt offen, keine Installation oder Veröffentlichung.
+
+## Ursprüngliches Ergebnis vor Korrektur
 
 Drei konkrete offene Befunde: ein Bestandsschutzfehler in Paket 9, zwei Fehler im vorbereiteten Abnahmeweg von Paket 13. Die regulären Offline-Tests sind grün, decken diese Fälle aber nicht ab. Vor Veröffentlichung Paket 9 nachbessern; vor tatsächlicher Datenbankabnahme Paket 13 korrigieren. Pakete 12–14 bleiben vorbereitet, nicht im Zielsystem abgenommen.
 

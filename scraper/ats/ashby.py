@@ -11,7 +11,9 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
     daten = http.hole(f"https://api.ashbyhq.com/posting-api/job-board/{ats_id}").json()
     stellen = []
     for j in objekt_liste(daten, "jobs"):
-        if not j.get("isListed"):
+        if not isinstance(j.get("isListed"), bool):
+            raise ValueError("Ashby-Stelle benötigt boolesches isListed")
+        if not j["isListed"]:
             continue
         land = (((j.get("address") or {}).get("postalAddress")) or {}).get("addressCountry")
         teile = [j.get("location"), land] + [(s or {}).get("location") for s in j.get("secondaryLocations") or []]
