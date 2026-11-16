@@ -1,6 +1,6 @@
 # STATUS
 
-Stand: 2026-11-15
+Stand: 2026-11-16
 
 ## Was funktioniert (Phase 1, 2 und 2b, Code fertig)
 - Täglicher Lauf per GitHub Actions („Täglicher Lauf“, 04:00 UTC): ruft die Stellen von 4 Firmen ab (Helsing, The Exploration Company, Taktile, telli), schreibt sie in Supabase und legt `data/bericht.md` ab.
@@ -20,6 +20,13 @@ Stand: 2026-11-15
 - Website: „Liste“ vor Größe/Branche, ODER bei mehreren Listen, Rangsortierung bei genau einer Liste, Quellen-/Lizenzangaben in Liste und Detailseite. Ohne aktive Daten bleibt der Filter unsichtbar; Gäste erhalten keine Ranking-Abfragen. Ungültige Liste oder fehlende Einrichtung ergibt einen Hinweis statt ungefilterter Treffer.
 - Neu geprüft am 2026-11-15: **430 Python-Offline-Tests, 153 Webtests, Typprüfung und isolierter Produktions-Build (Webpack) bestanden.** Chrome-Klicktests mit künstlichen Serverantworten auf Laptop-/Handygröße bestanden; unabhängige Codeprüfung abgeschlossen. Testserver beendet, keine Zugangsdaten geladen, keine Live-Zugriffe oder Veröffentlichung.
 - **Offen vor Anwendung:** `tests/sql/rankings.sql` in isolierter PostgreSQL-Testdatenbank ausführen; aktuelle Umgebung hat kein PostgreSQL/Docker. Tatsächliche Datenbankrechte, SQL-Ausgabewechsel und globale Rangsortierung sowie Zusammenspiel mit echtem PostgREST daher noch unbestätigt. Quellen später mit Claude auswählen; vor Aktivierung Nutzungskreis und fristgerechte Bereinigung absichern.
+
+## Noch mögliche Codepakete erfasst
+- **Paket 1 lokal fertig (2026-11-16):** `leseKi` gibt unabhängige geprüfte Aufgaben-/Rahmen-/Muss-/Benefits-Listen zurück und weist Array-Lücken ab. Vorhandenes Format, Textwerte, Reihenfolge, Grenzen, Sprachen und Anzeige bleiben erhalten. Plan `docs/plans/2026-11-15-ki-anforderungsdaten.md`. Pakete 2–14 bleiben offen; keine pauschale Freigabe.
+- **Neu geprüft:** zuerst vier gezielte Fehler nachgewiesen, danach alle neun Zusammenfassungstests und insgesamt **169 Webtests**, Typprüfung und isolierter Webpack-Build grün. Zwölf Chrome-Anzeigefälle mit künstlichen Daten auf Laptop-/Handygröße bestanden. Keine tatsächliche Modellqualität oder Live-Datenbank geprüft, nichts veröffentlicht; keine Nutzeraktion nötig.
+- `docs/arbeitspakete-codex.md` enthält auf Basis `eeced3f` elf lokal ohne neue fachliche Entscheidungen umsetzbare Pakete, drei Pakete mit gesonderter Datenbank-/Betriebsabnahme sowie klar abgegrenzte offene Entscheidungen. Priorität zunächst Anforderungsdaten, Dokument-Metadaten, Filterparameter/-verträge und korrekte bekannte Gehaltseinheiten.
+- Jedes Paket nennt vorhandenen Codeanschluss, konkrete Lieferung und Grenze. Keine unbenutzten Zukunftsbibliotheken oder vorweggenommenen CV-Scores. Bereits erledigte Grundlagen separat aufgeführt, Firmenportal-Vorläufigkeit und Live-/Groq-Grenzen bleiben gültig.
+- Der ursprüngliche Listenauftrag umfasste nur Dokumentation; der nachfolgende Umsetzungsauftrag umfasst ausschließlich Paket 1. Der Nutzer muss keine Routine manuell starten.
 
 ## Stellenwerte als konkrete Codegrundlage (lokal fertig)
 - `web/lib/stellendaten.ts` enthält die bereits benötigten Typen und Datenleser `leseGehalt`/`leseSteckbrief`, ohne Anzeige-/Next.js-/Netzwerkabhängigkeit. `steckbrief.ts` nutzt bzw. exportiert diese Grundlage für die bestehende Stellenliste und Detailseite; bisherige Importpfade bleiben gültig.
@@ -109,6 +116,10 @@ Stand: 2026-11-15
 - **Phase 4, Zusatzfirmen:** Die Tabelle `laeufe` (Laufberichte mit Firmennamen) ist für alle lesbar; private Zusatzfirmen dürfen dort nicht für andere sichtbar werden.
 
 ## Nächster Schritt
+**Paket 1 abgeschlossen 2026-11-16:** Geprüfte unabhängige KI-Listen im bestehenden Leser implementiert und von der unveränderten Stellenseite genutzt. Tests, Typprüfung, isolierter Build und künstliche Browserprobe bestanden; eigener Abschlussreview ohne materielle Befunde, Claudes unabhängige Prüfung anhand des Agentenprotokolls separat. Keine Nutzeraktion, keine Veröffentlichung. Als nächstes lokales Paket **2 (Dokument-Metadaten)** empfohlen, noch nicht beauftragt. Pakete 2–14 sowie Datenbankabnahme/Upload bleiben separat.
+
+**Arbeitskatalog 2026-11-15, aktualisiert 2026-11-16:** `docs/arbeitspakete-codex.md` enthält die vollständige abgegrenzte Liste der derzeit erkennbaren Vorarbeiten, Paket 1 als lokal erledigt markiert. Für weitere Aufträge den konkreten Paketscope verwenden. Datenbankabnahme/Upload und fachlich offene Pakete nicht als pauschal freigegeben behandeln.
+
 **Codegrundlage 2026-11-15:** `web/lib/stellendaten.ts` ist implementiert, sofort angeschlossen und geprüft. Claude kann die Datenleser für spätere Filter-/CV-Eingaben wiederverwenden; konkrete Vergleiche, Bewertung, Speicherung und CV-Textauslesen weiterhin erst nach passenden Fragen und Freigabe planen. Keine manuelle Nutzeraktion nötig.
 
 **Vorarbeit spätere Phasen 2026-11-15:** `docs/vorarbeit-spaetere-phasen.md` und künstliche Beispiele sind für Claude vorbereitet. Anschlussstellen und Recherche müssen nicht neu erfunden werden; neue Funktionen weiterhin erst nach passenden Fragen und ausdrücklicher Planfreigabe umsetzen. Keine laufende Nutzeraufgabe daraus ableiten; bestehende Ranking-/Groq-Haltepunkte bleiben gültig.

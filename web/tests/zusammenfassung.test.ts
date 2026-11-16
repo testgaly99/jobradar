@@ -36,3 +36,65 @@ test("Voraussetzungen: Abschluss, Erfahrung, dann Muss, ohne Lücken", () => {
     ["Studium Informatik o. ä.", "3 Jahre Backend", "TypeScript", "SQL"]);
   assert.deepEqual(voraussetzungen({ ...gut, abschluss: null, muss: [] }), []);
 });
+
+test("Alle zurückgegebenen Listen sind von Eingabe und anderen Leseergebnissen unabhängig", () => {
+  const roh: Ki = structuredClone(gut);
+  const a = leseKi(roh)!, b = leseKi(roh)!;
+  for (const feld of ["aufgaben", "rahmen", "muss", "benefits"] as const) {
+    assert.notEqual(a[feld], roh[feld], feld);
+    assert.notEqual(a[feld], b[feld], feld);
+    const vorher = [...roh[feld]];
+    a[feld].push("Nur in diesem Ergebnis");
+    assert.deepEqual(roh[feld], vorher, feld);
+    assert.deepEqual(b[feld], vorher, feld);
+  }
+  assert.deepEqual(leseKi(roh), gut);
+});
+
+test("Spätere Änderungen der Rohlisten verändern gelesene Anforderungen nicht", () => {
+  const roh: Ki = structuredClone(gut);
+  const gelesen = leseKi(roh)!;
+  for (const feld of ["aufgaben", "rahmen", "muss", "benefits"] as const) roh[feld][0] = "Geändert";
+  assert.deepEqual(gelesen, gut);
+});
+
+test("Auch bei gemeinsamem Eingabearray bleiben unterschiedliche Felder getrennt", () => {
+  const gemeinsam = ["SQL"];
+  const gelesen = leseKi({ ...gut, muss: gemeinsam, benefits: gemeinsam })!;
+  gelesen.muss[0] = "Verändert";
+  assert.deepEqual(gelesen.benefits, ["SQL"]);
+  assert.deepEqual(gemeinsam, ["SQL"]);
+});
+
+test("Texte, Reihenfolge, Duplikate und vorhandene Grenzen bleiben erhalten", () => {
+  for (const sprache of ["de", "en"]) {
+    const roh = { aufgaben: ["  Erstens  ", "SQL", "SQL", "Viertens", "Fünftens"],
+      rahmen: ["Eins", "Zwei", "Drei", "Vier"], abschluss: " Studium ", erfahrung: " 3 Jahre ",
+      muss: ["Zuerst", "Danach", "Zum Schluss"], benefits: ["A", "B"], sprache, unbekannt: "nicht übernehmen" };
+    const { unbekannt, ...erwartet } = roh;
+    assert.deepEqual(leseKi(roh), erwartet);
+    assert.deepEqual(voraussetzungen(leseKi(roh)!), [" Studium ", " 3 Jahre ", "Zuerst", "Danach", "Zum Schluss"]);
+  }
+  assert.deepEqual(leseKi({ ...gut, rahmen: [], muss: [], benefits: [], abschluss: null, erfahrung: null }),
+    { ...gut, rahmen: [], muss: [], benefits: [], abschluss: null, erfahrung: null });
+});
+
+test("Leere oder lückenhafte Elemente sind in keiner Liste gültige Anforderungen", () => {
+  for (const [feld, laenge] of [["aufgaben", 3], ["rahmen", 1], ["muss", 1], ["benefits", 1]] as const) {
+    const loecher = new Array(laenge);
+    assert.equal(leseKi({ ...gut, [feld]: loecher }), null, `${feld}: Löcher`);
+    assert.equal(leseKi({ ...gut, [feld]: Array(laenge).fill(undefined) }), null, `${feld}: undefined`);
+    assert.equal(leseKi({ ...gut, [feld]: Array(laenge).fill(" \n ") }), null, `${feld}: leer`);
+  }
+});
+
+test("Schreibgeschützte Eingaben werden nur gelesen; Voraussetzungen liefern eine eigene Liste", () => {
+  const roh = Object.freeze({ ...gut, aufgaben: Object.freeze([...gut.aufgaben]),
+    rahmen: Object.freeze([...gut.rahmen]), muss: Object.freeze([...gut.muss]), benefits: Object.freeze([...gut.benefits]) });
+  const gelesen = leseKi(roh)!;
+  assert.deepEqual(gelesen, gut);
+  const liste = voraussetzungen(gelesen);
+  liste[0] = "Nur diese Ausgabe";
+  assert.equal(gelesen.abschluss, gut.abschluss);
+  assert.deepEqual(gelesen.muss, gut.muss);
+});
