@@ -7,14 +7,16 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
 
 BASE = "http://localhost:3002"
+LOG = Path(sys.argv[1])
+STARTZEILE = len(LOG.read_text().splitlines()) if LOG.exists() else 0
 
 def b64(value):
     return base64.urlsafe_b64encode(json.dumps(value).encode()).decode().rstrip("=")
 
-def session(context):
+def session(context, mode="normal"):
     now = int(time.time())
     claims = {"sub": "00000000-0000-4000-8000-000000000001", "aud": "authenticated", "role": "authenticated",
-              "email": "offline@example.com", "iat": now, "exp": now + 3600, "iss": "https://offline.example.invalid/auth/v1"}
+              "email": "offline@example.com", "mode": mode, "iat": now, "exp": now + 3600, "iss": "https://offline.example.invalid/auth/v1"}
     token = b64({"alg": "HS256", "typ": "JWT"}) + "." + b64(claims) + "." + b64("offline")
     value = {"access_token": token, "refresh_token": "offline", "token_type": "bearer", "expires_in": 3600,
              "expires_at": now + 3600, "user": {"id": claims["sub"], "email": claims["email"]}}
@@ -66,7 +68,28 @@ with sync_playwright() as p:
             assert not errors, errors
             user.close()
             print(f"OK {width}px: Gast, Filter, Detailseite, ungültige Auswahl; Größe über drei Seiten mit/ohne Ranking")
-        records = [json.loads(line) for line in Path(sys.argv[1]).read_text().splitlines()]
-        assert not any("ranking_" in r["pfad"] and r["mode"] == "gast" for r in records)
+            for fall in ["merken-fehler", "merken-leer", "beworben-konflikt"]:
+                probe = context(browser, width)
+                session(probe, f"{fall}-{width}")
+                seite = probe.new_page()
+                seite.goto(BASE + "/stellen/Testfirma%20A%3A1")
+                if fall == "beworben-konflikt":
+                    seite.get_by_role("button", name="Ich habe mich beworben", exact=True).click()
+                    expect(seite.get_by_role("alert")).to_contain_text("Der Status konnte nicht gespeichert werden")
+                    expect(seite.get_by_role("link", name="Beworben ✓ · Zur Bewerbung", exact=True)).to_be_visible()
+                else:
+                    seite.get_by_role("button", name="Gemerkt ✓", exact=True).click()
+                    if fall == "merken-fehler":
+                        expect(seite.get_by_role("alert")).to_contain_text("Das Merken konnte nicht zurückgenommen werden")
+                        expect(seite.get_by_role("button", name="Gemerkt ✓", exact=True)).to_be_visible()
+                    else:
+                        expect(seite.get_by_role("button", name="Merken", exact=True)).to_be_visible()
+                probe.close()
+            print(f"OK {width}px: Entmerken-Fehler, erfolgreiches Entmerken, paralleler Statusfortschritt")
+        records = [json.loads(line) for line in LOG.read_text().splitlines()[STARTZEILE:]]
+        assert not any("ranking_" in r.get("pfad", "") and r["mode"] == "gast" for r in records)
+        assert not any(r["mode"].startswith("merken-fehler-") and r.get("methode") == "DELETE" for r in records)
+        konflikte = [r for r in records if r.get("ereignis") == "statusupdate"]
+        assert len(konflikte) == 2 and all(r["status"] == "im_gespraech" and not r["passend"] for r in konflikte)
     finally:
         browser.close()

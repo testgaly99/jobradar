@@ -58,3 +58,19 @@ test("Netz-Guard erlaubt den lokalen Prüfserver, verhindert aber externe DNS-Ab
     "const a=require('node:assert/strict'); a.throws(()=>require('node:dns').lookup('example.invalid',()=>{}),/gesperrt/); const s=require('node:net').createServer(); s.listen(0,'127.0.0.1',()=>s.close());"], { encoding: "utf8" });
   assert.equal(r.status, 0, r.stderr);
 });
+
+test("Browserfixture beantwortet nur markierten internen Redirect synthetisch, übriges Netz bleibt gesperrt", () => {
+  const fixture = fileURLToPath(new URL("../scripts/offline/antworten.cjs", import.meta.url));
+  const r = spawnSync(process.execPath, ["-e", `
+    const a = require('node:assert/strict'); require(process.argv[1]);
+    (async () => {
+      const intern = { method: 'GET', next: { internal: 1 }, headers: { rsc: '1' } };
+      a.equal((await fetch('http://localhost:3002/stellen/test', intern)).status, 204);
+      await a.rejects(fetch('http://localhost:3002/stellen/test'), /gesperrt/);
+      await a.rejects(fetch('http://localhost:3002/konto', intern), /gesperrt/);
+      await a.rejects(fetch('https://example.invalid/stellen/test', intern), /gesperrt/);
+      a.throws(() => require('node:net').connect(3002, '127.0.0.1'), /gesperrt/);
+    })().catch(() => { process.exitCode = 1; });
+  `, fixture], { encoding: "utf8", cwd: mkdtempSync(join(tmpdir(), "jobradar-redirect-")) });
+  assert.equal(r.status, 0, r.stderr);
+});

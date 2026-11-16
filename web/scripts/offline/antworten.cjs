@@ -3,6 +3,7 @@ require('./netz-sperre.cjs');
 const fs = require('node:fs');
 const path = require('node:path');
 const log = path.join(process.cwd(), 'anfragen.jsonl');
+const bewerbungen = new Map();
 const heute = new Date().toISOString().slice(0, 10);
 const jobs = [
   ['Testfirma A:1', 'Testfirma A', 'Datenanalyse'],
@@ -27,13 +28,46 @@ const groessenJobs = [[57, '<50', 0], [52, '50–249', 1], [1, '250–999', 2], 
   })));
 globalThis.fetch = async (input, init = {}) => {
   const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url);
-  if (url.hostname !== 'offline.example.invalid') throw new Error('Externer Testzugriff gesperrt');
   const headers = new Headers(init.headers ?? (input instanceof Request ? input.headers : {}));
+  // Nexts internen Redirect-Vorabruf rein synthetisch beantworten: Client lädt das Ziel regulär neu.
+  // Keine echte Loopback-Verbindung und keine gelockerte Socket-/Domainsperre.
+  if (['http://localhost:3002', 'http://127.0.0.1:3002'].includes(url.origin)
+      && (url.pathname === '/stellen' || url.pathname.startsWith('/stellen/'))
+      && init.method === 'GET' && init.next?.internal === 1 && headers.get('rsc') === '1') {
+    return new Response(null, { status: 204 });
+  }
+  if (url.hostname !== 'offline.example.invalid') throw new Error('Externer Testzugriff gesperrt');
   const token = headers.get('authorization')?.replace(/^Bearer /, '');
   let mode = 'gast';
   try { mode = JSON.parse(Buffer.from(token.split('.')[1], 'base64url')).mode ?? 'normal'; } catch {}
   const body = typeof init.body === 'string' && init.body ? JSON.parse(init.body) : {};
-  fs.appendFileSync(log, JSON.stringify({ pfad: url.pathname, mode, listen: body.p_listen }) + '\n');
+  const methode = init.method ?? 'GET';
+  fs.appendFileSync(log, JSON.stringify({ pfad: url.pathname, mode, methode, listen: body.p_listen }) + '\n');
+  const aktionsprobe = /^(merken-fehler|merken-leer|beworben-konflikt)-/.test(mode);
+  if (aktionsprobe && !bewerbungen.has(mode)) bewerbungen.set(mode, {
+    id: '00000000-0000-4000-8000-000000000015', job_id: 'Testfirma A:1', status: 'gemerkt', beworben_am: null,
+  });
+  if (aktionsprobe && methode === 'HEAD' && ['/rest/v1/contacts', '/rest/v1/interviews', '/rest/v1/application_events'].includes(url.pathname)) {
+    return mode.startsWith('merken-fehler-') && url.pathname.endsWith('/contacts')
+      ? antwort({ code: 'XX000' }, 500) : antwort([], 200, { 'content-range': '*/0' });
+  }
+  if (aktionsprobe && url.pathname === '/rest/v1/applications') {
+    const a = bewerbungen.get(mode);
+    if (methode === 'DELETE') {
+      if (a?.status === 'gemerkt' && url.searchParams.get('status') === 'eq.gemerkt') bewerbungen.set(mode, null);
+      return antwort(null);
+    }
+    if (methode === 'PATCH') {
+      if (mode.startsWith('beworben-konflikt-')) a.status = 'im_gespraech';
+      const passt = a && url.searchParams.get('status') === `eq.${a.status}`
+        && (url.searchParams.get('beworben_am') === 'is.null' ? a.beworben_am === null
+          : url.searchParams.get('beworben_am') === `eq.${a.beworben_am}`);
+      if (passt) Object.assign(a, body);
+      fs.appendFileSync(log, JSON.stringify({ mode, ereignis: 'statusupdate', status: a?.status, passend: !!passt }) + '\n');
+      return antwort(passt ? [{ id: a.id }] : []);
+    }
+    return antwort(a ? [a] : []);
+  }
   if (url.pathname === '/auth/v1/user') return antwort({ id: '00000000-0000-4000-8000-000000000001', aud: 'authenticated', role: 'authenticated', email: 'ranking@example.com', app_metadata: {}, user_metadata: {}, created_at: heute });
   if (url.pathname === '/rest/v1/rpc/facetten') return antwort({ groesse: { '250–999': 3 }, kategorie: { Technik: 3 }, land: { Deutschland: 3 } });
   if (url.pathname === '/rest/v1/rpc/ranking_katalog') {
