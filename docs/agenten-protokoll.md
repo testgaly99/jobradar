@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 14:11 MEZ – Codex – Paket 11
+- Auftrag: nächste Schritte nach Paketen 1–10 lokal fortsetzen; hier Paket 11 im erlaubten Umfang bearbeitet, echte Datenbankabnahmen/Upload separat.
+- Commits: lokaler Commit „Isolierte Webprüfung als Projektwerkzeug versionieren“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.
+- Geänderte Dateien: web/scripts/offline/pruefe.cjs, netz-sperre.cjs, antworten.cjs, browser.py; web/tests/offline-web.test.ts; web/package.json; .gitignore; docs/pruefvorbereitung.md; docs/plans/2026-11-16-isolierte-webpruefung.md; außerdem STATUS, Entscheidungen, Arbeitskatalog und dieses Protokoll.
+- Ergebnis: Vier ausgewählte Helfer unter web/scripts/offline versioniert, keine Arbeitsprotokolle kopiert. Nur app/lib/public und bekannte Konfigurationen werden ohne Umgebungsdateien, Caches und Quell-Symlinks in ignorierte .pruefung kopiert. Kindprozesse erhalten nur ausgewählte Betriebssystemwerte/künstliche Einstellungen. Netzwerk und externe DNS-Abfragen gesperrt; numerische Loopback-Auflösung ermöglicht lokales Listening. Eigener Server nur auf freiem Port 3002, nach Erfolg/Fehler beendet; vorhandene Server unangetastet. Browser beschränkt auf localhost, synthetische Daten, keine reguläre Nutzeraufgabe.
+- Prüfungen: Fünf Schutztests, zuerst fehlendes Modul rot. Ganze Suite 248 Webtests und Typprüfung bestanden. Tatsächlicher isolierter Webpack-Build mit Netzsperre bestanden. Browserprüfung: je 1280/390 Pixel Gast, Listenfilter, Detailseite mit 0 Jahren und ungültige Auswahl, acht Fälle bestanden; keine Browserfehler, keine Gast-Rankingabfragen. Server nach Erfolg und nach vorangegangenen fehlgeschlagenen Browserläufen beendet. git diff --check und eigener Review ohne materielle Befunde.
+- Nicht geprüft / offene Fragen: Keine Live-Daten, Umgebungsdateien oder Schlüssel, keine echten Datenbankrechte geprüft. Python-Anwendung unverändert, Suite nicht erneut ausgeführt. Linux-/GitHub-Lauf noch offen. PostgreSQL/Docker nicht vorhanden; kein Werkzeug installiert. Keine Veröffentlichung.
+- Abweichungen: Netzsperre zunächst auch für das lokale Listening zu streng; nur numerische Loopback-DNS-Auflösung erlaubt und dafür eigener Schutztest ergänzt. Browser-Locatoren auf tatsächlichen Steckbrief und mobilen Filter-Klickweg präzisiert; danach kompletter Browserlauf grün. Kein Produktcode geändert. Browser mit vorhandenem Python 3.12 direkt wegen Launcher-Erkennung. Eigener Review gemäß Sitzungsregel, Claude-Prüfung separat.
+
 ## 2026-11-16 12:26 MEZ – Codex – Paket 10
 - Auftrag: Nutzer beauftragt die nächsten vier Pakete 7 → 8 → 9 → 10; hier Paket 10 separat abgeschlossen.
 - Commits: lokaler Commit „Öffentliche Fehlerausgaben auf sichere Diagnosedaten begrenzen“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.

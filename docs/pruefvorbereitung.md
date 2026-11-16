@@ -58,11 +58,18 @@ npm.cmd test
 
 ### 3. Produktions-Build und Browserprobe
 
-**Was:** Den bereits dokumentierten isolierten Prüfweg des Ranking-Plans verwenden: frische Kopie ausgewählter Quelldateien, keine `*.env*`, bereinigte Prozessumgebung und künstliche Einstellungen. Build mit gesperrten HTTP-Aufrufen; Browser ausschließlich auf `localhost:3002`, externe Anfragen blockiert und Datenbankantworten ersetzt. Nur Fehlerfälle mit Screenshots festhalten; Testserver anschließend beenden.
+**Was:** Im Unterordner `web/` steht der bisherige isolierte Weg jetzt als versioniertes Entwicklerwerkzeug bereit:
+
+```powershell
+npm.cmd run pruefe:build
+npm.cmd run pruefe:browser
+```
+
+Der Browserlauf erstellt zuerst den isolierten Build und verwendet die bereits vorhandenen Chrome-/Python-/Playwright-Werkzeuge. Falls der Windows-Launcher die vorhandene Python-Installation nicht erkennt, kann der Entwickler `-- --python <Interpreterpfad>` anhängen. Nichts nachinstallieren. Das sind Entwicklerprüfungen, keine regelmäßigen Nutzeraufgaben.
 
 **Warum:** Ein normaler Next.js-Build lädt lokale Umgebungsdateien automatisch. Die vorhandene sichere Probe wurde deshalb in einer frischen Kopie durchgeführt. Eine Browserprobe mit Ersatzdaten belegt Bedienabläufe, aber keine echte Datenbankabschirmung.
 
-**Erfolg:** Build endet erfolgreich; Browserprüfungen bestehen; keine echten Anbieter-/Datenbankaufrufe. Reproduktionsdetails und lokale Helfer stehen in `plans/2026-11-15-ranking-grundlage.md` sowie dem dort genannten lokalen Arbeitsprotokoll. Fehlende Helfer sind kein Anlass, ersatzweise einen normalen Build mit lokalen Zugangsdaten auszuführen.
+**Erfolg:** Build und gegebenenfalls Browserprüfung enden mit Exit 0. Quellenkopie, Build und synthetische Anfragen liegen ausschließlich unter dem ignorierten Ordner `.pruefung/`. Symlinks in Quellen werden abgewiesen, Umgebungsdateien/Caches nicht kopiert. Ausgehende Verbindungen sind im Kindprozess gesperrt; numerische Loopback-Adressen dürfen für das Server-Listening aufgelöst werden. Der Browser ruft nur localhost:3002 auf. Ein vorhandener Server wird nicht gestoppt; der eigene Prüfserver wird nach Erfolg oder Fehler beendet. Keine echten Anbieter-/Datenbankaufrufe und keine Schlüssel nötig.
 
 ## Bereits vorbereitete Datenbankabnahme
 
