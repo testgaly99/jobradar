@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 11:41 MEZ – Codex – Paket 8
+- Auftrag: Nutzer beauftragt die nächsten vier Pakete 7 → 8 → 9 → 10; hier Paket 8 separat abgeschlossen.
+- Commits: lokaler Commit „Python- und Website-Datenvertrag mit gemeinsamen Beispielen prüfen“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.
+- Geänderte Dateien: tests/fixtures/stellendaten_vertrag.json, tests/test_stellendaten_vertrag.py, web/tests/datenvertrag.test.ts, docs/plans/2026-11-16-datenvertrag.md; außerdem STATUS, Entscheidungen, Arbeitskatalog und dieses Protokoll.
+- Ergebnis: Eine gemeinsame Fixture wird unmittelbar von zwölf Python- und 15 TypeScript-Prüfungen genutzt. Explizite Steckbrief-Rohdaten und Website-Projektion, 0/Unbekannt, Einheiten, kaputte Werte sowie neun gültige/ungültige KI-Fälle geprüft. Bewusste Unterschiede bei vollständiger Python-Schlüsselprüfung, Texttrimmen und Website-Teilprojektion erhalten; keine neue Schema-Bibliothek oder Datenstruktur im Produkt.
+- Prüfungen: Gezielt zwölf Python- und 15 Webtests grün. Vollständig 480 Python-Offline-Tests über pruefe_offline mit gesperrten Live-Modulen/Umgebungsdateien/Netzwerk/Prozessstarts; 243 Webtests, Typprüfung und isolierter Webpack-Build bestanden. Build ohne Umgebungsdateien und mit künstlichen Einstellungen/HTTP-Sperre. Eigener Review und git diff --check ohne Befunde. Kein neuer Browserlauf, nur Tests/Fixture/Dokumentation geändert.
+- Nicht geprüft / offene Fragen: Keine Modellqualität oder echte SQL-/RLS-Ausführung geprüft. Keine echten Anzeigen/CVs, Zugangsdaten, Modellaufrufe, Migration oder Veröffentlichung. Pakete 9/10 folgen im erteilten Auftrag, 11–14 separat.
+- Abweichungen: Neue Vertragstests von Anfang an grün; keine unnötige Codeänderung erzwungen. Erster kompletter Python-Lauf: 443 bestanden, 37 Einrichtungsfehler wegen gesperrtem Standard-Tempordner; PYTEST_DEBUG_TEMPROOT ausschließlich für den Prozess auf lokalen Prüf-Unterordner gesetzt, danach alle 480 grün. Schutzregeln unverändert. Vorhandenes Python 3.12 direkt wegen Launcher-Erkennung; eigener Review, Claude-Prüfung separat.
+
 ## 2026-11-16 11:35 MEZ – Codex – Paket 7
 - Auftrag: Nutzer beauftragt die nächsten vier Pakete 7 → 8 → 9 → 10; hier Paket 7 separat abgeschlossen.
 - Commits: lokaler Commit „Berliner Sommerzeitlücken und gemeinsame Datumswerte prüfen“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.

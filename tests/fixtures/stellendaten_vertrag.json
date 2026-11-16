@@ -1,0 +1,41 @@
+{
+  "hinweis": "Vollständig künstlich. Gespeichertes Format und Website-Projektion sind bewusst verschieden.",
+  "steckbriefe": [
+    {
+      "name": "Null Jahre, Jahresgehalt und Sprache",
+      "text": "0 years experience. German C1. 70k-85k EUR. Security clearance.", "abschnitte": [],
+      "roh": {"erfahrung_jahre": 0, "sprachen": [{"sprache": "Deutsch", "niveau": "C1"}], "gehalt": {"min": 70000, "max": 85000, "waehrung": "EUR", "zeitraum": "Jahr"}, "sicherheitsueberpruefung": true},
+      "anzeige": {"erfahrungJahre": 0, "sprachen": [{"sprache": "Deutsch", "niveau": "C1"}], "gehalt": {"min": 70000, "max": 85000, "waehrung": "EUR", "zeitraum": "Jahr"}, "sicherheit": true}
+    },
+    {
+      "name": "Monatsbetrag und Erfahrung aus Abschnitt",
+      "text": "5.500 CHF pro Monat", "abschnitte": [{"titel": "Profil", "punkte": ["3 years experience"]}],
+      "roh": {"erfahrung_jahre": 3, "sprachen": [], "gehalt": {"min": 5500, "max": 5500, "waehrung": "CHF", "zeitraum": "Monat"}, "sicherheitsueberpruefung": false},
+      "anzeige": {"erfahrungJahre": 3, "sprachen": [], "gehalt": {"min": 5500, "max": 5500, "waehrung": "CHF", "zeitraum": "Monat"}, "sicherheit": false}
+    },
+    {
+      "name": "Unbekannte Werte bleiben unbekannt",
+      "text": "Ein künstlicher Anzeigentext ohne Angaben.", "abschnitte": [],
+      "roh": {"erfahrung_jahre": null, "sprachen": [], "gehalt": null, "sicherheitsueberpruefung": false},
+      "anzeige": {"erfahrungJahre": null, "sprachen": [], "gehalt": null, "sicherheit": false}
+    }
+  ],
+  "steckbriefLeser": [
+    {"name": "Explizite Stunden und Dezimalbeträge", "roh": {"gehalt": {"min": 25.5, "max": 30.75, "waehrung": "EUR", "zeitraum": "Stunde"}}, "anzeige": {"erfahrungJahre": null, "sprachen": [], "gehalt": {"min": 25.5, "max": 30.75, "waehrung": "EUR", "zeitraum": "Stunde"}, "sicherheit": false}},
+    {"name": "Falsche Typen und umgekehrte Spanne", "roh": {"erfahrung_jahre": "3", "sprachen": [null, {"sprache": 4, "niveau": "C1"}], "gehalt": {"min": 80000, "max": 70000, "waehrung": "EUR", "zeitraum": "Jahr"}, "sicherheitsueberpruefung": "true"}, "anzeige": {"erfahrungJahre": null, "sprachen": [], "gehalt": null, "sicherheit": false}},
+    {"name": "Kein Objekt", "roh": [], "anzeige": {"erfahrungJahre": null, "sprachen": [], "gehalt": null, "sicherheit": false}}
+  ],
+  "kiBasis": {"aufgaben": ["APIs bauen", "Tests schreiben", "Code prüfen"], "rahmen": ["Hybrid"], "abschluss": "Studium Informatik", "erfahrung": "3 Jahre", "muss": ["TypeScript"], "benefits": ["4-Tage-Woche"], "studium": "ja", "taetigkeit": "anspruchsvoll", "sprache": "de"},
+  "kiAnzeige": {"aufgaben": ["APIs bauen", "Tests schreiben", "Code prüfen"], "rahmen": ["Hybrid"], "abschluss": "Studium Informatik", "erfahrung": "3 Jahre", "muss": ["TypeScript"], "benefits": ["4-Tage-Woche"], "sprache": "de"},
+  "kiFaelle": [
+    {"name": "Deutsch vollständig", "aenderungen": {}, "pythonGueltig": true, "webGueltig": true},
+    {"name": "Englisch und optionale leere Anforderungen", "aenderungen": {"sprache": "en", "rahmen": [], "abschluss": null, "erfahrung": null, "muss": [], "benefits": []}, "pythonGueltig": true, "webGueltig": true, "anzeigeAenderungen": {"sprache": "en", "rahmen": [], "abschluss": null, "erfahrung": null, "muss": [], "benefits": []}},
+    {"name": "Schreiber trimmt, Leser bewahrt empfangene Texte", "aenderungen": {"abschluss": "  Studium Informatik  "}, "normalisiert": {"abschluss": "Studium Informatik"}, "pythonGueltig": true, "webGueltig": true, "anzeigeAenderungen": {"abschluss": "  Studium Informatik  "}},
+    {"name": "Zu wenige Aufgaben", "aenderungen": {"aufgaben": ["Nur eins"]}, "pythonGueltig": false, "webGueltig": false},
+    {"name": "Falscher Listentyp", "aenderungen": {"muss": "SQL"}, "pythonGueltig": false, "webGueltig": false},
+    {"name": "Leere Anforderung", "aenderungen": {"muss": [" "]}, "pythonGueltig": false, "webGueltig": false},
+    {"name": "Nicht unterstützte Sprache", "aenderungen": {"sprache": "fr"}, "pythonGueltig": false, "webGueltig": false},
+    {"name": "Studium prüft ausschließlich der vollständige Schreiber", "aenderungen": {"studium": "falsch"}, "pythonGueltig": false, "webGueltig": true},
+    {"name": "Zusatzfelder liest die UI nicht", "aenderungen": {"unbekannt": "nicht anzeigen"}, "pythonGueltig": false, "webGueltig": true}
+  ]
+}
