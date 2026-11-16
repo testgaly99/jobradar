@@ -2,6 +2,8 @@
 
 Stand: 2026-11-16, Bestandsbasis `c2a0592`. **Laufende Anforderungsklärung, kein freigegebener Bauplan.** Nutzer möchte zuerst sein bestehendes Claude-Pro-Abo nutzen und zusätzlich einen Mistral-Weg ohne API-Kosten. Die bisherige Claude-only-Regel für persönliche Daten muss nach Klärung des optionalen Mistral-Wegs ausdrücklich konsistent nachgeführt werden; dieses Dokument aktiviert keinen Anbieter und verarbeitet keine persönlichen Daten.
 
+**Fragen vollständig nachvollziehen:** Das [Fragenprotokoll Q1–Q5](2026-11-16-cv-abgleich-fragen.md) enthält auf ausdrücklichen Nutzerauftrag den vollständigen Wortlaut einschließlich Empfehlungen, Antwortoptionen, Antworten und späteren Präzisierungen. Alle weiteren gestellten Fragen ebenso dokumentieren. Q3/Q4 sind inzwischen beantwortet; Q5 wird auf Nutzerwunsch als offenes To-do zurückgestellt.
+
 ## Methode und vorhandene Grundlagen
 
 `find-skills` zur Auswahl und die installierte `grill-me`/`grilling`-Anleitung für Fragenrunden nach Abhängigkeiten: Fakten selbst prüfen, Empfehlungen anbieten, Antworten festhalten, daraus Anforderungen/Abnahmen entwickeln. Keine stillen Entscheidungen aus ausbleibenden Antworten ableiten. Keine neue Skill-/Parserinstallation. PDF-/DOCX-Skills sind für spätere Dokumentarbeit vorhanden; ihre Existenz beweist keine installierte Parserumgebung und ist keine Freigabe, echte CVs zu öffnen. Unpassende Skills wie Bildgenerierung, Reisen oder neue Seitengestaltung werden nicht allein wegen Verfügbarkeit angewendet.
@@ -14,17 +16,20 @@ Bestand: PDF/Word-Dokumentversionen und Eigentümerschutz sind bereits vorgesehe
 |---|---|---|
 | A1 | Nutzerwunsch | Primär Claude Pro, keine zusätzlichen API-Kosten. Zusätzliche Mistral-Option ebenfalls ohne API-Kosten. Kein stiller kostenpflichtiger Ersatzweg. |
 | A2 | Antwort Q1 bestätigt | Erste Version: nachvollziehbare Belege, offene Nachweise und Empfehlung der besten CV-Version. Prozentwert/Score wird zurückgestellt, bis Bedeutung und Gewichtung feststehen. |
-| A3 | Antwort Q2 bestätigt | Übereinstimmungen und nicht übereinstimmende Stellen farblich **direkt in der Stellenanzeige** markieren. Antwort im Wortlaut: „Das soll farblich markiert werden in der Stellenanzeige, genau wie dinge, die mit meinem CV übereinstimmen“. Farben und Bedeutung „nicht belegt“ versus „nicht erfüllt“ dadurch noch nicht abschließend entschieden. |
+| A3 | Q2: Darstellungswunsch bestätigt; Bedeutung später durch Q3 geklärt | Übereinstimmungen und offene/nicht erfüllte Anforderungen farblich **direkt in der Stellenanzeige** markieren. Q2 allein bestätigte noch keine Farblegende oder Behandlung fehlender Nachweise; vollständige Antwortgeschichte im Fragenprotokoll. |
 | A4 | Bestehende Projektanforderung | PDF und Word, mehrere eigene CV-Versionen, begründete CV-Empfehlung, private Daten/Ergebnisse pro Nutzer. Kein Zugriff durch Gäste/andere Nutzer. Vorerst persönliche Nutzung; kein gemeinsames Abo für fremde Nutzer vorsehen. |
 | A5 | Bestehende Qualitätsgrenze | Keine Fähigkeiten erfinden oder aus bloßer Nichterwähnung sicher auf Unfähigkeit schließen. Ergebnisse müssen anhand tatsächlicher CV-/Anzeigenpassagen nachvollziehbar sein. |
+| A6 | Antwort Q3 bestätigt | Ganze Anforderung im unveränderten Anzeigentext markieren; Klick zeigt CV-Beleg bzw. Begründung. Grün = belegt, Gelb = teilweise oder noch nicht belegt, Rot = nachweislich nicht erfüllt. Fehlende Erwähnung allein ist kein Rot. |
+| A7 | Freie Antwort Q4 | Alle CVs abgleichen, besten passenden CV für den angezeigten Vergleich verwenden und ausdrücklich benennen. Keine Belege mehrerer CVs zu einem scheinbar vollständigen Einzel-CV zusammenführen. Manueller Wechsel und Auswahlregeln/Gleichstand bleiben unentschieden. |
+| A8 | Antwort Q5: zurückgestellt | Zusätzlichen Mistral-Weg als offenes To-do für später führen. Keine Betriebsart ausgewählt oder Datenfreigabe erteilt. Claude-Pro-Klärung unabhängig fortsetzen. |
 
-## Runde 2: Antworten stehen aus
+## Runde 2: Antworten eingearbeitet
 
-**Q3 – Farblegende und Interaktion.** Ganze Anforderung im unveränderten Text markieren; Klick zeigt CV-Beleg bzw. Begründung? Empfehlung: Grün belegt, Gelb teilweise/noch nicht belegt, Rot nachweislich nicht erfüllt. Alternative: nur Grün/Rot, wobei Rot ausdrücklich auch „nicht belegt“ bedeutet. Keine Palette oder Statuszusammenlegung als bereits entschieden behandeln.
+**Q3 – Bestätigt:** Grün/Gelb/Rot mit Beleg oder Begründung gemäß A6. „Teilweise“ und „noch nicht belegt“ müssen trotz gemeinsamer gelber Farbe im Text unterscheidbar bleiben. Sichere Feststellung echter Nichterfüllung im Entwurf behandeln.
 
-**Q4 – Vergleichsbasis.** Empfehlung: Farben beziehen sich auf eine konkrete CV-Version, beste empfohlene Version zunächst vorausgewählt, manuell umschaltbar. Alternative: alle CVs gemeinsam als Gesamtprofil. Belege verschiedener Versionen nicht still zu einem scheinbar passenden einzelnen CV vermischen.
+**Q4 – Präzisiert:** Alle CVs vergleichen; der am besten passende ist Grundlage des dargestellten Vergleichs und wird benannt. Kein Gesamtprofil. Nutzer hat die empfohlene manuelle Umschaltung nicht ausdrücklich bestätigt; nicht als beschlossene Anforderung behandeln.
 
-**Q5 – Mistral und Datenfreigabe.** Empfehlung: Cloudverarbeitung nur nach bewusster Anbieterwahl, vorher ausgeschlossenem Training und geprüftem Kostenstopp. Alternativen: ausschließlich lokal auf eigenem Rechner, oder automatischer Wechsel nach einmaliger ausdrücklicher Freigabe. Noch keine Einwilligung zur echten Übertragung, keine Quoten-/Kontoprüfung und keine Installation vorgenommen.
+**Q5 – Offenes To-do für später:** Mistral-Betriebsart, kostenfreie Kontonutzung, Training/Aufbewahrung und Kostenstopp später klären. Keine der angebotenen Alternativen gewählt. Keine Einwilligung zur echten Übertragung, keine Quoten-/Kontoprüfung und keine Installation vorgenommen.
 
 ## Weitere Zweige nach diesen Antworten
 
@@ -32,7 +37,7 @@ Bestand: PDF/Word-Dokumentversionen und Eigentümerschutz sind bereits vorgesehe
 2. **Empfehlung/Nachweise:** explizite versus übertragbare Erfahrung, teilweise belegte Anforderungen, Umgang mit Sprach-/Erfahrungsangaben, Muss/Soll und Gleichstand mehrerer CVs. Beste Version hinsichtlich belegter Abdeckung und Darstellung unterscheiden; keine Gewichtungsformel erfinden.
 3. **Auslösung/Betrieb:** je Stelle auf Knopfdruck, beim Öffnen oder für ausgewählte Stapel; erwartete Menge/Wartezeit. PC-abhängiger persönlicher Worker oder Cloudweg erst nach Anbieter-/Datenschutzentscheidung bewerten. Regelmäßige manuelle Terminalstarts sind kein gewünschter Nutzerablauf.
 4. **Wiederverwendung/Korrektur:** Ergebnis speichern, nach CV-/Anzeigen-/Vorgabenänderung als veraltet behandeln, neue Berechnung; Nutzerkorrektur und deren Gültigkeit, manuelle Ergänzung statt erfundener CV-Belege. Export/Löschen um neue private Daten ergänzen.
-5. **Betriebsfreigabe:** konkrete Konto-/Modellverfügbarkeit mit künstlichen Daten nachweisen, Kostenstopp ohne bezahltes Fallback, Trainings-/Aufbewahrungsbedingungen prüfen, Qualität beider Anbieter getrennt abnehmen. Erst danach echte CVs über freigegebenen Weg.
+5. **Betriebsfreigabe:** konkrete Claude-Konto-/Modellverfügbarkeit mit künstlichen Daten nachweisen, Kostenstopp ohne bezahltes Fallback und Trainings-/Aufbewahrungsbedingungen prüfen. Mistral gemäß Q5 als späteren Zweig behandeln; vor dessen späterer Aktivierung gesondert klären und abnehmen. Erst nach jeweiliger Freigabe echte CVs verarbeiten.
 
 ## Verifizierte Anbieterfakten und verbleibende Grenzen
 
@@ -56,8 +61,8 @@ Prüftag 2026-11-16, ausschließlich offizielle Quellen. Öffentliche Dokumentat
 
 - Originalanzeige bleibt byte-/textgleich rekonstruierbar; Markierung verändert keinen Wortlaut und erzeugt keine fremden HTML-Inhalte.
 - Jeder als belegt markierte Teil verweist auf eine tatsächlich vorhandene Passage der zugrunde liegenden CV-Version; eine erfundene Referenz wird verworfen bzw. als Prüfproblem gezeigt.
-- Fehlende Erwähnung, Teilbeleg und nachweislicher Widerspruch werden gemäß Q3 getrennt erklärt; Farben erhalten zusätzlich lesbare Statushinweise.
-- CV A belegt SQL, CV B Projektleitung: Empfehlung und Markierungen dürfen ohne gewählte Gesamtprofilregel keine vollständige Abdeckung durch einen einzigen CV behaupten.
+- Fehlende Erwähnung und Teilbeleg sind gelb, nachweisliche Nichterfüllung rot; Gründe werden gemäß Q3 getrennt erklärt, Farben erhalten zusätzlich lesbare Statushinweise.
+- CV A belegt SQL, CV B Projektleitung: Alle CVs prüfen, die beste passende Version benennen und nur deren Belege für die angezeigten Markierungen verwenden. Keine vollständige Abdeckung durch einen einzigen CV aus gemischten Belegen behaupten.
 - Leere/fehlerhafte Auslesung führt zu einem Hinweis und Korrekturmöglichkeit statt scheinbar vollständigem Ergebnis.
 - Eine geänderte CV-/Anzeigenversion zeigt keinen alten Abgleich als aktuell. Eigentümergrenze, Export und Löschung gelten auch für Ergebnisse/Korrekturen.
 - Ohne bestätigte Mistral-Nutzung gehen keine persönlichen Inhalte dorthin. Kontingentende startet keine kostenpflichtige Anfrage und keinen ungefragten Anbieterwechsel.
