@@ -1,6 +1,6 @@
 # Übergabepaket für spätere Phasen
 
-Stand: 2026-11-15, Code-Basis `601ec4a`. Auftrag: Claude durch geprüfte Anschlussstellen, Grundlagenrecherche und künstliche Beispiele spätere Bestandsarbeit abnehmen.
+Stand: Recherche 2026-11-15 auf `601ec4a`, Anschlussstellen aktualisiert 2026-11-16 auf `ae9c463`. Anbieterinformationen nicht erneut recherchiert. Auftrag: Claude durch geprüfte Anschlussstellen, Grundlagenrecherche und künstliche Beispiele spätere Bestandsarbeit abnehmen.
 
 **Keine Implementierungsfreigabe:** Dieses Dokument ist eine Bestandsaufnahme und Recherche, kein freigegebener Bauplan. Gestaltung, neue Datenmodelle, Abläufe und Empfehlungen bleiben vorläufig. Vor einer Übernahme passende Fragen mit dem Nutzer klären, Antworten einarbeiten und die überarbeitete Planung ausdrücklich freigeben lassen. Die vorhandenen Projektregeln und Haltepunkte bleiben maßgeblich.
 
@@ -16,13 +16,13 @@ Alle Feststellungen zum Datenbestand beziehen sich auf Quellcode/Migrationsdatei
 | Rückkehr von Google | `web/app/auth/callback/route.ts`, `GET` | Tauscht Code gegen Supabase-Sitzung. Keine eigene verschlüsselte Provider-Token-Ablage oder Erneuerungslogik in dieser Route. Erlaubte Weiterleitungsziele sind beschränkt. |
 | Anwendungsdaten | `supabase/migrations/001_schema.sql`, `applications`, `contacts`, `interviews`, `application_events` | Firma, Referenznummer, Kontakte, Bewerbungsstatus, nächster Schritt und Interviewzeitpunkt vorhanden. Interviewzeit ist `timestamptz`; Fälligkeit des nächsten Schritts ist nur ein `date`. |
 | Statusmodell | `web/lib/bewerbung.ts`, `STATUS` | Aktuell gemerkt/beworben/im_gespraech/angebot/abgeschlossen. Alten Status eingang_bestaetigt nicht aus Migration 001 übernehmen; Migration 008 und spätere Anforderungen beachten. |
-| Zeitdarstellung | `web/lib/bewerbung.ts`, `berlinZuIso`, `zeitDe`, `tagDe`; `web/instrumentation.ts` | Vorhandene Berlin-Zeitumrechnung und Darstellung. Nicht automatisch als vollständige Lösung für mehrdeutige/nicht existierende Sommerzeit-Uhrzeiten behandeln; solche Fälle liegen als Beispiele vor. |
+| Zeitdarstellung | `web/lib/bewerbung.ts`, `berlinZuIso`, `zeitDe`, `tagDe`; `web/instrumentation.ts` | Paket 7 prüft Kalender/Uhrzeit, weist die Berliner Frühlingslücke ab und erhält die bisherige Wahl bei der doppelten Herbststunde. In vorhandene Formulare eingebunden/getestet. Neue Google-Event-Importregeln sind dadurch nicht festgelegt. |
 | Export/Löschen | `web/app/export/route.ts`, `web/lib/nutzer-loeschen-kern.ts` | Neue Verbindungs-, Mail-, Vorschlags- oder Erinnerungsdaten müssen später in den Lebenszyklus einbezogen werden. Aktuelle Löschroutine behandelt Bewerbungen, Dokumente, Storage und Auth-Konto. |
 | Namensvergleich | `web/lib/link-import.ts`, `firmaPasst` | Für Stellenlinks vorhanden; Präfixvergleich ist kein Identitätsnachweis für Mail-Absender oder Gesellschaften. Nicht ungeprüft für Gmail-Zuordnung übernehmen. |
 
 Das geprüfte Firmenschema hat auch keine eigene bestätigte Mail-Domain-Zuordnung. Eine ATS-/Karriereportal-Domain ist nicht automatisch eine erlaubte Absenderdomain der Firma. Diese Zuordnung gehört vor einem Mailabruf in die Planung.
 
-In den vorhandenen Migrationen 001–010 sind keine Tabellen für Google-Verbindungen, verschlüsselte Provider-Tokens, Mail-/Kalender-Synchronisationsstände oder Erinnerungszustellungen definiert. Auch keine Zuordnung von Google-Event-IDs und Gmail-Nachrichten-IDs zu Bewerbungen. Das sind spätere Planungspunkte, keine Aussage über den Inhalt einer echten Datenbank.
+In den vorhandenen Migrationen 001–011 sind keine Tabellen für Google-Verbindungen, verschlüsselte Provider-Tokens, Mail-/Kalender-Synchronisationsstände oder Erinnerungszustellungen definiert. Auch keine Zuordnung von Google-Event-IDs und Gmail-Nachrichten-IDs zu Bewerbungen. Das sind spätere Planungspunkte, keine Aussage über den Inhalt einer echten Datenbank.
 
 ### Offizielle Grundlagen, geprüft am 2026-11-15
 
@@ -56,7 +56,7 @@ Automatische Abläufe gehören nach Einrichtung in den Hintergrund. Der Nutzer m
 | Marktrolle/Eigentümer/Alter | Firmenschema enthält bisher vor allem Name, Karriereportal, Größe, Kategorie, Hauptsitz | Entsprechende strukturierte Felder/Quellen fehlen im aktuellen Schema; nicht aus dem vorhandenen Werbetext ableiten. |
 | Suchprofile, Muss/Soll, Gewichte | `leseFilter`, `filterZuUrl`, `formZuUrl` für aktuelle URL-Auswahl | Keine gespeicherten Suchprofile oder Gewichtung im vorhandenen Schema definiert. Inhalt und Verhalten erst klären. |
 
-**Konkrete Anschlussfolge für Claude nach späterer Freigabe:** `web/lib/filter.ts` (URL/Typen) → `web/lib/stellen.ts` (normale Abfrage) **und** `supabase/migrations/010_rankings.sql`/`ranking_stellen` (Ranking-Modus) → passende Facetten → `web/app/stellen/page.tsx` (Darstellung) → vorhandene Tests erweitern. Sonst könnte ein neuer Filter nur ohne Ranking-Auswahl funktionieren.
+**Konkrete Anschlussfolge für Claude nach späterer Freigabe:** `web/lib/filter.ts` (URL/Typen) → `web/lib/stellen.ts` (normale Abfrage) **und** `ranking_stellen` (aktuelle Definition in Migration 011; spätere Schemaänderungen als neue Migrationsdatei) (Ranking-Modus) → passende Facetten → `web/app/stellen/page.tsx` (Darstellung) → vorhandene Tests erweitern. Sonst könnte ein neuer Filter nur ohne Ranking-Auswahl funktionieren.
 
 Quell-/Parserbasis: `scraper/steckbrief.py:steckbrief`, `web/lib/steckbrief.ts:leseSteckbrief`, `web/lib/zusammenfassung.ts:leseKi`, Migrationen 001/005/009. Vorhandene Gehaltsanzeige rechnet ausdrücklich nichts um. Die Beispielwerte unten belegen diese Formate, keine zugesagte Datenqualität echter Anzeigen.
 
@@ -78,10 +78,14 @@ Datei `beispiele/spaetere-phasen.json` enthält reduzierte Eingaben, keine Token
 
 1. **Filterdaten:** EUR/Jahr, EUR/Monat, CHF/Jahr und unbekanntes Gehalt; vollständiger/leerer Steckbrief sowie gültige KI-Zusammenfassung. Bestehende Leser können diese Teilobjekte verarbeiten.
 2. **Mail-Zuordnung:** eine laufende Bewerbung, zwei Bewerbungen derselben Firma, fremder Nutzer, ähnliche fremde Domain, doppelte Nachricht und fehlender Text. Claude muss keine echten Nachrichten zum Entwerfen solcher Fälle verwenden.
-3. **Kalender:** normaler Zeitpunkt und Berliner Sommerzeit-Grenzen; Herkunft „von App erstellt“ gegenüber „fremder Termin“. Die Behandlung mehrdeutiger lokaler Zeiten bleibt eine offene Fachentscheidung.
+3. **Kalender:** normaler Zeitpunkt und Berliner Sommerzeit-Grenzen; Herkunft „von App erstellt“ gegenüber „fremder Termin“. Die vorhandene Herbstwahl ist in Paket 7 erhalten und geprüft; andere Import-/Zuordnungsregeln später gesondert klären.
 4. **CV-Abgleich:** fiktiver Text mit explizitem SQL-Nachweis und einer nicht erwähnten Anforderung. Keine vorgegebene KI-Antwort, Bewertung oder Modellentscheidung.
 
 Vorbereitet sind Eingangsdaten und bereits geltende Invarianten; für neue, noch ungeklärte Funktionserwartungen werden keine grünen Tests behauptet. Vor Nutzung als echte Regressionstests die jeweilige Phase mit dem Nutzer klären. Der Datenbestand wird nicht von Anwendung oder täglichem Lauf eingelesen.
+
+## Aktualisierte vorhandene Grundlagen (2026-11-16)
+
+Die Codepakete ergänzen bereits genutzte Grundlagen: `web/lib/stellendaten.ts` enthält `leseGehalt`/`leseSteckbrief`, der KI-Leser liefert unabhängige geprüfte Listen, `datumOk` und `berlinZuIso` prüfen vorhandene Formularwerte. Python und Website verwenden dieselben künstlichen Vertragsbeispiele in `tests/fixtures/stellendaten_vertrag.json`. Diese Grundlagen wiederverwenden; sie sind kein fertiger CV-Abgleich oder Auftrag für zusätzliche Filterregeln. Weitere konkret prüfbare Unterstützung steht als Kandidaten 15–20 im Arbeitskatalog; vorhandene Recherche nicht erneut als neues Paket zählen.
 
 ## Übergabe an Claude
 
