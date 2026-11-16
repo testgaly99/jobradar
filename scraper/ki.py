@@ -248,10 +248,15 @@ def auswerten(heute, frage=frage_groq, frist_s=5400, uhr=time.monotonic):
     return erg
 
 
-def nachfuellen(frage_ft=firma_titel):
-    """Teil C: Bewerbungen ohne Firma und Titel bekommen beides aus dem eingefuegten Anzeigentext. Gibt die Anzahl zurueck."""
-    n = 0
+def nachfuellen(frage_ft=firma_titel, frist_s=5400, uhr=time.monotonic):
+    """Teil C: fehlende Firma/Titel nachfüllen, bis Frist/Kontingent erreicht; Anzahl Erfolge.
+    Eine laufende Frage wird noch verarbeitet, danach startet keine weitere bei abgelaufener Frist.
+    """
+    start, n = uhr(), 0
     for a in db.bewerbungen_ohne_firma():
+        if uhr() - start >= frist_s:
+            print("Hinweis: Nachfüll-Frist abgelaufen, Rest folgt beim nächsten Lauf.")
+            break
         try:
             firma, titel = frage_ft(a["snapshot_text"])
         except (Erschoepft, GroqWeg) as e:

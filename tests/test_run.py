@@ -161,7 +161,7 @@ def test_ausblenden_vor_der_ki(aufbau, monkeypatch):
     reihe = []
     monkeypatch.setattr(db, "nein_ausblenden", lambda: reihe.append("aus") or 0)
     monkeypatch.setattr(run.ki, "auswerten", lambda *a, **k: reihe.append("auswerten") or {})
-    monkeypatch.setattr(run.ki, "nachfuellen", lambda: reihe.append("nachfuellen") or 0)
+    monkeypatch.setattr(run.ki, "nachfuellen", lambda **kw: reihe.append("nachfuellen") or 0)
     run.lauf("2026-11-07", d)
     assert reihe == ["aus", "auswerten", "nachfuellen"]
 
@@ -170,10 +170,10 @@ def test_lauf_mit_key_wertet_aus(aufbau, monkeypatch):
     d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: []})
     monkeypatch.setenv("GROQ_API_KEY", "k")
     fristen = []
-    monkeypatch.setattr(run.ki, "auswerten", lambda heute, **k: fristen.append(k.get("frist_s")) or {"ausgewertet": 2, "fehler": 0, "wartend": 5})
-    monkeypatch.setattr(run.ki, "nachfuellen", lambda: 1)
+    monkeypatch.setattr(run.ki, "auswerten", lambda heute, **k: fristen.append(("auswerten", k.get("frist_s"))) or {"ausgewertet": 2, "fehler": 0, "wartend": 5})
+    monkeypatch.setattr(run.ki, "nachfuellen", lambda **k: fristen.append(("nachfuellen", k.get("frist_s"))) or 1)
     ki_ = run.lauf("2026-11-07", d)["ki"]
-    assert fristen == [3600]  # Nacht-Frist: 60 Min ab KI-Start, Scraping braucht bis ~80 von 180 Min
+    assert fristen == [("auswerten", 3600), ("nachfuellen", 3600)]  # vorhandenes Schrittbudget auch beim Nachfüllen
     assert ki_ == {"ausgewertet": 2, "fehler": 0, "wartend": 5, "nachgefuellt": 1, "ausgeblendet": 0}
     assert "ausgewertet: 2" in (d / "bericht.md").read_text(encoding="utf-8")
 

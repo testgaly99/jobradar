@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-16 | Paket 20: Automatisches Nachfüllen mit vorhandener Frist begrenzen. | Beauftragte Korrektur bestehenden Verhaltens, mit künstlichen Regressionen geprüft; keine neuen Produktkriterien oder Live-/Betriebsfreigaben. |
 | 2026-11-16 | Paket 19: Sitemap-Kollisionen vor dem Detailabruf abweisen. | Beauftragte Korrektur bestehenden Verhaltens, mit künstlichen Regressionen geprüft; keine neuen Produktkriterien oder Live-/Betriebsfreigaben. |
 | 2026-11-16 | Paket 17: Parallele Webabrufe je Host mit Pause koordinieren. | Beauftragte Korrektur bestehenden Verhaltens, mit künstlichen Regressionen geprüft; keine neuen Produktkriterien oder Live-/Betriebsfreigaben. |
 | 2026-11-16 | Paket 18: Weiterleitungen unter Robots-Regeln und Domainpause prüfen. | Beauftragte Korrektur bestehenden Verhaltens, mit künstlichen Regressionen geprüft; keine neuen Produktkriterien oder Live-/Betriebsfreigaben. |
