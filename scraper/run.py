@@ -12,6 +12,7 @@ from scraper.companies import lade_unternehmen
 from scraper.logo import hole_logo
 from scraper.steckbrief import steckbrief
 from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant, land
+from scraper.fehler import kurzfehler
 
 
 def _schreibe_text(pfad, text):
@@ -58,34 +59,40 @@ def _firma(f, heute):
     name = f["name"]
     zeile = {"name": name, "gefunden": 0, "gefiltert": 0, "neu": 0,
              "geschlossen": 0, "fehler": "", "gruende": {}}
+    schritt = "Adapterwahl"
     try:
         adapter = ADAPTER.get(f["ats_typ"])
         if adapter is None:
             raise LookupError(f"kein Adapter für {f['ats_typ']}")
+        schritt = "Bestand"
         bekannte = frozenset(i[len(name) + 1:] for i in db.lade_offene(name))
+        schritt = "Abruf"
         stellen = adapter(f["ats_id"], bekannte=bekannte)
+        schritt = "Antwortprüfung"
         _pruefe_stellen(stellen, bekannte)
         unveraendert = [s["ext_id"] for s in stellen if s.get("unveraendert")]
         voll = [s for s in stellen if not s.get("unveraendert")]
         behalten, gruende = [], Counter()
+        schritt = "Filterung"
         for s in voll:
             ok, grund = ist_relevant(s["titel"], s["ort"], s["remote"])
             if ok:
                 try:
                     sbr = steckbrief(s.get("abschnitte"), s["text"])
                 except Exception as e:  # eine Anzeige darf nie die ganze Firma kippen
-                    print(f"Hinweis: Steckbrief fehlgeschlagen ({name}): {type(e).__name__}: {e}")
+                    print(f"Hinweis: Steckbrief fehlgeschlagen: {kurzfehler(e)}")
                     sbr = None
                 behalten.append({**s, "erfahrungslevel": erfahrungslevel(s["titel"], (sbr or {}).get("erfahrung_jahre")),
                                  "staedte": deutsche_staedte(s["ort"]), "land": land(s["ort"]),
                                  "steckbrief": sbr})
             else:
                 gruende[grund] += 1
+        schritt = "Abgleich"
         neu, geschlossen = db.schreibe(name, behalten, heute, unveraendert)
         zeile.update(gefunden=len(stellen), gefiltert=sum(gruende.values()), gruende=dict(gruende),
                      neu=neu, geschlossen=geschlossen)
     except Exception as e:
-        zeile["fehler"] = f"{type(e).__name__}: {e}"[:200]
+        zeile["fehler"] = f"{schritt}: {kurzfehler(e)}"[:200]
     return zeile
 
 
@@ -116,7 +123,7 @@ def _logos(firmen):
                 if url:
                     db.setze_logo(f["name"], url)
     except Exception as e:
-        print(f"Hinweis: Logos fehlgeschlagen: {type(e).__name__}: {e}")
+        print(f"Hinweis: Logos fehlgeschlagen: {kurzfehler(e)}")
 
 
 def _ki(heute):
@@ -136,9 +143,9 @@ def _ki(heute):
             try:
                 schritt()
             except Exception as e:
-                print(f"Hinweis: KI {name} fehlgeschlagen: {type(e).__name__}: {e}")
+                print(f"Hinweis: KI {name} fehlgeschlagen: {kurzfehler(e)}")
     except Exception as e:
-        print(f"Hinweis: KI-Schritt fehlgeschlagen: {type(e).__name__}: {e}")
+        print(f"Hinweis: KI-Schritt fehlgeschlagen: {kurzfehler(e)}")
     return erg
 
 

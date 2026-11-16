@@ -18,7 +18,9 @@ class VerbotenDurchRobots(Exception):
 
 
 class RobotsNichtErreichbar(Exception):
-    pass
+    def __init__(self, text, status=None):
+        super().__init__(text)
+        self.status = status
 
 
 def _get(basis: str, url: str) -> requests.Response:
@@ -39,7 +41,7 @@ def _darf(basis: str, url: str) -> bool:
         except requests.RequestException as e:
             raise RobotsNichtErreichbar(f"{basis}: {e}") from e
         if antwort.status_code >= 500:
-            raise RobotsNichtErreichbar(f"{basis}: HTTP {antwort.status_code}")
+            raise RobotsNichtErreichbar(f"{basis}: HTTP {antwort.status_code}", antwort.status_code)
         if antwort.status_code < 400:  # 4xx: alles erlaubt
             parser = urllib.robotparser.RobotFileParser()
             parser.parse(antwort.text.splitlines())

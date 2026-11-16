@@ -22,6 +22,7 @@ Stand: 2026-11-16
 - **Offen vor Anwendung:** `tests/sql/rankings.sql` in isolierter PostgreSQL-Testdatenbank ausführen; aktuelle Umgebung hat kein PostgreSQL/Docker. Tatsächliche Datenbankrechte, SQL-Ausgabewechsel und globale Rangsortierung sowie Zusammenspiel mit echtem PostgREST daher noch unbestätigt. Quellen später mit Claude auswählen; vor Aktivierung Nutzungskreis und fristgerechte Bereinigung absichern.
 
 ## Noch mögliche Codepakete erfasst
+- **Paket 10 lokal fertig (2026-11-16):** Öffentliche Laufberichte und Hinweise nutzen Klasse, Status, sichere Codes und Verarbeitungsschritt; rohe Antworten/URLs/Header/Ausnahmetexte bleiben heraus. Datenbankgrenze und KI-Hinweise bereinigt. 553 Python-Offline-Tests bestanden; Auftrag 7–10 lokal abgeschlossen. Auftrag 7–10 vollständig lokal erledigt. Pakete 11–14 nicht beauftragt. Keine Nutzeraktion, keine Veröffentlichung.
 - **Paket 9 lokal fertig (2026-11-16):** Adapterantworten und alle Stellen vor dem Abgleich geprüft, ungültige IDs/Titel/Links und kaputte Kurzmeldungen verhindern Stellen-Schreiben. JSON-/XML-Formprüfung in bestehenden Adaptern ergänzt. 536 Python-Offline-Tests bestanden. Als Nächstes Paket 10, bereits beauftragt. Keine Nutzeraktion, keine Veröffentlichung.
 - **Paket 8 lokal fertig (2026-11-16):** Gemeinsame künstliche JSON-Fixture für Steckbrief-Schreiber, KI-Prüfung und Website-Leser. 480 Python-Offline-Tests, 243 Webtests, Typprüfung und isolierter Build bestanden; keine Anwendungskorrektur nötig. Als Nächstes Paket 9, bereits beauftragt. Keine Nutzeraktion, keine Veröffentlichung.
 - **Paket 7 lokal fertig (2026-11-16):** Gemeinsame Kalenderprüfung präzisiert, ungültige Uhren und Berliner Frühlingslücke vor dem Speichern abgewiesen; Herbstwahl erhalten. 228 Webtests, Typprüfung, isolierter Build und sechs künstliche Formularprüfungen bestanden. Als Nächstes Paket 8, bereits beauftragt. Keine Nutzeraktion, keine Veröffentlichung.
@@ -124,9 +125,9 @@ Stand: 2026-11-16
 - **Phase 4, Zusatzfirmen:** Die Tabelle `laeufe` (Laufberichte mit Firmennamen) ist für alle lesbar; private Zusatzfirmen dürfen dort nicht für andere sichtbar werden.
 
 ## Nächster Schritt
-**Paket 9 lokal fertig (2026-11-16):** Adapterantworten und alle Stellen vor dem Abgleich geprüft, ungültige IDs/Titel/Links und kaputte Kurzmeldungen verhindern Stellen-Schreiben. JSON-/XML-Formprüfung in bestehenden Adaptern ergänzt. 536 Python-Offline-Tests bestanden. Als Nächstes Paket 10, bereits beauftragt. Keine Nutzeraktion, keine Veröffentlichung.
+**Paket 10 lokal fertig (2026-11-16):** Öffentliche Laufberichte und Hinweise nutzen Klasse, Status, sichere Codes und Verarbeitungsschritt; rohe Antworten/URLs/Header/Ausnahmetexte bleiben heraus. Datenbankgrenze und KI-Hinweise bereinigt. 553 Python-Offline-Tests bestanden; Auftrag 7–10 lokal abgeschlossen. Auftrag 7–10 vollständig lokal erledigt. Pakete 11–14 nicht beauftragt. Keine Nutzeraktion, keine Veröffentlichung.
 
-**Arbeitskatalog 2026-11-15, aktualisiert 2026-11-16:** Pakete 1–9 lokal abgeschlossen, Nachweise und verbleibender Umfang in `docs/arbeitspakete-codex.md`. Als Nächstes Paket 10, bereits beauftragt.
+**Arbeitskatalog 2026-11-15, aktualisiert 2026-11-16:** Pakete 1–10 lokal abgeschlossen, Nachweise und verbleibender Umfang in `docs/arbeitspakete-codex.md`. Auftrag 7–10 vollständig lokal erledigt. Pakete 11–14 nicht beauftragt.
 
 **Codegrundlage 2026-11-15:** `web/lib/stellendaten.ts` ist implementiert, sofort angeschlossen und geprüft. Claude kann die Datenleser für spätere Filter-/CV-Eingaben wiederverwenden; konkrete Vergleiche, Bewertung, Speicherung und CV-Textauslesen weiterhin erst nach passenden Fragen und Freigabe planen. Keine manuelle Nutzeraktion nötig.
 

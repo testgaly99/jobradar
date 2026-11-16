@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import requests
+from scraper.fehler import DatenbankFehler, kurzfehler
 
 BATCH = 500
 SEITE = 1000
@@ -25,10 +26,22 @@ def _req(method, pfad, **kw):
     _lade_env()
     url, key = os.environ["SUPABASE_URL"].rstrip("/"), os.environ["SUPABASE_SERVICE_KEY"]
     headers = {"apikey": key, "Authorization": f"Bearer {key}", **kw.pop("headers", {})}
-    r = requests.request(method, f"{url}/rest/v1/{pfad}", headers=headers, timeout=60, **kw)
+    try:
+        r = requests.request(method, f"{url}/rest/v1/{pfad}", headers=headers, timeout=60, **kw)
+    except requests.RequestException as e:
+        raise DatenbankFehler(method, pfad, getattr(getattr(e, "response", None), "status_code", None),
+                              ursache=type(e).__name__) from None
     if not r.ok:
-        raise RuntimeError(f"Supabase {method} {pfad}: {r.status_code} {r.text[:200]}")
-    return r.json() if r.text else None
+        try:
+            daten = r.json()
+        except ValueError:
+            daten = None
+        code = daten.get("code") if isinstance(daten, dict) else None
+        raise DatenbankFehler(method, pfad, r.status_code, code) from None
+    try:
+        return r.json() if r.text else None
+    except ValueError as e:
+        raise DatenbankFehler(method, pfad, r.status_code, ursache=type(e).__name__) from None
 
 
 def _upsert(tabelle, zeilen, konflikt):
@@ -207,6 +220,6 @@ def snapshot_nachruesten():
         if ": 404 " in str(e) or "PGRST202" in str(e):
             print("Hinweis: snapshot_nachruesten fehlt (Migration 005 offen), übersprungen.")
         else:
-            print(f"Hinweis: snapshot_nachruesten fehlgeschlagen: {e}")
+            print(f"Hinweis: snapshot_nachruesten fehlgeschlagen: {kurzfehler(e)}")
     except Exception as e:  # Netzwerk o. Ä.: Lauf geht trotzdem weiter
-        print(f"Hinweis: snapshot_nachruesten fehlgeschlagen: {type(e).__name__}: {e}")
+        print(f"Hinweis: snapshot_nachruesten fehlgeschlagen: {kurzfehler(e)}")

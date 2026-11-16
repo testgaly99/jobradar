@@ -9,6 +9,7 @@ from pathlib import Path
 import requests
 
 from . import db
+from .fehler import kurzfehler
 
 GROSS = "openai/gpt-oss-120b"
 QWEN = "qwen/qwen3.8-27b"
@@ -31,9 +32,10 @@ class Erschoepft(Exception):
 
 
 class GroqWeg(Exception):
-    def __init__(self, text, status=None):
+    def __init__(self, text, status=None, code=None):
         super().__init__(text)
         self.status = status
+        self.code = code
 
 
 class Ungueltig(Exception):
@@ -151,7 +153,7 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep, prompts=PROMPTS
                 if not fehler.get("failed_generation"):  # ohne Inhalt gibt es nichts zum Zurueckfragen
                     raise Ungueltig("Groq hat keine Antwort geliefert (json_validate_failed ohne Inhalt).")
                 return fehler["failed_generation"], modell
-            raise GroqWeg(f"HTTP {r.status_code} {fehler.get('code', '')}".strip(), r.status_code)
+            raise GroqWeg(f"HTTP {r.status_code} {fehler.get('code', '')}".strip(), r.status_code, fehler.get("code"))
         j = r.json()
         return j["choices"][0]["message"]["content"] or "", j.get("model", modell)
     raise GroqWeg("HTTP 429 (Minutenlimit)", 429)  # nie den Rohtext: er enthaelt die Organisations-ID
@@ -238,10 +240,10 @@ def auswerten(heute, frage=frage_groq, frist_s=5400, uhr=time.monotonic):
             db.speichere_ki(job_id, ergebnis, GROSS, hashes[job_id])
             erg["ausgewertet"] += 1
         except (Erschoepft, GroqWeg) as e:
-            print(f"Hinweis: KI-Auswertung beendet ({type(e).__name__}: {e}), Rest folgt beim nächsten Lauf.")
+            print(f"Hinweis: KI-Auswertung beendet ({kurzfehler(e)}), Rest folgt beim nächsten Lauf.")
             break
         except Exception as e:  # nur diese Stelle auslassen; sie bleibt in der Warteschlange
-            print(f"Hinweis: KI-Auswertung {job_id} fehlgeschlagen: {type(e).__name__}")
+            print(f"Hinweis: KI-Auswertung fehlgeschlagen: {kurzfehler(e)}")
     erg["wartend"] = len(schlange) - erg["ausgewertet"] - erg["fehler"]
     return erg
 
@@ -253,10 +255,10 @@ def nachfuellen(frage_ft=firma_titel):
         try:
             firma, titel = frage_ft(a["snapshot_text"])
         except (Erschoepft, GroqWeg) as e:
-            print(f"Hinweis: Nachfüllen beendet ({type(e).__name__}: {e}).")
+            print(f"Hinweis: Nachfüllen beendet ({kurzfehler(e)}).")
             break
         except Exception as e:  # Ungueltig o. Ae.: der naechste Lauf versucht es erneut
-            print(f"Hinweis: Nachfüllen {a['id']} fehlgeschlagen: {type(e).__name__}")
+            print(f"Hinweis: Nachfüllen fehlgeschlagen: {kurzfehler(e)}")
             continue
         if firma or titel:
             db.setze_firma_titel(a["id"], firma, titel)

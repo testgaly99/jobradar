@@ -36,7 +36,7 @@ def test_fehler_bricht_nicht_ab(aufbau):
     bericht = run.lauf("2026-11-07", d)
     assert "B:1" in t["jobs"] and set(t["companies"]) == {"A", "B"}
     fa, fb = bericht["firmen"]
-    assert "RuntimeError: kaputt" in fa["fehler"] and fb["fehler"] == ""
+    assert fa["fehler"] == "Abruf: RuntimeError" and fb["fehler"] == ""
     assert "RuntimeError" in (d / "bericht.md").read_text(encoding="utf-8")
     assert t["laeufe"] == [{"datum": "2026-11-07", "bericht": bericht}]
 
@@ -69,7 +69,7 @@ def test_stelle_hat_neue_felder_und_bericht(aufbau):
 
 def test_unbekannter_adapter_ist_fehler(aufbau):
     d, _ = aufbau([firma("A", "nix")], {})
-    assert "kein Adapter für nix" in run.lauf("2026-11-07", d)["firmen"][0]["fehler"]
+    assert run.lauf("2026-11-07", d)["firmen"][0]["fehler"] == "Adapterwahl: LookupError"
 
 
 def test_filterfehler_bricht_nicht_ab(aufbau):
@@ -198,7 +198,10 @@ def test_ki_fehler_kippt_lauf_nicht(aufbau, monkeypatch, capsys):
     monkeypatch.setattr(db, "nein_ausblenden", kaputt)
     bericht = run.lauf("2026-11-07", d)
     assert bericht["firmen"][0]["fehler"] == "" and "A:1" in t["jobs"] and t["laeufe"]
-    assert capsys.readouterr().out.count("RuntimeError: boom") == 3
+    ausgabe = capsys.readouterr().out
+    assert ausgabe.count("RuntimeError") == 3 and "boom" not in ausgabe
+    for schritt in ("ausblenden", "auswerten", "nachfuellen"):
+        assert f"KI {schritt} fehlgeschlagen: RuntimeError" in ausgabe
 
 
 @pytest.mark.parametrize("antwort", [
