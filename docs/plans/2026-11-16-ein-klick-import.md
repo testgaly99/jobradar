@@ -66,4 +66,14 @@ Ableitung: Neuer Fremdseiten-Sammelweg startet mit Status Gemerkt und leerem Bew
 - Fehlende Erkennung/Anmeldung und Übertragungsfehler ohne falsche Erfolgsmeldung behandeln.
 - Mit künstlichen Seiten und getrennten Nutzern prüfen; keine automatische Portal-/Firmenfreigabe, keine echten Daten/Schlüssel oder Veröffentlichung.
 
-Technische Bestandsprüfung abgeschlossen, Antworten Q6/Q7 eingearbeitet. Chrome-Bauabschnitt beauftragt, lokale Umsetzung läuft. Browser-Erweiterung, Veröffentlichung und tatsächliche Installation getrennt behandeln; keine zusätzlichen Dienste/Konten/Pakete ungefragt einrichten.
+## Lokaler Abschluss und verbleibende Schritte
+
+- [x] Chrome-Erweiterung unter `browser-erweiterung/chrome/` mit [Einrichtungsanleitung](../../browser-erweiterung/chrome/README.md) erstellt; eigene App wird nicht erneut importiert, doppelte Quellklicks teilen einen wartenden Auftrag. Formular-/Editorauswahl wird vor Auslesen ausgeschlossen.
+- [x] Geschützte Importseite und selbst authentifizierende POST-API umgesetzt. Origin/JSON/Größen/Eigentümer prüfen, neue Karte Gemerkt ohne Datum, bestehende Einträge unverändert. Kein Quellseiten-/ATS-/KI-Aufruf.
+- [x] Login-Unterbrechung, einzelne Tabbindung, zeitschrankenbehafteter Entwurf, feste UUID-Navigation, keine automatische Wiederholung eines unklaren Schreibvorgangs. Bestehende Karten mit eingeblendetem Archiv öffnen, damit auch abgeschlossene Karten sichtbar bleiben.
+- [x] 16 Erweiterungs-Vertragstests mit tatsächlichem Kerncode und künstlichen Chrome-/DOM-/HTTP-Antworten bestanden; 15 App-Importtests sowie gesamte 288 Webtests und Typprüfung bestanden. Verlorenes Tab-Fertig-Ereignis und Formularauswahl mit roten Regressionen nachgewiesen und behoben; unabhängige Nachprüfung bestanden.
+- [x] Isolierter aktueller Build und Browserabnahme auf 1280/390 Pixeln bestanden: echter gleichursprünglicher POST, neue Karte/Dublette, Status-/Inhaltserhalt, Gast/Herkunftsschutz, GET/Fragment ohne Schreibvorgang. Abgenommene App-Dateien per Hash mit aktuellem Quellstand verglichen.
+- [ ] Erweiterung tatsächlich in Chrome installieren und Berechtigungsdialog, native Injektion, vorhandene Login-Cookies und echten privaten Datenbankzugriff mit künstlicher Anzeige gesondert abnehmen. Isolierte Tests ersetzen diese Plattform-/RLS-Abnahme nicht. Keine Installation oder Veröffentlichung ausgeführt.
+- [ ] Danach Edge → Safari → Smartphone → Firefox gemäß Q6. Plattformvoraussetzungen und Smartphone-Betriebssystem noch klären; keine Kompatibilität oder Kostenfreiheit einer späteren Verteilung vorwegnehmen.
+
+Die Zehn-Minuten-Grenze sperrt verspätete Ausführung; ruhende Sessiondaten werden beim nächsten relevanten Ereignis bzw. Sitzungsende entfernt, nicht garantiert minutengenau. Keine neue Tabelle/Migration, kein zusätzlicher Dienst und keine neue Bibliothek. Der künstliche lokale Prüfserver ist kein Ziel für echte Importe. Vor persönlicher Verwendung muss die kompatible Website-Version verfügbar und die gesonderte Plattformabnahme erfolgt sein.

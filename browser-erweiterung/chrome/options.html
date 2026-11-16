@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="de">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Jobradar verbinden</title></head>
+<body>
+  <main>
+    <h1>Jobradar verbinden</h1>
+    <p>Trage einmal die Adresse deiner Jobradar-Website ein. Die Erweiterung benötigt Zugriff auf genau diese Website, um deine vorhandene Anmeldung zu nutzen.</p>
+    <form id="einstellungen">
+      <label for="adresse">Adresse deiner Jobradar-Website</label>
+      <input id="adresse" type="url" required size="52" placeholder="https://deine-website.example.invalid" autocomplete="url">
+      <button type="submit">Verbinden</button>
+    </form>
+    <p id="status" role="status" aria-live="polite"></p>
+    <p>Danach auf einer Stellenanzeige den angehefteten Jobradar-Knopf drücken. Neue Anzeigen landen unter „Gemerkt“, ohne Bewerbungsdatum.</p>
+    <p>Gelesen werden nur die aktuelle Adresse, eine passende Überschrift und eine eindeutig erkannte Stellenbeschreibung oder dein ausgewählter Text. Es gibt keinen dauerhaften Zugriff auf andere Webseiten, keine KI-Aufrufe und keine kopierten Zugangsschlüssel.</p>
+    <p>Für die lokale Prüfung ist ausschließlich http://localhost:3002 möglich.</p>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

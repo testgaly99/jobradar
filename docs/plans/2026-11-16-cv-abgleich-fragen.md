@@ -1,6 +1,6 @@
 # CV-Abgleich: vollständiges Fragenprotokoll
 
-Stand: 2026-11-16. Dieses Protokoll enthält alle bisher im aktuellen CV-Interview gestellten Fragen Q1–Q5 im Wortlaut, ihre Antwortoptionen und die eingegangenen Antworten. Fachliche Anforderungen und Anbieterrecherche stehen im [Klärungsdokument](2026-11-16-cv-abgleich-klaerung.md). Es wurde noch kein CV-Abgleich implementiert oder freigegeben.
+Stand: 2026-11-16. Dieses Protokoll enthält alle bisher im aktuellen CV-Interview gestellten Fragen Q1–Q5 und Q8/Q9 im Wortlaut, ihre Antwortoptionen und die eingegangenen Antworten. Die zwischenzeitlichen Importfragen Q6/Q7 und die Portalfrage Q10 sind unten verlinkt. Fachliche Anforderungen und Anbieterrecherche stehen im [Klärungsdokument](2026-11-16-cv-abgleich-klaerung.md). Es wurde noch kein CV-Abgleich implementiert oder freigegeben.
 
 ## Dokumentationsauftrag und Fortschreibung
 
@@ -21,6 +21,8 @@ Der genaue Sendezeitpunkt der einzelnen Chatnachrichten ist hier nicht verfügba
 | Q3 | Beantwortet | Grün = belegt, Gelb = teilweise oder noch nicht belegt, Rot = nachweislich nicht erfüllt. Ganze Anforderung markieren; Klick zeigt Beleg oder Begründung. |
 | Q4 | Mit eigener Präzisierung beantwortet | Alle CVs abgleichen, besten passenden CV als Grundlage des angezeigten Vergleichs verwenden und benennen. Kein Gesamtprofil aus zusammengelegten CV-Belegen. Eine manuelle Auswahl zum Wechseln wurde nicht ausdrücklich bestätigt. |
 | Q5 | Auf Nutzerwunsch zurückgestellt | Mistral als offenes To-do später klären. Keine Auswahl einer Betriebsart und keine Datenfreigabe. Claude-Pro-Klärung kann fortgesetzt werden. |
+| Q8 | Antwort ausstehend | Auslösung und Wiederverwendung des CV-Abgleichs noch nicht festlegen. |
+| Q9 | Antwort ausstehend | Priorität der Anforderungen und Gleichstand bei CV-Empfehlung noch nicht festlegen. |
 
 ## Runde 1
 
@@ -134,8 +136,33 @@ Vor Eingang der Antworten wurde Runde 2 im abschließenden Chattext noch einmal 
 
 Die verbindlichen Nutzerantworten stehen unter Q3–Q5. Insbesondere ist der hier empfohlene manuelle CV-Wechsel dadurch nicht zusätzlich bestätigt, und keine Mistral-Alternative wurde gewählt.
 
-## Noch nicht gestellte Folgefragen
+## Runde 4 – CV-Bauplan, Antworten ausstehend
+
+### Q8 – Start und Wiederverwendung
+
+> ❓ Q8 – CV-Abgleich starten: Soll der Abgleich zunächst über einen Knopf pro Stellenanzeige starten und das Ergebnis gespeichert werden? ➡️ Meine Empfehlung: ja; nach einer Änderung an Anzeige oder CV als veraltet kennzeichnen und bei Bedarf neu starten. Das spart dein Abo-Kontingent und vermeidet eine Neuberechnung bei jedem Öffnen.
+
+Angebotene Antworten:
+
+1. Ja: Knopf pro Stelle, Ergebnis wiederverwenden
+2. Automatisch beim Öffnen einer Anzeige
+3. Nachts alle gemerkten Stellen abgleichen
+
+Antwort: ausstehend. Keine Auslösung oder Speicherung allein aus der Empfehlung ableiten.
+
+### Q9 – Auswahl der besten CV-Version
+
+> ❓ Q9 – Beste CV-Version: Soll die Empfehlung zuerst belegte Muss-Anforderungen und danach belegte Soll-Anforderungen berücksichtigen und bei Gleichstand mehrere gleich gute CVs nennen? ➡️ Meine Empfehlung: ja, mit Begründung und weiterhin ohne Prozentwert. Die genaue Behandlung von Teilbelegen wird anschließend im Entwurf transparent beschrieben.
+
+Angebotene Antworten:
+
+1. Ja: Muss vor Soll, Gleichstand offen zeigen
+2. Alle Anforderungen gleich behandeln
+
+Antwort: ausstehend. Noch keine Gewichtungsformel oder Behandlung von Teilbelegen beschlossen.
+
+## Weitere, noch nicht gestellte Folgefragen
 
 Die Themen unter „Weitere Zweige“ im [Klärungsdokument](2026-11-16-cv-abgleich-klaerung.md) sind vorbereitete Zweige, keine bereits gestellten oder beantworteten Interviewfragen. Fortsetzung dort priorisieren, tatsächliche CV-Fragen anschließend hier lückenlos ergänzen. Der Mistral-Zweig bleibt auf Nutzerwunsch zurückgestellt.
 
-Themenübergreifende Fortsetzung: Die inzwischen gestellten und beantworteten **Q6/Q7 zum Ein-Klick-Import** stehen vollständig im [eigenen Import-Fragenprotokoll](2026-11-16-ein-klick-import.md). Sie sind keine zusätzlichen CV-Entscheidungen. Neue Fragen ab Q8 nummerieren.
+Themenübergreifende Fortsetzung: Die gestellten und beantworteten **Q6/Q7 zum Ein-Klick-Import** stehen vollständig im [eigenen Import-Fragenprotokoll](2026-11-16-ein-klick-import.md). **Q10 zur Firmenportal-Erkennung** steht im [vorläufigen Portalplan](2026-11-15-firmenportal-erkennung.md#gestellte-frage-q10--erster-bauabschnitt). Diese Fragen sind keine zusätzlichen CV-Entscheidungen. Neue Fragen ab Q11 nummerieren.

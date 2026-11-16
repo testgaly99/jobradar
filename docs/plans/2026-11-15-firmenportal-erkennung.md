@@ -6,6 +6,21 @@ Stand: 2026-11-15. **Planvorschlag, noch keine Freigabe zur Implementierung.** D
 
 ## Nutzen und kleiner erster Schritt
 
+### Gestellte Frage Q10 – erster Bauabschnitt
+
+Fortsetzung der Nutzerklärung am 2026-11-16 nach „Setz das um“ zu den weiteren Vorschlägen. Die ausdrückliche Vorläufigkeit bleibt bis Klärung und gemeinsamer Bestätigung erhalten. Vollständiger Fragewortlaut:
+
+> ❓ Q10 – Firmenportal-Erkennung: Soll der erste Baustein aus einem eingegebenen Karriere-Link zunächst das verwendete Bewerbungssystem erkennen, ohne die Firma schon automatisch anzubinden? ➡️ Meine Empfehlung: ja, zuerst Greenhouse, Ashby und Personio; unklare Ergebnisse zur Auswahl zeigen. Die vollständige Anbindung mit privater Sichtbarkeit folgt als eigener Schritt.
+
+Angebotene Antworten:
+
+1. Ja: Portal aus Karriere-Link zuerst erkennen
+2. Gleich vollständige Firmenanbindung planen
+
+Antwort: ausstehend. Empfehlung und unterstützte Portale dadurch noch nicht freigegeben; kein Anwendungscode für diesen Entwurf implementiert. CV-Fragen Q8/Q9 stehen im [CV-Fragenprotokoll](2026-11-16-cv-abgleich-fragen.md). Neue Fragen ab Q11 nummerieren.
+
+### Bisheriger Vorschlag
+
 Später soll eine Firma per Karriere-Link angebunden werden können. Heute muss in `data/companies.csv` von Hand stehen, welches Bewerbungsportal sie nutzt und welche Kennung dazu gehört. Der erste Baustein erkennt diese Angaben aus übergebenen URLs und optional bereits vorliegendem HTML. Er führt selbst keine Netzwerkanfrage aus und speichert nichts.
 
 Künstliches Beispiel: `https://jobs.ashbyhq.com/testfirma` ergibt einen Kandidaten mit `ats_typ=ashby` und `ats_id=testfirma`. Das beweist weder die Identität der Firma noch das Vorhandensein offener Stellen. Erst spätere Prüfung und ausdrückliche Zuordnung dürfen daraus eine aktive Quelle machen.

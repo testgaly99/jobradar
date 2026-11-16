@@ -62,11 +62,11 @@ Empfohlene Umsetzung: zuerst 15 und 16 (Datenerhalt), dann 18 und 17 (Abrufregel
 
 | Nr. | Stand | Konkrete Lieferung und Abnahmegrenze |
 |---|---|---|
-| 21 | In Arbeit | Vorhandene isolierte Browserabnahme für Tracker, Dokumente, CSV-Export und Konto erweitern; ausschließlich künstliche Daten und bestehende Infrastruktur. Plan `plans/2026-11-16-browser-cv-abnahme.md`. Kein Nachweis echter Datenbankrechte. |
+| 21 | Erledigt lokal | Vorhandene isolierte Browserabnahme für Tracker, Dokumente, CSV-Export und Konto erweitert und auf 1280/390 Pixeln bestanden, einschließlich neuer Import-API; ausschließlich künstliche Daten und bestehende Infrastruktur. Plan `plans/2026-11-16-browser-cv-abnahme.md`. Kein Nachweis echter Datenbankrechte. |
 | 22 | Beispiel erstellt und mechanisch geprüft | Vollständiger künstlicher CV-Gesamtfall mit drei CV-Versionen, sechs Anforderungen, 18 getrennten Zuordnungen und benannter bester Version; `beispiele/cv-abgleich.md`/`.json`. Kein Matcher/Parser/Modellaufruf, keine erfundene Gewichtung. |
-| 23 | Chrome-Umsetzung in Arbeit | Ein-Klick-Import einer gerade geöffneten fremden Anzeige ins eigene Board als Gemerkt ohne Bewerbungsdatum. Browser-Erweiterung und gleichursprüngliche private Import-API ohne Fremdseitenabruf/Modelle, bestehende Einträge erhalten. Q6/Q7 beantwortet und vollständig in `plans/2026-11-16-ein-klick-import.md` dokumentiert. Danach Edge, Safari, Smartphone, Firefox; weitere Plattformen und echte Installation noch nicht abgenommen. |
+| 23 | Chrome lokal umgesetzt/geprüft | Ein-Klick-Import einer gerade geöffneten fremden Anzeige ins eigene Board als Gemerkt ohne Bewerbungsdatum. Browser-Erweiterung und gleichursprüngliche private Import-API ohne Fremdseitenabruf/Modelle, bestehende Einträge erhalten und mit Archiv sichtbar öffnen. 16 Chrome-Vertragstests sowie App-/Browserprüfung bestanden; native Installation/Cookies/RLS noch nicht abgenommen. Q6/Q7 vollständig in `plans/2026-11-16-ein-klick-import.md`, Anleitung `../browser-erweiterung/chrome/README.md`. Danach Edge, Safari, Smartphone, Firefox. Keine Veröffentlichung. |
 
-Die weiteren Vorschläge CV-Bauplan und Firmenportal-Klärung bleiben bei offenen Nutzerentscheidungen; Paket 22 ist keine Freigabe für deren ungeklärte Produktregeln. Mistral bleibt auf Nutzerwunsch zurückgestellt.
+Die weiteren Vorschläge CV-Bauplan und Firmenportal-Klärung werden mit gestellten, noch unbeantworteten Q8/Q9 bzw. Q10 fortgesetzt; Wortlaut/Optionen im CV-Fragenprotokoll bzw. vorläufigen Portalplan. Paket 22 ist keine Freigabe für ungeklärte Produktregeln. Mistral bleibt auf Nutzerwunsch zurückgestellt.
 
 ## Weiterhin nicht ohne fachliche Klärung umsetzen
 

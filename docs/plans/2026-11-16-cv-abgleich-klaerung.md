@@ -2,7 +2,7 @@
 
 Stand: 2026-11-16, Bestandsbasis `c2a0592`. **Laufende Anforderungsklärung, kein freigegebener Bauplan.** Nutzer möchte zuerst sein bestehendes Claude-Pro-Abo nutzen und zusätzlich einen Mistral-Weg ohne API-Kosten. Die bisherige Claude-only-Regel für persönliche Daten muss nach Klärung des optionalen Mistral-Wegs ausdrücklich konsistent nachgeführt werden; dieses Dokument aktiviert keinen Anbieter und verarbeitet keine persönlichen Daten.
 
-**Fragen vollständig nachvollziehen:** Das [Fragenprotokoll Q1–Q5](2026-11-16-cv-abgleich-fragen.md) enthält auf ausdrücklichen Nutzerauftrag den vollständigen Wortlaut einschließlich Empfehlungen, Antwortoptionen, Antworten und späteren Präzisierungen. Alle weiteren gestellten Fragen ebenso dokumentieren. Q3/Q4 sind inzwischen beantwortet; Q5 wird auf Nutzerwunsch als offenes To-do zurückgestellt.
+**Fragen vollständig nachvollziehen:** Das [CV-Fragenprotokoll](2026-11-16-cv-abgleich-fragen.md) enthält auf ausdrücklichen Nutzerauftrag den vollständigen Wortlaut einschließlich Empfehlungen, Antwortoptionen, Antworten und späteren Präzisierungen. Alle weiteren gestellten Fragen ebenso dokumentieren. Q3/Q4 sind beantwortet; Q5 wird auf Nutzerwunsch als offenes To-do zurückgestellt. Runde 4 fragt mit Q8 nach Auslösung/Wiederverwendung und mit Q9 nach Priorität/Gleichstand der CV-Empfehlung; Antworten stehen aus, Empfehlungen noch nicht übernehmen.
 
 ## Methode und vorhandene Grundlagen
 
