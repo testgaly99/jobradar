@@ -88,6 +88,8 @@ Eine passende lokale Umgebung ist noch nicht vorhanden. Dafür wurden weder Werk
 
 ## Übergabe bei jeder tatsächlichen Prüfung
 
+Paket 14 bereitet `.github/workflows/codepruefung.yml` vor: separate Python-/Webprüfungen unter Ubuntu, ausschließlich Repository-Leserechte, ohne Anbieter-Secrets. Python nutzt den geschützten Offline-Einstieg; Web nutzt Node 24, bestehende Tests, Typprüfung und den isolierten Build mit Netzsperre. Bestehende Abhängigkeiten würden erst im zukünftigen GitHub-Runner eingerichtet. Kein Browser-/Datenbankdienst und keine Veröffentlichung durch diesen Workflow. Der tägliche Abruf bleibt unverändert. Lokal nur Datei vorbereitet und bestehende Befehle geprüft; echter GitHub-/Linux-Lauf und Aktivierung erst nach gesondertem Upload. Größen-Code aus Paket 12 vorher isoliert mit Datenbank/PostgREST abnehmen.
+
 Ergebnis immer mit Code-Stand, Datum, genauen Befehlen, Ersatz-/Offline-Grenzen, bestandenen und offenen Prüfungen dokumentieren. Geprüfte Anzeigeabläufe, Datenbankrechte und KI-Qualität getrennt benennen. Neue Tests sollen beobachtbares Verhalten und Fehlerfälle prüfen; keine Tests allein für diese Dokumentation hinzufügen.
 
 Die Prüfwerkzeuge und ihre Schutztests verwenden ausschließlich künstliche Daten. `pytest.ini`, täglicher Workflow und Live-Testmodule bleiben unverändert. Vorläufigkeit des Firmenportal-Plans sowie sämtliche bestehenden Live-/Groq-/Veröffentlichungsgrenzen bleiben bestehen.

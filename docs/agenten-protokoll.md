@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 14:29 MEZ – Codex – Paket 14
+- Auftrag: nächste Schritte nach Paketen 1–10 lokal fortsetzen; hier Paket 14 im erlaubten Umfang bearbeitet, echte Datenbankabnahmen/Upload separat.
+- Commits: lokaler Commit „Automatische Offline-Codepruefung fuer GitHub vorbereiten“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.
+- Geänderte Dateien: .github/workflows/codepruefung.yml; docs/pruefvorbereitung.md; docs/plans/2026-11-16-codepruefung.md; außerdem STATUS, Entscheidungen, Arbeitskatalog und dieses Protokoll.
+- Ergebnis: .github/workflows/codepruefung.yml enthält getrennte Ubuntu-Jobs für vorhandene Python-/Webprüfungen. Python 3.12, Node 24, bestehende deklarierte Abhängigkeiten, geschützter Offline-Einstieg und Build-Netzsperre. Nur contents:read, keine gespeicherten Checkout-Zugangsdaten und kein Cache nötig. Kein Scraper-/Groq-/SQL-/Browserdienst oder Deployment; täglicher Workflow unverändert. Erst zukünftiger freigegebener Upload aktiviert Ereignisse. Alle 14 Katalogpakete jetzt lokal bearbeitet: 1–11 fertig, 12–14 vorbereitet und mit offenen Abnahmen gekennzeichnet.
+- Prüfungen: Workflow-Datei und offizielle Action-/Syntaxdokumentation geprüft, Befehle gegen vorhandene Einstiege abgeglichen; täglicher Workflow ohne Diff. Bestehende unveränderte Prüfungen zuletzt in Paket 13: 570 Python-Offline-Tests, in Paket 12: 249 Webtests/Typprüfung/isolierter Produktions-Build und Chrome-Mehrseitenprobe mit künstlichen Daten grün. Keine zusätzlichen Tests nur für eine Konfigurationsdatei; keine unveränderten Prüfungen wiederholt. git diff --check und Commit-Inhaltsprüfung bestanden.
+- Nicht geprüft / offene Fragen: Kein tatsächlicher GitHub-/Linux-Lauf. YAML-/Actions-Prüfer lokal nicht vorhanden, keine maschinelle Workflow-Schemavalidierung behauptet und nichts nachinstalliert. Action-Tags anhand offizieller Dokumentation geprüft, tatsächliche Auflösung beim GitHub-Lauf offen. SQL-/PostgREST-Abnahme bleibt mangels Umgebung ausstehend; Code aus Paket 12 vor Upload abnehmen. Kein Push/Merge, keine Installation, keine echten Daten/Schlüssel/Umgebungsdateien gelesen.
+- Abweichungen: Nur lokale Workflow-Vorbereitung entsprechend Kataloggrenze, keine Aktivierung. Bestehende Prüfergebnisse wiederverwendet, da weder Anwendung noch Tests verändert wurden. Eigener Review, Claude-Prüfung separat.
+
 ## 2026-11-16 14:26 MEZ – Codex – Paket 13
 - Auftrag: nächste Schritte nach Paketen 1–10 lokal fortsetzen; hier Paket 13 im erlaubten Umfang bearbeitet, echte Datenbankabnahmen/Upload separat.
 - Commits: lokaler Commit „Isolierte SQL- und PostgREST-Abnahme vorbereiten“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.
