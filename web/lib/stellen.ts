@@ -1,10 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { GROESSEN_REIHENFOLGE, ausschlussBedingungen, ausschlussWoerter, onlineSeitGrenze, suchBedingung, type Filter } from "./filter.ts";
+import { GROESSEN_REIHENFOLGE, ausschlussBedingungen, ausschlussWoerter, onlineSeitGrenze, seitenBereich, suchBedingung, type Filter } from "./filter.ts";
 
 // Postgres-Array-Literal mit Anführungszeichen, damit Kommas in Werten ("Luft- & Raumfahrt, Verteidigung") nicht trennen.
 const arr = (l: string[]) => `{${l.map((s) => `"${s.replace(/[\\"]/g, "\\$&")}"`).join(",")}}`;
 
-export const PRO_SEITE = 50;
+export { PRO_SEITE } from "./filter.ts";
 export const SPALTEN =
   "id,unternehmen,titel,ort,staedte,remote,arbeitsmodell,vertragsart,abteilung,erfahrungslevel,url,erstmals_gesehen,companies!inner(groesse_klasse,kategorie,aktiv)";
 
@@ -34,12 +34,12 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   if (f.q) q = q.or(suchBedingung(f.q, f.volltext));
   for (const b of ausschlussBedingungen(ausschlussWoerter(f.ohne), f.volltext)) q = q.or(b);
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
-  const von = (f.seite - 1) * PRO_SEITE;
+  const { von, bis } = seitenBereich(f.seite);
   const o = f.sort === "rang" && f.liste.length === 1 ? q.order("rang", { nullsFirst: false }).order("unternehmen").order("id")
     : f.sort === "firma" ? q.order("unternehmen").order("id")
     : f.sort === "titel" ? q.order("titel").order("id")
     : q.order("erstmals_gesehen", { ascending: false }).order("id");
-  return o.range(von, von + PRO_SEITE - 1);
+  return o.range(von, bis);
 }
 
 // shortcut: "groesse" liegt in der Join-Spalte companies.groesse_klasse (in PostgREST nicht sortierbar), darum wird nur die
