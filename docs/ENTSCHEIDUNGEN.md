@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-16 | Nutzer beauftragt Pakete 4, 5 und 6 nacheinander mit separaten Abschlüssen; Paket 4 sichert bestehende Filter durch 29 gemeinsame HTTP-Vertragstests ab. | Alle neuen Erwartungen sind im bisherigen Code erfüllt; unnötige Änderungen an Filterregeln entfallen, echte SQL-/RLS-Abnahme bleibt separat. |
 | 2026-11-16 | Nutzer beauftragt Paket 3: gemeinsame technische Prüfung von Seitenzahl, Start und Ende für URL-Verarbeitung und beide Stellenabfragen; unsichere Werte fallen auf Seite 1 zurück. | `Number.isInteger` schützt weder vor unsicheren Ganzzahlen noch vor Überlauf beim Berechnen eines vollständigen 50er-Bereichs; bestehende Defaults und Filterregeln bleiben erhalten. |
 | 2026-11-16 | Nutzer beauftragt Paket 2: vorhandene Dokumentprüfung zentral als reine Funktion in der bestehenden Speicheraktion nutzen; UTC-Kalenderprüfung aus Bewerbungen wiederverwenden. | Unmögliche Versionsdaten und falsch typisierte Argumente werden vor dem Schreibversuch abgefangen, ohne neue Upload-/Dateitypregeln oder eine zweite Datumslogik einzuführen. |
 | 2026-11-16 | Paket 1 im vorhandenen KI-Leser umgesetzt: Listen vor Rückgabe kopieren und bei der Textprüfung Array-Lücken berücksichtigen; bestehende Ausgabe unverändert nutzen. | Verhindert gegenseitige Änderungen zwischen Rohdaten, Leseergebnissen und Feldern, ohne neue Bewertungsregeln oder KI-Aufrufe einzuführen. |

@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 11:00 MEZ – Codex – Paket 4
+- Auftrag des Nutzers: Pakete 4, 5, 6 nacheinander strukturiert abarbeiten; hier ausschließlich Paket 4 abschließen.
+- Commits: lokaler Commit „Gemeinsamen Filtervertrag mit allen Gruppen absichern“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Basis `47c0ea8`, Arbeitsordner sauber. Kein Push/Merge.
+- Geänderte Dateien: `web/tests/filter-vertrag.test.ts` und `docs/plans/2026-11-16-filter-vertrag.md` neu; `docs/STATUS.md`, `docs/ENTSCHEIDUNGEN.md`, `docs/arbeitspakete-codex.md`, `docs/agenten-protokoll.md` ergänzt. Kein Anwendungscode geändert.
+- Tests: neue Suite **29 bestanden**, gesamte Websuite `npm.cmd test` **211 bestanden**; Typprüfung `.\node_modules\.bin\tsc.cmd --noEmit --incremental false` in web Exit 0. Isolierter Webpack-Build bestanden, keine Umgebungsdateien/künstliche Einstellungen/HTTP gesperrt; lokale Hilfe `.superpowers/sdd/2026-11-16-filter-vertrag/build-check.cjs`. Eigener Abschlussreview und `git diff --check` ohne Befunde.
+- Ergebnis: erwartete PostgREST-Operatoren für alle Gruppen, UND zwischen Gruppen/OR-Blöcken, Standard-/Rankingwege, Zählung, Sortierungen/Pagination, Datum, Gastverhalten und Formularwechsel/Rücksetzen abgesichert. Keine zweite Filterlogik gebaut, kein Fehler im bestehenden Code nachgewiesen.
+- Nicht geprüft / offene Fragen: keine echte SQL-/RLS-Abnahme. Kein neuer Browserlauf, da nur Tests/Dokumentation geändert; Anwendung entspricht geprüftem Paket-3-Stand. Python unverändert und Suite nicht erneut ausgeführt. Keine echten Daten/Zugangsdaten, Live-Anfragen, Migration, Installation oder Veröffentlichung. Anschließend 5 und 6 bereits autorisiert, 7–14 separat.
+- Abweichungen: neue Tests von Anfang an grün; keine künstlichen Fehler oder unnötigen Produktänderungen für einen Rot-Grün-Zyklus eingeführt. Eigener Review gemäß Sitzungsregel gegen unaufgeforderte Delegation; Claudes unabhängige Prüfung separat. Keine Nutzeraktion nötig.
+
 ## 2026-11-16 10:53 MEZ – Codex
 - Auftrag des Nutzers: „Weiter mit 3“ – Filterparameter und Seitenbereiche technisch absichern; ausschließlich Paket 3.
 - Commits: lokaler Abschluss-Commit „Seitenzahlen und Abfragebereiche sicher berechnen“, Schlusszeile `Agent: Codex`; dieser Eintrag gehört zum selben Commit. Ausgangsstand `fb0611c`, Arbeitsordner sauber. Kein Push/Merge.
