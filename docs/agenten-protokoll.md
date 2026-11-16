@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 11:27 MEZ – Codex – Paket 6 / Abschluss 4–6
+- Auftrag des Nutzers: Pakete 4, 5, 6 nacheinander strukturiert abarbeiten; Paket 6 nach 4/5 abgeschlossen, Gesamtauftrag lokal erledigt.
+- Commits: lokaler Commit „Unveränderte Belegtexte und sichere Markierung absichern“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Basis `eb6fbb9`, Arbeitsordner sauber. Vorausgehende Abschlüsse dieses Auftrags: `c3b59e4` (Paket 4), `eb6fbb9` (Paket 5). Kein Push/Merge.
+- Geänderte Dateien: `web/tests/anzeige.test.ts`, neuer Plan `docs/plans/2026-11-16-belegtexte.md`; `docs/STATUS.md`, `docs/ENTSCHEIDUNGEN.md`, `docs/arbeitspakete-codex.md`, `docs/agenten-protokoll.md`. Kein Anwendungscode geändert.
+- Tests: gezielt 15 Anzeigetests bestanden, sieben zusätzliche Tests mit u. a. 112 String-/Begriffslisten-Kombinationen zur exakten Segmentrekonstruktion. Websuite `npm.cmd test` **222 bestanden**. Typprüfung in web ohne Fehler; isolierter Webpack-Build bestanden (keine Umgebungsdateien/künstliche Einstellungen/HTTP gesperrt). Chrome-Probe `.superpowers/sdd/2026-11-16-belegtexte/browser-check.py`: **zwölf Fälle bestanden** für gültige/markierungsfreie/gemischte/kaputte/fehlende Abschnitte sowie Gast je Laptop/Handy. TextContent und markierte Stücke geprüft, scheinbarer Script-Inhalt bleibt Text ohne Ausführung. Keine Browserfehler, externe Anfragen blockiert. Testserver beendet, Port kontrolliert. Eigener Review und `git diff --check` ohne Befunde.
+- Ergebnis: Zeichengetreue Segmentierung einschließlich Unicode, Umlaute, CR/LF, Sonder-/Kontrollzeichen und unveränderte gültige Abschnittsbelege abgesichert. Kaputte Einträge nutzen bestehende Filter-/Rückfalllogik. Bestehende Absatzformatierung im unstrukturierten Rückfall bleibt erhalten und wird nicht als umkehrbar auf den ursprünglichen Rohtext ausgegeben. Keine neuen Beleg-IDs, semantischen Regeln oder Farben.
+- Nicht geprüft / offene Fragen: keine echten Anzeigen/CVs oder tatsächliche KI-Qualität, Datenbank-/RLS-Rechte geprüft; Python-Anwendung unverändert und Suite nicht erneut ausgeführt. Keine Zugangsdaten/Live-Zugriffe, Migration, Installation oder Veröffentlichung. Pakete 7–14 nicht beauftragt, keine Nutzeraktion nötig.
+- Abweichungen: wie Paket 4 alle neuen Tests von Anfang an grün, keine unnötige Codeänderung erzwungen. Wie zuvor Browserprobe direkt mit installiertem Python 3.12 wegen Launcher-Erkennung; eigener Review gemäß Sitzungsregel, unabhängige Claude-Prüfung separat.
+
 ## 2026-11-16 11:05 MEZ – Codex – Paket 5
 - Auftrag des Nutzers: autorisierte Reihenfolge 4 → 5 → 6, hier Paket 5 nach abgeschlossenem Paket 4 umgesetzt.
 - Commits: lokaler Commit „Stundenlohn auf Bewerbungskarten korrekt beschriften“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Basis `c3b59e4`, Arbeitsordner sauber. Kein Push/Merge.
