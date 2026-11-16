@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 11:35 MEZ – Codex – Paket 7
+- Auftrag: Nutzer beauftragt die nächsten vier Pakete 7 → 8 → 9 → 10; hier Paket 7 separat abgeschlossen.
+- Commits: lokaler Commit „Berliner Sommerzeitlücken und gemeinsame Datumswerte prüfen“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.
+- Geänderte Dateien: web/lib/bewerbung.ts, web/tests/bewerbung.test.ts, docs/plans/2026-11-16-datum-berlin.md; außerdem STATUS, Entscheidungen, Arbeitskatalog und dieses Protokoll.
+- Ergebnis: Kalenderdatum strikt geprüft, Jahr-0–99-Sonderfall durch gemeinsame UTC-Hilfe vermieden; Dokumente/Tracker teilen datumOk. berlinZuIso prüft selbst und verlangt passenden Berliner Rückvergleich. parseAbschnitt nutzt diesen Prüfer unmittelbar. Vorherige Wahl der doppelten Herbststunde beibehalten.
+- Prüfungen: Sechs neue Verhaltenstests; zuerst 23 grün/drei rot, nach Korrektur npm.cmd test: 228 bestanden. Typprüfung in web ohne Fehler; isolierter Webpack-Build ohne Umgebungsdateien, mit künstlichen Einstellungen und HTTP-Sperre bestanden. Sechs Chrome-Formularprüfungen bei 1280/390 Pixel: Lücke meldet vorhandenen Fehler ohne Schreibversuch; gültige Zeit und Herbstwahl ergeben erwartetes ISO in ersetztem insert. Externe Anfragen blockiert, keine Browserfehler, Testserver beendet. Lokale Hilfen unter .superpowers/sdd/2026-11-16-datum-berlin/. git diff --check ohne Fehler, eigener Review ohne materielle Befunde.
+- Nicht geprüft / offene Fragen: Keine echte Anmeldung, Interviews oder Datenbankrechte geprüft, keine Live-Abfragen/Dateien/Zugangsdaten. Python-Anwendung unverändert, Python-Suite nicht erneut ausgeführt. Pakete 8–10 bereits beauftragt, 11–14 separat. Keine Veröffentlichung oder Nutzeraktion.
+- Abweichungen: Browser wie zuvor direkt mit vorhandenem Python 3.12 wegen Launcher-Erkennung, keine Installation. Eigener Review statt unaufgeforderter Delegation gemäß Sitzungsregel; Claude-Prüfung separat. Lokale Testhilfe blockierte zuerst Nexts interne Weiterleitung; nur Loopback-Port 3002/Bewerbungsroute freigegeben und Locator auf Formularfehler statt Next-Route-Ansage eingegrenzt. Danach alle sechs Fälle erneut bestanden, keine Serverfehler. Kein Anwendungscode für diese Hilfskorrekturen geändert.
+
 ## 2026-11-16 11:27 MEZ – Codex – Paket 6 / Abschluss 4–6
 - Auftrag des Nutzers: Pakete 4, 5, 6 nacheinander strukturiert abarbeiten; Paket 6 nach 4/5 abgeschlossen, Gesamtauftrag lokal erledigt.
 - Commits: lokaler Commit „Unveränderte Belegtexte und sichere Markierung absichern“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Basis `eb6fbb9`, Arbeitsordner sauber. Vorausgehende Abschlüsse dieses Auftrags: `c3b59e4` (Paket 4), `eb6fbb9` (Paket 5). Kein Push/Merge.

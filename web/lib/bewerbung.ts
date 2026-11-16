@@ -34,10 +34,17 @@ export const FELDER: Record<Abschnitt, Record<string, Typ>> = {
 const PFLICHT: Partial<Record<Abschnitt, string[]>> = { neu: ["firma", "titel"], stelle: ["firma", "titel"], ablauf: ["status"], person: ["name"] };
 const NAME: Record<string, string> = { firma: "Firma", titel: "Titel", status: "Status", name: "Name" };
 
+// setUTCFullYear vermeidet die Date.UTC-Sonderbehandlung der Jahre 0–99 als 1900–1999.
+function utcZeit(jahr: number, monat: number, tag: number, stunde = 0, minute = 0): number {
+  const d = new Date(0);
+  d.setUTCFullYear(jahr, monat - 1, tag);
+  d.setUTCHours(stunde, minute, 0, 0);
+  return d.getTime();
+}
 export const datumOk = (s: string) => {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
-  if (!m) return false;
-  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  if (!m || s.length !== 10 || +m[1] < 1) return false;
+  const d = new Date(utcZeit(+m[1], +m[2], +m[3]));
   return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3];
 };
 
@@ -63,7 +70,7 @@ export function parseAbschnitt(abschnitt: Abschnitt, f: Eingabe): { daten: Recor
         break;
       }
       case "datum": if (!datumOk(s)) return { fehler: "Ungültiges Datum." }; daten[k] = s; break;
-      case "zeit": if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s) || !datumOk(s.slice(0, 10))) return { fehler: "Ungültiges Datum." }; { const z = berlinZuIso(s); if (!z || +s.slice(11, 13) > 23 || +s.slice(14) > 59) return { fehler: "Ungültiges Datum." }; daten[k] = z; } break;
+      case "zeit": { const z = berlinZuIso(s); if (!z) return { fehler: "Ungültiges Datum." }; daten[k] = z; } break;
       case "int15": if (!/^[1-5]$/.test(s)) return { fehler: "Interesse muss zwischen 1 und 5 liegen." }; daten[k] = Number(s); break;
       case "tags": {
         const t = [...new Set(s.split(",").map((x) => x.trim()).filter(Boolean))];
@@ -135,14 +142,18 @@ const berlinTeile = new Intl.DateTimeFormat("en-US", {
 });
 function berlinOffsetMs(t: number): number {
   const p = Object.fromEntries(berlinTeile.formatToParts(new Date(t)).map((x) => [x.type, +x.value]));
-  return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute) - Math.floor(t / 60000) * 60000;
+  return utcZeit(p.year, p.month, p.day, p.hour, p.minute) - Math.floor(t / 60000) * 60000;
 }
 export function berlinZuIso(lokal: string): string | null {
-  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(lokal.trim());
-  if (!m) return null;
-  const wand = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+  const s = lokal.trim();
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(s);
+  if (!m || !datumOk(s.slice(0, 10)) || +m[4] > 23 || +m[5] > 59) return null;
+  const wand = utcZeit(+m[1], +m[2], +m[3], +m[4], +m[5]);
   let t = wand - berlinOffsetMs(wand);
   t = wand - berlinOffsetMs(t); // Offset am Zielzeitpunkt erneut prüfen (Sommerzeitwechsel)
+  const p = Object.fromEntries(berlinTeile.formatToParts(new Date(t)).map((x) => [x.type, +x.value]));
+  // Eine übersprungene Wanduhrzeit lässt sich nicht auf dieselben Berliner Werte zurückrechnen.
+  if (p.year !== +m[1] || p.month !== +m[2] || p.day !== +m[3] || p.hour !== +m[4] || p.minute !== +m[5]) return null;
   return new Date(t).toISOString();
 }
 
