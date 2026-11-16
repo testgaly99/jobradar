@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-16 | Nachprüfung aller 14 Pakete dokumentiert drei offene Befunde; vor Datenbankabnahme zuerst Paket 9/13 nachbessern. | Grüne reguläre Ersatztests decken beschädigte Sichtbarkeitsfelder, optimierte Assertions und eine ungeeignete Sortier-Fixture nicht ab; zehn künstliche Repros belegen den Korrekturbedarf ohne Live-Zugriffe. |
 | 2026-11-16 | Paket 14 bereitet einen separaten Workflow mit Leserechten, vorhandenen Offline-Prüfungen und isoliertem Build vor; der tägliche Live-Abruf bleibt unverändert. | Codefehler sollen unabhängig von Zugangsdaten und echten Abrufen erkannt werden. Ein lokaler Workflow-Entwurf benötigt noch keine Freigabe für Upload, Dienste oder echte Datenbanktests. |
 | 2026-11-16 | Paket 13 trennt verbindungsfreien Werkzeugvorcheck, zurückgerollte SQL-Proben und absichtlich persistierte künstliche HTTP-Fixture; alle tatsächlichen Verbindungen bleiben auf feste lokale Testziele beschränkt. | Offline-Ersatztests belegen keine Datenbankrechte. Getrennte Verbindungen benötigen persistierte künstliche Daten, und feste Ziele/Startkennungen vermeiden versehentlich übernommene echte Konfigurationen. |
 | 2026-11-16 | Paket 12 verwendet einen datenbankseitigen technischen Größenschlüssel und ordnet vor Pagination; echte Datenbankabnahme bleibt Veröffentlichungsvoraussetzung. | Eine Sortierung nach dem Laden ordnet nur die aktuelle Seite. Bestehende Relation und vorhandenes JSON vermeiden zusätzliche RPC-Endpunkte und erhalten die bestehenden Rollenregeln. |

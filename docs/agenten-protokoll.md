@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 15:51 MEZ – Codex – Nachprüfung Pakete 1–14
+- Auftrag des Nutzers: „Prüfe die Umsetzung all deiner bisherigen Arbeitspakete“, mit „Continue“ fortgesetzt. Prüfung auf `658696d` gegen Paketbasis `eeced3f`; vollständiger Bericht `docs/pruefung-arbeitspakete-2026-11-16.md`.
+- Commits: lokaler Dokumentationscommit „Nachpruefung aller Arbeitspakete mit offenen Befunden dokumentieren“, dieser Eintrag gehört zum selben Commit; Schlusszeile `Agent: Codex`. Kein Push/Merge.
+- Geänderte Dateien: docs/pruefung-arbeitspakete-2026-11-16.md, docs/STATUS.md, docs/ENTSCHEIDUNGEN.md, docs/arbeitspakete-codex.md und dieses Protokoll. Keine Änderung am Anwendungscode oder an regulären Tests.
+- Ergebnis: drei offene Befunde. Hohe Priorität: Paket-9-Schutz greift bei kaputten Sichtbarkeitsfeldern in Ashby/Recruitee nicht, resultierende leere Liste schließt Bestand und entfernt Text. Mittlere Priorität: Paket-13-Startschutz/Abnahmen entfallen bei Python-Optimierung; Größen-Fixture ist bereits nach ID größensortiert und erkennt ignorierte Größenordnung nicht. Außerhalb dieser Befunde keine weiteren konkreten Fehler im geprüften Umfang. Historische „fertig“-Bewertung von Paket 9 ausdrücklich korrigiert.
+- Tests: geschützter Python-Einstieg 570 bestanden, Websuite 249 bestanden, Typprüfung Exit 0, tatsächlicher isolierter Build und aktuelle Chrome-Probe 1280/390 px mit Gast/Filter/Detail/ungültiger Auswahl und drei Größenseiten mit/ohne Ranking bestanden. Prüfserver beendet. Zusätzlich zehn rote künstliche Review-Erwartungen: Ashby 3, Recruitee 5, optimierter Prüfer 1, ignorierte Sortierung 1. Keine echten Daten berührt. Weitere 2000 Seiten-Grenzwerte unabhängig mit BigInt geprüft. git diff --check und Commit-Inhaltsprüfung.
+- Nicht geprüft / offene Fragen: Befunde nicht behoben, echte SQL-/RLS-/PostgREST-Abnahme und GitHub-/Linux-Lauf weiter offen; YAML-/Actions-Prüfer fehlt. Keine Installationen, Zugangsdaten/Umgebungsdateien, Live-/Groq-Zugriffe, Migrationen oder Veröffentlichungen. Nicht alle historischen UI-Einzelfälle erneut im Browser ausgeführt; aktueller versionierter Browserumfang im Bericht genau benannt.
+- Abweichungen: parallele unabhängige Reviews für 1–8 und Teilprüfung 9, Root schließt übrige Quellprüfung und Repros ab. Neue Repros liegen lokal ignoriert; Zwischenlauf sammelte auch diese und ergab 570 grün/10 rot. Danach nur die neuen Repro-Dateien ohne test_-Präfix abgelegt; unveränderte reguläre Suite erneut 570 grün. Alle zehn Fehler bleiben dokumentiert und müssen als gezielte Regressionen bei Behebung übernommen werden. Reiner Prüfauftrag: keine ungefragten Codekorrekturen, kein Installationsauftrag abgeleitet.
+
 ## 2026-11-16 14:29 MEZ – Codex – Paket 14
 - Auftrag: nächste Schritte nach Paketen 1–10 lokal fortsetzen; hier Paket 14 im erlaubten Umfang bearbeitet, echte Datenbankabnahmen/Upload separat.
 - Commits: lokaler Commit „Automatische Offline-Codepruefung fuer GitHub vorbereiten“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.
