@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-16 | Paket 16: Datenbankantworten vor dem Stellenabgleich prüfen. | Beauftragte Korrektur bestehenden Verhaltens, mit künstlichen Regressionen geprüft; keine neuen Produktkriterien oder Live-/Betriebsfreigaben. |
 | 2026-11-16 | Paket 15: Entmerken und Statuswechsel vor Lese- und Parallelfehlern schützen. | Beauftragte Korrektur bestehenden Verhaltens, mit künstlichen Regressionen geprüft; keine neuen Produktkriterien oder Live-/Betriebsfreigaben. |
 | 2026-11-16 | Auf erneuten Prüfauftrag sechs konkrete lokale Codex-Kandidaten 15–20 erfasst; zuerst Datenerhalt, dann Abrufregeln und Laufzuverlässigkeit. | Zusätzliche bestehende Fehlerpfade sind lokal überprüfbar, ohne neue Produktkriterien festzulegen. Erledigte Grundlagen und vorbereitete echte Abnahmen nicht erneut zählen; neue Implementierung ist nicht Teil dieses Prüfauftrags. |
 | 2026-11-16 | Nutzer beauftragt alle drei Reviewkorrekturen: Sichtbarkeitsfelder vor Überspringen validieren, Abnahmebedingungen unabhängig von Optimierung erzwingen und Größen-/Datums-Testdaten mischen. | Kaputte Antworten dürfen keinen Bestand schließen; ein Prüflauf muss seine Schutzbedingungen und tatsächliche globale Sortierung zuverlässig prüfen. Gültige bisherige Fachregeln und separate echte Datenbankfreigabe bleiben erhalten. |

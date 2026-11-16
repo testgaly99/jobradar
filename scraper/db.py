@@ -145,14 +145,28 @@ def _in(werte):
     return "in.(" + ",".join('"' + w.replace('"', '\\"') + '"' for w in werte) + ")"
 
 
+def _objektliste(antwort, kontext):
+    if not isinstance(antwort, list) or not all(isinstance(z, dict) for z in antwort):
+        raise ValueError(f"Ungültige {kontext}")
+    return antwort
+
+
 def _bestand(firma):
-    zeilen = []
+    bestand = {}
     while True:
-        teil = _req("GET", "jobs", params={"unternehmen": f"eq.{firma}", "select": "id,status,erstmals_gesehen",
-                                           "order": "id", "limit": SEITE, "offset": len(zeilen)})
-        zeilen += teil
+        teil = _objektliste(_req("GET", "jobs", params={
+            "unternehmen": f"eq.{firma}", "select": "id,status,erstmals_gesehen",
+            "order": "id", "limit": SEITE, "offset": len(bestand),
+        }), "Bestandsantwort")
+        for z in teil:
+            id_, datum = z.get("id"), z.get("erstmals_gesehen", "")
+            if (not isinstance(id_, str) or not id_.startswith(firma + ":") or id_ == firma + ":"
+                    or id_ in bestand or z.get("status") not in ("offen", "geschlossen")
+                    or (datum is not None and (not isinstance(datum, str) or not datum.strip()))):
+                raise ValueError("Ungültige Bestandszeile")
+            bestand[id_] = z
         if len(teil) < SEITE:
-            return {z["id"]: z for z in zeilen}
+            return bestand
 
 
 def lade_offene(firma):
@@ -188,17 +202,30 @@ def schreibe(firma, neue, heute, unveraendert=()):
             **({"abschnitte": n.get("abschnitte"), "land": n.get("land", ""),
                                                   "steckbrief": n.get("steckbrief")} if neue_spalten else {}),
         })
-    _upsert("jobs", zeilen, "id")
     gesehen = {z["id"] for z in zeilen}
     unv = [i for i in (f"{firma}:{e}" for e in unveraendert) if i in alt]
-    for i in range(0, len(unv), CHUNK):
-        _req("PATCH", "jobs", params={"id": _in(unv[i:i + CHUNK])}, json={"zuletzt_gesehen": heute})
     gesehen_alle = gesehen | set(unv)
     fehlend = [i for i, z in alt.items() if z["status"] == "offen" and i not in gesehen_alle]
     mit_bewerbung = set()
     for i in range(0, len(fehlend), CHUNK):
-        r = _req("GET", "applications", params={"select": "job_id", "job_id": _in(fehlend[i:i + CHUNK])})
-        mit_bewerbung |= {a["job_id"] for a in r}
+        angefragt = fehlend[i:i + CHUNK]
+        offset = 0
+        while True:
+            r = _objektliste(_req("GET", "applications", params={
+                "select": "job_id", "job_id": _in(angefragt), "order": "job_id",
+                "limit": SEITE, "offset": offset,
+            }), "Bewerbungsantwort")
+            for a in r:
+                if not isinstance(a.get("job_id"), str) or a["job_id"] not in angefragt:
+                    raise ValueError("Ungültige Bewerbungszuordnung")
+                mit_bewerbung.add(a["job_id"])
+            if len(r) < SEITE:
+                break
+            offset += len(r)
+    # Erst nach allen kritischen Schutzlesungen schreiben; keine HTTP-Transaktion behaupten.
+    _upsert("jobs", zeilen, "id")
+    for i in range(0, len(unv), CHUNK):
+        _req("PATCH", "jobs", params={"id": _in(unv[i:i + CHUNK])}, json={"zuletzt_gesehen": heute})
     for liste, patch in (([i for i in fehlend if i not in mit_bewerbung],
                           {"status": "geschlossen", "text": None, "sichtbar": False}),
                          ([i for i in fehlend if i in mit_bewerbung], {"status": "geschlossen"})):

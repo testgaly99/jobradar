@@ -95,7 +95,10 @@ class FakeDB:
             return list(self.t["companies"].values())
         elif method == "GET" and pfad == "applications":
             ids = _in(params["job_id"])
-            return [{"job_id": a} for a in self.t["applications"] if a in ids]
+            rows = [{"job_id": a} for a in self.t["applications"] if a in ids]
+            rows.sort(key=lambda a: a["job_id"])
+            offset = params.get("offset", 0)
+            return rows[offset:offset + params.get("limit", len(rows))]
         elif method == "PATCH" and pfad == "companies":
             self.t["companies"][params["name"][3:]].update(json)
         elif method == "PATCH":
