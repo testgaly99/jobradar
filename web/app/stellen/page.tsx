@@ -5,7 +5,7 @@ import { firmenFarbe } from "@/lib/farbe";
 import { datumDe } from "@/lib/bewerbung";
 import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
 import { kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
-import { PRO_SEITE, nachGroesse, stellenAbfrage } from "@/lib/stellen";
+import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { merken, entmerken } from "./actions";
 import FilterBlock from "./filterblock";
 import FilterClient from "./filter-client";
@@ -49,8 +49,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
     sb.from("laeufe").select("datum").order("datum", { ascending: true }).limit(1).maybeSingle(), // fehlt die Tabelle: nur 3-Tage-Regel
   ]);
   const ersterLauf: string | null = erster.data?.datum ?? null;
-  const geladen = (ergebnis.data ?? []) as unknown as Job[];
-  const jobs = f.sort === "groesse" ? nachGroesse(geladen) : geladen;
+  const jobs = (ergebnis.data ?? []) as unknown as Job[];
   const gesamt = ergebnis.count ?? 0;
   const letzterLauf: string | null = lauf.data?.datum ?? null;
   const veraltet = letzterLauf !== null && letzterLauf < tagePlus(heuteLokal(), -2);

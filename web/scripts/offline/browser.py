@@ -52,9 +52,20 @@ with sync_playwright() as p:
             page.goto(BASE + "/stellen?liste=veraltet")
             expect(page.get_by_role("status")).to_contain_text("nicht mehr verfügbar")
             expect(page.locator("#stellenliste > li")).to_have_count(0)
+            for ranking in [False, True]:
+                page.goto(BASE + "/stellen?sort=groesse" + ("&liste=test-b" if ranking else ""))
+                expect(page.locator("#stellenliste > li")).to_have_count(50)
+                expect(page.locator("#stellenliste > li").first).to_contain_text("Größentest 0:0")
+                page.get_by_role("link", name="Weiter", exact=True).click()
+                expect(page.locator("#stellenliste > li").first).to_contain_text("Größentest 0:50")
+                expect(page.locator("#stellenliste > li").nth(7)).to_contain_text("Größentest 1:0")
+                page.get_by_role("link", name="Weiter", exact=True).click()
+                expect(page.locator("#stellenliste > li")).to_have_count(12)
+                expect(page.locator("#stellenliste > li").last).to_contain_text("Größentest 99:0")
+                expect(page.get_by_text("Seite 3 von 3", exact=True)).to_be_visible()
             assert not errors, errors
             user.close()
-            print(f"OK {width}px: Gast, Filter, Detailseite, ungültige Auswahl")
+            print(f"OK {width}px: Gast, Filter, Detailseite, ungültige Auswahl; Größe über drei Seiten mit/ohne Ranking")
         records = [json.loads(line) for line in Path(sys.argv[1]).read_text().splitlines()]
         assert not any("ranking_" in r["pfad"] and r["mode"] == "gast" for r in records)
     finally:

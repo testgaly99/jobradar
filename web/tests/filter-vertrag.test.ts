@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createClient } from "@supabase/supabase-js";
 import { filterZuUrl, formZuUrl, landNurMitFacette, leseFilter, type Filter, type Gruppe } from "../lib/filter.ts";
 import { rankingFilter } from "../lib/rankings.ts";
-import { nachGroesse, stellenAbfrage } from "../lib/stellen.ts";
+import { stellenAbfrage } from "../lib/stellen.ts";
 
 async function abfrage(f: Filter) {
   const aufrufe: { url: URL; init: RequestInit }[] = [];
@@ -78,7 +78,9 @@ test("Alle Sortierungen und Rang-Fallbacks behalten stabile Reihenfolge und Pagi
       ["titel", "titel.asc,id.asc"], ["groesse", "erstmals_gesehen.desc,id.asc"], ["rang", "erstmals_gesehen.desc,id.asc"]]) {
       const f = rankingFilter(leseFilter({ liste, sort, seite: "2" }), true);
       const { url } = await abfrage(f);
-      assert.equal(url.searchParams.get("order"), sort === "rang" && liste.length === 1 ? "rang.asc.nullslast,unternehmen.asc,id.asc" : standard);
+      assert.equal(url.searchParams.get("order"), sort === "groesse"
+        ? `${liste.length ? "companies->groesse_rang" : "companies(groesse_rang)"}.asc,erstmals_gesehen.desc,id.asc`
+        : sort === "rang" && liste.length === 1 ? "rang.asc.nullslast,unternehmen.asc,id.asc" : standard);
       assert.equal(url.searchParams.get("offset"), "50");
       assert.equal(url.searchParams.get("limit"), "50");
     }
@@ -136,11 +138,4 @@ test("Leere und unbekannte Parameter sowie fehlende Land-Facette fügen keine Au
   const { url } = await abfrage(f);
   for (const key of ["land", "erfahrungslevel", "fremd", "or", "erstmals_gesehen"]) assert.equal(url.searchParams.has(key), false, key);
   assert.equal(url.searchParams.get("status"), "eq.offen");
-});
-
-test("Größensortierung ordnet weiterhin nur die geladenen Stellen und verändert deren Eingabereihenfolge nicht", () => {
-  const jobs = [null, "1.000+", "<50", "250–999", "50–249"].map((groesse_klasse) => ({ companies: { groesse_klasse } }));
-  const vorher = [...jobs];
-  assert.deepEqual(nachGroesse(jobs).map((j) => j.companies.groesse_klasse), ["<50", "50–249", "250–999", "1.000+", null]);
-  assert.deepEqual(jobs, vorher);
 });

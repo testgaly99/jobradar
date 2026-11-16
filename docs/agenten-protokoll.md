@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 14:21 MEZ – Codex – Paket 12
+- Auftrag: nächste Schritte nach Paketen 1–10 lokal fortsetzen; hier Paket 12 im erlaubten Umfang bearbeitet, echte Datenbankabnahmen/Upload separat.
+- Commits: lokaler Commit „Globale Groessensortierung mit SQL-Abnahme vorbereiten“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.
+- Geänderte Dateien: web/lib/stellen.ts; web/app/stellen/page.tsx; web/tests/stellen.test.ts; web/tests/filter-vertrag.test.ts; web/scripts/offline/antworten.cjs und browser.py; supabase/migrations/011_globale_groesse.sql; tests/sql/groesse.sql; docs/plans/2026-11-16-globale-groesse.md; außerdem STATUS, Entscheidungen, Arbeitskatalog und dieses Protokoll.
+- Ergebnis: Generierte gespeicherte companies.groesse_rang-Spalte bildet die vorhandenen Klassen auf 0/1/2/3/99 ab. Standardabfrage ordnet über die Firmenbeziehung, Rankingabfrage über denselben Schlüssel im bestehenden companies-JSON; danach wie bisher neueste zuerst/id. Alte Sortierung nur innerhalb einer Seite entfernt. SQL-Datei erhält bestehende RPC-Signatur, Listenvalidierung und security invoker; Gast erhält ausschließlich den zusätzlichen aus öffentlicher Größe berechneten Schlüssel. Keine Migration ausgeführt.
+- Prüfungen: Zwei neue HTTP-Vertragstests zuerst rot, danach grün: 112 künstliche Treffer über drei Seiten mit/ohne Ranking, Filter/Count/Offset/Reihenfolge. Alte Seitensortierprüfung durch globale Fälle ersetzt. 249 Webtests, Typprüfung und isolierter Webpack-Build bestanden. Chrome 1280/390 Pixel: bisherige acht Fälle sowie jeweils drei Größenseiten mit/ohne Ranking bestanden. Eigener Server beendet. Vorbereitete SQL-Prüfung umfasst fünf Größenklassen, Gastspalte und weiterhin gesperrten Text; nicht ausgeführt. git diff --check und eigener Review bestanden.
+- Nicht geprüft / offene Fragen: Keine PostgreSQL-/PostgREST-Umgebung vorhanden, tatsächliche SQL-Syntax, Zielversion, Rollen und HTTP-Ausführung noch nicht abgenommen. Migration 011 muss vor echter Größensortierung angewendet werden; kein Upload dieses Codes vor Datenbankabnahme. Python unverändert und nicht erneut geprüft. Keine Live-Daten/Umgebungsdateien/Schlüssel gelesen, kein Dienst installiert oder veröffentlicht.
+- Abweichungen: Paket ausdrücklich nur vorbereitet statt vollständig abgenommen, weil isolierte Datenbank fehlt. Für Top-level-Sortierung über many-to-one und JSON offizielle PostgREST-Dokumentation geprüft. Typprüfung erforderte eine explizite Ergebnis-Typangabe im künstlichen Test; danach grün. Eigener Review, Claude-Prüfung separat.
+
 ## 2026-11-16 14:11 MEZ – Codex – Paket 11
 - Auftrag: nächste Schritte nach Paketen 1–10 lokal fortsetzen; hier Paket 11 im erlaubten Umfang bearbeitet, echte Datenbankabnahmen/Upload separat.
 - Commits: lokaler Commit „Isolierte Webprüfung als Projektwerkzeug versionieren“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.

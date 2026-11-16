@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-16 | Paket 12 verwendet einen datenbankseitigen technischen Größenschlüssel und ordnet vor Pagination; echte Datenbankabnahme bleibt Veröffentlichungsvoraussetzung. | Eine Sortierung nach dem Laden ordnet nur die aktuelle Seite. Bestehende Relation und vorhandenes JSON vermeiden zusätzliche RPC-Endpunkte und erhalten die bestehenden Rollenregeln. |
 | 2026-11-16 | Paket 11 übernimmt ausschließlich bereinigte bestehende Build-/Browserhelfer als unmittelbar nutzbare Entwicklerwerkzeuge. | Ein fester reproduzierbarer Prüfweg vermeidet lokale Wegwerfskripte und versehentlich geladene Diensteinstellungen; der Nutzer startet keine Routine von Hand. |
 | 2026-11-16 | Paket 10 nutzt kontrollierte technische Fehlerdarstellung statt beliebiger Ausnahmetexte; Status, geprüfte Codes und Verarbeitungsschritt bleiben öffentlich erhalten. | Antwortkörper, Header und URLs können Zugangsdaten oder vertrauliche Inhalte enthalten; begrenzte Diagnosedaten erlauben Fehlerzuordnung ohne diese Inhalte zu veröffentlichen. |
 | 2026-11-16 | Paket 9 prüft vollständige Adapterergebnisse und die vorhandenen JSON-/XML-Antwortformen vor dem Stellenabgleich. | Fehlerhafte Antworten dürfen keine offenen Stellen schließen oder unvollständige Daten schreiben; gültige leere Abrufe und bekannte Kurzmeldungen bleiben möglich. |

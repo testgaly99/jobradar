@@ -51,3 +51,42 @@ test("Auch direkt gebaute ungültige Filter erzeugen in beiden Abfragewegen nur 
     assert.equal(anzahl, 8);
   }
 });
+
+for (const mitListe of [false, true]) {
+  test(`${mitListe ? "Ranking" : "Standard"}: Größe wird vor Pagination global geordnet`, async () => {
+    // Bereits geordnete künstliche Serverantwort; beweist den HTTP-Vertrag, keine SQL-Ausführung.
+    const erwartet = [
+      ...Array.from({ length: 57 }, (_, i) => ({ id: `klein:${i}`, companies: { groesse_klasse: "<50" } })),
+      ...Array.from({ length: 52 }, (_, i) => ({ id: `mittel:${i}`, companies: { groesse_klasse: "50–249" } })),
+      { id: "gross:1", companies: { groesse_klasse: "250–999" } },
+      { id: "sehrgross:1", companies: { groesse_klasse: "1.000+" } },
+      { id: "unbekannt:1", companies: { groesse_klasse: null } },
+    ];
+    const aufrufe: URL[] = [];
+    const sb = createClient("https://datenbank.example.invalid", "test-ohne-zugangsdaten", {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      global: { fetch: async input => {
+        const url = new URL(typeof input === "string" ? input : input instanceof URL ? input.href : input.url);
+        aufrufe.push(url);
+        const offset = Number(url.searchParams.get("offset"));
+        return new Response(JSON.stringify(erwartet.slice(offset, offset + 50)), {
+          headers: { "Content-Type": "application/json", "content-range": `${offset}-${Math.min(offset + 49, erwartet.length - 1)}/${erwartet.length}` },
+        });
+      } },
+    });
+    const ids: string[] = [];
+    for (const seite of [1, 2, 3]) {
+      const r = await stellenAbfrage(sb, { ...leseFilter({ sort: "groesse", liste: mitListe ? ["test-a", "test-b"] : undefined, level: "Senior" }), seite });
+      assert.equal(r.error, null);
+      assert.equal(r.count, erwartet.length);
+      ids.push(...((r.data ?? []) as unknown as { id: string }[]).map(j => j.id));
+    }
+    assert.deepEqual(ids, erwartet.map(j => j.id));
+    assert.deepEqual(aufrufe.map(u => u.searchParams.get("offset")), ["0", "50", "100"]);
+    for (const url of aufrufe) {
+      assert.equal(url.searchParams.get("order"), `${mitListe ? "companies->groesse_rang" : "companies(groesse_rang)"}.asc,erstmals_gesehen.desc,id.asc`);
+      assert.equal(url.searchParams.get("erfahrungslevel"), "in.(Senior)");
+      assert.equal(url.searchParams.get("limit"), "50");
+    }
+  });
+}

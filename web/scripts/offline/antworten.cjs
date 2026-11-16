@@ -19,6 +19,12 @@ const jobs = [
 const antwort = (daten, status = 200, headers = {}) => new Response(JSON.stringify(daten), {
   status, headers: { 'Content-Type': 'application/json', ...headers },
 });
+// Bewusst mehr als zwei Seiten; unbekannte Größe bleibt am Ende.
+const groessenJobs = [[57, '<50', 0], [52, '50–249', 1], [1, '250–999', 2], [1, '1.000+', 3], [1, null, 99]]
+  .flatMap(([anzahl, klasse, rang]) => Array.from({ length: anzahl }, (_, i) => ({
+    ...jobs[0], id: `groesse:${rang}:${i}`, titel: `Größentest ${rang}:${i}`,
+    groesse_klasse: klasse, companies: { ...jobs[0].companies, groesse_klasse: klasse, groesse_rang: rang },
+  })));
 globalThis.fetch = async (input, init = {}) => {
   const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url);
   if (url.hostname !== 'offline.example.invalid') throw new Error('Externer Testzugriff gesperrt');
@@ -43,6 +49,7 @@ globalThis.fetch = async (input, init = {}) => {
   ]));
   if (url.pathname === '/rest/v1/rpc/ranking_stellen' || url.pathname === '/rest/v1/jobs') {
     let daten = jobs;
+    if (url.searchParams.get('order')?.startsWith('companies')) daten = groessenJobs;
     if (body.p_listen?.length === 1 && body.p_listen[0] === 'test-a') daten = daten.filter(j => j.unternehmen === 'Testfirma A');
     if (url.searchParams.get('id')?.startsWith('eq.')) daten = daten.filter(j => j.id === url.searchParams.get('id').slice(3));
     if (url.searchParams.get('order')?.startsWith('rang.')) daten = [...daten].sort((a, b) => a.id.localeCompare(b.id));

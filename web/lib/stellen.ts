@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { GROESSEN_REIHENFOLGE, ausschlussBedingungen, ausschlussWoerter, onlineSeitGrenze, seitenBereich, suchBedingung, type Filter } from "./filter.ts";
+import { ausschlussBedingungen, ausschlussWoerter, onlineSeitGrenze, seitenBereich, suchBedingung, type Filter } from "./filter.ts";
 
 // Postgres-Array-Literal mit Anführungszeichen, damit Kommas in Werten ("Luft- & Raumfahrt, Verteidigung") nicht trennen.
 const arr = (l: string[]) => `{${l.map((s) => `"${s.replace(/[\\"]/g, "\\$&")}"`).join(",")}}`;
@@ -35,16 +35,11 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   for (const b of ausschlussBedingungen(ausschlussWoerter(f.ohne), f.volltext)) q = q.or(b);
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
   const { von, bis } = seitenBereich(f.seite);
-  const o = f.sort === "rang" && f.liste.length === 1 ? q.order("rang", { nullsFirst: false }).order("unternehmen").order("id")
+  const o = f.sort === "groesse" ? q.order(mitListe ? "companies->groesse_rang" : "companies(groesse_rang)")
+    .order("erstmals_gesehen", { ascending: false }).order("id")
+    : f.sort === "rang" && f.liste.length === 1 ? q.order("rang", { nullsFirst: false }).order("unternehmen").order("id")
     : f.sort === "firma" ? q.order("unternehmen").order("id")
     : f.sort === "titel" ? q.order("titel").order("id")
     : q.order("erstmals_gesehen", { ascending: false }).order("id");
   return o.range(von, bis);
-}
-
-// shortcut: "groesse" liegt in der Join-Spalte companies.groesse_klasse (in PostgREST nicht sortierbar), darum wird nur die
-// geladene Seite sortiert, nicht die ganze Trefferliste. Upgrade: View oder RPC mit Sortierung in der DB.
-export function nachGroesse<T extends { companies: { groesse_klasse: string | null } }>(jobs: T[]): T[] {
-  const rang = (j: T) => { const i = GROESSEN_REIHENFOLGE.indexOf(j.companies?.groesse_klasse ?? ""); return i < 0 ? 99 : i; };
-  return [...jobs].sort((a, b) => rang(a) - rang(b));
 }
