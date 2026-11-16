@@ -60,6 +60,8 @@ Empfohlene Umsetzung: zuerst 15 und 16 (Datenerhalt), dann 18 und 17 (Abrufregel
 
 ## Weiterhin nicht ohne fachliche Klärung umsetzen
 
+Die CV-Klärung wurde anschließend auf Nutzerauftrag begonnen: `plans/2026-11-16-cv-abgleich-klaerung.md` enthält bestätigte erste Anforderungen, aktuelle Anbieterfakten und noch offene Fragen. Keine weiteren Codepakete daraus vorwegnehmen; Claude Pro primär und Mistral optional ohne API-Kosten sind der neue Wunsch, noch keine pauschale Datenfreigabe oder fertige Integration.
+
 - **CV-Dateien auslesen:** unterstützte Word-/PDF-Varianten, Texterkennungsbedarf, Ausführungsweg und nötige Bibliotheken noch nicht festgelegt. Ein eigener PDF-Parser ist nicht in jeder möglichen Architektur zwingend. Keine echten CVs als Entwicklungsdaten.
 - **CV-Vergleich und Ergebnisdaten:** Skill-Begriffe/Synonyme, belegte versus nicht erwähnte Fähigkeiten, Score, Gewichte, Empfehlung, Speicherung, Löschregeln und Cache-/Versionsmodell. Keine generische Bewertungsmaschine oder neue Datenbanktabellen auf Vorrat bauen.
 - **Neue fachliche Filter:** Mindestwert/Spannenüberlappung, Umgang mit unbekannten Werten, Muss/Soll und Profile sowie Freigabe neuer Kriterien für Gäste. Ein technischer Wertevergleich allein entscheidet nicht, welche Stelle passen soll.

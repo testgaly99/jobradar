@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-16 | CV-Anforderungsklärung auf Nutzerauftrag: Claude Pro primär, Mistral-Option ohne API-Kosten; erste Stufe Belege/CV-Empfehlung und farbliche Markierungen, Score später. | Neue Anbieteroption zunächst technisch, hinsichtlich Kosten und persönlicher Daten klären. Nutzerantworten in Fragenrunden festhalten; keine Umsetzung, Datenübertragung oder vollständige Freigabe aus Teilantworten ableiten. |
 | 2026-11-16 | Paket 20: Automatisches Nachfüllen mit vorhandener Frist begrenzen. | Beauftragte Korrektur bestehenden Verhaltens, mit künstlichen Regressionen geprüft; keine neuen Produktkriterien oder Live-/Betriebsfreigaben. |
 | 2026-11-16 | Paket 19: Sitemap-Kollisionen vor dem Detailabruf abweisen. | Beauftragte Korrektur bestehenden Verhaltens, mit künstlichen Regressionen geprüft; keine neuen Produktkriterien oder Live-/Betriebsfreigaben. |
 | 2026-11-16 | Paket 17: Parallele Webabrufe je Host mit Pause koordinieren. | Beauftragte Korrektur bestehenden Verhaltens, mit künstlichen Regressionen geprüft; keine neuen Produktkriterien oder Live-/Betriebsfreigaben. |

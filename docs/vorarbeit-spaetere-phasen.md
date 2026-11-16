@@ -66,6 +66,8 @@ Quell-/Parserbasis: `scraper/steckbrief.py:steckbrief`, `web/lib/steckbrief.ts:l
 
 ## Phase 6: Lebenslauf-Abgleich
 
+**Aktualisierung 2026-11-16:** Die konkrete Klärung läuft in `plans/2026-11-16-cv-abgleich-klaerung.md`. Nutzer wünscht Claude Pro zuerst und eine Mistral-Option ohne API-Kosten. Erste Version mit Belegen/offenen Nachweisen/CV-Empfehlung bestätigt, Prozentwert zurückgestellt; farbliche Markierung direkt im Anzeigentext gewünscht. Farblegende, CV-Basis und Mistral-Datenfreigabe noch offen. Aktuelle Anbieterfakten dort festgehalten; ältere Annahmen über kostenlosen API-Zugang oder Training nicht ungeprüft übernehmen. Kein freigegebener Bauplan oder Übertragungsauftrag.
+
 - **Vorhanden:** `documents` enthält Dokumentart, Versionsname, Datum und Storage-Pfad; Bewerbungen verweisen über `cv_dokument_id` und `anschreiben_dokument_id` auf Versionen. Migration 004 schützt verwendete Versionen vor Löschung. `web/app/dokumente/upload.tsx` lädt Dateien direkt in den Speicher; `actions.ts` erstellt kurzlebige Download-Links.
 - **Noch nicht vorhanden im geprüften Code:** Textgewinnung aus PDF/Word, strukturierte Lebenslauf-Fähigkeiten, Abgleichläufe, begründete Treffer/Lücken, nachvollziehbare Modell-/Dokumentversionen und Passungsgewichte. Ein Upload ist noch kein gelesener oder ausgewerteter Lebenslauf. Keine Parserbibliothek, Modellversion oder neue Tabelle in dieser Vorbereitung festlegen.
 - **Wiederverwendbar:** `jobs.abschnitte`, `jobs.ki`, `voraussetzungen` und `web/lib/anzeige.ts` bieten Anzeigenabschnitte bzw. Anforderungen. Die bisherige Hervorhebung wichtiger Punkte ist ein Wortvergleich; sie ersetzt keinen semantischen CV-Abgleich.
