@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 21:21 MEZ – Codex – künstlicher CV-Gesamtfall und neue Folgeaufträge
+- Auftrag des Nutzers: „Setz das um“ zu den weiteren Arbeiten; zusätzlich Ein-Klick-Übernahme einer fremden Anzeige ins Kanban-Board als offenes To-do aufnehmen und bauen. Q6/Q7 während der Arbeit beantwortet: Reihenfolge Chrome, Edge, Safari, Smartphone, Firefox; Gemerkt ohne Bewerbungsdatum.
+- Commits: lokaler Dokumentations-/Beispielcommit „Künstlichen CV-Abnahmefall und Folgeaufträge dokumentieren“, dieser Eintrag gehört zum selben Commit; Schlusszeile `Agent: Codex`. Kein Push/Merge.
+- Geänderte Dateien: docs/beispiele/cv-abgleich.json und .md; neue Pläne docs/plans/2026-11-16-browser-cv-abnahme.md und 2026-11-16-ein-klick-import.md; bestehende CV-Fragen/Klärung, STATUS, Entscheidungen, Arbeitskatalog und dieses Protokoll. Keine Anwendung im vorliegenden Commit.
+- Ergebnis: Vollständiger erfundener Gesamtfall mit einer Originalanzeige, drei getrennten CV-Versionen, sechs Anforderungen, 18 Zuordnungen und sieben Abnahmefällen. Beste Version per eindeutiger Abdeckungsdominanz ohne Gewichte; Rot nur bei ausdrücklich negativer CV-Angabe. Exakte Belege und benannte Vergleichsbasis. Neue Arbeiten als Pakete 21–23 getrennt erfasst. Ein-Klick-Import in späteren Phasen dokumentiert; Chrome-Umsetzung durch zweiteilige Browser-/App-Arbeit in Arbeit. Alle neuen Fragen/Optionen/Antworten im Wortlaut erhalten.
+- Tests: Python 3.12 -B .pruefung/cv-beispiel-pruefen.py → bestanden; JSON, exakte Anzeigen-/CV-Positionen und Zitate, Originalrekonstruktion, vier Zustände, Vollständigkeit und eindeutige Dominanz geprüft. Helfer ist lokal/ignoriert und wird nicht committet. git diff --check und Commit-Inhaltsprüfung. Keine neue Anwendungs-/Buildsuite für diesen reinen Beispiel-/Dokumentationscommit.
+- Nicht geprüft / offene Fragen: Keine Modellqualität, Parser, produktives CV-Schema oder UI damit abgenommen. Browserpaket 21 und Chrome-Import 23 noch in Arbeit, tatsächliche Ergebnisse folgen in eigenen Einträgen. Keine echten CVs/DB-Daten/Konten/Geheimnisse/Umgebungsdateien, Installationen oder Veröffentlichung. Weitere CV-/Firmenportal-Produktentscheidungen weiterhin offen; Mistral zurückgestellt.
+- Abweichungen von Plan oder Regeln: keine. Beispiel liegt im bestehenden docs/beispiele statt eines zweiten Beispielordners. Vorhandene Browserinfrastruktur und Link-Normalisierung werden weiterverwendet; historische Bookmarklet-Entfernung und manueller Beworben-Status werden durch den neuen getrennten Sammelweg nicht still überschrieben.
+
 ## 2026-11-16 21:03 MEZ – Codex – vollständiges CV-Fragenprotokoll und Antworten Runde 2
 - Auftrag des Nutzers: „Alle Fragen, die du gestellt hast, müssen dokumentiert werden, damit Claude Code das nachvollziehen kann“. Während der Arbeit eingegangene Antworten Q3–Q5 im Wortlaut dokumentieren und Anforderungen aktualisieren.
 - Commits: lokaler Dokumentationscommit „CV-Fragen vollständig mit Antworten für Claude dokumentieren“, dieser Eintrag gehört zum selben Commit; Schlusszeile `Agent: Codex`. Kein Push/Merge.

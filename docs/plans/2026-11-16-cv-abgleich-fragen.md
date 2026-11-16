@@ -136,4 +136,6 @@ Die verbindlichen Nutzerantworten stehen unter Q3–Q5. Insbesondere ist der hie
 
 ## Noch nicht gestellte Folgefragen
 
-Die Themen unter „Weitere Zweige“ im [Klärungsdokument](2026-11-16-cv-abgleich-klaerung.md) sind vorbereitete Zweige, keine bereits gestellten oder beantworteten Interviewfragen. Fortsetzung dort priorisieren, tatsächliche Fragen anschließend hier lückenlos ergänzen. Der Mistral-Zweig bleibt auf Nutzerwunsch zurückgestellt.
+Die Themen unter „Weitere Zweige“ im [Klärungsdokument](2026-11-16-cv-abgleich-klaerung.md) sind vorbereitete Zweige, keine bereits gestellten oder beantworteten Interviewfragen. Fortsetzung dort priorisieren, tatsächliche CV-Fragen anschließend hier lückenlos ergänzen. Der Mistral-Zweig bleibt auf Nutzerwunsch zurückgestellt.
+
+Themenübergreifende Fortsetzung: Die inzwischen gestellten und beantworteten **Q6/Q7 zum Ein-Klick-Import** stehen vollständig im [eigenen Import-Fragenprotokoll](2026-11-16-ein-klick-import.md). Sie sind keine zusätzlichen CV-Entscheidungen. Neue Fragen ab Q8 nummerieren.

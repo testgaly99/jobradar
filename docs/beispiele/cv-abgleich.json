@@ -1,0 +1,297 @@
+{
+  "hinweis": "Vollständig künstlicher Soll-/Abnahmefall. Alle drei CVs sind Versionen desselben fiktiven Profils, ohne reale Person. Kein Modelloutput, kein produktives API-/Datenbankschema und kein Implementierungsauftrag für einen Matcher.",
+  "stand": "2026-11-16",
+  "positionskonvention": "Nullbasierte Zeichenpositionen im jeweiligen unveränderten Text; start einschließlich, ende ausschließlich. Texte verwenden nur Zeichen der Unicode-Basisebene und LF-Zeilenumbrüche, sodass Python-Zeichenindizes und JavaScript-Stringindizes hier übereinstimmen. Keine Normalisierung oder Kürzung vor dem Anwenden.",
+  "legende": {
+    "belegt": {
+      "farbe": "gruen",
+      "anzeigetext": "Belegt"
+    },
+    "teilweise_belegt": {
+      "farbe": "gelb",
+      "anzeigetext": "Teilweise belegt"
+    },
+    "nicht_belegt": {
+      "farbe": "gelb",
+      "anzeigetext": "Noch nicht belegt"
+    },
+    "nachweislich_nicht_erfuellt": {
+      "farbe": "rot",
+      "anzeigetext": "Nachweislich nicht erfüllt"
+    }
+  },
+  "anzeige": {
+    "id": "synthetische-anzeige-1",
+    "text": "Synthetische Beispielanzeige: Datenanalyse und Projektkoordination\nArbeitgeber: Fiktiver Beispielbetrieb\n\nAufgaben\nDatenanalysen erstellen und fachübergreifende Projekte koordinieren.\n\nAnforderungen\nErfahrung mit SQL-Abfragen für Datenanalysen.\nErfahrung in der Koordination fachübergreifender Projekte.\nAbgeschlossenes Studium der Wirtschaftsinformatik.\nEnglischkenntnisse auf Niveau C1.\nErfahrung mit Power BI.\nFührerschein Klasse B vorhanden.\n\nBewerbung\nDies ist ein erfundenes Prüfbeispiel, keine echte Ausschreibung.\n"
+  },
+  "anforderungen": [
+    {
+      "id": "a1",
+      "anzeigenpassage": {
+        "start": 199,
+        "ende": 244,
+        "zitat": "Erfahrung mit SQL-Abfragen für Datenanalysen."
+      }
+    },
+    {
+      "id": "a2",
+      "anzeigenpassage": {
+        "start": 245,
+        "ende": 303,
+        "zitat": "Erfahrung in der Koordination fachübergreifender Projekte."
+      }
+    },
+    {
+      "id": "a3",
+      "anzeigenpassage": {
+        "start": 304,
+        "ende": 354,
+        "zitat": "Abgeschlossenes Studium der Wirtschaftsinformatik."
+      }
+    },
+    {
+      "id": "a4",
+      "anzeigenpassage": {
+        "start": 355,
+        "ende": 388,
+        "zitat": "Englischkenntnisse auf Niveau C1."
+      }
+    },
+    {
+      "id": "a5",
+      "anzeigenpassage": {
+        "start": 389,
+        "ende": 412,
+        "zitat": "Erfahrung mit Power BI."
+      }
+    },
+    {
+      "id": "a6",
+      "anzeigenpassage": {
+        "start": 413,
+        "ende": 445,
+        "zitat": "Führerschein Klasse B vorhanden."
+      }
+    }
+  ],
+  "cv_versionen": [
+    {
+      "id": "cv-daten",
+      "versionsname": "Fiktiver CV – Datenanalyse",
+      "text": "Fiktiver CV – Datenanalyse\nAbgeschlossenes Bachelorstudium der Wirtschaftsinformatik.\nRegelmäßig SQL-Abfragen für Datenanalysen erstellt.\nEnglischkenntnisse auf Niveau B2.\nFührerschein Klasse B nicht vorhanden.\n",
+      "erwartete_zuordnungen": [
+        {
+          "anforderung_id": "a1",
+          "status": "belegt",
+          "cv_beleg": {
+            "start": 86,
+            "ende": 137,
+            "zitat": "Regelmäßig SQL-Abfragen für Datenanalysen erstellt."
+          },
+          "begruendung": "SQL-Abfragen für Datenanalysen werden in dieser CV-Version ausdrücklich genannt."
+        },
+        {
+          "anforderung_id": "a2",
+          "status": "nicht_belegt",
+          "cv_beleg": null,
+          "begruendung": "Diese CV-Version erwähnt keine Projektkoordination. Ein Beleg aus einer anderen Version darf diese Markierung nicht grün machen."
+        },
+        {
+          "anforderung_id": "a3",
+          "status": "belegt",
+          "cv_beleg": {
+            "start": 27,
+            "ende": 85,
+            "zitat": "Abgeschlossenes Bachelorstudium der Wirtschaftsinformatik."
+          },
+          "begruendung": "Der abgeschlossene Bachelor ist ein Nachweis des verlangten abgeschlossenen Studiums."
+        },
+        {
+          "anforderung_id": "a4",
+          "status": "teilweise_belegt",
+          "cv_beleg": {
+            "start": 138,
+            "ende": 171,
+            "zitat": "Englischkenntnisse auf Niveau B2."
+          },
+          "begruendung": "Englischkenntnisse sind belegt, das verlangte Niveau C1 ist durch die Angabe B2 nicht belegt. Daraus folgt keine bestätigte Unfähigkeit, C1 zu erreichen."
+        },
+        {
+          "anforderung_id": "a5",
+          "status": "nicht_belegt",
+          "cv_beleg": null,
+          "begruendung": "Power BI wird in keiner CV-Version erwähnt. Es liegt keine Aussage über tatsächlich fehlende Kenntnisse vor."
+        },
+        {
+          "anforderung_id": "a6",
+          "status": "nachweislich_nicht_erfuellt",
+          "cv_beleg": {
+            "start": 172,
+            "ende": 210,
+            "zitat": "Führerschein Klasse B nicht vorhanden."
+          },
+          "begruendung": "Der fiktive CV erklärt ausdrücklich, dass der verlangte Führerschein nicht vorhanden ist. Rot beruht auf dieser negativen Angabe, nicht auf einer fehlenden Erwähnung."
+        }
+      ]
+    },
+    {
+      "id": "cv-projekte",
+      "versionsname": "Fiktiver CV – Projektarbeit",
+      "text": "Fiktiver CV – Projektarbeit\nAbgeschlossenes Bachelorstudium der Wirtschaftsinformatik.\nFachübergreifende Projekte mit drei Teams koordiniert.\nEnglischkenntnisse auf Niveau B2.\nFührerschein Klasse B nicht vorhanden.\n",
+      "erwartete_zuordnungen": [
+        {
+          "anforderung_id": "a1",
+          "status": "nicht_belegt",
+          "cv_beleg": null,
+          "begruendung": "Diese CV-Version erwähnt keine SQL-Erfahrung. Das ist kein Nachweis fehlender SQL-Kenntnisse."
+        },
+        {
+          "anforderung_id": "a2",
+          "status": "belegt",
+          "cv_beleg": {
+            "start": 87,
+            "ende": 141,
+            "zitat": "Fachübergreifende Projekte mit drei Teams koordiniert."
+          },
+          "begruendung": "Koordination fachübergreifender Projekte wird in dieser CV-Version ausdrücklich genannt."
+        },
+        {
+          "anforderung_id": "a3",
+          "status": "belegt",
+          "cv_beleg": {
+            "start": 28,
+            "ende": 86,
+            "zitat": "Abgeschlossenes Bachelorstudium der Wirtschaftsinformatik."
+          },
+          "begruendung": "Der abgeschlossene Bachelor ist ein Nachweis des verlangten abgeschlossenen Studiums."
+        },
+        {
+          "anforderung_id": "a4",
+          "status": "teilweise_belegt",
+          "cv_beleg": {
+            "start": 142,
+            "ende": 175,
+            "zitat": "Englischkenntnisse auf Niveau B2."
+          },
+          "begruendung": "Englischkenntnisse sind belegt, das verlangte Niveau C1 ist durch die Angabe B2 nicht belegt. Daraus folgt keine bestätigte Unfähigkeit, C1 zu erreichen."
+        },
+        {
+          "anforderung_id": "a5",
+          "status": "nicht_belegt",
+          "cv_beleg": null,
+          "begruendung": "Power BI wird in keiner CV-Version erwähnt. Es liegt keine Aussage über tatsächlich fehlende Kenntnisse vor."
+        },
+        {
+          "anforderung_id": "a6",
+          "status": "nachweislich_nicht_erfuellt",
+          "cv_beleg": {
+            "start": 176,
+            "ende": 214,
+            "zitat": "Führerschein Klasse B nicht vorhanden."
+          },
+          "begruendung": "Der fiktive CV erklärt ausdrücklich, dass der verlangte Führerschein nicht vorhanden ist. Rot beruht auf dieser negativen Angabe, nicht auf einer fehlenden Erwähnung."
+        }
+      ]
+    },
+    {
+      "id": "cv-kombiniert",
+      "versionsname": "Fiktiver CV – kombinierte Version",
+      "text": "Fiktiver CV – kombinierte Version\nAbgeschlossenes Bachelorstudium der Wirtschaftsinformatik.\nRegelmäßig SQL-Abfragen für Datenanalysen erstellt.\nFachübergreifende Projekte mit drei Teams koordiniert.\nEnglischkenntnisse auf Niveau B2.\nFührerschein Klasse B nicht vorhanden.\n",
+      "erwartete_zuordnungen": [
+        {
+          "anforderung_id": "a1",
+          "status": "belegt",
+          "cv_beleg": {
+            "start": 93,
+            "ende": 144,
+            "zitat": "Regelmäßig SQL-Abfragen für Datenanalysen erstellt."
+          },
+          "begruendung": "SQL-Abfragen für Datenanalysen werden in dieser CV-Version ausdrücklich genannt."
+        },
+        {
+          "anforderung_id": "a2",
+          "status": "belegt",
+          "cv_beleg": {
+            "start": 145,
+            "ende": 199,
+            "zitat": "Fachübergreifende Projekte mit drei Teams koordiniert."
+          },
+          "begruendung": "Koordination fachübergreifender Projekte wird in dieser CV-Version ausdrücklich genannt."
+        },
+        {
+          "anforderung_id": "a3",
+          "status": "belegt",
+          "cv_beleg": {
+            "start": 34,
+            "ende": 92,
+            "zitat": "Abgeschlossenes Bachelorstudium der Wirtschaftsinformatik."
+          },
+          "begruendung": "Der abgeschlossene Bachelor ist ein Nachweis des verlangten abgeschlossenen Studiums."
+        },
+        {
+          "anforderung_id": "a4",
+          "status": "teilweise_belegt",
+          "cv_beleg": {
+            "start": 200,
+            "ende": 233,
+            "zitat": "Englischkenntnisse auf Niveau B2."
+          },
+          "begruendung": "Englischkenntnisse sind belegt, das verlangte Niveau C1 ist durch die Angabe B2 nicht belegt. Daraus folgt keine bestätigte Unfähigkeit, C1 zu erreichen."
+        },
+        {
+          "anforderung_id": "a5",
+          "status": "nicht_belegt",
+          "cv_beleg": null,
+          "begruendung": "Power BI wird in keiner CV-Version erwähnt. Es liegt keine Aussage über tatsächlich fehlende Kenntnisse vor."
+        },
+        {
+          "anforderung_id": "a6",
+          "status": "nachweislich_nicht_erfuellt",
+          "cv_beleg": {
+            "start": 234,
+            "ende": 272,
+            "zitat": "Führerschein Klasse B nicht vorhanden."
+          },
+          "begruendung": "Der fiktive CV erklärt ausdrücklich, dass der verlangte Führerschein nicht vorhanden ist. Rot beruht auf dieser negativen Angabe, nicht auf einer fehlenden Erwähnung."
+        }
+      ]
+    }
+  ],
+  "erwartete_empfehlung": {
+    "cv_id": "cv-kombiniert",
+    "benannte_vergleichsbasis": "Fiktiver CV – kombinierte Version",
+    "begruendung": "Diese Version belegt sowohl SQL als auch Projektkoordination selbst. Gegenüber jeder anderen Version ist mindestens eine dieser beiden Anforderungen zusätzlich belegt; bei allen übrigen Anforderungen besteht derselbe Nachweisstand. Keine Version ist bei einer Anforderung besser als diese Version. Damit ist die Empfehlung in diesem Fall ohne Gewichte, Prozentwert oder Gleichstandsregel eindeutig.",
+    "direkt_sichtbare_zuordnungen_aus": "cv-kombiniert",
+    "nicht_entschieden": "Keine allgemeine Auswahlformel, Gewichtung, Muss-/Soll-Priorisierung oder Gleichstandsregel daraus ableiten. Auch manuelle CV-Umschaltung bleibt offen."
+  },
+  "abnahmefaelle": [
+    {
+      "id": "original_erhalten",
+      "erwartung": "Markierungen betreffen die vollständigen sechs Anforderungssätze an ihren Positionen; alle Zwischenstücke und übrigen Abschnitte bleiben unverändert. Zusammensetzen ergibt exakt den Original-Anzeigentext."
+    },
+    {
+      "id": "beleg_anzeigen",
+      "erwartung": "Klick auf a1/a2/a3 im angezeigten Vergleich zeigt das genaue CV-Zitat aus cv-kombiniert und dessen Versionsname; a4 zeigt B2 sowie den fehlenden C1-Nachweis."
+    },
+    {
+      "id": "fehlen_ist_nicht_rot",
+      "erwartung": "a5 bleibt gelb mit dem Hinweis Noch nicht belegt. Kein Power-BI-Beleg wird erfunden; der fehlende Eintrag bedeutet keine bestätigte fehlende Fähigkeit."
+    },
+    {
+      "id": "rot_mit_negativem_beleg",
+      "erwartung": "a6 ist nur wegen der ausdrücklich negativen CV-Angabe rot. Klick zeigt genau diese Angabe und den benannten CV."
+    },
+    {
+      "id": "alle_versionen_pruefen",
+      "erwartung": "Für alle drei CV-Versionen liegen eigene Zuordnungen vor. Der angezeigte Vergleich benennt cv-kombiniert als Grundlage."
+    },
+    {
+      "id": "keine_belege_mischen",
+      "erwartung": "Im Vergleich von cv-daten bleibt a2 gelb; im Vergleich von cv-projekte bleibt a1 gelb. Der passende Satz aus der jeweils anderen CV-Version darf nicht als eigener Beleg übernommen werden. Diese interne Fallprüfung schreibt keine manuelle Umschaltoberfläche vor."
+    },
+    {
+      "id": "falsche_referenz",
+      "erwartung": "Eine aus einer anderen Version kopierte oder erfundene Referenz, ein Zitat außerhalb der Textgrenzen oder ein nicht zum Text passender Ausschnitt muss als Prüfproblem erkannt werden; nicht als belegte Anforderung zeigen."
+    }
+  ]
+}

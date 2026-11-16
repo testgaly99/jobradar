@@ -58,6 +58,16 @@ Empfohlene Umsetzung: zuerst 15 und 16 (Datenerhalt), dann 18 und 17 (Abrufregel
 - **Browserprüfung später ausbauen:** Die versionierte Probe prüft Stellen-/Rankingabläufe. Tracker/Konto/Dokumente/Export haben noch keine gleichwertige dauerhaft versionierte komplette Browserabnahme; historische Einzelfälle nicht damit gleichsetzen. Bei weiteren Änderungen bevorzugt deren tatsächliche Abläufe mit künstlichen Antworten ergänzen, statt jetzt ein weiteres allgemeines Testframework zu bauen.
 - **Phase 3/5/6 und Firmenportal:** Anschlussstellen, Recherche und künstliche Beispiele liegen bereits in `vorarbeit-spaetere-phasen.md`. Nur gezielt aktualisieren. Google-/Mail-Priorität und Rechte, CV-Dateiformate/Bewertungsregeln, neue Filter-/Gehaltsregeln, Ranking-Quellen/Nutzungskreis und private Firmen brauchen weiter passende Fragen. Firmenportal-Plan ausdrücklich vorläufig; keine direkte Übernahme.
 
+## D: Beauftragte Folgearbeiten 21–23 (2026-11-16)
+
+| Nr. | Stand | Konkrete Lieferung und Abnahmegrenze |
+|---|---|---|
+| 21 | In Arbeit | Vorhandene isolierte Browserabnahme für Tracker, Dokumente, CSV-Export und Konto erweitern; ausschließlich künstliche Daten und bestehende Infrastruktur. Plan `plans/2026-11-16-browser-cv-abnahme.md`. Kein Nachweis echter Datenbankrechte. |
+| 22 | Beispiel erstellt und mechanisch geprüft | Vollständiger künstlicher CV-Gesamtfall mit drei CV-Versionen, sechs Anforderungen, 18 getrennten Zuordnungen und benannter bester Version; `beispiele/cv-abgleich.md`/`.json`. Kein Matcher/Parser/Modellaufruf, keine erfundene Gewichtung. |
+| 23 | Chrome-Umsetzung in Arbeit | Ein-Klick-Import einer gerade geöffneten fremden Anzeige ins eigene Board als Gemerkt ohne Bewerbungsdatum. Browser-Erweiterung und gleichursprüngliche private Import-API ohne Fremdseitenabruf/Modelle, bestehende Einträge erhalten. Q6/Q7 beantwortet und vollständig in `plans/2026-11-16-ein-klick-import.md` dokumentiert. Danach Edge, Safari, Smartphone, Firefox; weitere Plattformen und echte Installation noch nicht abgenommen. |
+
+Die weiteren Vorschläge CV-Bauplan und Firmenportal-Klärung bleiben bei offenen Nutzerentscheidungen; Paket 22 ist keine Freigabe für deren ungeklärte Produktregeln. Mistral bleibt auf Nutzerwunsch zurückgestellt.
+
 ## Weiterhin nicht ohne fachliche Klärung umsetzen
 
 Die CV-Klärung wurde anschließend auf Nutzerauftrag begonnen: `plans/2026-11-16-cv-abgleich-klaerung.md` enthält bestätigte erste Anforderungen, aktuelle Anbieterfakten und noch offene Fragen. Keine weiteren Codepakete daraus vorwegnehmen; Claude Pro primär und Mistral optional ohne API-Kosten sind der neue Wunsch, noch keine pauschale Datenfreigabe oder fertige Integration.

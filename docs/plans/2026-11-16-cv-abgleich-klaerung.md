@@ -59,6 +59,8 @@ Prüftag 2026-11-16, ausschließlich offizielle Quellen. Öffentliche Dokumentat
 
 ## Vorgeschlagene Abnahmefälle – noch kein freigegebenes Ergebnisschema
 
+**Vollständiger künstlicher Gesamtfall ergänzt (Nutzerauftrag 2026-11-16):** [Beispiel und Vergleichsmatrix](../beispiele/cv-abgleich.md), [JSON mit Originaltexten und Belegpositionen](../beispiele/cv-abgleich.json). Drei getrennte CV-Versionen, sechs Anforderungen und 18 Zuordnungen; alle bestätigten Farben enthalten. Die beste Version ist hier durch eindeutige Abdeckungsdominanz erkennbar, ohne allgemeine Gewichtung oder Gleichstandsregel festzulegen. Mechanische Konsistenz geprüft; kein ausgeführter KI-Abgleich oder Parsernachweis.
+
 - Originalanzeige bleibt byte-/textgleich rekonstruierbar; Markierung verändert keinen Wortlaut und erzeugt keine fremden HTML-Inhalte.
 - Jeder als belegt markierte Teil verweist auf eine tatsächlich vorhandene Passage der zugrunde liegenden CV-Version; eine erfundene Referenz wird verworfen bzw. als Prüfproblem gezeigt.
 - Fehlende Erwähnung und Teilbeleg sind gelb, nachweisliche Nichterfüllung rot; Gründe werden gemäß Q3 getrennt erklärt, Farben erhalten zusätzlich lesbare Statushinweise.
