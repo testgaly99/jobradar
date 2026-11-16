@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 20:47 MEZ – Codex – Paket 19
+- Auftrag des Nutzers: „Arbeite das ein“ zu den sechs Kandidaten 15–20; hier eigener lokaler Abschluss von Paket 19. Umfang vor Code im Plan `docs/plans/2026-11-16-pakete-15-20.md` festgehalten. Reihenfolge 15/16/18/17/19/20, unabhängige Dateibereiche parallel vorbereitet.
+- Commits: lokaler Commit „Sitemap-Kollisionen vor dem Detailabruf abweisen“, Eintrag gehört zum selben Commit; Schlusszeile `Agent: Codex`. Kein Push/Merge.
+- Geänderte Dateien: scraper/ats/sitemap.py, tests/test_sitemap_kollisionen.py; außerdem gemeinsamer Plan, STATUS, Entscheidungen, Arbeitskatalog und dieses Protokoll.
+- Ergebnis: Vollständige durch das vorhandene Fragment ausgewählte URLliste vor Detailabruf, Vorfilter und Known-ID-Kurzweg auf ID-Kollisionen prüfen. Gleiche URL bleibt dedupliziert; unterschiedliche URL mit gleicher bestehender ID ergibt Firmenfehler. ID-/Hashverfahren unverändert.
+- Tests: 12 neue Fälle zuerst 7 rot/5 grün, danach 72 gezielte Sitemap-/ATS-Fälle grün. Pfad-, Query- und Host-Kollisionen, bekannte IDs, echte URLduplikate, lange Hashfallback-URLs, Fragmentfilter und unveränderter FakeDB-Bestand bei später Kollision geprüft. Gesamtprüfung der fertigen Arbeitskopie aller sechs Pakete vor Aufteilung in Einzelcommits: 761 geschützte Python-Offline-Tests, 273 Webtests, Typprüfung und tatsächlicher isolierter Webpack-Build bestanden. Aktuelle Browserprobe mit künstlichen Antworten auf 1280/390px einschließlich sechs neuer Aktionsfälle bestanden; Prüfserver beendet. Diese Gesamtzahlen betreffen den gemeinsamen fertigen Arbeitsstand 15–20, nicht die Testanzahl jedes Zwischencommits. Nach grünen Prüfungen werden nur Dokumentation/Commitaufteilung weitergeführt. git diff --check und Commit-Inhaltsprüfung. Unabhängiger Quellreview ohne konkrete Restbefunde.
+- Nicht geprüft / offene Fragen: Keine vorhandene ID umbenannt, keine neue ID-Strategie oder Migration. Echte Erreichbarkeit und unbekannte Seitenformate nicht geprüft. Keine echten Daten/Schlüssel/Umgebungsdateien, Live-/Groq-Abfragen, neuen Pakete/Dienste, Migrationen oder Veröffentlichung. Echte Datenbank- und GitHub-Abnahmen bleiben separat.
+- Abweichungen: Keine Abweichung vom eng beauftragten Kollisionsschutz. Keine neue fachliche Auswahl oder Änderung der Kanban-Animationen. Nächster lokaler Abschluss: Paket 20, bereits beauftragt.
+
 ## 2026-11-16 20:47 MEZ – Codex – Paket 17
 - Auftrag des Nutzers: „Arbeite das ein“ zu den sechs Kandidaten 15–20; hier eigener lokaler Abschluss von Paket 17. Umfang vor Code im Plan `docs/plans/2026-11-16-pakete-15-20.md` festgehalten. Reihenfolge 15/16/18/17/19/20, unabhängige Dateibereiche parallel vorbereitet.
 - Commits: lokaler Commit „Parallele Webabrufe je Host mit Pause koordinieren“, Eintrag gehört zum selben Commit; Schlusszeile `Agent: Codex`. Kein Push/Merge.

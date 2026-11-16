@@ -143,12 +143,17 @@ def _stelle(seite, url, ext_id, heute):
 def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[dict]:
     sitemap, _, filter_ = ats_id.partition("#")  # das Fragment wird nie abgerufen
     heute = date.today().isoformat()
-    stellen, gesehen, zaehler, fehlserie = [], set(), Counter(), 0
+    # Erst die vollständige URL-Auswahl prüfen: bekannte IDs und Vorfilter dürfen Kollisionen nicht verdecken.
+    urls = {}
     for url in _urls(sitemap):  # Fehler der Sitemap selbst kippen die Firma
-        ext_id = _ext_id(url)
-        if filter_ not in url or ext_id in gesehen:
+        if filter_ not in url:
             continue
-        gesehen.add(ext_id)
+        ext_id = _ext_id(url)
+        if ext_id in urls and urls[ext_id] != url:
+            raise ValueError("Kollision verschiedener Sitemap-URLs bei derselben Stellen-ID")
+        urls[ext_id] = url
+    stellen, zaehler, fehlserie = [], Counter(), 0
+    for ext_id, url in urls.items():
         if _vorgefiltert(url):
             zaehler["vorgefiltert"] += 1
             continue
@@ -175,5 +180,5 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
         else:
             zaehler["geladen"] += 1
             stellen.append(s)
-    print(f"Hinweis: {sitemap}: {len(gesehen)} Stellen-URLs, " + ", ".join(f"{k}: {v}" for k, v in zaehler.items()))
+    print(f"Hinweis: {sitemap}: {len(urls)} Stellen-URLs, " + ", ".join(f"{k}: {v}" for k, v in zaehler.items()))
     return stellen
