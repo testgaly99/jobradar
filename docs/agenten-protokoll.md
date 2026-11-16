@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 11:05 MEZ – Codex – Paket 5
+- Auftrag des Nutzers: autorisierte Reihenfolge 4 → 5 → 6, hier Paket 5 nach abgeschlossenem Paket 4 umgesetzt.
+- Commits: lokaler Commit „Stundenlohn auf Bewerbungskarten korrekt beschriften“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Basis `c3b59e4`, Arbeitsordner sauber. Kein Push/Merge.
+- Geänderte Dateien: `web/lib/karte.ts`, `web/tests/karte.test.ts`, `docs/plans/2026-11-16-karten-gehaltseinheiten.md` neu; `docs/STATUS.md`, `docs/ENTSCHEIDUNGEN.md`, `docs/arbeitspakete-codex.md`, `docs/agenten-protokoll.md`.
+- Tests: gezielt zuerst fünf grün/drei rot wegen Stundenbeträgen als Jahr; nach einzeiliger Korrektur gesamte Websuite `npm.cmd test` **215 bestanden**, vier zusätzliche Verhaltenstests. Typprüfung in web ohne Fehler; isolierter Webpack-Build bestanden, keine Umgebungsdateien/künstliche Einstellungen/HTTP gesperrt. Lokale Chrome-Probe `.superpowers/sdd/2026-11-16-karten-gehaltseinheiten/browser-check.py`: **14 Prüfungen bestanden** (sechs künstliche Karten und ausgewählte Detailansicht je Laptop/Handy), keine Browserfehler. Externe Browseranfragen blockiert, keine Schreibaktion, Testserver beendet und Port kontrolliert. Eigener Review und `git diff --check` ohne Befunde.
+- Ergebnis: explizit Stunde neben Monat/Jahr erhalten, keine Umrechnung, manueller Vorrang und Teilangaben unverändert. Kanban-Animationen nicht verändert.
+- Nicht geprüft / offene Fragen: keine echten Bewerbungen, Dateien oder Datenbankrechte geprüft; Python unverändert und Suite nicht erneut ausgeführt. Keine Zugangsdaten/Live-Zugriffe, Installation, Migration oder Veröffentlichung. Paket 6 weiterhin autorisiert, 7–14 separat.
+- Abweichungen: wie zuvor Browserprobe direkt mit installiertem Python 3.12 wegen defekter Launcher-Erkennung; keine Installation. Eigener Review gemäß Sitzungsregel, unabhängige Claude-Prüfung separat. Keine Nutzeraktion nötig.
+
 ## 2026-11-16 11:00 MEZ – Codex – Paket 4
 - Auftrag des Nutzers: Pakete 4, 5, 6 nacheinander strukturiert abarbeiten; hier ausschließlich Paket 4 abschließen.
 - Commits: lokaler Commit „Gemeinsamen Filtervertrag mit allen Gruppen absichern“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Basis `47c0ea8`, Arbeitsordner sauber. Kein Push/Merge.

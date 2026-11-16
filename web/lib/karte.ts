@@ -19,7 +19,7 @@ export function gehaltText(
   if (!g || !werte.length) return null;
   const zahlen = werte.length === 2 && werte[0] !== werte[1] ? `${zahl.format(werte[0])}–${zahl.format(werte[1])}` : zahl.format(werte[0]);
   const w = ` ${!g.waehrung || g.waehrung === "EUR" ? "€" : g.waehrung}`;
-  return `${zahlen}${w} / ${g.zeitraum === "Monat" ? "Monat" : "Jahr"}`;
+  return `${zahlen}${w} / ${g.zeitraum === "Monat" ? "Monat" : g.zeitraum === "Stunde" ? "Stunde" : "Jahr"}`;
 }
 
 export function tageSeit(events: { datum: string }[], erstellt_am: string, heute: string): number {
