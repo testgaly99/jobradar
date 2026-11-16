@@ -3,6 +3,7 @@
 begin;
 do $$ begin
   if current_database() <> 'jobradar_ranking_test'
+     or current_setting('jobradar.testdatenbank', true) is distinct from 'nur-kuenstliche-daten'
      or current_setting('jobradar.offline_test', true) is distinct from 'rankings' then
     raise exception 'Nur für isolierte Ranking-Testdatenbank';
   end if;

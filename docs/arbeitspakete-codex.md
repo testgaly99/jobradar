@@ -1,6 +1,6 @@
 # Codex-Arbeitspakete zur Unterstützung von Claude
 
-Stand: 2026-11-16, Katalogbasis `eeced3f`. Pakete 1–11 lokal abgeschlossen, Paket 12 lokal vorbereitet. Pakete 13–14 folgen; echte SQL-/PostgREST-Abnahme und GitHub-Lauf offen. Nachweise in `plans/`. Als Nächstes Paket 13 vorbereiten; Migration 011 vor echter Größensortierung isoliert abnehmen, nicht vorab hochladen. Kein Upload oder Live-Zugriff freigegeben.
+Stand: 2026-11-16, Katalogbasis `eeced3f`. Pakete 1–11 lokal abgeschlossen, Pakete 12–13 lokal vorbereitet. Paket 14 folgt; echte SQL-/PostgREST-Abnahme und GitHub-Lauf offen. Nachweise in `plans/`. Als Nächstes Paket 14 als lokale Workflow-Datei vorbereiten. Installation, Migrationausführung und Datenbankabnahme bleiben separat freizugeben. Kein Upload oder Live-Zugriff freigegeben.
 
 „Ohne neue Entscheidungen“ bedeutet hier: keine neuen fachlichen Regeln, Anbieter, Quellen, Gebühren, Datenformate oder Nutzerabläufe festlegen. Technische Umsetzung bestehender Regeln kann ich selbst übernehmen. Nicht jedes Paket ist zwingend vor allen anderen Funktionen nötig; alle haben jedoch einen konkreten vorhandenen Anschluss und können Claude Arbeit abnehmen. Keine unbenutzten Universalbibliotheken auf Vorrat bauen.
 
@@ -29,7 +29,7 @@ Diese Pakete greifen an vorhandenem Verhalten an und können daher ohne fertigen
 | Nr. | Phase | Lieferung, die ich vorbereiten kann | Warum noch nicht vollständig abschließbar |
 |---|---|---|---|
 | 12 | Vorbereitet / 5 | **Größensortierung global vor der Seitenbildung.** Die bereits festgelegte Klassenreihenfolge auch über mehrere Seiten korrekt anwenden; SQL-Datei, Webanschluss und künstliche Abnahmefälle für normalen und Ranking-Modus vorbereiten. | `web/lib/stellen.ts:nachGroesse` sortiert derzeit ausdrücklich nur die geladene Seite. Die Korrektur braucht eine passende Datenbankabfrage und echte SQL-/PostgREST-Abnahme. Migration bleibt eine Datei; keine Live-Anwendung durch Codex. |
-| 13 | 4, 5 und Rechte | **Vorhandene Ranglisten-Datenbanktests ausführungsfertig ergänzen.** Isolations-/Startprüfungen, synthetische Daten, Rollen-/Gastfälle, Ausgabewechsel und tatsächliche PostgREST-Pagination vorbereiten; vorhandenes SQL-Skript weiterverwenden. | `tests/sql/rankings.sql` existiert bereits. Kein PostgreSQL/Docker verfügbar; neue Umgebung/Installation braucht gesonderte Freigabe. Ersatzantworten dürfen nicht als geprüfte RLS-Rechte gelten. Keine Live-Datenbank oder echte Sicherung verwenden. |
+| 13 | Vorbereitet / 4, 5 und Rechte | **Vorhandene Ranglisten-Datenbanktests ausführungsfertig ergänzen.** Isolations-/Startprüfungen, synthetische Daten, Rollen-/Gastfälle, Ausgabewechsel und tatsächliche PostgREST-Pagination vorbereiten; vorhandenes SQL-Skript weiterverwenden. | `tests/sql/rankings.sql` existiert bereits. Kein PostgreSQL/Docker verfügbar; neue Umgebung/Installation braucht gesonderte Freigabe. Ersatzantworten dürfen nicht als geprüfte RLS-Rechte gelten. Keine Live-Datenbank oder echte Sicherung verwenden. |
 | 14 | alle / Automatik | **Automatische Codeprüfung als Workflow-Datei vorbereiten.** Vorhandenen Offline-Einstieg, Webtests und Typprüfung in eine passende GitHub-Prüfung einbinden, ohne Nutzerdaten/Secrets anzufordern; vom echten täglichen Abruf trennen. | GitHub Actions und täglicher Workflow sind vorhanden. Neue Workflow-Datei kann lokal geschrieben/geprüft werden. Tatsächlicher GitHub-/Linux-Lauf und Aktivierung erst nach ausdrücklich freigegebenem Upload; kein Push/Merge durch diesen Listenauftrag. Paket 11 kann später einen isolierten Build ergänzen. |
 
 Hier fehlen keine neuen fachlichen Kriterien für den jeweiligen eng gefassten Schritt; es fehlen Ausführungsumgebung oder bereits geltende Betriebsfreigaben. „Vorbereitet“ und „im echten Zielsystem bestanden“ strikt unterscheiden.
@@ -55,6 +55,6 @@ Hier fehlen keine neuen fachlichen Kriterien für den jeweiligen eng gefassten S
 
 ## Empfohlene Reihenfolge
 
-Pakete 1–11 lokal abgeschlossen, Paket 12 lokal vorbereitet. Pakete 13–14 folgen; echte SQL-/PostgREST-Abnahme und GitHub-Lauf offen. Als Nächstes Paket 13 vorbereiten; Migration 011 vor echter Größensortierung isoliert abnehmen, nicht vorab hochladen.
+Pakete 1–11 lokal abgeschlossen, Pakete 12–13 lokal vorbereitet. Paket 14 folgt; echte SQL-/PostgREST-Abnahme und GitHub-Lauf offen. Als Nächstes Paket 14 als lokale Workflow-Datei vorbereiten. Installation, Migrationausführung und Datenbankabnahme bleiben separat freizugeben.
 
 Bei jedem Paket muss Claude später den abgegebenen Code und Teststand sehen können. Formprüfungen belegen keine echte KI-Qualität und Ersatztests keine Datenbankrechte. Eine geänderte Anforderung kann diese Liste einschränken oder erweitern; sie ist der abgegrenzte Katalog auf dem heutigen Projektstand, kein Versprechen, jede künftige Aufgabe vorab zu kennen.

@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 14:26 MEZ – Codex – Paket 13
+- Auftrag: nächste Schritte nach Paketen 1–10 lokal fortsetzen; hier Paket 13 im erlaubten Umfang bearbeitet, echte Datenbankabnahmen/Upload separat.
+- Commits: lokaler Commit „Isolierte SQL- und PostgREST-Abnahme vorbereiten“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.
+- Geänderte Dateien: tests/sql/pruefe.py, vorpruefung.sql, http_daten.sql, postgrest.conf, README.md; tests/sql/rankings.sql und groesse.sql; tests/test_sql_pruefung.py; docs/pruefvorbereitung.md; docs/plans/2026-11-16-datenbankabnahme.md; außerdem STATUS, Entscheidungen, Arbeitskatalog und dieses Protokoll.
+- Ergebnis: tests/sql/pruefe.py prüft standardmäßig nur vorhandene Werkzeuge. Explizite SQL-Probe nutzt ausschließlich 127.0.0.1:5433/jobradar_ranking_test, bereinigte psql-Umgebung, keine Passwort-/Servicedateien und drei feste Testskripte. Vorcheck verlangt persistente Kennung, leeres Schema und generierte Größenspalte. HTTP auf 127.0.0.1:3003 verlangt zuerst Testkennung; keine Proxys/Redirects. Vorbereitete Prüfung von Gast-/Schreibschutz, Katalog, 1005 eindeutigen Treffern über alle Seiten, Größen-/Rangsortierung und UND-Filtern. SQL-Tests rollen zurück; separate HTTP-Fixture committet ausdrücklich nur künstliche Daten und verweigert vorhandenen Bestand. PostgREST-Konfiguration und genaue Voraussetzungen dokumentiert; keine Installation/Verbindung/Ausführung.
+- Prüfungen: Zuerst fehlender Prüfeinstieg rot, danach 17 Schutztests grün. Ganze geschützte Python-Suite: 570 bestanden. Werkzeugvorcheck tatsächlich verbindungsfrei ausgeführt: psql und postgrest fehlen, vorgesehener Fehlerstatus. git diff --check und eigener Quellreview bestanden. Keine Webänderung in Paket 13; zuletzt Paket 12: 249 Webtests, Typprüfung, isolierter Build und Browserprüfung grün.
+- Nicht geprüft / offene Fragen: Kein SQL-/RLS-/PostgREST-Test tatsächlich ausgeführt. Supabase-kompatibles auth/storage-Basisschema und Rollen werden vorausgesetzt, nicht durch Platzhalter ersetzt; konkrete Zielversion offen. Neue Umgebung/Installation und migrationsseitige Ausführung nicht freigegeben. Testkonfiguration enthält ausschließlich eine absichtlich öffentliche synthetische Signatur. Keine Live-/Umgebungsdatei gelesen, kein Konto/Server eingerichtet, kein Push/Merge.
+- Abweichungen: Ausführungsweg und Abnahmebestand vorbereitet statt echten DB-Lauf vorzutäuschen. SQL-Transaktion kann keine Daten für separate HTTP-Verbindungen liefern: deshalb ausdrücklich getrennte commitende künstliche Fixture, anschließend SQL-Probe erst wieder im neu leeren Testschema. Eigener Review, Claude-Prüfung separat.
+
 ## 2026-11-16 14:21 MEZ – Codex – Paket 12
 - Auftrag: nächste Schritte nach Paketen 1–10 lokal fortsetzen; hier Paket 12 im erlaubten Umfang bearbeitet, echte Datenbankabnahmen/Upload separat.
 - Commits: lokaler Commit „Globale Groessensortierung mit SQL-Abnahme vorbereiten“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.

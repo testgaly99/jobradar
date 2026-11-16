@@ -1,4 +1,4 @@
--- Nur in einer isolierten Testdatenbank nach Anwendung der Migrationen 001..010.
+-- Nur in einer isolierten Testdatenbank nach Anwendung der Migrationen 001..011.
 -- Niemals mit der Live-Datenbank verbinden. Kein Testkonto und kein Geheimnis erforderlich.
 -- Schutz: Testdatenbank muss jobradar_ranking_test heißen, zusätzlich explizit setzen:
 --   PGOPTIONS='-c jobradar.offline_test=rankings' psql -X -v ON_ERROR_STOP=1 ... -f tests/sql/rankings.sql
@@ -7,6 +7,7 @@
 begin;
 do $$ begin
   if pg_catalog.current_database() <> 'jobradar_ranking_test'
+     or pg_catalog.current_setting('jobradar.testdatenbank', true) is distinct from 'nur-kuenstliche-daten'
      or pg_catalog.current_setting('jobradar.offline_test', true) is distinct from 'rankings' then
     raise exception 'Nur für ausdrücklich eingerichtete isolierte Ranking-Testdatenbank';
   end if;
