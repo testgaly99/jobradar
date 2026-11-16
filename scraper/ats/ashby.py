@@ -1,6 +1,7 @@
 """Ashby: öffentliche Posting-API."""
 from scraper import http
 from scraper.abschnitte import abschnitte
+from scraper.ats.daten import objekt_liste, stellen_id
 
 _MODELL = {"Remote": "Remote", "Hybrid": "Hybrid", "OnSite": "Vor Ort"}
 _VERTRAG = {"FullTime": "Vollzeit", "PartTime": "Teilzeit", "Contract": "Befristet", "Temporary": "Befristet"}
@@ -9,14 +10,14 @@ _VERTRAG = {"FullTime": "Vollzeit", "PartTime": "Teilzeit", "Contract": "Befrist
 def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[dict]:  # bekannte: ignoriert
     daten = http.hole(f"https://api.ashbyhq.com/posting-api/job-board/{ats_id}").json()
     stellen = []
-    for j in daten["jobs"]:
+    for j in objekt_liste(daten, "jobs"):
         if not j.get("isListed"):
             continue
         land = (((j.get("address") or {}).get("postalAddress")) or {}).get("addressCountry")
         teile = [j.get("location"), land] + [(s or {}).get("location") for s in j.get("secondaryLocations") or []]
         text = " ".join((j.get("descriptionPlain") or "").split())
         stellen.append({
-            "ext_id": str(j["id"]),
+            "ext_id": stellen_id(j["id"]),
             "titel": j["title"],
             "ort": ", ".join(t.strip() for t in teile if t and t.strip()),
             "remote": bool(j.get("isRemote")),

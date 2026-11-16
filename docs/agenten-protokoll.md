@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 12:18 MEZ – Codex – Paket 9
+- Auftrag: Nutzer beauftragt die nächsten vier Pakete 7 → 8 → 9 → 10; hier Paket 9 separat abgeschlossen.
+- Commits: lokaler Commit „Fehlerhafte Abrufresultate vor dem Stellenabgleich abweisen“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.
+- Geänderte Dateien: scraper/run.py; scraper/ats/daten.py, greenhouse.py, ashby.py, recruitee.py, personio.py, sitemap.py; tests/test_run.py, tests/test_ats_daten.py; docs/plans/2026-11-16-abrufresultate.md; außerdem STATUS, Entscheidungen, Arbeitskatalog und dieses Protokoll.
+- Ergebnis: Gesamtes Ergebnis vor Filterung und db.schreibe geprüft; ungültige Firma verändert keine Stellen, andere Firmen laufen weiter. Bekannte unveränderte Kurzmeldungen sowie echte leere Listen behalten bisheriges Verhalten. JSON-Adapter prüfen gemeinsame Objektlisten/Quell-IDs, damit leere Objekte oder str(None) nicht unbemerkt weitergehen. Personio-/Sitemap-Wurzelformen und Sitemap-Links geprüft; gemeinsame JSON-Hilfe sofort von drei Adaptern genutzt. Keine neuen Fachfilter, Mengenregeln oder Schließpolitik.
+- Prüfungen: 18 zusätzliche Laufprüfungen zuerst elf rot/22 grün; 38 zusätzliche Adapterprüfungen zuerst 33 rot/fünf grün. Danach gesamter Python-Offline-Lauf: 536 bestanden, mit lokalen temporären Testdateien und unveränderten Sperren für Umgebungsdateien/Live-Module/Netzwerk/Prozessstarts. Bestandsschutz bei schlechten/teilweise guten Antworten, fortgesetzter Abruf anderer Firmen, Kurzmeldungen und echte leere Ergebnisse geprüft; vorhandene Adapter-Fixtures grün. Eigener Review und git diff --check ohne Befunde. Website unverändert, Webtests/Build nicht erneut ausgeführt; letzter Stand aus Paket 8: 243 Webtests, Typprüfung und isolierter Build bestanden.
+- Nicht geprüft / offene Fragen: Keine Live-Karriereseite oder Datenbank abgefragt, keine echten Daten/Zugangsdaten. Bestehende Detailseiten-Ausfallbehandlung im Sitemap-Adapter nicht neu entworfen; Mengen-/Historienüberwachung und Selbstreparatur außerhalb. Keine Migration, Installation oder Veröffentlichung. Paket 10 folgt, 11–14 separat.
+- Abweichungen: Prüfung an den vorhandenen JSON-/XML-Adaptergrenzen mit ergänzt, weil falsche leere Behälter sonst vor der zentralen Prüfung zu [] werden konnten; innerhalb des Paketumfangs und mit roten Tests belegt. Python direkt mit installiertem Interpreter und lokalem PYTEST_DEBUG_TEMPROOT wie zuvor. Eigener Review, unabhängige Claude-Prüfung separat.
+
 ## 2026-11-16 11:41 MEZ – Codex – Paket 8
 - Auftrag: Nutzer beauftragt die nächsten vier Pakete 7 → 8 → 9 → 10; hier Paket 8 separat abgeschlossen.
 - Commits: lokaler Commit „Python- und Website-Datenvertrag mit gemeinsamen Beispielen prüfen“, Schlusszeile `Agent: Codex`; Eintrag gehört zum selben Commit. Kein Push/Merge.

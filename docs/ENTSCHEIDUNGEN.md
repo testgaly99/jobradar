@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-16 | Paket 9 prüft vollständige Adapterergebnisse und die vorhandenen JSON-/XML-Antwortformen vor dem Stellenabgleich. | Fehlerhafte Antworten dürfen keine offenen Stellen schließen oder unvollständige Daten schreiben; gültige leere Abrufe und bekannte Kurzmeldungen bleiben möglich. |
 | 2026-11-16 | Paket 8 prüft Python-Schreiber und Website-Leser anhand einer gemeinsamen synthetischen Fixture und ausdrücklich getrennter Ausgabeerwartungen. | Gemeinsame Beispiele decken Vertragsabweichungen auf, ohne die bewusste UI-Teilprojektion mit vollständiger KI-Validierung gleichzusetzen. |
 | 2026-11-16 | Nutzer beauftragt Pakete 7–10 nacheinander; Paket 7 zentralisiert die Prüfung reiner Daten und Berliner Zeiten einschließlich Rückvergleich. | Eine im Frühjahr übersprungene Uhrzeit darf nicht still zu einem anderen Termin werden; die bisherige Herbstwahl bleibt bestehen. |
 | 2026-11-16 | Paket 6 sichert bestehende Segmentierung/Abschnittsleser mit exakter Stringrekonstruktion und künstlichen Browserfällen ab; kein Anwendungscode geändert. | Die vorhandenen Funktionen erfüllen die neuen Regressionserwartungen; bestehende Absatzformatierung und Markierungsregeln bleiben erhalten, ohne spätere semantische Belegvergleiche vorwegzunehmen. |

@@ -1,4 +1,5 @@
 import pytest
+import copy
 
 from scraper import db, run
 from tests.fakedb import FakeDB
@@ -198,3 +199,43 @@ def test_ki_fehler_kippt_lauf_nicht(aufbau, monkeypatch, capsys):
     bericht = run.lauf("2026-11-07", d)
     assert bericht["firmen"][0]["fehler"] == "" and "A:1" in t["jobs"] and t["laeufe"]
     assert capsys.readouterr().out.count("RuntimeError: boom") == 3
+
+
+@pytest.mark.parametrize("antwort", [
+    None, {}, "keine Liste", [None], [[]], [{}],
+    [stelle("1", titel="")], [stelle("1", titel=" \n ")], [stelle("1", titel=42)],
+    [{**stelle("1"), "url": None}], [{**stelle("1"), "url": " "}],
+    [stelle("")], [stelle(42)], [{**stelle("1"), "unveraendert": "ja"}],
+    [{"ext_id": "unbekannt", "unveraendert": True}],
+    [stelle("1"), stelle("1")],
+])
+def test_kaputte_abrufantwort_veraendert_keine_vorhandenen_stellen(aufbau, antwort):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1"), stelle("2")]})
+    run.lauf("2026-11-06", d)
+    vorher = copy.deepcopy(t["jobs"])
+    run.ADAPTER["a"] = lambda _, **k: antwort
+    bericht = run.lauf("2026-11-07", d)["firmen"][0]
+    assert bericht["fehler"]
+    assert (bericht["neu"], bericht["geschlossen"]) == (0, 0)
+    assert t["jobs"] == vorher
+
+
+def test_gutes_teilergebnis_wird_vor_kaputter_stelle_nicht_geschrieben(aufbau, monkeypatch):
+    d, t = aufbau([firma("A", "a"), firma("B", "b")],
+                  {"a": lambda _, **k: [stelle("1")], "b": lambda _, **k: [stelle("1")]})
+    run.lauf("2026-11-06", d)
+    run.ADAPTER["a"] = lambda _, **k: [stelle("3"), {**stelle("4"), "url": ""}]
+    run.ADAPTER["b"] = lambda _, **k: [stelle("1"), stelle("2")]
+    bericht = run.lauf("2026-11-07", d)
+    assert bericht["firmen"][0]["fehler"]
+    assert "A:3" not in t["jobs"] and t["jobs"]["A:1"]["status"] == "offen"
+    assert "B:2" in t["jobs"] and not bericht["firmen"][1]["fehler"]
+
+
+def test_echte_leere_liste_bleibt_erfolgreich_mit_bisheriger_schliesslogik(aufbau):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1")]})
+    run.lauf("2026-11-06", d)
+    run.ADAPTER["a"] = lambda _, **k: []
+    bericht = run.lauf("2026-11-07", d)["firmen"][0]
+    assert bericht["fehler"] == "" and bericht["gefunden"] == 0 and bericht["geschlossen"] == 1
+    assert t["jobs"]["A:1"]["status"] == "geschlossen"

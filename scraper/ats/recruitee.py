@@ -1,13 +1,14 @@
 """Recruitee: öffentliche Offers-API (liefert alle Stellen mit Text in einer Anfrage)."""
 from scraper import http
 from scraper.abschnitte import abschnitte, text_aus_html
+from scraper.ats.daten import objekt_liste, stellen_id
 
 _VERTRAG = {"fulltime": "Vollzeit", "fulltime_permanent": "Vollzeit", "fulltime_fixed_term": "Befristet"}
 
 
 def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[dict]:  # bekannte: ignoriert
     stellen = []
-    for o in http.hole(f"https://{ats_id}/api/offers/").json()["offers"]:
+    for o in objekt_liste(http.hole(f"https://{ats_id}/api/offers/").json(), "offers"):
         if o.get("status", "published") != "published":
             continue
         roh = f"{o.get('description') or ''}{o.get('requirements') or ''}"
@@ -15,7 +16,7 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
         ort = ", ".join(x for x in (o.get("city"), o.get("country")) if x)
         modell = "Remote" if o.get("remote") else "Hybrid" if o.get("hybrid") else "Vor Ort" if o.get("on_site") else ""
         stellen.append({
-            "ext_id": str(o["id"]),
+            "ext_id": stellen_id(o["id"]),
             "titel": o["title"].strip(),
             "ort": ort,
             "remote": bool(o.get("remote")),

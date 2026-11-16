@@ -34,9 +34,14 @@ def _ext_id(url):
 
 def _urls(sitemap, index_aufloesen=True):
     wurzel = ET.fromstring(http.hole(sitemap).content)
+    if wurzel.tag.rsplit("}", 1)[-1] not in ("urlset", "sitemapindex"):
+        raise ValueError("Unerwartete Sitemap-XML-Wurzel")
     # nur <url>/<sitemap>-Einträge, nicht image:loc/video:loc der Erweiterungen
-    locs = wurzel.findall("{*}url/{*}loc") + wurzel.findall("{*}sitemap/{*}loc")
-    urls = [loc.text.strip() for loc in locs if loc.text]
+    eintraege = wurzel.findall("{*}url") + wurzel.findall("{*}sitemap")
+    locs = [eintrag.find("{*}loc") for eintrag in eintraege]
+    if any(loc is None or not loc.text or not loc.text.strip() for loc in locs):
+        raise ValueError("Sitemap-Eintrag ohne Link")
+    urls = [loc.text.strip() for loc in locs]
     if index_aufloesen and wurzel.tag.endswith("sitemapindex"):
         return [u for teil in urls for u in _urls(teil, False)]
     return urls

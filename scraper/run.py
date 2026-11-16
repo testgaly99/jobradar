@@ -27,6 +27,32 @@ def _schreibe_text(pfad, text):
         raise
 
 
+def _pruefe_stellen(stellen, bekannte):
+    """Kaputte Antworten vor jedem Stellenabgleich ablehnen; [] bleibt ein gültiger Abruf."""
+    if not isinstance(stellen, list):
+        raise ValueError("Abrufantwort ist keine Liste")
+    gesehen = set()
+    for s in stellen:
+        if not isinstance(s, dict):
+            raise ValueError("Stelleneintrag ist kein Objekt")
+        ext_id = s["ext_id"]
+        if not isinstance(ext_id, str) or not ext_id.strip():
+            raise ValueError("Ungültige Stellen-ID")
+        if ext_id in gesehen:
+            raise ValueError("Doppelte Stellen-ID")
+        gesehen.add(ext_id)
+        unveraendert = s.get("unveraendert", False)
+        if not isinstance(unveraendert, bool):
+            raise ValueError("Ungültige unveraendert-Markierung")
+        if unveraendert:
+            if ext_id not in bekannte:
+                raise ValueError("Unbekannte ID in unveraendert-Kurzmeldung")
+        else:
+            for feld in ("titel", "url"):
+                if not isinstance(s[feld], str) or not s[feld].strip():
+                    raise ValueError(f"Ungültiges Pflichtfeld: {feld}")
+
+
 def _firma(f, heute):
     """Gibt die Berichtszeile fuer ein Unternehmen zurueck; bei Fehler wird nichts geschrieben."""
     name = f["name"]
@@ -38,6 +64,7 @@ def _firma(f, heute):
             raise LookupError(f"kein Adapter für {f['ats_typ']}")
         bekannte = frozenset(i[len(name) + 1:] for i in db.lade_offene(name))
         stellen = adapter(f["ats_id"], bekannte=bekannte)
+        _pruefe_stellen(stellen, bekannte)
         unveraendert = [s["ext_id"] for s in stellen if s.get("unveraendert")]
         voll = [s for s in stellen if not s.get("unveraendert")]
         behalten, gruende = [], Counter()
