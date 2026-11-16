@@ -17,15 +17,24 @@ export function pruefeAbrufHost(url: string): void {
 }
 
 const robots = new Map<string, ((pfad: string) => boolean) | null>();
+const robotsLaden = new Map<string, Promise<void>>();
 const zuletzt = new Map<string, number>();
+const laufend = new Map<string, Promise<void>>();
 
-async function get(url: string): Promise<Response> {
+function get(url: string): Promise<Response> {
   const host = new URL(url).host;
-  const warte = (zuletzt.get(host) ?? -Infinity) + PAUSE_MS - Date.now();
-  if (warte > 0) await new Promise((r) => setTimeout(r, warte));
-  try {
-    return await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(TIMEOUT_MS), redirect: "error" });
-  } finally { zuletzt.set(host, Date.now()); }
+  // Pro Host erst nach Abschluss und Pause starten; auch Fehler geben den nächsten Abruf frei.
+  const abruf = (laufend.get(host) ?? Promise.resolve()).then(async () => {
+    const warte = (zuletzt.get(host) ?? -Infinity) + PAUSE_MS - Date.now();
+    if (warte > 0) await new Promise((r) => setTimeout(r, warte));
+    try {
+      return await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(TIMEOUT_MS), redirect: "error" });
+    } finally { zuletzt.set(host, Date.now()); }
+  });
+  const fertig = abruf.then(() => {}, () => {});
+  laufend.set(host, fertig);
+  void fertig.then(() => { if (laufend.get(host) === fertig) laufend.delete(host); });
+  return abruf;
 }
 
 // shortcut: nur Disallow-Präfixe der Gruppen "*" und jobradar, kein Allow/Wildcard; bei Bedarf Parser-Lib nehmen.
@@ -50,9 +59,17 @@ async function hole(url: string): Promise<Response> {
   pruefeAbrufHost(url);
   const u = new URL(url);
   if (!robots.has(u.host)) {
-    const r = await get(`${u.origin}/robots.txt`);
-    if (r.status >= 500) throw new Error(`robots.txt nicht erreichbar: ${u.host}`);
-    robots.set(u.host, r.status < 400 ? parseRobots(await r.text()) : null);
+    let laden = robotsLaden.get(u.host);
+    if (!laden) {
+      laden = (async () => {
+        const r = await get(`${u.origin}/robots.txt`);
+        if (r.status >= 500) throw new Error(`robots.txt nicht erreichbar: ${u.host}`);
+        robots.set(u.host, r.status < 400 ? parseRobots(await r.text()) : null);
+      })();
+      robotsLaden.set(u.host, laden);
+    }
+    try { await laden; }
+    finally { if (robotsLaden.get(u.host) === laden) robotsLaden.delete(u.host); }
   }
   const darf = robots.get(u.host);
   if (darf && !darf(u.pathname)) throw new Error(`Durch robots.txt verboten: ${url}`);

@@ -18,6 +18,15 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-16 20:47 MEZ – Codex – Paket 17
+- Auftrag des Nutzers: „Arbeite das ein“ zu den sechs Kandidaten 15–20; hier eigener lokaler Abschluss von Paket 17. Umfang vor Code im Plan `docs/plans/2026-11-16-pakete-15-20.md` festgehalten. Reihenfolge 15/16/18/17/19/20, unabhängige Dateibereiche parallel vorbereitet.
+- Commits: lokaler Commit „Parallele Webabrufe je Host mit Pause koordinieren“, Eintrag gehört zum selben Commit; Schlusszeile `Agent: Codex`. Kein Push/Merge.
+- Geänderte Dateien: web/lib/ats-abruf.ts, web/tests/ats-abruf.test.ts; außerdem gemeinsamer Plan, STATUS, Entscheidungen, Arbeitskatalog und dieses Protokoll.
+- Ergebnis: Promise-Warteschlange pro Host startet nächsten Abruf erst nach Abschluss und Pause. Fehler geben die Queue frei. Gleichzeitige erste Anfragen teilen dieselbe Robots-Abfrage; fehlerhaftes Erstladen kann später erneut versucht werden. Allowlist, Redirectverbot und Timeout erhalten.
+- Tests: 8 neue deterministische VM-Fälle mit tatsächlichem TS-/Linkcode und künstlichem Fetch/Uhr zuerst 7 rot/1 grün, danach 19 gezielte Fälle inklusive vorhandener Linktests grün. Gemeinsamer/verschiedener Host, Abschlussabstand, Fehlerfreigabe und Robots-Wiederanlauf geprüft, keine tatsächlichen Sleeps/Netzanfragen. Gesamtprüfung der fertigen Arbeitskopie aller sechs Pakete vor Aufteilung in Einzelcommits: 761 geschützte Python-Offline-Tests, 273 Webtests, Typprüfung und tatsächlicher isolierter Webpack-Build bestanden. Aktuelle Browserprobe mit künstlichen Antworten auf 1280/390px einschließlich sechs neuer Aktionsfälle bestanden; Prüfserver beendet. Diese Gesamtzahlen betreffen den gemeinsamen fertigen Arbeitsstand 15–20, nicht die Testanzahl jedes Zwischencommits. Nach grünen Prüfungen werden nur Dokumentation/Commitaufteilung weitergeführt. git diff --check und Commit-Inhaltsprüfung. Unabhängiger Quellreview ohne konkrete Restbefunde.
+- Nicht geprüft / offene Fragen: Koordination gilt pro Serverprozess, nicht global über mehrere Instanzen. Kein zusätzlicher Dienst, kein API-Konto, keine Änderung der bestehenden Robots-Parserpolitik. Keine echten Daten/Schlüssel/Umgebungsdateien, Live-/Groq-Abfragen, neuen Pakete/Dienste, Migrationen oder Veröffentlichung. Echte Datenbank- und GitHub-Abnahmen bleiben separat.
+- Abweichungen: VM hält Modulzustand und Uhr pro Fall getrennt und nutzt vorhandenen TypeScript-Compiler; keine neue Produktions-Test-API und keine neue Bibliothek. Keine neue fachliche Auswahl oder Änderung der Kanban-Animationen. Nächster lokaler Abschluss: Paket 19, bereits beauftragt.
+
 ## 2026-11-16 20:47 MEZ – Codex – Paket 18
 - Auftrag des Nutzers: „Arbeite das ein“ zu den sechs Kandidaten 15–20; hier eigener lokaler Abschluss von Paket 18. Umfang vor Code im Plan `docs/plans/2026-11-16-pakete-15-20.md` festgehalten. Reihenfolge 15/16/18/17/19/20, unabhängige Dateibereiche parallel vorbereitet.
 - Commits: lokaler Commit „Weiterleitungen unter Robots-Regeln und Domainpause prüfen“, Eintrag gehört zum selben Commit; Schlusszeile `Agent: Codex`. Kein Push/Merge.
