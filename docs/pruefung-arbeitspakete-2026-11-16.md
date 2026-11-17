@@ -42,7 +42,7 @@ Anschlüsse: [http_daten.sql:8](../tests/sql/http_daten.sql#L8), [pruefe.py:105]
 
 Die Fixture ordnet die Größenklassen bereits aufsteigend nach den fortlaufenden IDs an; alle Stellen haben dasselbe Erstdatum. Erwartet wird genau diese ID-Reihenfolge. Eine API, die die angeforderte Größensortierung ignoriert und lediglich nach ID aufsteigend liefert, erfüllt damit beide Größenprüfungen über alle Seiten.
 
-Rein künstlich bestätigt: Ein Anfrageersatz, der beide Größen-ORDER-Ausdrücke absichtlich ignoriert, jedoch Rechte, Count, Filter und Rangfolge korrekt beantwortet, lässt `http_pruefen` vollständig erfolgreich enden. Das belegt einen Fehler im Prüfnachweis, keinen nachgewiesenen Fehler der Migration 011. Die tatsächliche SQL-/PostgREST-Ausführung bleibt offen.
+Rein künstlich bestätigt: Ein Anfrageersatz, der beide Größen-ORDER-Ausdrücke absichtlich ignoriert, jedoch Rechte, Count, Filter und Rangfolge korrekt beantwortet, lässt `http_pruefen` vollständig erfolgreich enden. Das belegt einen Fehler im Prüfnachweis, keinen nachgewiesenen Fehler der Migration 010 (Spalte groesse_rang). Die tatsächliche SQL-/PostgREST-Ausführung bleibt offen.
 
 Korrekturrichtung: Größenklassen über IDs und Erstdaten mischen, sodass die Größenfolge deutlich von ID-/Datumssortierung abweicht. Erwartete Reihenfolge unabhängig bestimmen und einen Fall mit absichtlich ignorierter Größenordnung nachweislich ablehnen.
 

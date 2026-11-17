@@ -31,7 +31,7 @@ def test_psql_nutzt_nur_festes_lokales_ziel_und_keine_geerbten_zugangsdaten():
     assert env["PGPASSFILE"] == pruefung.os.devnull
 
 
-@pytest.mark.parametrize("name", ["../rankings.sql", "011_globale_groesse.sql", "http_daten.sql", "fremd.sql"])
+@pytest.mark.parametrize("name", ["../rankings.sql", "010_rankings.sql", "http_daten.sql", "fremd.sql"])
 def test_sql_laesst_weder_migration_noch_beliebige_datei_zu(name):
     with pytest.raises(ValueError):
         pruefung.sql_aufruf(name, {})
@@ -169,3 +169,15 @@ def test_vorcheck_oeffnet_keine_verbindung(monkeypatch, capsys):
     monkeypatch.setattr(pruefung.subprocess, "run", lambda *a, **kw: pytest.fail("SQL im Vorcheck"))
     assert pruefung.main([]) == 2
     assert "fehlt" in capsys.readouterr().out
+
+
+def test_migration_010_definiert_groesse_rang_vor_ranking_stellen_und_nur_dort():
+    ordner = Path(__file__).parent.parent / "supabase" / "migrations"
+    sql = (ordner / "010_rankings.sql").read_text(encoding="utf-8")
+    assert "add column if not exists groesse_rang" in sql
+    assert sql.index("add column if not exists groesse_rang") < sql.index("create or replace function public.ranking_stellen")
+    assert sql.count("create or replace function public.ranking_stellen") == 1
+    assert "'groesse_rang', c.groesse_rang" in sql
+    for datei in ordner.glob("*.sql"):
+        if datei.name != "010_rankings.sql":
+            assert "function public.ranking_stellen" not in datei.read_text(encoding="utf-8"), datei.name

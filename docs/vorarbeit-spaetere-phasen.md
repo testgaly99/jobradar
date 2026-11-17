@@ -22,7 +22,7 @@ Alle Feststellungen zum Datenbestand beziehen sich auf Quellcode/Migrationsdatei
 
 Das geprüfte Firmenschema hat auch keine eigene bestätigte Mail-Domain-Zuordnung. Eine ATS-/Karriereportal-Domain ist nicht automatisch eine erlaubte Absenderdomain der Firma. Diese Zuordnung gehört vor einem Mailabruf in die Planung.
 
-In den vorhandenen Migrationen 001–011 sind keine Tabellen für Google-Verbindungen, verschlüsselte Provider-Tokens, Mail-/Kalender-Synchronisationsstände oder Erinnerungszustellungen definiert. Auch keine Zuordnung von Google-Event-IDs und Gmail-Nachrichten-IDs zu Bewerbungen. Das sind spätere Planungspunkte, keine Aussage über den Inhalt einer echten Datenbank.
+In den vorhandenen Migrationen 001–010 sind keine Tabellen für Google-Verbindungen, verschlüsselte Provider-Tokens, Mail-/Kalender-Synchronisationsstände oder Erinnerungszustellungen definiert. Auch keine Zuordnung von Google-Event-IDs und Gmail-Nachrichten-IDs zu Bewerbungen. Das sind spätere Planungspunkte, keine Aussage über den Inhalt einer echten Datenbank.
 
 ### Offizielle Grundlagen, geprüft am 2026-11-15
 
@@ -56,7 +56,7 @@ Automatische Abläufe gehören nach Einrichtung in den Hintergrund. Der Nutzer m
 | Marktrolle/Eigentümer/Alter | Firmenschema enthält bisher vor allem Name, Karriereportal, Größe, Kategorie, Hauptsitz | Entsprechende strukturierte Felder/Quellen fehlen im aktuellen Schema; nicht aus dem vorhandenen Werbetext ableiten. |
 | Suchprofile, Muss/Soll, Gewichte | `leseFilter`, `filterZuUrl`, `formZuUrl` für aktuelle URL-Auswahl | Keine gespeicherten Suchprofile oder Gewichtung im vorhandenen Schema definiert. Inhalt und Verhalten erst klären. |
 
-**Konkrete Anschlussfolge für Claude nach späterer Freigabe:** `web/lib/filter.ts` (URL/Typen) → `web/lib/stellen.ts` (normale Abfrage) **und** `ranking_stellen` (aktuelle Definition in Migration 011; spätere Schemaänderungen als neue Migrationsdatei) (Ranking-Modus) → passende Facetten → `web/app/stellen/page.tsx` (Darstellung) → vorhandene Tests erweitern. Sonst könnte ein neuer Filter nur ohne Ranking-Auswahl funktionieren.
+**Konkrete Anschlussfolge für Claude nach späterer Freigabe:** `web/lib/filter.ts` (URL/Typen) → `web/lib/stellen.ts` (normale Abfrage) **und** `ranking_stellen` (aktuelle Definition in Migration 010 (Spalte groesse_rang); spätere Schemaänderungen als neue Migrationsdatei) (Ranking-Modus) → passende Facetten → `web/app/stellen/page.tsx` (Darstellung) → vorhandene Tests erweitern. Sonst könnte ein neuer Filter nur ohne Ranking-Auswahl funktionieren.
 
 Quell-/Parserbasis: `scraper/steckbrief.py:steckbrief`, `web/lib/steckbrief.ts:leseSteckbrief`, `web/lib/zusammenfassung.ts:leseKi`, Migrationen 001/005/009. Vorhandene Gehaltsanzeige rechnet ausdrücklich nichts um. Die Beispielwerte unten belegen diese Formate, keine zugesagte Datenqualität echter Anzeigen.
 

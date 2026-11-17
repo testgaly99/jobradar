@@ -1,4 +1,4 @@
--- Nur in einer isolierten Testdatenbank nach Anwendung der Migrationen 001..011.
+-- Nur in einer isolierten Testdatenbank nach Anwendung der Migrationen 001..010.
 -- Niemals mit der Live-Datenbank verbinden. Kein Testkonto und kein Geheimnis erforderlich.
 -- Schutz: Testdatenbank muss jobradar_ranking_test heißen, zusätzlich explizit setzen:
 --   PGOPTIONS='-c jobradar.offline_test=rankings' psql -X -v ON_ERROR_STOP=1 ... -f tests/sql/rankings.sql

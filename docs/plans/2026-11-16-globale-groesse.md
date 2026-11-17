@@ -7,11 +7,11 @@ Technischer Sortierschlüssel auf companies als gespeicherte generierte Spalte: 
 Offizielle Grundlagen am 2026-11-16 geprüft: [PostgREST Top-level Ordering](https://docs.postgrest.org/en/v13/references/api/resource_embedding.html#top-level-ordering), [JSON Ordering](https://docs.postgrest.org/en/v13/references/api/tables_views.html#json-columns), [PostgreSQL Generated Columns](https://www.postgresql.org/docs/17/ddl-generated-columns.html). Daraus abgeleitete Umsetzung; tatsächlich installierte Zielversion und SQL-Ausführung noch nicht verifiziert.
 
 - [x] HTTP-Vertragstests mit künstlichen mehreren Seiten und bestehender Filter-/Rankinglogik zuerst ergänzen.
-- [x] Migration 011 nur als Datei, bestehende RPC um JSON-Schlüssel ergänzen; Webabfrage global ordnen und alte Seitensortierung entfernen.
+- [x] Migration 010 (Spalte groesse_rang) nur als Datei, bestehende RPC um JSON-Schlüssel ergänzen; Webabfrage global ordnen und alte Seitensortierung entfernen.
 - [x] Websuite, Typprüfung, isolierter Build und künstliche Browserprobe; SQL-Abnahmefälle für Paket 13 vorbereiten.
 - [x] Dokumentieren und eigener lokaler Commit als Vorbereitung, keine Produktivfreigabe.
 
-Gast liest weiterhin nur öffentliche Felder; neue Spalte ist ausschließlich aus bereits öffentlicher Größenklasse berechnet. Keine Quellenaktivierung, neue Kriterien oder Änderung der Klassen. Migration 011 vor jeder echten Nutzung dieses Sortierwegs erforderlich; ohne sie kann der Größensortieraufruf fehlschlagen. Nicht vor Datenbankabnahme hochladen.
+Gast liest weiterhin nur öffentliche Felder; neue Spalte ist ausschließlich aus bereits öffentlicher Größenklasse berechnet. Keine Quellenaktivierung, neue Kriterien oder Änderung der Klassen. Migration 010 (Spalte groesse_rang) vor jeder echten Nutzung dieses Sortierwegs erforderlich; ohne sie kann der Größensortieraufruf fehlschlagen. Nicht vor Datenbankabnahme hochladen.
 
 ## Ergebnis und Nachweise
 
@@ -19,6 +19,6 @@ Generierte gespeicherte companies.groesse_rang-Spalte bildet die vorhandenen Kla
 
 Zwei neue HTTP-Vertragstests zuerst rot, danach grün: 112 künstliche Treffer über drei Seiten mit/ohne Ranking, Filter/Count/Offset/Reihenfolge. Alte Seitensortierprüfung durch globale Fälle ersetzt. 249 Webtests, Typprüfung und isolierter Webpack-Build bestanden. Chrome 1280/390 Pixel: bisherige acht Fälle sowie jeweils drei Größenseiten mit/ohne Ranking bestanden. Eigener Server beendet. Vorbereitete SQL-Prüfung umfasst fünf Größenklassen, Gastspalte und weiterhin gesperrten Text; nicht ausgeführt. git diff --check und eigener Review bestanden.
 
-Keine PostgreSQL-/PostgREST-Umgebung vorhanden, tatsächliche SQL-Syntax, Zielversion, Rollen und HTTP-Ausführung noch nicht abgenommen. Migration 011 muss vor echter Größensortierung angewendet werden; kein Upload dieses Codes vor Datenbankabnahme. Python unverändert und nicht erneut geprüft. Keine Live-Daten/Umgebungsdateien/Schlüssel gelesen, kein Dienst installiert oder veröffentlicht.
+Keine PostgreSQL-/PostgREST-Umgebung vorhanden, tatsächliche SQL-Syntax, Zielversion, Rollen und HTTP-Ausführung noch nicht abgenommen. Migration 010 (Spalte groesse_rang) muss vor echter Größensortierung angewendet werden; kein Upload dieses Codes vor Datenbankabnahme. Python unverändert und nicht erneut geprüft. Keine Live-Daten/Umgebungsdateien/Schlüssel gelesen, kein Dienst installiert oder veröffentlicht.
 
 Paket ausdrücklich nur vorbereitet statt vollständig abgenommen, weil isolierte Datenbank fehlt. Für Top-level-Sortierung über many-to-one und JSON offizielle PostgREST-Dokumentation geprüft. Typprüfung erforderte eine explizite Ergebnis-Typangabe im künstlichen Test; danach grün. Eigener Review, Claude-Prüfung separat.

@@ -1,6 +1,7 @@
 -- Ranglisten-Unterbau: absichtlich ohne echte Ranglisten, Firmenzuordnungen oder Quellenabrufe.
 -- Nur als Datei vorbereitet. Später vom Nutzer im Supabase SQL Editor ausführen.
 -- Migration 005 (jobs.land) wird vorausgesetzt. Mehrfach ausführbar.
+-- Enthält auch die globale Größensortierung (Spalte groesse_rang); ranking_stellen wird nur hier definiert.
 
 create table if not exists public.ranking_listen (
   id text primary key check (id ~ '^[a-z0-9][a-z0-9_-]{0,79}$'),
@@ -83,6 +84,15 @@ drop policy if exists ranking_firmen_lesen on public.ranking_firmen;
 create policy ranking_firmen_lesen on public.ranking_firmen for select to authenticated
   using (public.ranking_ausgabe_aktuell(ausgabe_id));
 
+-- Technischer Größenschlüssel, muss vor ranking_stellen existieren.
+alter table public.companies add column if not exists groesse_rang integer
+  generated always as (
+    case groesse_klasse when '<50' then 0 when '50–249' then 1
+      when '250–999' then 2 when '1.000+' then 3 else 99 end
+  ) stored;
+-- Ausschließlich die bereits öffentliche Größeninformation, keine Text-/Nutzerrechte ergänzen.
+grant select (groesse_rang) on public.companies to anon;
+
 -- Von den öffentlichen facetten() getrennt, damit Gastrechte unverändert bleiben.
 create or replace function public.ranking_katalog()
 returns table(id text, name text, anzahl bigint)
@@ -146,7 +156,7 @@ begin
     select j.id, j.unternehmen, j.titel, j.ort, j.staedte, j.remote,
       j.arbeitsmodell, j.vertragsart, j.abteilung, j.erfahrungslevel, j.url,
       j.erstmals_gesehen, j.text, j.land, c.groesse_klasse, c.kategorie,
-      pg_catalog.jsonb_build_object('groesse_klasse', c.groesse_klasse, 'kategorie', c.kategorie),
+      pg_catalog.jsonb_build_object('groesse_klasse', c.groesse_klasse, 'kategorie', c.kategorie, 'groesse_rang', c.groesse_rang),
       case when eine_liste then zuordnung.rang else null::integer end
     from public.jobs j
     join public.companies c on c.name = j.unternehmen and c.aktiv

@@ -1,4 +1,4 @@
--- Nur vorbereitete isolierte Abnahme nach Migration 011. Keine Migration ausführen.
+-- Nur vorbereitete isolierte Abnahme nach Migration 010 (Spalte groesse_rang). Keine Migration ausführen.
 \set ON_ERROR_STOP on
 begin;
 do $$ begin

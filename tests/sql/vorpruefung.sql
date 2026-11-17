@@ -15,6 +15,6 @@ do $$ begin
   end if;
   if not exists(select 1 from information_schema.columns where table_schema='public'
                 and table_name='companies' and column_name='groesse_rang' and is_generated='ALWAYS') then
-    raise exception 'Vorbereitete Migration 011 fehlt';
+    raise exception 'Vorbereitete Migration 010 (Spalte groesse_rang) fehlt';
   end if;
 end $$;

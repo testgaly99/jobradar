@@ -86,7 +86,7 @@ Für `tests/sql/rankings.sql` sind unabhängig von jeder Ranking-Auswahl folgend
 
 Das Skript prüft vor seinen Testschritten den Datenbanknamen `jobradar_ranking_test` und die ausdrückliche Testkennung; Testdaten liegen in einer zurückgerollten Transaktion. Diese Schutzprüfung ersetzt keine vorherige Kontrolle des Verbindungsziels. Keine bestehende Live-Verbindung oder Sicherung echter Nutzerdaten verwenden.
 
-Eine passende lokale Umgebung ist noch nicht vorhanden. Dafür wurden weder Werkzeuge installiert noch ein Dienst oder Konto angelegt. Paket 13 ergänzt den verbindungsfreien Werkzeugvorcheck `python -B tests/sql/pruefe.py`, feste lokale Testziele und einen vorbereiteten SQL-/HTTP-Abnahmepfad. Einrichtung und tatsächliche Ausführung bleiben gesondert offen. Reihenfolge, Voraussetzungen, persistente Testkennung, künstliche HTTP-Fixture und Grenzen stehen in [tests/sql/README.md](../tests/sql/README.md). `groesse.sql` ergänzt die globale Größenabnahme nach Migration 011. Keine Datei wurde gegen PostgreSQL/PostgREST ausgeführt.
+Eine passende lokale Umgebung ist noch nicht vorhanden. Dafür wurden weder Werkzeuge installiert noch ein Dienst oder Konto angelegt. Paket 13 ergänzt den verbindungsfreien Werkzeugvorcheck `python -B tests/sql/pruefe.py`, feste lokale Testziele und einen vorbereiteten SQL-/HTTP-Abnahmepfad. Einrichtung und tatsächliche Ausführung bleiben gesondert offen. Reihenfolge, Voraussetzungen, persistente Testkennung, künstliche HTTP-Fixture und Grenzen stehen in [tests/sql/README.md](../tests/sql/README.md). `groesse.sql` ergänzt die globale Größenabnahme nach Migration 010 (Spalte groesse_rang). Keine Datei wurde gegen PostgreSQL/PostgREST ausgeführt.
 
 ## Übergabe bei jeder tatsächlichen Prüfung
 
