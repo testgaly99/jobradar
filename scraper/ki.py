@@ -87,6 +87,25 @@ def _text(roh, name):
     return v and v.strip()
 
 
+# Fester Streich-Filter (Design Punkt 13): Groq befolgt diese Verbote nicht immer. Nur streichen, nie umschreiben.
+_RAHMEN_WEG = re.compile(r"vollzeit|unbefristet|full[- ]?time|permanent|competitive|wettbewerbsfähig|attraktiv", re.I)
+_MUSS_WEG = re.compile(r"\b(deutsch|englisch|german|english)\b|deutschkenntnis|englischkenntnis"
+                       r"|sprachkenntnis|language|fließend|fluent", re.I)
+_ERFAHRUNG_WEG = re.compile(r"\boptional\b", re.I)
+
+
+def streiche(erg: dict) -> dict:
+    erg["rahmen"] = [x for x in erg["rahmen"] if not _RAHMEN_WEG.search(x)]
+    erf = (erg["erfahrung"] or "").lower()
+    # ganze Saetze, die schon in "erfahrung" stehen, nicht doppelt zeigen (kurze Schlagworte bleiben)
+    erg["muss"] = [x for x in erg["muss"] if not _MUSS_WEG.search(x) and not (len(x) >= 20 and x.lower() in erf)]
+    if erg["erfahrung"] and _ERFAHRUNG_WEG.search(erg["erfahrung"]):
+        erg["erfahrung"] = None
+    if erg["studium"] == "nein" and erg["abschluss"] is None and erg["taetigkeit"] == "anspruchsvoll":
+        erg["studium"] = "unklar"  # keine Angabe ist nie "nein" (Nutzerregel: unklar wird angezeigt)
+    return erg
+
+
 def pruefe(roh: dict) -> dict:
     if not isinstance(roh, dict):
         raise Ungueltig("Die Antwort muss ein JSON-Objekt sein.")
@@ -102,7 +121,7 @@ def pruefe(roh: dict) -> dict:
             werte = ", ".join(f'"{w}"' for w in erlaubt)
             raise Ungueltig(f"{name} ist {json.dumps(roh[name], ensure_ascii=False)}, erlaubt sind: {werte}.")
         erg[name] = roh[name]
-    return erg
+    return streiche(erg)
 
 
 def anfrage(text, modell, post=requests.post, schlaf=time.sleep, prompts=PROMPTS):
@@ -113,7 +132,7 @@ def anfrage(text, modell, post=requests.post, schlaf=time.sleep, prompts=PROMPTS
     db._lade_env()
     nachrichten = [{"role": "user", "content": text[:MAX_ZEICHEN]}] if isinstance(text, str) else text
     body = {"model": modell, "messages": [{"role": "system", "content": prompts[modell]}, *nachrichten],
-            "response_format": {"type": "json_object"}, "temperature": 0.2,
+            "response_format": {"type": "json_object"}, "temperature": 0,
             "max_completion_tokens": MAX_AUSGABE.get(modell, 1500)}
     if modell.startswith("openai/gpt-oss"):
         body["reasoning_effort"] = "low"  # qwen denkt ohne die Angabe nicht mit; mit ihr sprengt das Denken die Ausgabegrenze

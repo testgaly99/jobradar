@@ -57,12 +57,17 @@ def _lade_offene():
             return zeilen
 
 
-def _liste(v):
-    return "<ul>" + "".join(f"<li>{html.escape(x)}</li>" for x in v) + "</ul>"
+def _liste(v, bleibt=None):
+    """Groqs Liste unveraendert; was der Streich-Filter entfernt, erscheint durchgestrichen."""
+    return "<ul>" + "".join(f"<li>{_s(x, bleibt is not None and x.strip() not in bleibt)}</li>" for x in v) + "</ul>"
 
 
-def _wert(v):
-    return "null" if v is None else html.escape(v)
+def _s(x, weg):
+    return f"<s>{html.escape(x)}</s>" if weg else html.escape(x)
+
+
+def _wert(v, weg=False):
+    return "null" if v is None else _s(v, weg)
 
 
 def _zeile(s, erg):
@@ -74,8 +79,10 @@ def _zeile(s, erg):
         mitte = f'<td colspan="9"><b>Fehler:</b> {e(erg["fehler"])}</td>'
     elif erg["gueltig"]:
         f = erg["felder"]  # unveraendert aus Groqs letzter Antwort, nicht die normalisierte Fassung von pruefe
-        mitte = (f'<td>{_liste(f["aufgaben"])}</td><td>{_liste(f["rahmen"])}</td><td>{_wert(f["abschluss"])}</td>'
-                 f'<td>{_wert(f["erfahrung"])}</td><td>{_liste(f["muss"])}</td><td>{_liste(f["benefits"])}</td>'
+        g = ki.pruefe(f)  # was die Seite zeigt
+        mitte = (f'<td>{_liste(f["aufgaben"])}</td><td>{_liste(f["rahmen"], g["rahmen"])}</td><td>{_wert(f["abschluss"])}</td>'
+                 f'<td>{_wert(f["erfahrung"], g["erfahrung"] is None)}</td><td>{_liste(f["muss"], g["muss"])}</td>'
+                 f'<td>{_liste(f["benefits"])}</td>'
                  f'<td>{e(f["studium"])}</td><td>{e(f["taetigkeit"])}</td><td>{e(f["sprache"])}</td>')
     else:
         mitte = f'<td colspan="9"><b>ungültig</b><pre>{e(antworten[-1][0] if antworten else "")}</pre></td>'
