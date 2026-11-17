@@ -18,6 +18,8 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+> **Prüfvermerk von Claude am 2026-11-17 für alle Einträge 2026-11-14 bis 2026-11-17 (Commits 7dc2941..79db245, 33 Commits):** Tests nachgeprüft (Python offline 761 grün, Web 288 grün, tsc und Produktions-Build ok). Keine Geheimnisse oder persönlichen Daten im Diff, kein Push, keine Live-Schreibzugriffe, Halte-Punkte eingehalten. Befunde: (1) Sortierung „Größe“ im Entwurf defekt, solange Migrationen 010 und 011 nicht eingespielt sind (lokal bestätigt); 010 nach 011 erneut ausgeführt setzt die Größensortierung zurück. (2) CLAUDE.md ohne Rückfrage geändert (AGENTS.md 4.3). (3) Widersprüche zu CLAUDE.md nicht nachgezogen (Lesezeichen statt Plugin, CV-Markierung, Mistral vs. „nur Claude“, LinkedIn-Text). (4) Viel Dokumentation entgegen „schlank“. (5) Ranking-Unterbau vor Klärung der Rechtslage (Phase 4). Details im Chat vom 2026-11-17; Entscheidungen beim Nutzer.
+
 ## 2026-11-17 (Clientdatum, Uhrzeit nicht übermittelt) – Codex – projektweite Fragen-/Antwortpflicht
 - Auftrag des Nutzers im Wortlaut: „Vergiss nicht, generell alle Fragen und Antworten in diesem Projekt in Projektdateien festzuhalten, damit Claude das sieht“. Allgemeine Regel dauerhaft für alle Phasen und Agenten verankern; keine neue Produktumsetzung.
 - Commits: lokaler Dokumentationscommit „Fragen und Antworten als projektweite Dokumentationspflicht verankern“, dieser Eintrag gehört zum selben Commit; Schlusszeile `Agent: Codex`. Kein Push/Merge.
