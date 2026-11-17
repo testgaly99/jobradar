@@ -85,6 +85,8 @@ for (const mitListe of [false, true]) {
     assert.deepEqual(aufrufe.map(u => u.searchParams.get("offset")), ["0", "50", "100"]);
     for (const url of aufrufe) {
       assert.equal(url.searchParams.get("order"), `${mitListe ? "companies->groesse_rang" : "companies(groesse_rang)"}.asc,erstmals_gesehen.desc,id.asc`);
+      // Sortierspalte muss im Embed mitselektiert sein, sonst Fehler 42703 (Live-Bug)
+      assert.match(url.searchParams.get("select") ?? "", mitListe ? /companies(?!\()/ : /companies!inner\([^)]*groesse_rang/);
       assert.equal(url.searchParams.get("erfahrungslevel"), "in.(Senior)");
       assert.equal(url.searchParams.get("limit"), "50");
     }

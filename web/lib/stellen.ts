@@ -6,7 +6,7 @@ const arr = (l: string[]) => `{${l.map((s) => `"${s.replace(/[\\"]/g, "\\$&")}"`
 
 export { PRO_SEITE } from "./filter.ts";
 export const SPALTEN =
-  "id,unternehmen,titel,ort,staedte,remote,arbeitsmodell,vertragsart,abteilung,erfahrungslevel,url,erstmals_gesehen,companies!inner(groesse_klasse,kategorie,aktiv)";
+  "id,unternehmen,titel,ort,staedte,remote,arbeitsmodell,vertragsart,abteilung,erfahrungslevel,url,erstmals_gesehen,companies!inner(groesse_klasse,groesse_rang,kategorie,aktiv)";
 
 // Eine Abfrage aus dem Filter. companies!inner + aktiv=true blendet Stellen inaktiver Firmen aus.
 export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
@@ -14,7 +14,7 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   // Die Funktion liefert eine Zeile je Stelle. PostgREST filtert, zählt und sortiert global, erst dann folgt range().
   let q = mitListe
     ? sb.rpc("ranking_stellen", { p_listen: f.liste }, { count: "exact" })
-      .select(SPALTEN.replace("companies!inner(groesse_klasse,kategorie,aktiv)", "companies"))
+      .select(SPALTEN.replace("companies!inner(groesse_klasse,groesse_rang,kategorie,aktiv)", "companies"))
     : sb.from("jobs").select(SPALTEN, { count: "exact" })
       .eq("status", "offen").eq("sichtbar", true).eq("companies.aktiv", true);
   if (f.groesse.length) q = q.in(mitListe ? "groesse_klasse" : "companies.groesse_klasse", f.groesse);
