@@ -17,6 +17,7 @@ Dieses Projekt wird hauptsächlich mit Claude Code gebaut. Arbeitest du (ein and
 - **Keine neuen Dienste, Konten, kostenpflichtigen APIs oder Pakete** ohne Zustimmung (`CLAUDE.md` 3 und 10).
 - **Das Repo ist öffentlich:** keine Namen, E-Mails, Adressen, Vercel-Adresse oder sonstige persönliche Daten in Code oder Doku.
 - **Kanban-Animationen** nicht verändern. Scraping nur legal und fair (`CLAUDE.md` 3.5, 9).
+- **Ranglisten:** Im Repo (Code, Doku, Commits, Tests) nur Quellen mit offener Lizenz namentlich nennen (`CLAUDE.md` 4.8). Keine Listennamen anderer Herausgeber in Beispielen, Fixtures oder Testdaten.
 - Halte-Punkte in `docs/STATUS.md` („Halte vor dem Weitermachen“) sind verbindlich: dort anhalten und den Nutzer fragen.
 
 ## 3. Wie du arbeitest
