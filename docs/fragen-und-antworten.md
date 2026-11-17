@@ -28,7 +28,7 @@ In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q22**.
 
 ## Runde 2026-11-17 mit Claude Code (Q14–Q21)
 
-Fragen von Claude im Chat gestellt; der Fragewortlaut und die angebotenen Optionen liegen im Repo **nicht** vor (Lücke ausdrücklich benannt, nicht nachträglich erfunden). Die Spalte „Bedeutung“ gibt die Übergabe an den dokumentierenden Helfer wieder. Antworten im Wortlaut.
+Fragen von Claude im Chat gestellt; Fragetext, Optionen und Empfehlung unten im Kern-Wortlaut von Claude nachgetragen (2026-11-17). Die Spalte „Bedeutung“ gibt die Übergabe an den dokumentierenden Helfer wieder. Antworten im Wortlaut.
 
 | Kennung | Thema | Nutzerantwort im Wortlaut | Bedeutung / Folge | Status |
 |---|---|---|---|---|
@@ -42,6 +42,17 @@ Fragen von Claude im Chat gestellt; der Fragewortlaut und die angebotenen Option
 | Q21 | Ablauf des Hochladens | „Passt“ | Zweig pushen für Linux-CI → Nutzer spielt Migration 010 ein → erneut testen → „Ja, hochladen“ nach `main`. Halte-Punkte bleiben (Groq „passt“, erstes Live-Schreiben, „Ja, hochladen“). | entschieden |
 
 Ebenfalls am 2026-11-17, ohne Q-Nummer: CV-Farben in CLAUDE.md 6 festgehalten (Grün = belegt, Gelb = teilweise/unklar, Rot = nicht belegt). Diese Kurzfassung weicht von Q3 ab („Rot = nachweislich nicht erfüllt“); vor dem Bau klären (CV-Plan).
+
+
+### Fragetexte Q14–Q21 (Claude, 2026-11-17)
+- **Q14 – Lesezeichen oder Chrome-Erweiterung?** Optionen: a) Erweiterung behalten (fertig, getestet; Chrome/Edge, nicht Safari/Handy); b) zurück zum Lesezeichen (ohne Installation, aber meist nur Adresse, viele Jobseiten blockieren es); c) beides. Empfehlung: a).
+- **Q15 – Mistral für den CV-Abgleich?** Hintergrund: CV = persönliche Daten, Regel „nur über Claude-Abo“, Mistral-Gratis-Tarif darf Eingaben zum Training nutzen. Optionen: a) kein Mistral für den CV; b) nur geschwärzter CV; c) nur bezahlter Tarif ohne Training. Empfehlung: a).
+- **Q16 – LinkedIn-Seiten mit der Erweiterung lesen?** Hintergrund: LinkedIn verbietet auch Browser-Erweiterungen, die Inhalte kopieren; Risiko Kontosperre. Optionen: a) überall lesen; b) auf Portalen (LinkedIn, StepStone, Indeed, XING …) nur Adresse und Titel; c) dort gar nicht auslösen. Empfehlung: b).
+- **Q17 – Neue Fragen-Regel in CLAUDE.md** (von Codex ohne Rückfrage eingetragen): Empfehlung: behalten, auf drei Sätze kürzen.
+- **Q18 – Doku verschlanken** (STATUS kurz, Codex-Pläne zusammenfassen, Wiederholungen streichen, „für später“ einordnen, Fragen-Regel kürzen)? Empfehlung: ja.
+- **Q19 – Privat oder später öffentlich/kommerziell?** Frage nach dem Ziel in eigenen Worten (bestimmt die Rechtslage der Rankings).
+- **Q20 – Q13 und offene CV-Fragen jetzt oder zu Beginn der Phase?** Empfehlung: zu Beginn der jeweiligen Phase.
+- **Q21 – Reihenfolge bis zum Hochladen:** Korrekturen → Tests → Zweig hochladen (Linux-Prüfung) → Nutzer spielt 010 ein → Klicktest → „Ja, hochladen“ nach main. Empfehlung: ja.
 
 ## Ältere dokumentierte Gespräche
 

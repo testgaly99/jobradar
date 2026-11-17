@@ -6,7 +6,7 @@ Stand: 2026-11-17. **Laufende Anforderungsklärung, kein freigegebener Bauplan.*
 
 - **Q15 (Nutzerantwort „a). Analysiere aber, inwieweit das mein Kontingent aufbrauchen wird.“):** CV-Daten laufen **nur über Claude**; Mistral wird **nicht** für CVs genutzt. Damit sind A1 (Mistral-Option), A8/Q5 und der Mistral-Zweig unten überholt; die Mistral-Anbieterfakten bleiben nur als Material für die Phase-4-Prüfung (öffentliche Anzeigentexte, `docs/phasen-vorarbeit.md`). Wortlaut-Zeile in `docs/fragen-und-antworten.md`.
 - **Offener Auftrag aus Q15:** Analysieren, wie stark der nächtliche CV-Abgleich das Claude-Pro-Kontingent verbraucht (Zahl gemerkter Stellen × CV-Versionen, Wiederverwendung nach A11, Haiku laut CLAUDE.md 6). Noch nicht erledigt.
-- **Farben in CLAUDE.md 6 (Entscheidung 2026-11-17):** „Grün = belegt, Gelb = teilweise/unklar, Rot = nicht belegt, jeweils mit Beleg oder Begründung“. **Abweichung zu Q3/A6** („Rot = nachweislich nicht erfüllt“, „Fehlende Erwähnung allein ist kein Rot“): vor dem Bau mit dem Nutzer klären, welche Fassung gilt. Bis dahin nichts still entscheiden.
+- **Farben in CLAUDE.md 6 (Entscheidung 2026-11-17, an Q3 angeglichen):** Grün = belegt, Gelb = teilweise oder noch nicht belegt, Rot = nachweislich nicht erfüllt; jeweils mit Beleg oder Begründung. Die zunächst abweichende Kurzfassung „Rot = nicht belegt“ wurde am 2026-11-17 korrigiert.
 
 ## Antwortstand
 
@@ -14,7 +14,7 @@ Stand: 2026-11-17. **Laufende Anforderungsklärung, kein freigegebener Bauplan.*
 |---|---|---|
 | Q1 | Beantwortet | Belege, offene Nachweise und CV-Empfehlung zuerst; Prozentwert später. |
 | Q2 | Zunächst mit Darstellungswunsch beantwortet; Bedeutung anschließend durch Q3 geklärt | Übereinstimmungen und offene/nicht erfüllte Anforderungen direkt in der Stellenanzeige markieren. Q2 allein bestätigte die vorgeschlagene Behandlung fehlender Nachweise noch nicht. |
-| Q3 | Beantwortet | Grün = belegt, Gelb = teilweise oder noch nicht belegt, Rot = nachweislich nicht erfüllt. Ganze Anforderung markieren; Klick zeigt Beleg oder Begründung. (Abweichende Kurzfassung in CLAUDE.md 6, siehe oben.) |
+| Q3 | Beantwortet | Grün = belegt, Gelb = teilweise oder noch nicht belegt, Rot = nachweislich nicht erfüllt. Ganze Anforderung markieren; Klick zeigt Beleg oder Begründung. |
 | Q4 | Mit eigener Präzisierung beantwortet | Alle CVs abgleichen, besten passenden CV als Grundlage des angezeigten Vergleichs verwenden und benennen. Kein Gesamtprofil aus zusammengelegten CV-Belegen. Eine manuelle Auswahl zum Wechseln wurde nicht ausdrücklich bestätigt. |
 | Q5 | Auf Nutzerwunsch zurückgestellt; **durch Q15 am 2026-11-17 entschieden** | Ursprünglich: Mistral als offenes To-do später klären. Jetzt: kein Mistral für CVs. |
 | Q8 | Beantwortet am 2026-11-17 | Nachts alle eigenen gemerkten Stellen abgleichen. Diese Auswahl allein entschied Wiederverwendung noch nicht; anschließend durch Q11 bestätigt. |
@@ -229,7 +229,7 @@ Der Fragewortlaut liegt im Repo nicht vor (im Chat mit Claude gestellt; Lücke a
 | A3 | Q2: Darstellungswunsch bestätigt; Bedeutung später durch Q3 geklärt | Übereinstimmungen und offene/nicht erfüllte Anforderungen farblich **direkt in der Stellenanzeige** markieren. |
 | A4 | Bestehende Projektanforderung | PDF und Word, mehrere eigene CV-Versionen, begründete CV-Empfehlung, private Daten/Ergebnisse pro Nutzer. Kein Zugriff durch Gäste/andere Nutzer. Vorerst persönliche Nutzung; kein gemeinsames Abo für fremde Nutzer vorsehen. |
 | A5 | Bestehende Qualitätsgrenze | Keine Fähigkeiten erfinden oder aus bloßer Nichterwähnung sicher auf Unfähigkeit schließen. Ergebnisse müssen anhand tatsächlicher CV-/Anzeigenpassagen nachvollziehbar sein. |
-| A6 | Antwort Q3 bestätigt (Abweichung CLAUDE.md 6 klären) | Ganze Anforderung im unveränderten Anzeigentext markieren; Klick zeigt CV-Beleg bzw. Begründung. Grün = belegt, Gelb = teilweise oder noch nicht belegt (beide Gründe im Text unterscheidbar), Rot = nachweislich nicht erfüllt. Fehlende Erwähnung allein ist kein Rot. |
+| A6 | Antwort Q3 bestätigt (CLAUDE.md 6 angeglichen) | Ganze Anforderung im unveränderten Anzeigentext markieren; Klick zeigt CV-Beleg bzw. Begründung. Grün = belegt, Gelb = teilweise oder noch nicht belegt (beide Gründe im Text unterscheidbar), Rot = nachweislich nicht erfüllt. Fehlende Erwähnung allein ist kein Rot. |
 | A7 | Freie Antwort Q4; durch Q9 ergänzt | Alle CVs einzeln abgleichen, besten passenden CV für den angezeigten Vergleich verwenden und ausdrücklich benennen. Keine Belege mehrerer CVs zu einem scheinbar vollständigen Einzel-CV zusammenführen. Bei Gleichstand mehrere gleich gute CVs nennen; manueller Wechsel und Voreinstellung der angezeigten Version bei Gleichstand bleiben unentschieden. |
 | A8 | Antwort Q5 zurückgestellt; **durch Q15 entschieden** | Kein Mistral für CVs. |
 | A9 | Antwort Q8; durch Q11 ergänzt | „Nachts alle gemerkten Stellen abgleichen“. Zielumfang sind alle eigenen Stellen im Status Gemerkt; alle eigenen CV-Versionen gemäß Q4 einzeln. Knopf pro Stelle oder Start bei jedem Öffnen sind nicht der bestätigte Auslöser. Genaue Nachtzeit, Laufumgebung und Reihenfolge bei knappem Kontingent offen. |
