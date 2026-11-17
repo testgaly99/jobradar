@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { runInNewContext } from "node:vm";
 import { createClient } from "@supabase/supabase-js";
-import { pruefeImportDaten, importiereStelle, bearbeiteImportAnfrage } from "../lib/stellen-import.ts";
+import { PORTALE, istPortal, pruefeImportDaten, importiereStelle, bearbeiteImportAnfrage } from "../lib/stellen-import.ts";
 
 const OWNER = "11111111-1111-4111-8111-111111111111";
 const ID = "22222222-2222-4222-8222-222222222222";
@@ -47,12 +47,29 @@ function anfrage(body: string = JSON.stringify({ link: LINK }), headers: Record<
 }
 
 test("Importdaten normalisieren Link und Klartext ohne Abruf", () => {
-  const d = eingabe({ link: " https://www.linkedin.com/jobs/search/?currentJobId=123&trk=x ", titel: " Datenanalyse ", firma: " Beispielbetrieb ", text: "Zeile 1\r\nZeile 2" });
-  assert.equal(d.link, "https://www.linkedin.com/jobs/view/123/");
+  const d = eingabe({ link: " https://jobs.example.invalid/a?x=1 ", titel: " Datenanalyse ", firma: " Beispielbetrieb ", text: "Zeile 1\r\nZeile 2" });
   assert.equal(d.titel, "Datenanalyse");
   assert.equal(d.firma, "Beispielbetrieb");
   assert.equal(d.text, "Zeile 1\nZeile 2");
+});
+
+test("Portal-Links: Text und Firma aus der Seite werden verworfen, Titel und Link bleiben", () => {
+  const d = eingabe({ link: " https://www.linkedin.com/jobs/search/?currentJobId=123&trk=x ", titel: " Datenanalyse ", firma: " Beispielbetrieb ", text: "Anzeigentext" });
+  assert.equal(d.link, "https://www.linkedin.com/jobs/view/123/");
   assert.equal(d.quelle, "linkedin.com");
+  assert.equal(d.titel, "Datenanalyse");
+  assert.equal(d.firma, null);
+  assert.equal(d.text, null);
+  const s = eingabe({ link: "https://de.stepstone.de/stellenangebote--x", firma: "F", text: "T" });
+  assert.deepEqual([s.firma, s.text], [null, null]);
+  const evil = eingabe({ link: "https://evil-linkedin.com/jobs/1", firma: "F", text: "T" });
+  assert.deepEqual([evil.firma, evil.text], ["F", "T"]);
+});
+
+test("Portalliste in Website und Erweiterung ist identisch", async () => {
+  const kern = await import("../../browser-erweiterung/chrome/kern.mjs");
+  assert.deepEqual([...PORTALE].sort(), [...kern.PORTALE].sort());
+  for (const h of ["www.indeed.co.uk", "x.xing.com", "linkedin.de"]) assert.equal(istPortal(h), kern.istPortal(h), h);
 });
 
 test("Importdaten weisen kaputte Formen, unzulässige Felder, Credentials und zu lange Werte zurück", () => {

@@ -3,6 +3,20 @@ import { istUuid } from "./bewerbung.ts";
 import { analysiereLink } from "./link-import.ts";
 import { MAX_TEXT } from "./uebernahme.ts";
 
+
+// Jobportale: Nur Adresse und Seitentitel übernehmen (Nutzungsbedingungen verbieten das Kopieren per Erweiterung).
+// "name.*" steht für beliebige Endungen. Die Liste steht je einmal in der Erweiterung (kern.mjs) und in der Website (web/lib/stellen-import.ts); ein Test prüft Gleichheit.
+export const PORTALE: string[] = ["linkedin.com", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com"];
+export function istPortal(host: string): boolean {
+  const l = String(host).toLowerCase().split(".");
+  if (l.at(-1) === "") l.pop();
+  return PORTALE.some((p) => {
+    if (!p.endsWith(".*")) return l.length >= 2 && l.slice(-p.split(".").length).join(".") === p;
+    const n = p.slice(0, -2), tld = l.at(-1) ?? "";
+    return tld.length >= 2 && (l.at(-2) === n || (tld.length === 2 && ["co", "com"].includes(l.at(-2) ?? "") && l.at(-3) === n));
+  });
+}
+
 type ImportDaten = { link: string; quelle: string; titel: string | null; firma: string | null; text: string | null };
 type ImportErgebnis = { id: string; vorhanden: boolean } | { fehler: string };
 const FEHLER = "Die Stelle konnte nicht übernommen werden. Bitte erneut versuchen.";
@@ -22,12 +36,14 @@ export function pruefeImportDaten(wert: unknown): { daten: ImportDaten } | { feh
   if (!["http:", "https:"].includes(url.protocol) || url.username || url.password) return { fehler: "Nur http- und https-Links ohne Zugangsdaten sind möglich." };
   const a = analysiereLink(url.href);
   const optional = (feld: "titel" | "firma" | "text") => (w[feld] as string | undefined)?.replace(/\r\n/g, "\n").trim() || null;
+  // Auf Portalen nie Text oder Firma aus der Seite speichern (auch nicht von veralteten Erweiterungen); Firma nur aus dem Link.
+  const portal = istPortal(url.hostname);
   const titel = optional("titel") ?? a.titel ?? null;
-  const firma = optional("firma") ?? a.firma ?? null;
+  const firma = (portal ? null : optional("firma")) ?? a.firma ?? null;
   if ((titel?.length ?? 0) > 500 || (firma?.length ?? 0) > 300) return { fehler: "Firma oder Titel aus dem Anzeigenlink sind zu lang." };
   return { daten: {
     link: a.link ?? url.href, quelle: a.quelle,
-    titel, firma, text: optional("text"),
+    titel, firma, text: portal ? null : optional("text"),
   } };
 }
 

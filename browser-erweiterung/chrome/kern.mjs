@@ -3,6 +3,19 @@ export const MAX_ALTER = 10 * 60 * 1000;
 const PREFIX = "stellen-import:";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+// Jobportale: Nur Adresse und Seitentitel übernehmen (Nutzungsbedingungen verbieten das Kopieren per Erweiterung).
+// "name.*" steht für beliebige Endungen. Die Liste steht je einmal in der Erweiterung (kern.mjs) und in der Website (web/lib/stellen-import.ts); ein Test prüft Gleichheit.
+export const PORTALE = ["linkedin.com", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com"];
+export function istPortal(host) {
+  const l = String(host).toLowerCase().split(".");
+  if (l.at(-1) === "") l.pop();
+  return PORTALE.some((p) => {
+    if (!p.endsWith(".*")) return l.length >= 2 && l.slice(-p.split(".").length).join(".") === p;
+    const n = p.slice(0, -2), tld = l.at(-1) ?? "";
+    return tld.length >= 2 && (l.at(-2) === n || (tld.length === 2 && ["co", "com"].includes(l.at(-2) ?? "") && l.at(-3) === n));
+  });
+}
+
 export function appOrigin(wert) {
   let url;
   try { url = new URL(wert.trim()); } catch { throw Error("Bitte die Adresse deiner Jobradar-Website eintragen."); }
@@ -13,7 +26,7 @@ export function appOrigin(wert) {
   return url.origin;
 }
 
-export function erfasseAnzeige() {
+export function erfasseAnzeige(nurAdresse = false) {
   const url = new URL(location.href);
   if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || url.href.length > 4096) throw Error("Diese Seite kann nicht übernommen werden.");
   const kurz = (s, limit) => typeof s === "string" ? s.trim().slice(0, limit) : "";
@@ -32,6 +45,7 @@ export function erfasseAnzeige() {
     })
     .replace(/&(amp|lt|gt|quot|apos|nbsp);/g, (_, name) => ({ amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " })[name])
     .replace(/\s+/g, " ").trim();
+  if (nurAdresse) return { link: url.href, ...(kurz(document.title, 500) ? { titel: kurz(document.title, 500) } : {}) };
   const stellen = [];
   let besucht = 0;
   const finde = (obj, tiefe = 0) => {
@@ -142,7 +156,7 @@ export function erstelleImporteur(chrome, { jetzt = Date.now, uuid = () => crypt
         return;
       }
       if ((await eintraege()).length >= 10) throw Error("Bitte zuerst einen offenen Import abschließen oder schließen.");
-      const results = await chrome.scripting.executeScript({ target: { tabId: tab.id, frameIds: [0] }, world: "ISOLATED", func: erfasseAnzeige });
+      const results = await chrome.scripting.executeScript({ target: { tabId: tab.id, frameIds: [0] }, world: "ISOLATED", func: erfasseAnzeige, args: [istPortal(new URL(tab.url).hostname)] });
       const roh = results.find((r) => r.frameId === 0)?.result;
       if (!roh || typeof roh.link !== "string" || roh.link.length > 4096) throw Error("Der Anzeigenlink konnte nicht gelesen werden.");
       const link = new URL(roh.link);

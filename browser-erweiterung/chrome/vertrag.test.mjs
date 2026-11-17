@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
-import { appOrigin, erfasseAnzeige, uebertrageImAppTab, erstelleImporteur, MAX_ALTER } from "./kern.mjs";
+import { appOrigin, erfasseAnzeige, uebertrageImAppTab, erstelleImporteur, istPortal, PORTALE, MAX_ALTER } from "./kern.mjs";
 
 const origin = "https://board.example.invalid";
 const id = "11111111-1111-4111-8111-111111111111";
@@ -15,7 +15,7 @@ test("Ziel ist eine einzelne HTTPS-Origin oder genau localhost:3002", () => {
   }
 });
 
-function erfassung({ postings = [], auswahl = "", feldFokus = false, feldImBereich = false, h1 = ["Analyst"], titel = "Stellenanzeige", url = "https://karriere.example.invalid/job/7" } = {}) {
+function erfassung({ postings = [], auswahl = "", feldFokus = false, feldImBereich = false, h1 = ["Analyst"], titel = "Stellenanzeige", url = "https://karriere.example.invalid/job/7", nurAdresse } = {}) {
   const feld = { nodeType: 1, closest: () => ({}) };
   const document = {
     title: titel,
@@ -30,7 +30,7 @@ function erfassung({ postings = [], auswahl = "", feldFokus = false, feldImBerei
     get body() { throw Error("Ganze Seite darf nicht gelesen werden"); },
     get cookie() { throw Error("Cookies dürfen nicht gelesen werden"); },
   };
-  return vm.runInNewContext(`(${erfasseAnzeige.toString()})()`, {
+  return vm.runInNewContext(`(${erfasseAnzeige.toString()})(${JSON.stringify(nurAdresse)})`, {
     document, location: { href: url }, window: { getSelection: () => ({ rangeCount: auswahl ? 1 : 0, getRangeAt: () => ({ intersectsNode: () => feldImBereich }), toString: () => { if (feldFokus || feldImBereich) throw Error("Formularauswahl darf nicht gelesen werden"); return auswahl; } }) }, URL,
   });
 }
@@ -64,6 +64,18 @@ test("Fokus oder Auswahlbereich in Formular/Editor wird vor dem Auslesen ausgesc
     const mitStelle = erfassung({ ...schutz, auswahl: "Private Eingabe", postings: [{ "@type": "JobPosting", title: "Analyst", description: "Öffentliche Aufgaben" }] });
     assert.equal(mitStelle.text, "Öffentliche Aufgaben");
   }
+});
+
+test("Portale: nur registrierbare Domain samt Subdomains, keine Ähnlichkeiten", () => {
+  for (const h of ["linkedin.com", "de.linkedin.com", "www.stepstone.de", "stepstone.at", "de.indeed.com", "indeed.de", "uk.indeed.co.uk", "www.xing.com", "glassdoor.de", "www.monster.fr", "www.kununu.com", "WWW.LinkedIn.com"]) assert.equal(istPortal(h), true, h);
+  for (const h of ["evil-linkedin.com", "linkedin.com.evil.example", "notindeed.de", "stepstone.evil.com", "linkedin.de", "xing.de", "kununu.de", "karriere.example.invalid", "", "indeed"]) assert.equal(istPortal(h), false, h);
+  assert.ok(PORTALE.includes("linkedin.com"));
+});
+
+test("Portalseite mit JSON-LD und Auswahl liefert nur Adresse und Seitentitel", () => {
+  const r = erfassung({ nurAdresse: true, url: "https://de.linkedin.com/jobs/view/1", titel: "Analyst | LinkedIn", h1: ["Anderer"], auswahl: "Anzeigentext",
+    postings: [{ "@type": "JobPosting", title: "SQL", hiringOrganization: { name: "Firma" }, description: "Text" }] });
+  assert.deepEqual({ ...r }, { link: "https://de.linkedin.com/jobs/view/1", titel: "Analyst | LinkedIn" });
 });
 
 function appAufruf({ url = `${origin}/bewerbungen/import`, status = 201, body = { id, vorhanden: false }, kaputt = false } = {}) {
@@ -134,6 +146,16 @@ function ersatz() {
   const importer = erstelleImporteur(chrome, { jetzt: () => zeit, uuid: () => `00000000-0000-4000-8000-${String(nummer).padStart(12, "0")}` });
   return { chrome, session, tabs, aufrufe, importer, antwort: (wert) => { antwort = wert; }, zeit: (wert) => { zeit = wert; } };
 }
+
+test("Der Hintergrund fordert auf Portalen die reduzierte Erfassung an, sonst nicht", async () => {
+  for (const [url, erwartet] of [["https://www.stepstone.de/stellenangebote--x", true], ["https://quelle.example.invalid/job", false]]) {
+    const f = ersatz();
+    f.tabs.set(5, { id: 5, url, status: "complete" });
+    await f.importer.starten({ id: 5, url });
+    const s = f.aufrufe.find((a) => a[0] === "script" && a[1].func === erfasseAnzeige);
+    assert.deepEqual(s[1].args, [erwartet]);
+  }
+});
 
 test("Nur gestarteter Transfer wird im gebundenen App-Tab ausgeführt, danach einmalig beendet", async () => {
   const f = ersatz();
