@@ -16,11 +16,11 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
         text = text_aus_html(roh)
         abt = ((j.get("departments") or [{}])[0].get("name") or "").strip()
         stellen.append({
-            "ext_id": stellen_id(j["id"]),
-            "titel": j["title"],
+            "ext_id": stellen_id(j.get("id")),
+            "titel": j.get("title"),
             "ort": ort,
             "remote": "remote" in ort.lower(),
-            "url": j["absolute_url"],
+            "url": j.get("absolute_url"),
             "beschreibung_kurz": text[:300],
             "text": text,
             "abschnitte": abschnitte(roh),

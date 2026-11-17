@@ -10,6 +10,7 @@ def objekt_liste(daten, feld):
 
 
 def stellen_id(wert):
+    """None bei ungültiger ID: run.py überspringt die Stelle dann als "ungültige ID"."""
     if isinstance(wert, bool) or not isinstance(wert, (str, int)) or not str(wert).strip():
-        raise ValueError("Ungültige ATS-Stellen-ID")
+        return None
     return str(wert)

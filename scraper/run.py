@@ -28,37 +28,48 @@ def _schreibe_text(pfad, text):
         raise
 
 
+def _grund(s, bekannte, gesehen):
+    """Kurzer, fester Grund, warum eine einzelne Stelle übersprungen wird (nie Rohdaten); None = gültig."""
+    if not isinstance(s, dict):
+        return "kein Objekt"
+    if "uebersprungen" in s:  # Adapter meldet eine kaputte Einzelstelle
+        return s["uebersprungen"]
+    ext_id = s.get("ext_id")
+    if not isinstance(ext_id, str) or not ext_id.strip():
+        return "ungültige ID"
+    if ext_id in gesehen:
+        return "doppelte ID"
+    unveraendert = s.get("unveraendert", False)
+    if not isinstance(unveraendert, bool):
+        return "ungültige Markierung"
+    if unveraendert:
+        return None if ext_id in bekannte else "unbekannte ID"
+    for feld, grund in (("titel", "ohne Titel"), ("url", "ohne URL")):
+        if not isinstance(s.get(feld), str) or not s[feld].strip():
+            return grund
+    return None
+
+
 def _pruefe_stellen(stellen, bekannte):
-    """Kaputte Antworten vor jedem Stellenabgleich ablehnen; [] bleibt ein gültiger Abruf."""
+    """Kaputte Gesamtantwort kippt die Firma; kaputte Einzelstellen werden übersprungen. [] bleibt gültig."""
     if not isinstance(stellen, list):
         raise ValueError("Abrufantwort ist keine Liste")
-    gesehen = set()
+    gueltig, uebersprungen, gesehen = [], Counter(), set()
     for s in stellen:
-        if not isinstance(s, dict):
-            raise ValueError("Stelleneintrag ist kein Objekt")
-        ext_id = s["ext_id"]
-        if not isinstance(ext_id, str) or not ext_id.strip():
-            raise ValueError("Ungültige Stellen-ID")
-        if ext_id in gesehen:
-            raise ValueError("Doppelte Stellen-ID")
-        gesehen.add(ext_id)
-        unveraendert = s.get("unveraendert", False)
-        if not isinstance(unveraendert, bool):
-            raise ValueError("Ungültige unveraendert-Markierung")
-        if unveraendert:
-            if ext_id not in bekannte:
-                raise ValueError("Unbekannte ID in unveraendert-Kurzmeldung")
+        grund = _grund(s, bekannte, gesehen)
+        if grund:
+            uebersprungen[grund] += 1
         else:
-            for feld in ("titel", "url"):
-                if not isinstance(s[feld], str) or not s[feld].strip():
-                    raise ValueError(f"Ungültiges Pflichtfeld: {feld}")
+            gesehen.add(s["ext_id"])
+            gueltig.append(s)
+    return gueltig, uebersprungen
 
 
 def _firma(f, heute):
     """Gibt die Berichtszeile fuer ein Unternehmen zurueck; bei Fehler wird nichts geschrieben."""
     name = f["name"]
     zeile = {"name": name, "gefunden": 0, "gefiltert": 0, "neu": 0,
-             "geschlossen": 0, "fehler": "", "gruende": {}}
+             "geschlossen": 0, "fehler": "", "gruende": {}, "uebersprungen": {}}
     schritt = "Adapterwahl"
     try:
         adapter = ADAPTER.get(f["ats_typ"])
@@ -69,9 +80,9 @@ def _firma(f, heute):
         schritt = "Abruf"
         stellen = adapter(f["ats_id"], bekannte=bekannte)
         schritt = "Antwortprüfung"
-        _pruefe_stellen(stellen, bekannte)
-        unveraendert = [s["ext_id"] for s in stellen if s.get("unveraendert")]
-        voll = [s for s in stellen if not s.get("unveraendert")]
+        gueltig, uebersprungen = _pruefe_stellen(stellen, bekannte)
+        unveraendert = [s["ext_id"] for s in gueltig if s.get("unveraendert")]
+        voll = [s for s in gueltig if not s.get("unveraendert")]
         behalten, gruende = [], Counter()
         schritt = "Filterung"
         for s in voll:
@@ -88,9 +99,10 @@ def _firma(f, heute):
             else:
                 gruende[grund] += 1
         schritt = "Abgleich"
-        neu, geschlossen = db.schreibe(name, behalten, heute, unveraendert)
+        # Eine übersprungene Stelle könnte eine bestehende sein: dann nichts schließen.
+        neu, geschlossen = db.schreibe(name, behalten, heute, unveraendert, schliessen=not uebersprungen)
         zeile.update(gefunden=len(stellen), gefiltert=sum(gruende.values()), gruende=dict(gruende),
-                     neu=neu, geschlossen=geschlossen)
+                     uebersprungen=dict(uebersprungen), neu=neu, geschlossen=geschlossen)
     except Exception as e:
         zeile["fehler"] = f"{schritt}: {kurzfehler(e)}"[:200]
     return zeile
@@ -108,6 +120,9 @@ def _markdown(bericht):
     for f in bericht["firmen"]:
         if f["gruende"]:
             z.append(f"- {f['name']} gefiltert: " + ", ".join(f"{g}: {n}" for g, n in f["gruende"].items()))
+        if f.get("uebersprungen"):
+            z.append(f"- {f['name']}: {sum(f['uebersprungen'].values())} Stellen übersprungen ("
+                     + ", ".join(f"{g}: {n}" for g, n in f["uebersprungen"].items()) + ")")
     if bericht.get("ki"):
         z.append("- KI: " + ", ".join(f"{k}: {v}" for k, v in bericht["ki"].items()))
     return "\n".join(z) + "\n"

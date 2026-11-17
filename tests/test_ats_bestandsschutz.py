@@ -1,4 +1,4 @@
-"""Echte Adapterkette mit künstlichen Antworten: kaputte Flags erhalten den Bestand."""
+"""Echte Adapterkette mit künstlichen Antworten: kaputte Flags werden übersprungen, gültige Stellen übernommen, nichts geschlossen."""
 from copy import deepcopy
 from types import SimpleNamespace
 
@@ -26,14 +26,19 @@ def vorbereiten(monkeypatch, adapter, feld):
     return firma, fake, daten
 
 
-def pruefe_unveraenderten_bestand(firma, fake, daten, kaputt, teilweise):
+def pruefe_uebersprungen(firma, fake, daten, kaputt, teilweise, grund):
     bestand = deepcopy(fake.t["jobs"])
     gueltig = {**daten[0], "descriptionPlain": "Geänderter Text", "description": "Geänderter Text"}
     daten[:] = [gueltig, kaputt] if teilweise else [kaputt]
     bericht = run._firma(firma, "2026-11-16")
-    assert bericht["fehler"] == "Abruf: ValueError"
+    assert bericht["fehler"] == "" and bericht["uebersprungen"] == {grund: 1}
     assert bericht["geschlossen"] == bericht["neu"] == 0
-    assert fake.t["jobs"] == bestand  # auch Text, Hash und letztes Sichtungsdatum bleiben erhalten
+    assert fake.t["jobs"]["Testfirma:2"] == bestand["Testfirma:2"]  # nicht geschlossen, Text bleibt
+    if teilweise:
+        assert fake.t["jobs"]["Testfirma:1"]["text"] == "Geänderter Text"
+        assert fake.t["jobs"]["Testfirma:1"]["zuletzt_gesehen"] == "2026-11-16"
+    else:
+        assert fake.t["jobs"] == bestand
 
 
 @pytest.mark.parametrize("aenderung", [
@@ -41,18 +46,18 @@ def pruefe_unveraenderten_bestand(firma, fake, daten, kaputt, teilweise):
     {"isListed": "false"}, {"isListed": {}}, {"isListed": []},
 ])
 @pytest.mark.parametrize("teilweise", [False, True])
-def test_ashby_kaputtes_islisted_bricht_firma_vor_abgleich_ab(monkeypatch, aenderung, teilweise):
+def test_ashby_kaputtes_islisted_wird_uebersprungen(monkeypatch, aenderung, teilweise):
     firma, fake, daten = vorbereiten(monkeypatch, ashby, "jobs")
     kaputt = {k: v for k, v in daten[1].items() if k != "isListed"}
     kaputt = {} if aenderung is None else {**kaputt, **aenderung}
-    pruefe_unveraenderten_bestand(firma, fake, daten, kaputt, teilweise)
+    pruefe_uebersprungen(firma, fake, daten, kaputt, teilweise, "isListed ungültig")
 
 
 @pytest.mark.parametrize("status", [None, 0, False, True, {}, [], "", " \t\n"])
 @pytest.mark.parametrize("teilweise", [False, True])
-def test_recruitee_kaputter_status_bricht_firma_vor_abgleich_ab(monkeypatch, status, teilweise):
+def test_recruitee_kaputter_status_wird_uebersprungen(monkeypatch, status, teilweise):
     firma, fake, daten = vorbereiten(monkeypatch, recruitee, "offers")
-    pruefe_unveraenderten_bestand(firma, fake, daten, {**daten[1], "status": status}, teilweise)
+    pruefe_uebersprungen(firma, fake, daten, {**daten[1], "status": status}, teilweise, "Status ungültig")
 
 
 @pytest.mark.parametrize("adapter,feld,unveroeffentlicht", [

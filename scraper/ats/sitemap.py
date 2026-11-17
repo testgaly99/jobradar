@@ -143,16 +143,17 @@ def _stelle(seite, url, ext_id, heute):
 def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[dict]:
     sitemap, _, filter_ = ats_id.partition("#")  # das Fragment wird nie abgerufen
     heute = date.today().isoformat()
-    # Erst die vollständige URL-Auswahl prüfen: bekannte IDs und Vorfilter dürfen Kollisionen nicht verdecken.
-    urls = {}
+    # Gleiche ID, andere URL: die erste gilt, jede weitere wird gemeldet (run.py schließt dann nichts).
+    urls, stellen = {}, []
     for url in _urls(sitemap):  # Fehler der Sitemap selbst kippen die Firma
         if filter_ not in url:
             continue
         ext_id = _ext_id(url)
         if ext_id in urls and urls[ext_id] != url:
-            raise ValueError("Kollision verschiedener Sitemap-URLs bei derselben Stellen-ID")
+            stellen.append({"uebersprungen": "doppelte ID"})
+            continue
         urls[ext_id] = url
-    stellen, zaehler, fehlserie = [], Counter(), 0
+    zaehler, fehlserie = Counter(), 0
     for ext_id, url in urls.items():
         if _vorgefiltert(url):
             zaehler["vorgefiltert"] += 1

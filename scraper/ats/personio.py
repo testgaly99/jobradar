@@ -13,7 +13,7 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
         raise ValueError("Unerwartete Personio-XML-Wurzel")
     stellen = []
     for p in wurzel.iter("position"):
-        id_ = p.findtext("id").strip()
+        id_ = (p.findtext("id") or "").strip()  # leer: run.py überspringt die Stelle
         orte = [(o.text or "").strip() for o in p.iter("office")]  # iter: auch <additionalOffices>
         orte = [o for o in orte if o]
         roh = "".join(f"<h3>{d.findtext('name') or ''}</h3>{d.findtext('value') or ''}"

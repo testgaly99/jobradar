@@ -12,18 +12,19 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
     stellen = []
     for j in objekt_liste(daten, "jobs"):
         if not isinstance(j.get("isListed"), bool):
-            raise ValueError("Ashby-Stelle benötigt boolesches isListed")
+            stellen.append({"uebersprungen": "isListed ungültig"})
+            continue
         if not j["isListed"]:
             continue
         land = (((j.get("address") or {}).get("postalAddress")) or {}).get("addressCountry")
         teile = [j.get("location"), land] + [(s or {}).get("location") for s in j.get("secondaryLocations") or []]
         text = " ".join((j.get("descriptionPlain") or "").split())
         stellen.append({
-            "ext_id": stellen_id(j["id"]),
-            "titel": j["title"],
+            "ext_id": stellen_id(j.get("id")),
+            "titel": j.get("title"),
             "ort": ", ".join(t.strip() for t in teile if t and t.strip()),
             "remote": bool(j.get("isRemote")),
-            "url": j["jobUrl"],
+            "url": j.get("jobUrl"),
             "beschreibung_kurz": text[:300],
             "text": text,
             "abschnitte": abschnitte(j.get("descriptionHtml") or ""),

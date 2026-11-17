@@ -79,8 +79,8 @@ def test_filterfehler_bricht_nicht_ab(aufbau):
     run.ADAPTER["a"] = lambda _, **k: [{"ext_id": "2", "ort": "Berlin", "remote": False}]  # titel fehlt
     run.ADAPTER["b"] = lambda _, **k: [stelle("1"), stelle("9")]
     bericht = run.lauf("2026-11-07", d)
-    assert "KeyError" in bericht["firmen"][0]["fehler"]
-    assert t["jobs"]["A:1"]["status"] == "offen" and "A:2" not in t["jobs"]
+    assert bericht["firmen"][0]["fehler"] == "" and bericht["firmen"][0]["uebersprungen"] == {"ohne Titel": 1}
+    assert t["jobs"]["A:1"]["status"] == "offen" and "A:2" not in t["jobs"]  # übersprungen: nichts geschlossen
     assert "B:9" in t["jobs"]
 
 
@@ -204,35 +204,63 @@ def test_ki_fehler_kippt_lauf_nicht(aufbau, monkeypatch, capsys):
         assert f"KI {schritt} fehlgeschlagen: RuntimeError" in ausgabe
 
 
-@pytest.mark.parametrize("antwort", [
-    None, {}, "keine Liste", [None], [[]], [{}],
-    [stelle("1", titel="")], [stelle("1", titel=" \n ")], [stelle("1", titel=42)],
-    [{**stelle("1"), "url": None}], [{**stelle("1"), "url": " "}],
-    [stelle("")], [stelle(42)], [{**stelle("1"), "unveraendert": "ja"}],
-    [{"ext_id": "unbekannt", "unveraendert": True}],
-    [stelle("1"), stelle("1")],
-])
-def test_kaputte_abrufantwort_veraendert_keine_vorhandenen_stellen(aufbau, antwort):
+@pytest.mark.parametrize("antwort", [None, {}, "keine Liste"])
+def test_kaputte_gesamtantwort_veraendert_keine_vorhandenen_stellen(aufbau, antwort):
     d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1"), stelle("2")]})
     run.lauf("2026-11-06", d)
     vorher = copy.deepcopy(t["jobs"])
     run.ADAPTER["a"] = lambda _, **k: antwort
     bericht = run.lauf("2026-11-07", d)["firmen"][0]
-    assert bericht["fehler"]
+    assert bericht["fehler"].startswith("Antwortprüfung: ValueError")
     assert (bericht["neu"], bericht["geschlossen"]) == (0, 0)
     assert t["jobs"] == vorher
 
 
-def test_gutes_teilergebnis_wird_vor_kaputter_stelle_nicht_geschrieben(aufbau, monkeypatch):
+@pytest.mark.parametrize("kaputt,grund", [
+    (None, "kein Objekt"), ([], "kein Objekt"), ({}, "ungültige ID"),
+    (stelle("9", titel=""), "ohne Titel"), (stelle("9", titel=" \t "), "ohne Titel"), (stelle("9", titel=42), "ohne Titel"),
+    ({**stelle("9"), "url": None}, "ohne URL"), ({**stelle("9"), "url": " "}, "ohne URL"),
+    (stelle(""), "ungültige ID"), (stelle(42), "ungültige ID"), ({**stelle("9"), "unveraendert": "ja"}, "ungültige Markierung"),
+    ({"ext_id": "unbekannt", "unveraendert": True}, "unbekannte ID"),
+    (stelle("3"), "doppelte ID"), ({"uebersprungen": "isListed ungültig"}, "isListed ungültig"),
+])
+def test_kaputte_einzelstelle_wird_uebersprungen_und_verhindert_schliessen(aufbau, kaputt, grund):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1"), stelle("2")]})
+    run.lauf("2026-11-06", d)
+    vorher = copy.deepcopy(t["jobs"])
+    run.ADAPTER["a"] = lambda _, **k: [stelle("3"), kaputt]
+    bericht = run.lauf("2026-11-07", d)["firmen"][0]
+    assert bericht["fehler"] == "" and bericht["uebersprungen"] == {grund: 1}
+    assert (bericht["neu"], bericht["geschlossen"]) == (1, 0)
+    assert t["jobs"]["A:3"]["status"] == "offen"
+    assert {k: v for k, v in t["jobs"].items() if k != "A:3"} == vorher  # A:1/A:2 bleiben offen und unverändert
+    assert f"A: 1 Stellen übersprungen ({grund}: 1)" in (d / "bericht.md").read_text(encoding="utf-8")
+
+
+def test_gueltige_stellen_trotz_kaputter_stelle_uebernommen(aufbau):
     d, t = aufbau([firma("A", "a"), firma("B", "b")],
                   {"a": lambda _, **k: [stelle("1")], "b": lambda _, **k: [stelle("1")]})
     run.lauf("2026-11-06", d)
-    run.ADAPTER["a"] = lambda _, **k: [stelle("3"), {**stelle("4"), "url": ""}]
+    run.ADAPTER["a"] = lambda _, **k: [stelle("3"), {**stelle("4"), "url": ""}, stelle("5", titel=""), stelle("3")]
     run.ADAPTER["b"] = lambda _, **k: [stelle("1"), stelle("2")]
     bericht = run.lauf("2026-11-07", d)
-    assert bericht["firmen"][0]["fehler"]
-    assert "A:3" not in t["jobs"] and t["jobs"]["A:1"]["status"] == "offen"
+    a = bericht["firmen"][0]
+    assert a["fehler"] == "" and a["uebersprungen"] == {"ohne URL": 1, "ohne Titel": 1, "doppelte ID": 1}
+    assert "A:3" in t["jobs"] and "A:4" not in t["jobs"] and t["jobs"]["A:1"]["status"] == "offen"
+    assert "A: 3 Stellen übersprungen (ohne URL: 1, ohne Titel: 1, doppelte ID: 1)" in (d / "bericht.md").read_text(encoding="utf-8")
     assert "B:2" in t["jobs"] and not bericht["firmen"][1]["fehler"]
+
+
+def test_sauberer_lauf_schliesst_weiterhin(aufbau):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1"), stelle("2")]})
+    run.lauf("2026-11-06", d)
+    run.ADAPTER["a"] = lambda _, **k: [stelle("1"), {}]
+    run.lauf("2026-11-07", d)
+    assert t["jobs"]["A:2"]["status"] == "offen"
+    run.ADAPTER["a"] = lambda _, **k: [stelle("1")]
+    bericht = run.lauf("2026-11-08", d)["firmen"][0]
+    assert bericht["uebersprungen"] == {} and bericht["geschlossen"] == 1
+    assert t["jobs"]["A:2"]["status"] == "geschlossen"
 
 
 def test_echte_leere_liste_bleibt_erfolgreich_mit_bisheriger_schliesslogik(aufbau):

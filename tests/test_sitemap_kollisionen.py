@@ -1,4 +1,4 @@
-"""Gleiche technische ID darf keine unterschiedliche Stellen-URL verschlucken."""
+"""Gleiche technische ID bei verschiedenen URLs: erste URL gilt, die weitere wird als übersprungen gemeldet."""
 from copy import deepcopy
 from hashlib import sha256
 from html import escape
@@ -36,13 +36,16 @@ def vorbereiten(monkeypatch, urls):
     ["https://a.example.invalid/job/a/1", "https://b.example.invalid/job/a/1"],
 ])
 @pytest.mark.parametrize("bekannt", [False, True])
-def test_verschiedene_urls_mit_gleicher_id_brechen_vor_jedem_detailabruf_ab(monkeypatch, urls, bekannt):
+def test_verschiedene_urls_mit_gleicher_id_erste_gilt_weitere_uebersprungen(monkeypatch, urls, bekannt):
     assert sitemap._ext_id(urls[0]) == sitemap._ext_id(urls[1])
-    aufrufe = vorbereiten(monkeypatch, ["https://example.invalid/job/eindeutig/0", *urls])
-    bekannte = frozenset([sitemap._ext_id(urls[0])]) if bekannt else frozenset()
-    with pytest.raises(ValueError, match="Kollision"):
-        sitemap.hole_stellen(SITEMAP + "#/job/", bekannte=bekannte)
-    assert aufrufe == [SITEMAP]
+    u0 = "https://example.invalid/job/eindeutig/0"
+    aufrufe = vorbereiten(monkeypatch, [u0, *urls])
+    id_ = sitemap._ext_id(urls[0])
+    stellen = sitemap.hole_stellen(SITEMAP + "#/job/", bekannte=frozenset([id_]) if bekannt else frozenset())
+    assert {"uebersprungen": "doppelte ID"} in stellen
+    gueltig = [x for x in stellen if "uebersprungen" not in x]
+    assert [x["ext_id"] for x in gueltig] == [sitemap._ext_id(u0), id_]
+    assert aufrufe == [SITEMAP, u0] + ([] if bekannt else [urls[0]])
 
 
 @pytest.mark.parametrize("bekannt", [False, True])
@@ -76,22 +79,20 @@ def test_lange_urls_behalten_unterschiedliche_hash_ids_und_echte_duplikate(monke
     assert aufrufe == [SITEMAP] + ([] if bekannt else urls)
 
 
-def test_spaete_kollision_erhaelt_firmenbestand_ohne_detailabrufe(monkeypatch):
+def test_spaete_kollision_uebernimmt_neue_stelle_und_schliesst_nichts(monkeypatch):
     fake = FakeDB()
     monkeypatch.setattr(db, "_req", fake)
     monkeypatch.setattr(db, "_spalten", True)
     monkeypatch.setattr(run, "ADAPTER", {"sitemap": sitemap.hole_stellen})
     firma = {"name": "Testfirma", "ats_typ": "sitemap", "ats_id": SITEMAP + "#/job/"}
     urls = [f"https://example.invalid/job/bestand/{i}" for i in [1, 2]]
-    aufrufe = vorbereiten(monkeypatch, urls)
+    vorbereiten(monkeypatch, urls)
     assert run._firma(firma, "2026-11-15")["fehler"] == ""
     assert len(fake.t["jobs"]) == 2
     bestand = deepcopy(fake.t["jobs"])
-    aufrufe.clear()
     urls[:] = ["https://example.invalid/job/neue-stelle/0",
                "https://example.invalid/job/a+b/1", "https://example.invalid/job/a,b/1"]
     bericht = run._firma(firma, "2026-11-16")
-    assert bericht["fehler"] == "Abruf: ValueError"
-    assert bericht["neu"] == bericht["geschlossen"] == 0
-    assert fake.t["jobs"] == bestand
-    assert aufrufe == [SITEMAP]
+    assert bericht["fehler"] == "" and bericht["uebersprungen"] == {"doppelte ID": 1}
+    assert bericht["neu"] == 2 and bericht["geschlossen"] == 0
+    assert {k: fake.t["jobs"][k] for k in bestand} == bestand  # Bestand bleibt offen und unverändert

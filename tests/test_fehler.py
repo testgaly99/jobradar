@@ -139,7 +139,7 @@ def test_steckbrief_warnung_bleibt_bereinigt_ohne_firmenabbruch(monkeypatch, cap
     def kaputt(*a, **k):
         raise ValueError(MARKER)
     monkeypatch.setattr(db, "lade_offene", lambda _: [])
-    monkeypatch.setattr(db, "schreibe", lambda *a: (0, 0))
+    monkeypatch.setattr(db, "schreibe", lambda *a, **k: (0, 0))
     monkeypatch.setattr(run, "steckbrief", kaputt)
     monkeypatch.setattr(run, "ADAPTER", {"synthetisch": lambda *a, **k: [{"ext_id": "1", "titel": "Engineer", "url": "https://example.invalid", "ort": "Berlin", "remote": False, "text": "Künstlich"}]})
     bericht = run._firma({"name": "Testfirma", "ats_typ": "synthetisch", "ats_id": "test"}, "2026-11-16")

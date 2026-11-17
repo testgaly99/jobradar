@@ -186,8 +186,9 @@ def sync_companies(firmen):
     } for f in firmen], "name")
 
 
-def schreibe(firma, neue, heute, unveraendert=()):
-    """Gibt (Anzahl neuer, Anzahl geschlossener Stellen) zurueck. `unveraendert`: ext_ids, nur zuletzt_gesehen wird gesetzt."""
+def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):
+    """Gibt (Anzahl neuer, Anzahl geschlossener Stellen) zurueck. `unveraendert`: ext_ids, nur zuletzt_gesehen wird gesetzt.
+    `schliessen=False`: nicht gesehene Stellen bleiben offen (Lauf hat Einzelstellen übersprungen)."""
     alt = _bestand(firma)
     zeilen, neue_spalten = [], _spalten_da()
     for n in neue:
@@ -205,7 +206,7 @@ def schreibe(firma, neue, heute, unveraendert=()):
     gesehen = {z["id"] for z in zeilen}
     unv = [i for i in (f"{firma}:{e}" for e in unveraendert) if i in alt]
     gesehen_alle = gesehen | set(unv)
-    fehlend = [i for i, z in alt.items() if z["status"] == "offen" and i not in gesehen_alle]
+    fehlend = [i for i, z in alt.items() if schliessen and z["status"] == "offen" and i not in gesehen_alle]
     mit_bewerbung = set()
     for i in range(0, len(fehlend), CHUNK):
         angefragt = fehlend[i:i + CHUNK]

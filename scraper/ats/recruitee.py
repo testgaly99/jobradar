@@ -11,19 +11,21 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
     for o in objekt_liste(http.hole(f"https://{ats_id}/api/offers/").json(), "offers"):
         status = o.get("status", "published")
         if not isinstance(status, str) or not status.strip():
-            raise ValueError("Recruitee-Stelle benötigt nichtleeren Status")
+            stellen.append({"uebersprungen": "Status ungültig"})
+            continue
         if status != "published":
             continue
         roh = f"{o.get('description') or ''}{o.get('requirements') or ''}"
         text = text_aus_html(roh)
         ort = ", ".join(x for x in (o.get("city"), o.get("country")) if x)
         modell = "Remote" if o.get("remote") else "Hybrid" if o.get("hybrid") else "Vor Ort" if o.get("on_site") else ""
+        titel = o.get("title")
         stellen.append({
-            "ext_id": stellen_id(o["id"]),
-            "titel": o["title"].strip(),
+            "ext_id": stellen_id(o.get("id")),
+            "titel": titel.strip() if isinstance(titel, str) else titel,
             "ort": ort,
             "remote": bool(o.get("remote")),
-            "url": o["careers_url"],
+            "url": o.get("careers_url"),
             "beschreibung_kurz": text[:300],
             "text": text,
             "abschnitte": abschnitte(roh),
