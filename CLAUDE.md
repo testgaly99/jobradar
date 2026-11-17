@@ -432,6 +432,8 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 
 **Arbeit anderer KI-Agenten prüfen (Entscheidung 2026-11-14):** Andere Agenten (z. B. Codex) folgen `AGENTS.md` und tragen jede Sitzung in `docs/agenten-protokoll.md` ein; ihre Commits enden mit `Agent: <Name>`. Zu Beginn **jeder** Sitzung prüfst du: neue Einträge im Protokoll und `git log --grep "Agent:"` seit dem letzten Prüfvermerk. Gibt es Neues, liest du die Diffs, lässt die Tests laufen, prüfst die Regeln (Verbote, Dokumentation, Plan) und schreibst einen Prüfvermerk unter den Eintrag; Probleme meldest du mir, bevor weitergearbeitet wird.
 
+**Alle Fragen und Antworten dokumentieren (Nutzeranweisung 2026-11-17):** Das gilt projektweit für Nutzerfragen und Fragen aller Agenten, einschließlich Rückfragen, Statusfragen und Freigaben. Frage, Empfehlungen, angebotene Antwortoptionen und zugehörige Antworten im Wortlaut im passenden Projekt-/Fragenprotokoll festhalten; Datum, eindeutige Kennung im jeweiligen Gesprächskontext und Status ergänzen. Beim Stellen dokumentieren, eingehende Antworten und spätere Präzisierungen fortlaufend nachtragen; frühere Fassungen erhalten. Bestätigte Entscheidungen von Empfehlungen und noch offenen oder zurückgestellten Punkten trennen. Keine Antwort aus vorausgewählten Optionen oder Schweigen ableiten. Vor neuen Fragen vorhandene Antworten lesen und nicht erneut abfragen. Einstieg und Verweise stehen in `docs/fragen-und-antworten.md`; neue Protokolle dort eintragen, Entscheidungen und Übergabestand zusätzlich in Entscheidungen/STATUS nachführen. Datenschutz- und Geheimnisregeln gelten auch für Protokolle; nötige Schwärzungen kennzeichnen. Historischen Wortlaut nur aus tatsächlich vorhandenen Quellen übernehmen, Lücken ausdrücklich benennen.
+
 **Bei Fehlern:** Ich beschreibe, was passiert ist, oder kopiere die Meldung. Du suchst systematisch die Ursache, bevor du etwas änderst, und erklärst sie mir in einem Satz.
 
 **Hochladen auf GitHub** (Push) und das Übernehmen in `main` (Merge) nur nach meiner Zustimmung.
@@ -442,6 +444,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 
 - `docs/STATUS.md`: Was funktioniert, was in Arbeit ist, bekannte Probleme, nächster Schritt. **Zu Beginn jeder Sitzung lesen.**
 - `docs/ENTSCHEIDUNGEN.md`: jede Entscheidung mit Datum und einem Satz Begründung.
+- `docs/fragen-und-antworten.md`: projektweiter Einstieg zu allen Fragen-/Antwortprotokollen und offenen Fragen. **Zu Beginn jeder Sitzung lesen**, vor weiteren Rückfragen das passende Protokoll prüfen.
 - `docs/plans/`: die Pläne.
 - `data/kategorien.md`: die feste Kategorienliste.
 

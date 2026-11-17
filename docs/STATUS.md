@@ -2,6 +2,8 @@
 
 Stand: 2026-11-17
 
+**Projektweite Fragen-/Antwortpflicht (Nutzeranweisung 2026-11-17):** Alle Projektfragen und Antworten beider Seiten einschließlich Empfehlungen, Optionen, Präzisierungen und offenem Stand fortlaufend in Projektdateien festhalten. In CLAUDE.md 7/8 und AGENTS.md als dauerhafte Arbeits-/Startregel verankert. Zentraler Einstieg: [docs/fragen-und-antworten.md](fragen-und-antworten.md); zu Beginn jeder Sitzung und vor Rückfragen lesen. Bisherige Themenprotokolle verlinkt, historische Quellenlücken benannt. Keine erneute Antwort/Freigabe aus der Dokumentationsanweisung ableiten; Q13 weiterhin offen.
+
 ## Was funktioniert (Phase 1, 2 und 2b, Code fertig)
 - Täglicher Lauf per GitHub Actions („Täglicher Lauf“, 04:00 UTC): ruft die Stellen von 4 Firmen ab (Helsing, The Exploration Company, Taktile, telli), schreibt sie in Supabase und legt `data/bericht.md` ab.
 - Neue Website in `web/` (Next.js): Login, Stellenliste mit Filtern, Bewerbungs-Tracker, Link einfügen, Dokumente, Export.
@@ -143,6 +145,8 @@ Stand: 2026-11-17
 - **Phase 4, Zusatzfirmen:** Die Tabelle `laeufe` (Laufberichte mit Firmennamen) ist für alle lesbar; private Zusatzfirmen dürfen dort nicht für andere sichtbar werden.
 
 ## Nächster Schritt
+**Für jede Fortsetzung:** Zuerst `docs/fragen-und-antworten.md` und die verlinkten passenden Protokolle prüfen. Alle neuen Fragen/Antworten dort im Wortlaut samt Datum/Kennung/Status fortschreiben; vorhandene Antworten nicht erneut abfragen. Diese Regel gilt projektweit, auch für Claude Code.
+
 **Folgeauftrag 21–23 lokal abgeschlossen, Antworten aktualisiert (2026-11-17):** Browser-Prüfbestand, künstlicher CV-Gesamtfall und Chrome-Import fertig und lokal abgenommen; aktuelle Prüfzahlen/Grenzen oben. Q8/Q9/Q11/Q12: nachts alle eigenen gemerkten Stellen prüfen, fehlende/veraltete Abgleiche neu berechnen, unveränderte wiederverwenden; Muss vor Soll/Gleichstand offen; Textvorschau/Korrektur ohne Originaländerung. Q10: zuerst Karriere-Link-Erkennung; konkreter überarbeiteter Portalplan liegt vor, Q13-Bestätigung vor Umsetzung ausstehend. Weitere CV-Regeln (etwa Teilbelege, Scans und Gleichstands-Voreinstellung) nicht erfinden. Chrome-Installation/native Browser- und echte Datenbankabnahme bleiben gesondert offen, danach Edge → Safari → Smartphone → Firefox. Keine Veröffentlichung oder echte Datenverarbeitung ausgeführt. Mistral weiter zurückgestellt; SQL-/PostgREST-/GitHub- und Groq-Haltepunkte unverändert.
 
 **CV-Abgleich (aktualisiert 2026-11-17):** Vollständige Fragen-/Antwortgeschichte in `docs/plans/2026-11-16-cv-abgleich-fragen.md`, bestätigte Anforderungen und konkreter Nachtlaufentwurf in `docs/plans/2026-11-16-cv-abgleich-klaerung.md`. Nachtlauf/Wiederverwendung, Muss-vor-Soll/Gleichstand und Auslesekorrektur sind bestätigt. Noch offen etwa genaue Teilbeleg-Regeln, unklare Muss-/Soll-Zuordnung, Scan-Unterstützung, Nachtzeit/Laufumgebung und anfänglich gezeigter CV bei Gleichstand. Verbleibende Fragen klären, danach konsolidierten Entwurf gemeinsam bestätigen; noch keine CV-Implementierung oder echte Datenverarbeitung. Mistral bleibt auf Nutzerwunsch für später, ohne Datenfreigabe. SQL-/PostgREST-/GitHub-Abnahmen und Groq-Haltepunkt bleiben unabhängig offen.

@@ -3,7 +3,7 @@
 Dieses Projekt wird hauptsächlich mit Claude Code gebaut. Arbeitest du (ein anderer Agent) daran, gelten **ausnahmslos dieselben Regeln**. Diese Datei fasst die wichtigsten zusammen; im Zweifel gilt `CLAUDE.md`. Weichst du von einer Regel ab, ist die Arbeit unbrauchbar, auch wenn der Code funktioniert.
 
 ## 1. Bevor du irgendetwas tust
-1. Lies **vollständig**: `CLAUDE.md` (Anforderungen, harte Regeln, Arbeitsweise), `docs/STATUS.md` (Stand, offene To-dos, „Nächster Schritt“ mit Halte-Punkten), `docs/ENTSCHEIDUNGEN.md` (warum etwas so ist).
+1. Lies **vollständig**: `CLAUDE.md` (Anforderungen, harte Regeln, Arbeitsweise), `docs/STATUS.md` (Stand, offene To-dos, „Nächster Schritt“ mit Halte-Punkten), `docs/ENTSCHEIDUNGEN.md` (warum etwas so ist), `docs/fragen-und-antworten.md` (Fragenprotokolle und bereits gegebene Antworten).
 2. Arbeitet gerade ein Paket nach Plan, lies dessen Plan und Design (`docs/superpowers/plans/…`, `docs/superpowers/specs/…`). Das Design geht dem Plan vor; Abschnitte wie „Änderungen nach der Probe“ gehen älteren Abschnitten vor.
 3. Lokal (nicht im Repo) liegt das Arbeitsprotokoll unter `.superpowers/sdd/<plan>/progress.md`. Lesen erlaubt, **nie** committen, nie löschen.
 4. Arbeite **nur** im Ordner `jobradar-entwurf` auf dem Zweig `entwurf-ui`. Nie gleichzeitig mit Claude Code im selben Ordner arbeiten.
@@ -33,6 +33,7 @@ Nach **jeder** Änderung, im selben oder direkt folgenden Commit:
 4. Arbeitest du nach einem Plan: erledigte Schritte und Abweichungen im Plan bzw. im Arbeitsprotokoll vermerken (Abweichung immer mit Begründung).
 5. **Pflicht-Eintrag in `docs/agenten-protokoll.md`** (neueste oben, nach der Vorlage dort): Datum und Uhrzeit, Auftrag, alle Commits, geänderte Dateien, Tests mit Ergebnis, was nicht geprüft ist, jede Abweichung mit Begründung. Ohne diesen Eintrag gilt deine Arbeit als nicht abgegeben. Claude liest das Protokoll zu Beginn jeder Sitzung, prüft deine Commits und pflegt danach die Checkliste des Nutzers (ein Claude-Artifact, das du nicht ändern kannst).
 6. **Jede Commit-Nachricht endet mit der Zeile** `Agent: Codex` (bzw. deinem Namen). So findet Claude deine Commits auch, falls ein Protokoll-Eintrag fehlt.
+7. **Projektweit alle Fragen und Antworten festhalten:** Nutzerfragen und Agentenfragen einschließlich Rückfragen, Statusfragen und Freigaben beim Stellen im passenden Fachdokument protokollieren; Wortlaut, Empfehlungen, Antwortoptionen, Datum/Kennung und Status erhalten. Antworten und Präzisierungen im Wortlaut ergänzen, ältere Fassungen nicht überschreiben; Empfehlungen nicht als Entscheidungen behandeln. Neue Protokolle über `docs/fragen-und-antworten.md` auffindbar machen. Vor neuen Fragen nach vorhandenen Antworten sehen. Datenschutz/Geheimnisse beachten, Schwärzungen und historische Quellenlücken kennzeichnen. Die vollständige Regel steht in `CLAUDE.md` 7.
 
 ## 5. Wie du mit dem Nutzer sprichst
 - Immer **Deutsch**. Der Nutzer ist Programmier-Anfänger.
