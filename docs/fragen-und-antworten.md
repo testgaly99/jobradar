@@ -20,11 +20,28 @@ Der vollständige Wortlaut liegt jeweils im Fachdokument; diese Übersicht verwe
 
 | Thema / Gespräch | Fragen und Antworten | Quelle |
 |---|---|---|
-| CV-Abgleich, Gespräch 2026-11-16/17 | Q1–Q5, Q8/Q9 und Q11/Q12 mit Wortlaut, Empfehlungen, Optionen, Antworten und Präzisierungen. Q5/Mistral auf Nutzerwunsch zurückgestellt. | [CV-Fragenprotokoll](plans/2026-11-16-cv-abgleich-fragen.md) |
-| Ein-Klick-Import fremder Anzeigen, dasselbe Gespräch | Q6/Q7 beantwortet: Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox; Gemerkt ohne Bewerbungsdatum. | [Importplan und Fragenprotokoll](plans/2026-11-16-ein-klick-import.md) |
+| CV-Abgleich, Gespräch 2026-11-16/17 | Q1–Q5, Q8/Q9, Q11/Q12 und Q15 mit Wortlaut, Empfehlungen, Optionen, Antworten und Präzisierungen. Q5/Mistral durch Q15 erledigt: kein Mistral für CVs. | [CV-Fragenprotokoll](plans/2026-11-16-cv-abgleich.md) |
+| Ein-Klick-Import fremder Anzeigen, dasselbe Gespräch | Q6/Q7 beantwortet: Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox; Gemerkt ohne Bewerbungsdatum. Q14/Q16 (2026-11-17): Erweiterung statt Lesezeichen; auf Portalen nur Adresse und Titel. | [Importplan und Fragenprotokoll](plans/2026-11-16-ein-klick-import.md) |
 | Firmenportal-Erkennung, dasselbe Gespräch | Q10 zum ersten Umfang beantwortet. **Q13 zur überarbeiteten Planfreigabe ist weiterhin unbeantwortet.** Die allgemeine Dokumentationsanweisung beantwortet Q13 nicht. | [Portalplan und Fragenprotokoll](plans/2026-11-15-firmenportal-erkennung.md) |
 
-In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q14**. Der genaue Sendezeitpunkt einzelner älterer Nachrichten ist nicht verfügbar; vorhandene Datums-/Reihenfolgeangaben erhalten und keine Uhrzeiten erfinden. Fachliche Anforderungen stehen zusätzlich im [CV-Klärungsdokument](plans/2026-11-16-cv-abgleich-klaerung.md), der aktuelle Arbeits-/Übergabestand in [STATUS](STATUS.md).
+In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q22**. Der genaue Sendezeitpunkt einzelner älterer Nachrichten ist nicht verfügbar; vorhandene Datums-/Reihenfolgeangaben erhalten und keine Uhrzeiten erfinden. Fachliche Anforderungen stehen zusätzlich im [CV-Plan](plans/2026-11-16-cv-abgleich.md), der aktuelle Arbeits-/Übergabestand in [STATUS](STATUS.md).
+
+## Runde 2026-11-17 mit Claude Code (Q14–Q21)
+
+Fragen von Claude im Chat gestellt; der Fragewortlaut und die angebotenen Optionen liegen im Repo **nicht** vor (Lücke ausdrücklich benannt, nicht nachträglich erfunden). Die Spalte „Bedeutung“ gibt die Übergabe an den dokumentierenden Helfer wieder. Antworten im Wortlaut.
+
+| Kennung | Thema | Nutzerantwort im Wortlaut | Bedeutung / Folge | Status |
+|---|---|---|---|---|
+| Q14 | Ein-Klick-Import: Erweiterung oder Lesezeichen | „a)“ | Chrome-Erweiterung behalten statt Lesezeichen. CLAUDE.md 4.4/Backlog angepasst, [Importplan](plans/2026-11-16-ein-klick-import.md). | entschieden |
+| Q15 | Mistral für CVs | „a). Analysiere aber, inwieweit das mein Kontingent aufbrauchen wird.“ | Kein Mistral für CVs, CV nur über Claude; Mistral bleibt nur Phase-4-Kandidat für öffentliche Anzeigentexte. CLAUDE.md 3.2/4.2 angepasst, [CV-Plan](plans/2026-11-16-cv-abgleich.md). | entschieden; Kontingent-Analyse **offen** |
+| Q16 | Was die Erweiterung auf Jobportalen übernimmt | „b) Prüfe aber, ob das sicher unbedenklich ist. Prüfe auch die exakten aktuellen Nutzungsbedingungen“ | Auf Portalen (LinkedIn, StepStone, Indeed, XING …) nur Adresse und Titel; Jobradar öffnet Portale nie selbst. CLAUDE.md 4.4. | entschieden; Prüfung Nutzungsbedingungen **offen** |
+| Q17 | Fragen-/Antwortregel behalten | „Ja.“ | Regel bleibt, in CLAUDE.md 7 und AGENTS.md 4.7 auf rund drei Sätze gekürzt, Bedeutung unverändert. | erledigt |
+| Q18 | Dokumentation verschlanken | „Essenziell dabei ist, dass du alle nötigen Infos hast, die du brauchst. Es sollen keine Infos verloren gehen.“ (Bedingung zur Verschlankung) | STATUS gekürzt, Codex-Pläne in [codex-pakete.md](plans/2026-11-16-codex-pakete.md) zusammengeführt (Verbleibtabelle dort), Testzahlen nur im Agentenprotokoll. | erledigt 2026-11-17 |
+| Q19 | Nutzungskreis | „Erstmal starten wir ihn komplett privat und für Freunde. Wir brauchen aber zusätzlich einen Umbau-Plan, wenn er jemals kommerziell genutzt werden sollte“ | Privat und für Freunde; Umbau-Plan als Backlog-Punkt in CLAUDE.md 6. | entschieden; Umbau-Plan offen (erst vor kommerzieller Nutzung) |
+| Q20 | Reihenfolge der Arbeit | „Jetzt das Groq-Paket und Hochladen abschließen, dann die offenen CV Fragen klären“ | STATUS „Nächster Schritt“ A → B → C. Beendet die Verschiebung der Groq-Probe vom 2026-11-15. | entschieden |
+| Q21 | Ablauf des Hochladens | „Passt“ | Zweig pushen für Linux-CI → Nutzer spielt Migration 010 ein → erneut testen → „Ja, hochladen“ nach `main`. Halte-Punkte bleiben (Groq „passt“, erstes Live-Schreiben, „Ja, hochladen“). | entschieden |
+
+Ebenfalls am 2026-11-17, ohne Q-Nummer: CV-Farben in CLAUDE.md 6 festgehalten (Grün = belegt, Gelb = teilweise/unklar, Rot = nicht belegt). Diese Kurzfassung weicht von Q3 ab („Rot = nachweislich nicht erfüllt“); vor dem Bau klären (CV-Plan).
 
 ## Ältere dokumentierte Gespräche
 
@@ -41,9 +58,9 @@ Diese Fragen stammen aus dem verfügbaren bisherigen Gespräch; genaue Sendezeit
 
 | Kennung | Nutzerfrage im Wortlaut | Vorhandene Antwortquelle / Grenze |
 |---|---|---|
-| N1 | „Was für Arbeitspakete hast du?“ | Früherer Antwortwortlaut hier nicht verfügbar. Der fortgeschriebene [Arbeitskatalog](arbeitspakete-codex.md) dokumentiert Pakete und heutigen Abschlussstand. |
-| N2 | „Gibt es noch offene To Dos für dich? Prüfe alles, womit du Claude unterstützen kannst“ | Früherer Antwortwortlaut hier nicht verfügbar. Prüf-/Folgearbeiten und Ergebnisse stehen im [Arbeitskatalog](arbeitspakete-codex.md) und [Agentenprotokoll](agenten-protokoll.md). |
-| N3 | „Was brauchst du von mir für CV Abgleich? Nutze alle verfügbaren Skills, um die passenden Fragen und daraus entstehenden Anforderungen zu entwickeln. Ich möchte, dass der CV Abgleich erstmal über mein Claude Pro Abbo läuft, ohne API Kosten. Es soll aber zusätzlich eine Option eingebaut werden, das ganze über Mistral zu machen, ohne API Kosten zu zahlen“ | Vollständiger ursprünglicher Antworttext hier nicht verfügbar. Tatsächlich gestellte Folgefragen, Antworten, Anforderungen und Anbietergrenzen sind in den oben verlinkten [CV-Protokollen](plans/2026-11-16-cv-abgleich-fragen.md) nachvollziehbar. Die Anforderungsklärung ist noch nicht abgeschlossen. |
+| N1 | „Was für Arbeitspakete hast du?“ | Früherer Antwortwortlaut hier nicht verfügbar. Der fortgeschriebene [Codex-Sammelbericht](plans/2026-11-16-codex-pakete.md) dokumentiert Pakete und heutigen Abschlussstand. |
+| N2 | „Gibt es noch offene To Dos für dich? Prüfe alles, womit du Claude unterstützen kannst“ | Früherer Antwortwortlaut hier nicht verfügbar. Prüf-/Folgearbeiten und Ergebnisse stehen im [Codex-Sammelbericht](plans/2026-11-16-codex-pakete.md) und [Agentenprotokoll](agenten-protokoll.md). |
+| N3 | „Was brauchst du von mir für CV Abgleich? Nutze alle verfügbaren Skills, um die passenden Fragen und daraus entstehenden Anforderungen zu entwickeln. Ich möchte, dass der CV Abgleich erstmal über mein Claude Pro Abbo läuft, ohne API Kosten. Es soll aber zusätzlich eine Option eingebaut werden, das ganze über Mistral zu machen, ohne API Kosten zu zahlen“ | Vollständiger ursprünglicher Antworttext hier nicht verfügbar. Tatsächlich gestellte Folgefragen, Antworten, Anforderungen und Anbietergrenzen sind in den oben verlinkten [CV-Protokollen](plans/2026-11-16-cv-abgleich.md) nachvollziehbar. Die Anforderungsklärung ist noch nicht abgeschlossen. |
 | N4 | „Was kannst du sonst noch erledigen?“ | Antwortwortlaut direkt unten. Anschließende Beauftragung und tatsächlicher Abschlussstand in [STATUS](STATUS.md); historische Vorschläge nicht als heutige offene Pakete zählen. |
 
 ### N4 – damalige Agentenantwort im Wortlaut

@@ -51,7 +51,7 @@ Die bestehende Gastfunktion `facetten()` bleibt unabhängig von Ranglistentabell
 - [x] **2. Eingabeprüfung und ausdrückliche Zuordnung.** `scraper/rankings.py` prüft normalisierte Listenausgaben mit bekannten Firmen; unbekannte/doppelte Firmen, ungültige Ränge/Daten/URLs werden abgelehnt. Wiederholte Eingaben liefern identische Zeilen. Gemäß späterer Umfangsklärung oben/unten kein Importbefehl und keine Schreibschnittstelle in diesem Paket: atomare Ersetzung folgt mit Quellenentscheidung und Bereinigung.
 - [x] **3. Filteranschluss und Rangsortierung.** URL, Abfrage und Gesamtzahl erweitert; gebundene Parameter, serverseitige Filterung und Rangfolge vor Seiteneinteilung. Bestehende Filter bleiben angeschlossen. HTTP-Vertrag und Pagination über 1.000 Datensätze offline geprüft; tatsächliches SQL-/PostgREST-Verhalten bleibt offen.
 - [x] **4. Anzeige.** Listenfilter vor Größe/Branche, Rang-/Quell-/Lizenzangaben in Liste und Detailseite; Gastparameter verworfen. Ohne aktive Ausgaben kein neuer Filter. Bestehender Stil, nur `utilitaer.css` ergänzt; Next.js-Hinweise gelesen. Chrome-Klicktests mit künstlichen Antworten bestanden.
-- [ ] **5. Vollständige Datenbankabnahme.** Lokaler Teil abgeschlossen: 430 Python-Offline-Tests, 153 Webtests, Typprüfung, isolierter Produktions-Build und Chrome-Klicktests bestanden; unabhängiges Review und Übergabe dokumentiert. SQL-Testskript noch in isolierter Testdatenbank ausführen, bevor Migration/echte Daten freigegeben werden. Kein PostgreSQL/Docker vorhanden; nichts installiert und keine Live-Datenbank als Ersatz verwendet. Keine Quelle aktivieren, bevor Nutzungskreis, Erlaubnis und Bereinigung im Quellenpaket geklärt sind.
+- [ ] **5. Vollständige Datenbankabnahme.** Lokaler Teil abgeschlossen (Testzahlen im Agentenprotokoll 2026-11-15): Python-Offline-Tests, Webtests, Typprüfung, isolierter Produktions-Build und Chrome-Klicktests bestanden; unabhängiges Review und Übergabe dokumentiert. SQL-Testskript noch in isolierter Testdatenbank ausführen, bevor Migration/echte Daten freigegeben werden. Kein PostgreSQL/Docker vorhanden; nichts installiert und keine Live-Datenbank als Ersatz verwendet. Keine Quelle aktivieren, bevor Nutzungskreis, Erlaubnis und Bereinigung im Quellenpaket geklärt sind.
 
 ### Prüfstand 2026-11-15
 
@@ -79,3 +79,9 @@ Auswahl der ersten Quellen und aktuelle Nutzungserlaubnis; kostenpflichtige Teil
 ## Nutzerfreigabe
 
 2026-11-15: Der Nutzer beauftragt die Vorbereitung der Filterstruktur und Datenbanken; Auswahl der Rankings später mit Claude. Damit sind Datenmodell, Migration als Datei, neutrale Eingabeprüfung, Filteranschluss und Tests mit künstlichen Daten freigegeben. Keine echten Rankings vorauswählen oder eintragen. Ohne aktive Daten bleibt die Oberfläche unverändert; ein vorhandener Listenfilter wird erst bei gültigen freigegebenen Ausgaben eingeblendet. Datenbank-Ausführung und Veröffentlichung bleiben ausgeschlossen.
+
+## Nachtrag 2026-11-17
+
+- Migration 011 (Größensortierung, Paket 12) ist in `010_rankings.sql` eingearbeitet; die Datei ist mehrfach ausführbar (Commit `908ece7`). Der Prüfvermerk vom 2026-11-17 nennt: Sortierung „Größe“ im Entwurf defekt, solange 010 nicht eingespielt ist.
+- Reihenfolge laut Q21 („Passt“): Zweig pushen (Linux-CI) → Nutzer spielt 010 in Supabase ein (STATUS To-do 26) → erneut testen → „Ja, hochladen“. Die isolierte SQL-/PostgREST-Abnahme (Schritt 5) bleibt als eigener offener Punkt bestehen; ob sie vor dem Upload nötig ist, mit dem Nutzer klären (`tests/sql/README.md` sieht sie bisher vor dem produktiven Hochladen des Größen-Codes vor).
+- Rechte-Audit (`docs/ranking-recherche-v3.md`, Nachtrag): fast alle Arbeitgeber-Rankings nur mit Lizenz. Die Tabellen bleiben leer, bis Phase 4 das neu bewertet.

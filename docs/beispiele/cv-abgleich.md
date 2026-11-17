@@ -2,7 +2,7 @@
 
 Die Datei [cv-abgleich.json](cv-abgleich.json) enthält eine vollständig erfundene Stellenanzeige, drei CV-Versionen desselben fiktiven Profils und die erwarteten Zuordnungen zu allen sechs Anforderungen. Es sind keine echten Dokumente, persönlichen Daten oder Modellantworten. Das Format dient ausschließlich dem Beispiel; es legt kein produktives Antwort- oder Datenbankschema fest.
 
-Grundlage sind die bestätigten Antworten Q1–Q4 aus dem [Fragenprotokoll](../plans/2026-11-16-cv-abgleich-fragen.md). Ein Prozentwert, eine Gewichtung, eine allgemeine Auswahlregel oder eine manuelle Umschaltoberfläche werden dadurch nicht festgelegt. Mistral bleibt entsprechend Q5 zurückgestellt.
+Grundlage sind die bestätigten Antworten Q1–Q4 aus dem [Fragenprotokoll](../plans/2026-11-16-cv-abgleich.md). Ein Prozentwert, eine Gewichtung, eine allgemeine Auswahlregel oder eine manuelle Umschaltoberfläche werden dadurch nicht festgelegt. Mistral wird seit Q15 (2026-11-17) nicht für CVs genutzt.
 
 ## Erwarteter Vergleich
 

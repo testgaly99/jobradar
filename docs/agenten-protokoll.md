@@ -18,6 +18,17 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 
 ---
 
+## 2026-11-17 – Claude Code (Helfer) – Doku-Konsolidierung und Nachtrag Testzahlen
+- Auftrag des Nutzers: Doku verschlanken ohne Informationsverlust (Q18) und Antworten Q14–Q21 festhalten. Nur Dokumentation geändert; Verbleib aller alten Dateien in `docs/plans/2026-11-16-codex-pakete.md` (letzter Abschnitt).
+- Nachtrag Testzahlen, die bisher nur in STATUS/Plänen standen (seit heute gilt: Testzahlen nur hier):
+  - Scraper überspringt kaputte Einzelstellen (Claude, 2026-11-17, Commits `22c0006`, `8af7fbd`): 779 Python-Offline-Tests grün.
+  - Chrome-Ein-Klick-Import, Klicktest 2026-11-17 (Claude): Import-API, Dubletten, Herkunfts- und Anmeldeprüfung bestanden; native Installation offen.
+  - Offline-Prüfeinstieg 2026-11-15: 468 Python-Tests, davon 38 Schutztests; gezielter Audit-Schutztest 1 bestanden/33 abgewählt.
+  - Paket 23: 15 App-Importtests zusätzlich zu 16 Erweiterungs-Vertragstests.
+  - Ranking-Unterbau 2026-11-15: 430 Python-Offline-Tests, 153 Webtests, Typprüfung, isolierter Build, Chrome-Klicktests bestanden.
+- Tests: keine neuen Läufe (nur Dokumentation).
+- Abweichungen: keine.
+
 > **Prüfvermerk von Claude am 2026-11-17 für alle Einträge 2026-11-14 bis 2026-11-17 (Commits 7dc2941..79db245, 33 Commits):** Tests nachgeprüft (Python offline 761 grün, Web 288 grün, tsc und Produktions-Build ok). Keine Geheimnisse oder persönlichen Daten im Diff, kein Push, keine Live-Schreibzugriffe, Halte-Punkte eingehalten. Befunde: (1) Sortierung „Größe“ im Entwurf defekt, solange Migration 010 nicht eingespielt sind (lokal bestätigt); 010 nach 011 erneut ausgeführt setzt die Größensortierung zurück. (2) CLAUDE.md ohne Rückfrage geändert (AGENTS.md 4.3). (3) Widersprüche zu CLAUDE.md nicht nachgezogen (Lesezeichen statt Plugin, CV-Markierung, Mistral vs. „nur Claude“, LinkedIn-Text). (4) Viel Dokumentation entgegen „schlank“. (5) Ranking-Unterbau vor Klärung der Rechtslage (Phase 4). Details im Chat vom 2026-11-17; Entscheidungen beim Nutzer.
 
 ## 2026-11-17 (Clientdatum, Uhrzeit nicht übermittelt) – Codex – projektweite Fragen-/Antwortpflicht

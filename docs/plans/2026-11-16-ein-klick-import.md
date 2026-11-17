@@ -14,7 +14,7 @@ Ein beliebiger URL-Aufruf/Fragment ist kein Nachweis eines vom Nutzer gewollten 
 
 ## Gestellte Fragen – Runde 3, Antworten eingegangen
 
-Die Nummerierung setzt das [CV-Fragenprotokoll Q1–Q5](2026-11-16-cv-abgleich-fragen.md) fort. Neue Fragen und Antworten vollständig dokumentieren; Empfehlungen sind keine Freigabe.
+Die Nummerierung setzt das [CV-Fragenprotokoll Q1–Q5](2026-11-16-cv-abgleich.md) fort. Neue Fragen und Antworten vollständig dokumentieren; Empfehlungen sind keine Freigabe.
 
 ### Q6 – Browser für den Ein-Klick-Import
 
@@ -47,6 +47,13 @@ Nutzerantwort im Wortlaut:
 
 Ableitung: Neuer Fremdseiten-Sammelweg startet mit Status Gemerkt und leerem Bewerbungsdatum. Bereits vorhandene Einträge öffnen, ihren Status und Inhalt erhalten. Bestehender manueller Bewerbungsweg bleibt Beworben.
 
+## Runde 6 – Antworten am 2026-11-17 (Fragen von Claude gestellt)
+
+Fragewortlaut liegt im Repo nicht vor (im Chat mit Claude gestellt; Lücke ausdrücklich benannt). Bedeutung laut Übergabe; Antworten im Wortlaut, Gesamtübersicht in `docs/fragen-und-antworten.md`.
+
+- **Q14** – Nutzerantwort: „a)“. Bedeutung: Chrome-Erweiterung behalten statt Lesezeichen (Bookmarklet). Der Backlog-Eintrag „In Jobradar speichern per Lesezeichen … Kein Plugin“ (2026-11-12) ist damit ersetzt; CLAUDE.md 4.4/Backlog angepasst.
+- **Q16** – Nutzerantwort: „b) Prüfe aber, ob das sicher unbedenklich ist. Prüfe auch die exakten aktuellen Nutzungsbedingungen“. Bedeutung: Auf Jobportalen (LinkedIn, StepStone, Indeed, XING …) übernimmt die Erweiterung **nur Adresse und Titel**; Jobradar öffnet Portale nie selbst. Für Portale geht Q16 dem Chrome-Abschnitt unten vor (dort: Titel/Firma aus Metadaten und begrenzter Anzeigentext). **Offen:** aktuelle Nutzungsbedingungen dieser Portale prüfen und bewerten, ob auch das sicher unbedenklich ist; Umsetzung in `browser-erweiterung/` gesondert prüfen.
+
 ## Beschlossener erster Bauabschnitt: Chrome
 
 - Kleine lokale Manifest-V3-Erweiterung mit bewusstem Browser-Klick und einmaliger Einrichtung der eigenen Website-Adresse. `activeTab`/`scripting` für den gerade ausgewählten Tab, Zugriff auf die eigene Website nur nach gezielter Berechtigungsanfrage. Keine dauerhafte Leseberechtigung für alle Fremdseiten.
@@ -71,7 +78,7 @@ Ableitung: Neuer Fremdseiten-Sammelweg startet mit Status Gemerkt und leerem Bew
 - [x] Chrome-Erweiterung unter `browser-erweiterung/chrome/` mit [Einrichtungsanleitung](../../browser-erweiterung/chrome/README.md) erstellt; eigene App wird nicht erneut importiert, doppelte Quellklicks teilen einen wartenden Auftrag. Formular-/Editorauswahl wird vor Auslesen ausgeschlossen.
 - [x] Geschützte Importseite und selbst authentifizierende POST-API umgesetzt. Origin/JSON/Größen/Eigentümer prüfen, neue Karte Gemerkt ohne Datum, bestehende Einträge unverändert. Kein Quellseiten-/ATS-/KI-Aufruf.
 - [x] Login-Unterbrechung, einzelne Tabbindung, zeitschrankenbehafteter Entwurf, feste UUID-Navigation, keine automatische Wiederholung eines unklaren Schreibvorgangs. Bestehende Karten mit eingeblendetem Archiv öffnen, damit auch abgeschlossene Karten sichtbar bleiben.
-- [x] 16 Erweiterungs-Vertragstests mit tatsächlichem Kerncode und künstlichen Chrome-/DOM-/HTTP-Antworten bestanden; 15 App-Importtests sowie gesamte 288 Webtests und Typprüfung bestanden. Verlorenes Tab-Fertig-Ereignis und Formularauswahl mit roten Regressionen nachgewiesen und behoben; unabhängige Nachprüfung bestanden.
+- [x] Erweiterungs-Vertragstests mit tatsächlichem Kerncode und künstlichen Chrome-/DOM-/HTTP-Antworten, App-Importtests, gesamte Webtests und Typprüfung bestanden (Zahlen im Agentenprotokoll 2026-11-16 21:36). Verlorenes Tab-Fertig-Ereignis und Formularauswahl mit roten Regressionen nachgewiesen und behoben; unabhängige Nachprüfung bestanden.
 - [x] Isolierter aktueller Build und Browserabnahme auf 1280/390 Pixeln bestanden: echter gleichursprünglicher POST, neue Karte/Dublette, Status-/Inhaltserhalt, Gast/Herkunftsschutz, GET/Fragment ohne Schreibvorgang. Abgenommene App-Dateien per Hash mit aktuellem Quellstand verglichen.
 - [ ] Erweiterung tatsächlich in Chrome installieren und Berechtigungsdialog, native Injektion, vorhandene Login-Cookies und echten privaten Datenbankzugriff mit künstlicher Anzeige gesondert abnehmen. Isolierte Tests ersetzen diese Plattform-/RLS-Abnahme nicht. Keine Installation oder Veröffentlichung ausgeführt.
 - [ ] Danach Edge → Safari → Smartphone → Firefox gemäß Q6. Plattformvoraussetzungen und Smartphone-Betriebssystem noch klären; keine Kompatibilität oder Kostenfreiheit einer späteren Verteilung vorwegnehmen.

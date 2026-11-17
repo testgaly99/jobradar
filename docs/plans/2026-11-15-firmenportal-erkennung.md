@@ -21,7 +21,7 @@ Angebotene Antworten:
 
 > Ja: Portal aus Karriere-Link zuerst erkennen
 
-**Bestätigte Ableitung:** Zuerst aus einem eingegebenen Karriere-Link das Portal erkennen; Greenhouse, Ashby und Personio gemäß Empfehlung zuerst. Keine automatische Anbindung oder Quellenaktivierung. Diese Antwort gibt nicht pauschal alle technischen Vorschläge des alten Entwurfs frei. Kein Anwendungscode für diesen Baustein implementiert. CV-Fragen Q8/Q9 und Q11/Q12 stehen im [CV-Fragenprotokoll](2026-11-16-cv-abgleich-fragen.md). Weitere tatsächlich gestellte Fragen dort bzw. im passenden Fachdokument vollständig dokumentieren; neue IDs ab Q14.
+**Bestätigte Ableitung:** Zuerst aus einem eingegebenen Karriere-Link das Portal erkennen; Greenhouse, Ashby und Personio gemäß Empfehlung zuerst. Keine automatische Anbindung oder Quellenaktivierung. Diese Antwort gibt nicht pauschal alle technischen Vorschläge des alten Entwurfs frei. Kein Anwendungscode für diesen Baustein implementiert. CV-Fragen Q8/Q9 und Q11/Q12 stehen im [CV-Fragenprotokoll](2026-11-16-cv-abgleich.md). Weitere tatsächlich gestellte Fragen dort bzw. im passenden Fachdokument vollständig dokumentieren; neue IDs ab Q22 (Q14–Q21 am 2026-11-17 vergeben, siehe docs/fragen-und-antworten.md).
 
 ### Gestellte Frage Q13 – überarbeitete Fassung bestätigen
 

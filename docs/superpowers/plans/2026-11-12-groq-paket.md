@@ -20,7 +20,7 @@ Dieser Abschnitt aktualisiert den Fortschritt; die ursprünglichen Einzelschritt
 - Task 2: finale Probe A+B und „passt“ fehlen weiterhin; vom Nutzer bestätigt. Groq-Proben und Live-Zugriffe erfolgen gemäß `AGENTS.md` durch Claude Code.
 - Task 4, Step 6: erster Live-Auswertungslauf weiter ohne Freigabe, nicht durchgeführt.
 - Tasks 5–7: Browser-Klicktests nach freigegebenem Live-Lauf offen.
-- Task 8: STATUS, Entscheidungen und Agentenprotokoll aktualisiert. 352 Python-Offline-Tests, 143 Website-Tests und Typprüfung grün. Produktions-Build, `/ponytail-review`, Browser-Klicktests und Claude-Artifact in dieser Sitzung nicht ausgeführt bzw. bearbeitet; kein vollständiger Paketabschluss.
+- Task 8: STATUS, Entscheidungen und Agentenprotokoll aktualisiert. Python-Offline-Tests, Website-Tests und Typprüfung grün (Zahlen im Agentenprotokoll 2026-11-14). Produktions-Build, `/ponytail-review`, Browser-Klicktests und Claude-Artifact in dieser Sitzung nicht ausgeführt bzw. bearbeitet; kein vollständiger Paketabschluss.
 - Python-Prüfung abweichend vom ursprünglichen Befehl: Live-Testmodule per `--ignore` ausgeschlossen, Laden der Zugangsdaten deaktiviert, echte HTTP-Anfragen gesperrt; die Module lesen sonst Zugangsdaten bereits beim Import.
 
 ## Global Constraints
