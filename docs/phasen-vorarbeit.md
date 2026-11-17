@@ -6,7 +6,7 @@ Stand: 2026-11-17. Sammelt Vorarbeit und offene To-dos für Phase 3, 4 und 5 (Ph
 
 ## Phase 3: Google-Anbindung, Statusvorschläge, Erinnerungen
 
-**Offenes To-do:** Erinnerungs-Mail an den Admin (`ADMIN_EMAIL`) einrichten, sobald die jährlichen Hand-Quellen der Rankings (trendence, Universum, LinkedIn) fällig sind. Bis dahin erinnert ein GitHub-Issue (Entscheidung 2026-11-10, CLAUDE.md 4.8).
+**Offenes To-do:** Erinnerungs-Mail an den Admin (`ADMIN_EMAIL`) einrichten, sobald jährlich von Hand gepflegte Listen fällig sind. Bis dahin erinnert die Checkliste.
 
 ### Vorhandene Anschlussstellen
 
@@ -38,10 +38,10 @@ Bereits beschlossen (CLAUDE.md 4.7): Mail nur von Domains laufender Bewerbungen;
 
 ## Phase 4: offene To-dos
 
-- **Rechtslage der Rankings neu bewerten (2026-11-17):** Rechte-Audit in `docs/ranking-recherche-v3.md` (Nachtrag): öffentlich sauber nur EU-R&D-Scoreboard (CC BY), Wikidata (CC0), eingeschränkt EPO; fast alle Arbeitgeber-Rankings nur mit Lizenz. Betrifft den Ranking-Unterbau (Migration 010, [Plan](plans/2026-11-15-ranking-grundlage.md)) und CLAUDE.md 4.8.
+- **Rechtslage der Rankings (2026-11-17, entschieden Q41):** Rechte-Audit in `docs/ranking-recherche-v3.md`: öffentlich sauber EU-R&D-Scoreboard (CC BY), Wikidata (CC0), eingeschränkt EPA. Folgen für den Ranking-Unterbau (Migration 010, [Plan](plans/2026-11-15-ranking-grundlage.md)): Sichtbarkeit je Rang-Eintrag ergänzen, Admin-Formular „Liste von Hand einfügen“, Linksammlung.
 - **Ein-Klick-Import:** Chrome lokal gebaut; Plattformabnahme und Edge → Safari → Smartphone → Firefox offen. Details und Q6/Q7/Q14/Q16 im [Importplan](plans/2026-11-16-ein-klick-import.md).
-- **Firmenportal-Erkennung:** [Plan](plans/2026-11-15-firmenportal-erkennung.md), Q13 unbeantwortet.
-- **Whitelist „Stellen ohne Studium trotzdem zeigen“ (Wunsch 2026-11-14):** Admin pflegt Firmen, bei denen „Studium: nein“ nicht ausblendet. Zu klären: (1) nur Tätigkeit „anspruchsvoll“ oder alle? (Vorschlag: nur anspruchsvoll, wie die Prestige-Regel in CLAUDE.md 2); (2) Pflege per Häkchen auf der Konto-Seite, sofort wirksam?; (3) Prestige-Listen ergänzen die Liste, überschreiben sie nie? Technisch: Feld an `companies` (Migration), `nein_ausblenden` berücksichtigt es; `taetigkeit` wird schon gespeichert.
+- **Firmenportal-Erkennung:** [Plan](plans/2026-11-15-firmenportal-erkennung.md), Q13 am 2026-11-17 freigegeben („Ja, bauen“).
+- **Whitelist entschieden 2026-11-17 (Q45–Q47):** alle Stellen der Firma, Admin-Häkchen sofort wirksam, Prestige ergänzt (Häkchen haben Vorrang). Remote weltweit zählt mit (Q44). Ursprünglicher Stand: **Whitelist „Stellen ohne Studium trotzdem zeigen“ (Wunsch 2026-11-14):** Admin pflegt Firmen, bei denen „Studium: nein“ nicht ausblendet. Zu klären: (1) nur Tätigkeit „anspruchsvoll“ oder alle? (Vorschlag: nur anspruchsvoll, wie die Prestige-Regel in CLAUDE.md 2); (2) Pflege per Häkchen auf der Konto-Seite, sofort wirksam?; (3) Prestige-Listen ergänzen die Liste, überschreiben sie nie? Technisch: Feld an `companies` (Migration), `nein_ausblenden` berücksichtigt es; `taetigkeit` wird schon gespeichert.
 - **Mistral prüfen (Wunsch 2026-11-13), als Alternative oder Ergänzung zu Groq – nur für öffentliche Anzeigentexte, nie für CVs (Q15, 2026-11-17):**
   1. *Bedingungen an der Quelle prüfen* (offizielle Doku, kein Vorwissen): Gratis-Tarif „Experiment“ noch vorhanden? Echte Grenzen (Anfragen/Sekunde, Tokens/Minute und /Monat) aus dem eigenen Konto. Training, Speicherdauer, Serverstandort, erlaubte Nutzung (automatisiert, privat, nicht-kommerziell), Pausierung, Ablauf von Schlüsseln (CLAUDE.md 3.3). Material: Anbieterfakten vom 2026-11-16 im [CV-Plan](plans/2026-11-16-cv-abgleich.md#verifizierte-anbieterfakten-prüftag-2026-11-16-nur-offizielle-quellen) (API verlangt laut aktueller Doku Billing/PAYG).
   2. *Konto:* legt der Nutzer selbst an (Handynummer nötig, Zustimmung nach CLAUDE.md 10); `MISTRAL_API_KEY` nur in `.env` und als GitHub-Secret.

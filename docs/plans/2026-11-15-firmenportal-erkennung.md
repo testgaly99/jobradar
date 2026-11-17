@@ -29,6 +29,8 @@ Gestellt am 2026-11-17 nach Überarbeitung und Prüfung des vollständigen Plans
 
 > ❓ Q13 – Überarbeiteten Portalplan freigeben: Soll ich den jetzt konkretisierten Baustein bauen: einen Karriere-Link prüfen, Greenhouse/Ashby/Personio mit Portal-Kennung erkennen und unbekannte Links verständlich melden? ➡️ Meine Empfehlung: ja; ohne Seitenabruf, automatische Firmenanbindung oder neue Pakete. Der vollständige überarbeitete Plan ist dokumentiert.
 
+**Antwort Q13 (2026-11-17, per Auswahl):** „Ja, bauen (Empfohlen)“. Freigegeben; Bau nach dem Groq-Abschluss.
+
 Angebotene Antworten:
 
 1. Ja: überarbeiteten Portalplan jetzt umsetzen
