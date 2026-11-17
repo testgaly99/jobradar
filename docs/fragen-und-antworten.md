@@ -24,7 +24,7 @@ Der vollständige Wortlaut liegt jeweils im Fachdokument; diese Übersicht verwe
 | Ein-Klick-Import fremder Anzeigen, dasselbe Gespräch | Q6/Q7 beantwortet: Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox; Gemerkt ohne Bewerbungsdatum. Q14/Q16 (2026-11-17): Erweiterung statt Lesezeichen; auf Portalen nur Adresse und Titel. | [Importplan und Fragenprotokoll](plans/2026-11-16-ein-klick-import.md) |
 | Firmenportal-Erkennung, dasselbe Gespräch | Q10 zum ersten Umfang beantwortet. **Q13 am 2026-11-17 beantwortet: „Ja, bauen (Empfohlen)“.** Die allgemeine Dokumentationsanweisung beantwortet Q13 nicht. | [Portalplan und Fragenprotokoll](plans/2026-11-15-firmenportal-erkennung.md) |
 
-In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q55**. Der genaue Sendezeitpunkt einzelner älterer Nachrichten ist nicht verfügbar; vorhandene Datums-/Reihenfolgeangaben erhalten und keine Uhrzeiten erfinden. Fachliche Anforderungen stehen zusätzlich im [CV-Plan](plans/2026-11-16-cv-abgleich.md), der aktuelle Arbeits-/Übergabestand in [STATUS](STATUS.md).
+In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q64**. Der genaue Sendezeitpunkt einzelner älterer Nachrichten ist nicht verfügbar; vorhandene Datums-/Reihenfolgeangaben erhalten und keine Uhrzeiten erfinden. Fachliche Anforderungen stehen zusätzlich im [CV-Plan](plans/2026-11-16-cv-abgleich.md), der aktuelle Arbeits-/Übergabestand in [STATUS](STATUS.md).
 
 ## Runde 2026-11-17 mit Claude Code (Q14–Q21)
 
@@ -86,6 +86,37 @@ Präzisierungen zur Probe (Nutzer, 2026-11-17, ohne Q-Nummer): Sprachmix in eine
 | Q50 | Mistral-Prüfung | „Ja, wie geplant (Empfohlen)“ | Phase-4-Prüfung laut `docs/phasen-vorarbeit.md` (8 Schritte), nur öffentliche Anzeigentexte. | entschieden |
 
 | Q51 | Linksammlung zu Ranglisten | „Sammelseite mit Links (Empfohlen)“ | Bereich „Rankings zum Stöbern“ mit einfachen Links auf aktuelle Ranglisten, ohne Ränge, Logos oder Einbettung, für alle sichtbar. | entschieden |
+
+Planungsrunde für Codex (Nutzer, 2026-11-17): „Lass uns mal Pläne für alle Phasen festlegen, damit ich mit Codex diese Pläne ausführen kann sobald ich kein Claude Limit mehr habe. Claude nutzt die Skills für Planung und strukturierte Fragen viel besser, daher möchte ich mit dir alle Details klären“.
+
+| Q55 | Reihenfolge der Phasenpläne und des Baus durch Codex (Groq schließen Nutzer und Claude vorher ab) | „4 → 6 → 5 → 3 (Empfohlen)“ | Phase 4 (Firmen/Ranglisten) → Phase 6 (CV-Abgleich) → Phase 5 (KI-Filter) → Phase 3 (Kalender/Gmail; Google-Zugriffsrisiko vorher recherchieren). Ersetzt die Reihenfolge 4 → 3 → 5 → 6 in CLAUDE.md 6. | entschieden |
+
+Fragetext Q55 (Claude, Auswahl): 4 → 6 → 5 → 3 (Empfohlen) / 6 → 4 → 5 → 3 / wie in CLAUDE.md: 4 → 3 → 5 → 6.
+
+| Q56 | Wie werden Firmen aus offenen Quellen aktiv? | Freitext: „Abhängig von den Listen, ich kenne mich nicht aus und weiß nicht, was für Firmen in welcher Liste stehen, bzw. warum sie dort stehen. Mir ist wichtig, dass es sich bei den Listen jeweils um die Top xxx handelt, also eine Art Ranking oder so, damit ich sicher weiß, dass die Firmen groß oder sehr gut oder beliebt sind oder so“ | Firmenquellen müssen Ranglisten bzw. „Top N“ sein (Grund für die Aufnahme erkennbar); ein reines Nachschlagewerk wie Wikidata ist keine Liste, nur Datenquelle. Claude erklärte daraufhin, welche offenen Quellen echte Ranglisten sind (siehe Q57). | beantwortet |
+| Q57 | Welche Listen bestimmen die Firmenauswahl? | Freitext: „Ich verstehe die Frage nicht. Die Firmennamen sollen jeweils aus jeder der Listen übernommen werden. Dafür sind die Listen ja da“ | Alle erklärten offenen Listen liefern Firmen: EU R&D Scoreboard (World 2000/EU 800), DAX/MDAX/SDAX/TecDAX (über Wikidata), „Top 20 je Branche nach Mitarbeitenden“ (aus Wikidata berechnet), größte Unternehmen Deutschlands (Wikipedia, Lizenzkette prüfen), Patent-Rangliste des EPA, EIC-geförderte Startups, Behörden/Forschung (Q42). Firmen werden automatisch übernommen; Ränge nur sichtbar, wo die Lizenz es erlaubt (Q41). | entschieden |
+
+| Q58 | Firmen, deren Karriereseite/Portal das Programm nicht findet | Freitext: „Was heißt, dass das Programm etwas nicht finden kann. Ich dachte Programm und Claude suchen gemeinsam nach der Karriereseite einmalig für jede Firma, dann ist das für jede Firma ja festgelegt. Die Liste der Firmen ändert sich ja nur jedes halbe Jahr oder Jahr oder so, also nicht monatlich“ | Einmalige Ersteinrichtung je Firma: erst das Programm (Website aus Wikidata → Karriereseite → Portal erkennen), für den Rest recherchiert Claude (CLAUDE.md 4.3, öffentliche Firmendaten) Karriere-Link, Größe und Branche mit Quelle. Ergebnis wird fest gespeichert; neu gesucht nur für neue Firmen einer neuen Listen-Ausgabe oder bei defektem Portal (4f). | entschieden |
+
+Fragetext Q58 (Claude, Auswahl, frei beantwortet): Admin-Liste zum Nachtragen (Empfohlen) / einfach weglassen / Liste + Claude-Vorschlag.
+
+| Q59 | Zusatzfirma eines Freundes, Portal nicht gefunden (Claude darf für Freunde nicht suchen, Q38) | „Freund gibt Karriere-Link (Empfohlen)“ | Formular fragt nach Link zur Karriereseite oder einer Stellenanzeige; das Programm erkennt daraus das Portal; sonst Hinweis „diese Seite kann jobradar nicht lesen“. Keine Claude-Recherche für Freunde. | entschieden |
+
+Fragetext Q59 (Claude, Auswahl): Freund gibt Karriere-Link (Empfohlen) / Admin bekommt Bescheid / Zusatzfirmen erst später.
+
+| Q60 | Inhalt des täglichen Telegram-Digests | „Nur passende + Wunschfirmen (Empfohlen)“ | Neue Stellen, die zu gespeicherten Filtern/Stichwörtern passen, plus alle neuen Stellen der Wunscharbeitgeber; je Stelle eine Zeile mit Link, dazu „X weitere neue Stellen“ als Link zur Website. | entschieden |
+
+Fragetext Q60 (Claude, Auswahl): nur passende + Wunschfirmen (Empfohlen) / nur Zahlen + Link / alles Neue.
+
+| Q61 | Wo liegen die Firmendaten? | „Weg 1“ mit Zusatzbedingung zur Herkunftsanzeige (Wortlaut nicht im öffentlichen Repo) | Firmen aus offenen Quellen als Datei im Repo (Name, Karriere-Link, Portal, Größe, Branche, Quelle; Änderungen per Pull Request), Nachtlauf überträgt in die Datenbank. Alle übrigen Firmen (Zusatzfirmen, vom Admin von Hand ergänzte) nur in der Datenbank; ihre Herkunft sieht nur der Admin, Firma und Stellen sehen alle (bzw. bei Zusatzfirmen nur der Nutzer). Öffentlich einsehbar ist eine Herkunft nur bei offenen Quellen. | entschieden |
+
+Fragetext Q61 (Claude, Auswahl): Weg 1: Repo + DB (Empfohlen) / Weg 2: nur Datenbank.
+
+| Q62 | Rückmeldung zum Phase-4-Design (Nutzer, frei) | „zusatzfirmen werden dem Admin ebenfalls gemeldet. Der Admin kann die Zusatzfirmen auch für sich selbst oder alle freigeben. […] 4. Warum immer nur 100 Firmen pro Nacht? Das kann doch zu 90% durch reinen code geregelt werden. Alles, wo durch reinen Code nicht die Karriereseite gefunden werden kann, kann gemeinsam am näcshten morgen mittels Claude Code geprüft werden.“ | Neue Zusatzfirmen erscheinen in einer Admin-Liste (Firmenname, Link, Anzahl Nutzer, ohne Nutzernamen); Admin gibt für sich oder für alle frei; Formular und Datenschutzerklärung nennen das (Ausnahme von CLAUDE.md 4.6 nur für Firmenname/Link). Einrichtungslauf für alle Kandidaten auf einmal (Fortsetzung in der nächsten Nacht nur bei Zeitlimit); Rest gemeinsam am Morgen in einer Claude-Code-Sitzung, kein nächtlicher Claude-Workflow. | entschieden |
+
+| Q63 | Wie nutzen alle Nutzer die Chrome-Erweiterung, sobald die Seite live ist? (Nutzerfrage) | Claudes Empfehlung: jetzt Download von der Konto-Seite (ZIP, „Entpackte Erweiterung laden“, Anleitung mit eigener Adresse zum Kopieren); Chrome Web Store „nicht gelistet“ erst bei mehr Freunden oder öffentlichem Start (kostet einmalig Gebühr, ausdrückliche Zustimmung nötig). Antwort: „Der von dir genannte Plan passt“ | Paket „Erweiterung verteilen“ (Weg A) für Codex; Store-Veröffentlichung später als eigene Entscheidung (CLAUDE.md 3.1). | entschieden |
+
+Fragetexte Q56/Q57 (Claude, Auswahl, jeweils frei beantwortet): Q56 Vorschlag + Häkchen des Admins (Empfohlen) / vollautomatisch / automatisch mit Wochen-Stichprobe. Q57 Mehrfachauswahl EU R&D Scoreboard / Börsenindizes / Top 20 je Branche (Wikidata) / EIC-Startups + Behörden/Forschung.
 
 Zusatzanforderung (Nutzer, 2026-11-17, ohne Q-Nummer): „Ich brauche auch startups und Mittelstand bzw. zumindest die top 20 firmen pro Branche“.
 
