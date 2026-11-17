@@ -4,7 +4,7 @@ import { aktuellerNutzer } from "@/lib/nutzer";
 import { firmenFarbe } from "@/lib/farbe";
 import { datumDe } from "@/lib/bewerbung";
 import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
-import { kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
+import { istUmgerechnet, UMGERECHNET_HINWEIS, kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { merken, entmerken } from "./actions";
 import FilterBlock from "./filterblock";
@@ -204,7 +204,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                     <Ranglisten zuordnungen={ranglisten.zuordnungen.filter((z) => z.unternehmen === j.unternehmen)} />
                     {kurz.length > 0 && (
                       <ul className="kurz" aria-label="Kurzbeschreibung">
-                        {kurz.map((e) => <li key={e.feld}>{e.text}</li>)}
+                        {kurz.map((e) => <li key={e.feld} title={e.feld === "gehalt" && istUmgerechnet(e.text) ? UMGERECHNET_HINWEIS : undefined}>{e.text}</li>)}
                       </ul>
                     )}
                   </div>

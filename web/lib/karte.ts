@@ -1,5 +1,6 @@
 // Reine Helfer für Bewerbungs-Karten (Gehalt, Tage seit, nächster Termin).
 import { lokal } from "./filter.ts";
+import { ca, proJahr } from "./steckbrief.ts";
 
 // Datumsteil in Ortszeit; reine Datumsstrings bleiben unverändert.
 export const tagVon = (s: string) => (/^\d{4}-\d{2}-\d{2}$/.test(s) ? s : lokal(new Date(s)));
@@ -15,11 +16,11 @@ export function gehaltText(
 ): string | null {
   for (const s of [a.angebot_fix, a.gehalt_wunsch, a.gehalt_spanne_anzeige]) if (!fehlt(s)) return s!.trim();
   const g = steckbrief?.gehalt;
-  const werte = [g?.min, g?.max].filter((x): x is number => typeof x === "number" && Number.isFinite(x));
+  const werte = [g?.min, g?.max].filter((x): x is number => typeof x === "number" && Number.isFinite(x)).map((x) => proJahr(x, g?.zeitraum));
   if (!g || !werte.length) return null;
   const zahlen = werte.length === 2 && werte[0] !== werte[1] ? `${zahl.format(werte[0])}–${zahl.format(werte[1])}` : zahl.format(werte[0]);
   const w = ` ${!g.waehrung || g.waehrung === "EUR" ? "€" : g.waehrung}`;
-  return `${zahlen}${w} / ${g.zeitraum === "Monat" ? "Monat" : g.zeitraum === "Stunde" ? "Stunde" : "Jahr"}`;
+  return `${ca(g.zeitraum)}${zahlen}${w} / Jahr`;
 }
 
 export function tageSeit(events: { datum: string }[], erstellt_am: string, heute: string): number {

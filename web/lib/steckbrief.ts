@@ -23,17 +23,21 @@ export function waehleFelder(gespeichert: unknown): Feld[] {
 const tausender = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 const kurz = (n: number) => (n % 1000 === 0 ? `${n / 1000}k` : tausender(n));
 
-// "70–85k €", "90–110k CHF", "6.000 € / Monat". Nichts wird umgerechnet.
+// Gehalt wird überall als Jahresgehalt gezeigt: Monat x12, Stunde x2080 (40 h x 52 Wochen), dann mit "≈".
+const JAHRES_FAKTOR = { Jahr: 1, Monat: 12, Stunde: 2080 } as const;
+export const proJahr = (n: number, zeitraum?: string | null): number => Math.round(n * (JAHRES_FAKTOR[zeitraum as keyof typeof JAHRES_FAKTOR] ?? 1));
+export const ca = (zeitraum?: string | null): string => (zeitraum === "Monat" || zeitraum === "Stunde" ? "≈ " : "");
+export const UMGERECHNET_HINWEIS = "Umgerechnet auf ein Jahresgehalt (Monatsgehalt x 12, Stundenlohn x 2.080 = 40 Std. x 52 Wochen)";
+export const istUmgerechnet = (text: string): boolean => text.startsWith("≈");
+
+// "70–85k €", "90–110k CHF", "≈ 72k €" (aus Monatsgehalt).
 export function gehaltText(g: Gehalt): string {
   const w = g.waehrung === "EUR" ? "€" : "CHF";
-  if (g.zeitraum === "Jahr") {
-    const rund = g.min % 1000 === 0 && g.max % 1000 === 0;
-    const spanne = g.min === g.max ? (rund ? kurz(g.min) : tausender(g.min))
-      : rund ? `${g.min / 1000}–${g.max / 1000}k` : `${tausender(g.min)}–${tausender(g.max)}`;
-    return `${spanne} ${w}`;
-  }
-  const spanne = g.min === g.max ? tausender(g.min) : `${tausender(g.min)}–${tausender(g.max)}`;
-  return `${spanne} ${w} / ${g.zeitraum}`;
+  const [min, max] = [proJahr(g.min, g.zeitraum), proJahr(g.max, g.zeitraum)];
+  const rund = min % 1000 === 0 && max % 1000 === 0;
+  const spanne = min === max ? (rund ? kurz(min) : tausender(min))
+    : rund ? `${min / 1000}–${max / 1000}k` : `${tausender(min)}–${tausender(max)}`;
+  return `${ca(g.zeitraum)}${spanne} ${w}`;
 }
 
 // Arbeitsmodell plus "Remote", wenn die Stelle remote ist und das Modell das nicht schon sagt.

@@ -6,7 +6,7 @@ import { AUSGEBLENDET_BRANCHE, ID_FORM, heuteLokal, tagePlus } from "@/lib/filte
 import { datumDe } from "@/lib/bewerbung";
 import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
 import { firmenTrend } from "@/lib/firmentrend";
-import { modellText, FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
+import { istUmgerechnet, UMGERECHNET_HINWEIS, modellText, FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
 import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
 import { leseKi, voraussetzungen } from "@/lib/zusammenfassung";
@@ -109,7 +109,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       {eintraege.length > 0 && (
         <section className="steckbrief karte" aria-labelledby="steckbrief-titel">
           <h2 id="steckbrief-titel">Steckbrief</h2>
-          <dl>{eintraege.map((e) => <div key={e.feld}><dt>{FELD_TITEL[e.feld]}</dt><dd>{e.text}</dd></div>)}</dl>
+          <dl>{eintraege.map((e) => <div key={e.feld}><dt>{FELD_TITEL[e.feld]}</dt><dd title={e.feld === "gehalt" && istUmgerechnet(e.text) ? UMGERECHNET_HINWEIS : undefined}>{e.text}</dd></div>)}</dl>
         </section>
       )}
       {nutzer && firma && (
