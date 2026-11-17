@@ -263,3 +263,12 @@ test("Manifest gewährt keine dauerhaften Fremdseitenrechte und keine externe Na
   assert.equal(manifest.externally_connectable, undefined);
   assert.equal(manifest.content_scripts, undefined);
 });
+
+test("Manifest bleibt für Webseiten unsichtbar", async () => {
+  const m = JSON.parse(await readFile(new URL("./manifest.json", import.meta.url), "utf8"));
+  for (const schluessel of ["content_scripts", "web_accessible_resources", "externally_connectable", "host_permissions"]) {
+    assert.equal(schluessel in m, false, schluessel);
+  }
+  assert.deepEqual(m.permissions, ["activeTab", "scripting", "storage"]);
+  assert.ok(Array.isArray(m.optional_host_permissions));
+});

@@ -2,6 +2,8 @@
 
 Lokale erste Version für Chrome. Edge, Safari, Smartphone und Firefox folgen gemäß Nutzerpriorität später. Kein Browser wurde durch Codex eingerichtet, keine Erweiterung installiert und nichts veröffentlicht.
 
+Unsichtbar für Webseiten: keine Inhaltsskripte und keine freigegebenen Dateien; ein Test sichert das ab.
+
 ## Einmal einrichten
 
 **Was:**
