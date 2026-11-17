@@ -28,12 +28,16 @@ def _schreibe_text(pfad, text):
         raise
 
 
+_MELDUNGEN = {"kein Objekt", "doppelte ID", "isListed ungültig", "Status ungültig"}  # feste Adapter-Gründe
+
+
 def _grund(s, bekannte, gesehen):
     """Kurzer, fester Grund, warum eine einzelne Stelle übersprungen wird (nie Rohdaten); None = gültig."""
     if not isinstance(s, dict):
         return "kein Objekt"
     if "uebersprungen" in s:  # Adapter meldet eine kaputte Einzelstelle
-        return s["uebersprungen"]
+        m = s["uebersprungen"]
+        return m if isinstance(m, str) and m in _MELDUNGEN else "ungültige Meldung"  # nie Rohwerte in den Bericht
     ext_id = s.get("ext_id")
     if not isinstance(ext_id, str) or not ext_id.strip():
         return "ungültige ID"
@@ -81,6 +85,10 @@ def _firma(f, heute):
         stellen = adapter(f["ats_id"], bekannte=bekannte)
         schritt = "Antwortprüfung"
         gueltig, uebersprungen = _pruefe_stellen(stellen, bekannte)
+        if stellen and not gueltig:  # alles kaputt: eher Formatwechsel beim ATS als Einzelfehler
+            zeile.update(gefunden=len(stellen), uebersprungen=dict(uebersprungen),
+                         fehler=f"{schritt}: alle {len(stellen)} Stellen übersprungen (Format geändert?)")
+            return zeile
         unveraendert = [s["ext_id"] for s in gueltig if s.get("unveraendert")]
         voll = [s for s in gueltig if not s.get("unveraendert")]
         behalten, gruende = [], Counter()
@@ -122,7 +130,7 @@ def _markdown(bericht):
             z.append(f"- {f['name']} gefiltert: " + ", ".join(f"{g}: {n}" for g, n in f["gruende"].items()))
         if f.get("uebersprungen"):
             z.append(f"- {f['name']}: {sum(f['uebersprungen'].values())} Stellen übersprungen ("
-                     + ", ".join(f"{g}: {n}" for g, n in f["uebersprungen"].items()) + ")")
+                     + ", ".join(f"{g}: {n}" for g, n in f["uebersprungen"].items()) + "), nichts geschlossen")
     if bericht.get("ki"):
         z.append("- KI: " + ", ".join(f"{k}: {v}" for k, v in bericht["ki"].items()))
     return "\n".join(z) + "\n"

@@ -9,6 +9,9 @@ _VERTRAG = {"fulltime": "Vollzeit", "fulltime_permanent": "Vollzeit", "fulltime_
 def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[dict]:  # bekannte: ignoriert
     stellen = []
     for o in objekt_liste(http.hole(f"https://{ats_id}/api/offers/").json(), "offers"):
+        if "uebersprungen" in o:  # Nicht-Objekt aus objekt_liste
+            stellen.append(o)
+            continue
         status = o.get("status", "published")
         if not isinstance(status, str) or not status.strip():
             stellen.append({"uebersprungen": "Status ungültig"})

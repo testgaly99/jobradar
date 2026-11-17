@@ -79,8 +79,9 @@ def test_filterfehler_bricht_nicht_ab(aufbau):
     run.ADAPTER["a"] = lambda _, **k: [{"ext_id": "2", "ort": "Berlin", "remote": False}]  # titel fehlt
     run.ADAPTER["b"] = lambda _, **k: [stelle("1"), stelle("9")]
     bericht = run.lauf("2026-11-07", d)
-    assert bericht["firmen"][0]["fehler"] == "" and bericht["firmen"][0]["uebersprungen"] == {"ohne Titel": 1}
-    assert t["jobs"]["A:1"]["status"] == "offen" and "A:2" not in t["jobs"]  # übersprungen: nichts geschlossen
+    assert bericht["firmen"][0]["fehler"] == "Antwortprüfung: alle 1 Stellen übersprungen (Format geändert?)"
+    assert bericht["firmen"][0]["uebersprungen"] == {"ohne Titel": 1}
+    assert t["jobs"]["A:1"]["status"] == "offen" and "A:2" not in t["jobs"]  # nichts geschlossen
     assert "B:9" in t["jobs"]
 
 
@@ -223,6 +224,7 @@ def test_kaputte_gesamtantwort_veraendert_keine_vorhandenen_stellen(aufbau, antw
     (stelle(""), "ungültige ID"), (stelle(42), "ungültige ID"), ({**stelle("9"), "unveraendert": "ja"}, "ungültige Markierung"),
     ({"ext_id": "unbekannt", "unveraendert": True}, "unbekannte ID"),
     (stelle("3"), "doppelte ID"), ({"uebersprungen": "isListed ungültig"}, "isListed ungültig"),
+    ({"uebersprungen": "https://geheim.invalid/roh"}, "ungültige Meldung"), ({"uebersprungen": ["x"]}, "ungültige Meldung"),
 ])
 def test_kaputte_einzelstelle_wird_uebersprungen_und_verhindert_schliessen(aufbau, kaputt, grund):
     d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1"), stelle("2")]})
@@ -234,7 +236,7 @@ def test_kaputte_einzelstelle_wird_uebersprungen_und_verhindert_schliessen(aufba
     assert (bericht["neu"], bericht["geschlossen"]) == (1, 0)
     assert t["jobs"]["A:3"]["status"] == "offen"
     assert {k: v for k, v in t["jobs"].items() if k != "A:3"} == vorher  # A:1/A:2 bleiben offen und unverändert
-    assert f"A: 1 Stellen übersprungen ({grund}: 1)" in (d / "bericht.md").read_text(encoding="utf-8")
+    assert f"A: 1 Stellen übersprungen ({grund}: 1), nichts geschlossen" in (d / "bericht.md").read_text(encoding="utf-8")
 
 
 def test_gueltige_stellen_trotz_kaputter_stelle_uebernommen(aufbau):
@@ -247,8 +249,20 @@ def test_gueltige_stellen_trotz_kaputter_stelle_uebernommen(aufbau):
     a = bericht["firmen"][0]
     assert a["fehler"] == "" and a["uebersprungen"] == {"ohne URL": 1, "ohne Titel": 1, "doppelte ID": 1}
     assert "A:3" in t["jobs"] and "A:4" not in t["jobs"] and t["jobs"]["A:1"]["status"] == "offen"
-    assert "A: 3 Stellen übersprungen (ohne URL: 1, ohne Titel: 1, doppelte ID: 1)" in (d / "bericht.md").read_text(encoding="utf-8")
+    assert "A: 3 Stellen übersprungen (ohne URL: 1, ohne Titel: 1, doppelte ID: 1), nichts geschlossen" in (d / "bericht.md").read_text(encoding="utf-8")
     assert "B:2" in t["jobs"] and not bericht["firmen"][1]["fehler"]
+
+
+@pytest.mark.parametrize("antwort", [[{}], [None, stelle("")], [{"uebersprungen": "doppelte ID"}] * 3])
+def test_alle_stellen_uebersprungen_ist_firmenfehler(aufbau, antwort):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1")]})
+    run.lauf("2026-11-06", d)
+    vorher = copy.deepcopy(t["jobs"])
+    run.ADAPTER["a"] = lambda _, **k: antwort
+    bericht = run.lauf("2026-11-07", d)["firmen"][0]
+    assert bericht["fehler"] == f"Antwortprüfung: alle {len(antwort)} Stellen übersprungen (Format geändert?)"
+    assert (bericht["neu"], bericht["geschlossen"]) == (0, 0)
+    assert t["jobs"] == vorher
 
 
 def test_sauberer_lauf_schliesst_weiterhin(aufbau):

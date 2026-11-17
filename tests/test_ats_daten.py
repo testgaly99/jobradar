@@ -6,11 +6,20 @@ from scraper.ats import greenhouse, ashby, recruitee, personio, sitemap
 
 
 @pytest.mark.parametrize("adapter,feld", [(greenhouse, "jobs"), (ashby, "jobs"), (recruitee, "offers")])
-@pytest.mark.parametrize("wert", [{}, "", None, 42, [None], ["Text"]])
+@pytest.mark.parametrize("wert", [{}, "", None, 42])
 def test_json_antwort_braucht_echte_objektliste(monkeypatch, adapter, feld, wert):
     monkeypatch.setattr(http, "hole", lambda _: SimpleNamespace(json=lambda: {feld: wert}))
     with pytest.raises(ValueError):
         adapter.hole_stellen("synthetisch")
+
+
+@pytest.mark.parametrize("adapter,feld", [(greenhouse, "jobs"), (ashby, "jobs"), (recruitee, "offers")])
+@pytest.mark.parametrize("eintrag", [None, "Text", 42, []])
+def test_einzelnes_nicht_objekt_wird_uebersprungen(monkeypatch, adapter, feld, eintrag):
+    gut = {"id": 1, "title": "Engineer", "isListed": True, "jobUrl": "u", "absolute_url": "u", "careers_url": "u"}
+    monkeypatch.setattr(http, "hole", lambda _: SimpleNamespace(json=lambda: {feld: [eintrag, gut]}))
+    stellen = adapter.hole_stellen("synthetisch")
+    assert stellen[0] == {"uebersprungen": "kein Objekt"} and stellen[1]["ext_id"] == "1"
 
 
 @pytest.mark.parametrize("adapter,feld", [(greenhouse, "jobs"), (ashby, "jobs"), (recruitee, "offers")])

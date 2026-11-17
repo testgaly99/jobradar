@@ -10,6 +10,9 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
     daten = http.hole(f"https://boards-api.greenhouse.io/v1/boards/{ats_id}/jobs?content=true").json()
     stellen = []
     for j in objekt_liste(daten, "jobs"):
+        if "uebersprungen" in j:  # Nicht-Objekt aus objekt_liste
+            stellen.append(j)
+            continue
         ort = (j.get("location") or {}).get("name") or ""
         # Greenhouse liefert doppelt escaped: erst entpacken, Tags entfernen, nochmal entpacken.
         roh = html.unescape(j.get("content") or "")

@@ -11,6 +11,9 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
     daten = http.hole(f"https://api.ashbyhq.com/posting-api/job-board/{ats_id}").json()
     stellen = []
     for j in objekt_liste(daten, "jobs"):
+        if "uebersprungen" in j:  # Nicht-Objekt aus objekt_liste
+            stellen.append(j)
+            continue
         if not isinstance(j.get("isListed"), bool):
             stellen.append({"uebersprungen": "isListed ungültig"})
             continue

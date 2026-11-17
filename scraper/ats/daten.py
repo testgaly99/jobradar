@@ -2,11 +2,10 @@
 
 
 def objekt_liste(daten, feld):
+    """Keine Liste: ganze Antwort kaputt. Einzelne Nicht-Objekte werden zur Übersprungen-Meldung."""
     if not isinstance(daten, dict) or not isinstance(daten.get(feld), list):
         raise ValueError(f"ATS-Antwort benötigt Liste: {feld}")
-    if not all(isinstance(eintrag, dict) for eintrag in daten[feld]):
-        raise ValueError(f"ATS-Liste enthält ungültigen Eintrag: {feld}")
-    return daten[feld]
+    return [e if isinstance(e, dict) else {"uebersprungen": "kein Objekt"} for e in daten[feld]]
 
 
 def stellen_id(wert):

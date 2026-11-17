@@ -31,7 +31,8 @@ def pruefe_uebersprungen(firma, fake, daten, kaputt, teilweise, grund):
     gueltig = {**daten[0], "descriptionPlain": "Geänderter Text", "description": "Geänderter Text"}
     daten[:] = [gueltig, kaputt] if teilweise else [kaputt]
     bericht = run._firma(firma, "2026-11-16")
-    assert bericht["fehler"] == "" and bericht["uebersprungen"] == {grund: 1}
+    assert bericht["fehler"] == ("" if teilweise else "Antwortprüfung: alle 1 Stellen übersprungen (Format geändert?)")
+    assert bericht["uebersprungen"] == {grund: 1}
     assert bericht["geschlossen"] == bericht["neu"] == 0
     assert fake.t["jobs"]["Testfirma:2"] == bestand["Testfirma:2"]  # nicht geschlossen, Text bleibt
     if teilweise:
