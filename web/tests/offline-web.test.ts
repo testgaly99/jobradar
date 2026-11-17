@@ -38,10 +38,13 @@ test("Quell-Symlinks werden nicht in den isolierten Build verfolgt", () => {
 });
 
 test("Kindprozessumgebung übernimmt keine Dienste-Schlüssel oder fremden Node-Optionen", () => {
-  const env = umgebung("/test/guard.cjs", { PATH: "test", GROQ_API_KEY: "künstlich", NODE_OPTIONS: "fremd", SUPABASE_URL: "fremd" });
+  const env = umgebung("/test/guard.cjs", { PATH: "test", GROQ_API_KEY: "künstlich", NODE_OPTIONS: "fremd", SUPABASE_URL: "fremd",
+    ADMIN_EMAIL: "geerbt@example.invalid", SUPABASE_SERVICE_KEY: "geerbter-kuenstlicher-wert" });
   assert.equal(env.GROQ_API_KEY, undefined);
   assert.equal(env.SUPABASE_URL, undefined);
   assert.equal(env.NEXT_PUBLIC_SUPABASE_URL, "https://offline.example.invalid");
+  assert.equal(env.ADMIN_EMAIL, "offline-admin@example.invalid");
+  assert.equal(env.SUPABASE_SERVICE_KEY, "synthetischer-offline-service-schluessel");
   assert.equal(env.NODE_OPTIONS, '--require "/test/guard.cjs"');
 });
 
@@ -67,7 +70,10 @@ test("Browserfixture beantwortet nur markierten internen Redirect synthetisch, �
       const intern = { method: 'GET', next: { internal: 1 }, headers: { rsc: '1' } };
       a.equal((await fetch('http://localhost:3002/stellen/test', intern)).status, 204);
       await a.rejects(fetch('http://localhost:3002/stellen/test'), /gesperrt/);
-      await a.rejects(fetch('http://localhost:3002/konto', intern), /gesperrt/);
+      a.equal((await fetch('http://localhost:3002/konto?fehler=synthetisch', intern)).status, 204);
+      a.equal((await fetch('http://localhost:3002/dokumente', intern)).status, 204);
+      a.equal((await fetch('http://localhost:3002/login?geloescht=1', intern)).status, 204);
+      await a.rejects(fetch('http://localhost:3002/export', intern), /gesperrt/);
       await a.rejects(fetch('https://example.invalid/stellen/test', intern), /gesperrt/);
       a.throws(() => require('node:net').connect(3002, '127.0.0.1'), /gesperrt/);
     })().catch(() => { process.exitCode = 1; });

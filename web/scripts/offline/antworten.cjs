@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const log = path.join(process.cwd(), 'anfragen.jsonl');
 const bewerbungen = new Map();
+const persoenlich = require('./persoenlich.cjs');
 const heute = new Date().toISOString().slice(0, 10);
 const jobs = [
   ['Testfirma A:1', 'Testfirma A', 'Datenanalyse'],
@@ -32,17 +33,22 @@ globalThis.fetch = async (input, init = {}) => {
   // Nexts internen Redirect-Vorabruf rein synthetisch beantworten: Client lädt das Ziel regulär neu.
   // Keine echte Loopback-Verbindung und keine gelockerte Socket-/Domainsperre.
   if (['http://localhost:3002', 'http://127.0.0.1:3002'].includes(url.origin)
-      && (url.pathname === '/stellen' || url.pathname.startsWith('/stellen/'))
+      && (url.pathname === '/stellen' || url.pathname.startsWith('/stellen/')
+        || ['/konto', '/dokumente', '/login'].includes(url.pathname))
       && init.method === 'GET' && init.next?.internal === 1 && headers.get('rsc') === '1') {
     return new Response(null, { status: 204 });
   }
   if (url.hostname !== 'offline.example.invalid') throw new Error('Externer Testzugriff gesperrt');
   const token = headers.get('authorization')?.replace(/^Bearer /, '');
   let mode = 'gast';
-  try { mode = JSON.parse(Buffer.from(token.split('.')[1], 'base64url')).mode ?? 'normal'; } catch {}
+  let claims = {};
+  try { claims = JSON.parse(Buffer.from(token.split('.')[1], 'base64url')); mode = claims.mode ?? 'normal'; } catch {}
   const body = typeof init.body === 'string' && init.body ? JSON.parse(init.body) : {};
   const methode = init.method ?? 'GET';
   fs.appendFileSync(log, JSON.stringify({ pfad: url.pathname, mode, methode, listen: body.p_listen }) + '\n');
+  const privat = persoenlich.bearbeiten({ url, init, headers, claims, mode, body, methode,
+    loggen: wert => fs.appendFileSync(log, JSON.stringify(wert) + '\n') });
+  if (privat) return privat;
   const aktionsprobe = /^(merken-fehler|merken-leer|beworben-konflikt)-/.test(mode);
   if (aktionsprobe && !bewerbungen.has(mode)) bewerbungen.set(mode, {
     id: '00000000-0000-4000-8000-000000000015', job_id: 'Testfirma A:1', status: 'gemerkt', beworben_am: null,

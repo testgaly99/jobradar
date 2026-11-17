@@ -1,6 +1,6 @@
 # Prüfgrundlage für die bestehende Anwendung
 
-Stand: 2026-11-15. Diese Bestandsaufnahme dokumentiert bereits notwendige Prüfungen und den nun versionierten Offline-Einstieg. Sie legt keine neuen Produktfunktionen, Anbieter oder Rankings fest und ersetzt keine Funktions- oder Veröffentlichungsfreigabe. Aktuelle Ergebnisse stehen zentral in `STATUS.md`; frühere grüne Tests gelten nicht automatisch für spätere Änderungen.
+Stand: 2026-11-16. Diese Bestandsaufnahme dokumentiert bereits notwendige Prüfungen und den versionierten Offline-Einstieg. Sie legt keine neuen Produktfunktionen, Anbieter oder Rankings fest und ersetzt keine Funktions- oder Veröffentlichungsfreigabe. Aktuelle Ergebnisse stehen zentral in `STATUS.md`; frühere grüne Tests gelten nicht automatisch für spätere Änderungen.
 
 ## Vorbereiteter Prüfbestand
 
@@ -66,6 +66,8 @@ npm.cmd run pruefe:browser
 ```
 
 Der Browserlauf erstellt zuerst den isolierten Build und verwendet die bereits vorhandenen Chrome-/Python-/Playwright-Werkzeuge. Falls der Windows-Launcher die vorhandene Python-Installation nicht erkennt, kann der Entwickler `-- --python <Interpreterpfad>` anhängen. Nichts nachinstallieren. Das sind Entwicklerprüfungen, keine regelmäßigen Nutzeraufgaben.
+
+**Erweiterung 2026-11-16:** Zusätzlich zu Stellen-/Rankingabläufen prüft derselbe Einstieg auf 1280/390 Pixeln durchgehende Tracker-, Dokument-, CSV-Export- und Kontoabläufe einschließlich Fehlerfällen. Export enthält tatsächlich 1001 Bewerbungen und Beziehungen; Löschfälle betreffen ausschließlich künstliche Ersatzdaten. `persoenlich.py`/`.cjs` halten diese Fälle getrennt. Feste künstliche Admin-/Servicewerte werden ausschließlich im isolierten Prozess gesetzt; geerbte Werte werden verworfen. Die neue Import-API wird über einen echten Browser-Fetch mit künstlicher Anmeldung/DB geprüft. Eine installierte Erweiterung und tatsächliche Datenbankrechte sind damit nicht abgenommen. Umfang/Ergebnisse im [Abnahmeplan](plans/2026-11-16-browser-cv-abnahme.md).
 
 **Warum:** Ein normaler Next.js-Build lädt lokale Umgebungsdateien automatisch. Die vorhandene sichere Probe wurde deshalb in einer frischen Kopie durchgeführt. Eine Browserprobe mit Ersatzdaten belegt Bedienabläufe, aber keine echte Datenbankabschirmung.
 

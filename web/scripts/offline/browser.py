@@ -3,8 +3,10 @@ import base64
 import json
 import sys
 import time
+import uuid
 from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
+from persoenlich import pruefe_persoenlich
 
 BASE = "http://localhost:3002"
 LOG = Path(sys.argv[1])
@@ -15,8 +17,11 @@ def b64(value):
 
 def session(context, mode="normal"):
     now = int(time.time())
-    claims = {"sub": "00000000-0000-4000-8000-000000000001", "aud": "authenticated", "role": "authenticated",
-              "email": "offline@example.com", "mode": mode, "iat": now, "exp": now + 3600, "iss": "https://offline.example.invalid/auth/v1"}
+    uid = str(uuid.uuid5(uuid.NAMESPACE_URL, "offline:" + mode)) if mode.startswith(("tracker-", "dokument-", "export-", "konto-", "import-")) else "00000000-0000-4000-8000-000000000001"
+    email = "offline-admin@example.invalid" if mode.startswith("konto-admin-") else "offline@example.invalid"
+    claims = {"sub": uid, "aud": "authenticated", "role": "authenticated",
+              "email": email, "mode": mode, "iat": now, "exp": now + 3600, "iss": "https://offline.example.invalid/auth/v1"}
+    context.offline_claims = claims
     token = b64({"alg": "HS256", "typ": "JWT"}) + "." + b64(claims) + "." + b64("offline")
     value = {"access_token": token, "refresh_token": "offline", "token_type": "bearer", "expires_in": 3600,
              "expires_at": now + 3600, "user": {"id": claims["sub"], "email": claims["email"]}}
@@ -24,7 +29,25 @@ def session(context, mode="normal"):
 
 def context(browser, width):
     ctx = browser.new_context(viewport={"width": width, "height": 900})
-    ctx.route("**/*", lambda r: r.continue_() if r.request.url.startswith(BASE + "/") else r.abort())
+    def route(r):
+        url = r.request.url
+        if url.startswith(BASE + "/"):
+            return r.continue_()
+        claims = getattr(ctx, "offline_claims", {})
+        if url == "https://offline.example.invalid/auth/v1/user" and claims:
+            return r.fulfill(status=200, json={"id": claims["sub"], "email": claims["email"], "aud": "authenticated", "role": "authenticated"})
+        if url.startswith("https://offline.example.invalid/storage/v1/object/") and claims.get("mode", "").startswith("dokument-"):
+            method = r.request.method
+            with LOG.open("a", encoding="utf-8") as log:
+                log.write(json.dumps({"mode": claims["mode"], "ereignis": "browser-speicher", "methode": method, "pfad": url.split("offline.example.invalid", 1)[1]}) + "\n")
+            if method == "POST" and "/object/dokumente/" in url:
+                return r.fulfill(status=500, json={"message": "synthetischer Uploadfehler"}) if claims["mode"].startswith("dokument-uploadfehler-") else r.fulfill(status=200, json={"Key": "dokumente/offline.pdf"})
+            if method == "DELETE" and url.endswith("/object/dokumente"):
+                return r.fulfill(status=200, json=[])
+            if method == "GET" and "/object/sign/dokumente/" in url:
+                return r.fulfill(status=200, body=b"%PDF-1.4\n% rein synthetisches Browserbeispiel\n%%EOF", headers={"content-type": "application/pdf", "content-disposition": 'attachment; filename="synthetisch.pdf"'})
+        return r.abort()
+    ctx.route("**/*", route)
     return ctx
 
 with sync_playwright() as p:
@@ -86,6 +109,7 @@ with sync_playwright() as p:
                         expect(seite.get_by_role("button", name="Merken", exact=True)).to_be_visible()
                 probe.close()
             print(f"OK {width}px: Entmerken-Fehler, erfolgreiches Entmerken, paralleler Statusfortschritt")
+            pruefe_persoenlich(browser, width, context, session, BASE, LOG)
         records = [json.loads(line) for line in LOG.read_text().splitlines()[STARTZEILE:]]
         assert not any("ranking_" in r.get("pfad", "") and r["mode"] == "gast" for r in records)
         assert not any(r["mode"].startswith("merken-fehler-") and r.get("methode") == "DELETE" for r in records)

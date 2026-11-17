@@ -34,6 +34,7 @@ function umgebung(guard, geerbt = process.env) {
   }
   return Object.assign(env, { NEXT_TELEMETRY_DISABLED: '1', NODE_ENV: 'production',
     NEXT_PUBLIC_SUPABASE_URL: 'https://offline.example.invalid', NEXT_PUBLIC_SUPABASE_ANON_KEY: 'synthetischer-offline-schluessel',
+    ADMIN_EMAIL: 'offline-admin@example.invalid', SUPABASE_SERVICE_KEY: 'synthetischer-offline-service-schluessel',
     NODE_OPTIONS: `--require "${guard.replaceAll('\\', '/')}"` });
 }
 
@@ -72,7 +73,7 @@ async function browser(ziel, python) {
     }
     if (!bereit) throw new Error('Prüfserver nicht bereit');
     // Python erhält ebenfalls keine geerbten Dienste-Schlüssel oder Node-Optionen.
-    const pyEnv = { ...env }; delete pyEnv.NODE_OPTIONS;
+    const pyEnv = { ...env, PYTHONIOENCODING: 'utf-8' }; delete pyEnv.NODE_OPTIONS;
     await befehl(python, ['-B', path.join(__dirname, 'browser.py'), path.join(ziel, 'anfragen.jsonl')], { cwd: ziel, env: pyEnv });
   } finally {
     stoppen();
