@@ -3,7 +3,7 @@ export const MAX_ALTER = 10 * 60 * 1000;
 const PREFIX = "stellen-import:";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-// Jobportale: Nur Adresse und Seitentitel übernehmen (Nutzungsbedingungen verbieten das Kopieren per Erweiterung).
+// Jobportale: Nur Adresse und Titel aus dem Tab-Objekt, kein Skript in der Seite (Nutzungsbedingungen verbieten das Auslesen per Erweiterung).
 // "name.*" steht für beliebige Endungen. Die Liste steht je einmal in der Erweiterung (kern.mjs) und in der Website (web/lib/stellen-import.ts); ein Test prüft Gleichheit.
 export const PORTALE = ["linkedin.com", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com"];
 export function istPortal(host) {
@@ -26,7 +26,7 @@ export function appOrigin(wert) {
   return url.origin;
 }
 
-export function erfasseAnzeige(nurAdresse = false) {
+export function erfasseAnzeige() {
   const url = new URL(location.href);
   if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || url.href.length > 4096) throw Error("Diese Seite kann nicht übernommen werden.");
   const kurz = (s, limit) => typeof s === "string" ? s.trim().slice(0, limit) : "";
@@ -45,7 +45,6 @@ export function erfasseAnzeige(nurAdresse = false) {
     })
     .replace(/&(amp|lt|gt|quot|apos|nbsp);/g, (_, name) => ({ amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " })[name])
     .replace(/\s+/g, " ").trim();
-  if (nurAdresse) return { link: url.href, ...(kurz(document.title, 500) ? { titel: kurz(document.title, 500) } : {}) };
   const stellen = [];
   let besucht = 0;
   const finde = (obj, tiefe = 0) => {
@@ -156,8 +155,9 @@ export function erstelleImporteur(chrome, { jetzt = Date.now, uuid = () => crypt
         return;
       }
       if ((await eintraege()).length >= 10) throw Error("Bitte zuerst einen offenen Import abschließen oder schließen.");
-      const results = await chrome.scripting.executeScript({ target: { tabId: tab.id, frameIds: [0] }, world: "ISOLATED", func: erfasseAnzeige, args: [istPortal(new URL(tab.url).hostname)] });
-      const roh = results.find((r) => r.frameId === 0)?.result;
+      const portal = istPortal(new URL(tab.url).hostname);
+      const roh = portal ? { link: tab.url, titel: tab.title } :
+        (await chrome.scripting.executeScript({ target: { tabId: tab.id, frameIds: [0] }, world: "ISOLATED", func: erfasseAnzeige })).find((r) => r.frameId === 0)?.result;
       if (!roh || typeof roh.link !== "string" || roh.link.length > 4096) throw Error("Der Anzeigenlink konnte nicht gelesen werden.");
       const link = new URL(roh.link);
       if (!["http:", "https:"].includes(link.protocol) || link.username || link.password || link.origin !== new URL(tab.url).origin) throw Error("Diese Seite kann nicht übernommen werden.");
