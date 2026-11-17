@@ -1,8 +1,8 @@
 # Vorbereitung: Bewerbungsportal einer Firma erkennen
 
-Stand: 2026-11-15. **Planvorschlag, noch keine Freigabe zur Implementierung.** Der Nutzer beauftragt die Vorbereitung eines weiteren sinnvollen Arbeitsteils. Dieser Vorschlag ergänzt Phase 4; die Ranking-Auswahl bleibt bei Nutzer und Claude.
+Ursprünglicher Entwurf: 2026-11-15. Überarbeitet: **2026-11-17 nach Antwort Q10**. **Der kleine erste Umfang ist bestätigt; diese überarbeitete Fassung ist noch gemeinsam zu bestätigen, bevor daraus Anwendungscode entsteht.** Der Baustein ergänzt Phase 4; Ranking-Auswahl und tatsächliche Firmenanbindung gehören nicht zu seiner Freigabe.
 
-**Verbindlicher Hinweis des Nutzers (2026-11-15): Dieser Plan ist vorläufig und darf nicht direkt übernommen oder umgesetzt werden.** Vor einer Freigabe sind dem Nutzer passende, konkrete Fragen zu Zielen, Umfang, Prioritäten, unterstützten Portalen und offenen Annahmen zu stellen. Die Antworten müssen in den Plan eingearbeitet werden; erst danach kann der Nutzer die überarbeitete Fassung ausdrücklich freigeben. Sämtliche Empfehlungen, technischen Festlegungen, Umsetzungsschritte und Abnahmefälle unten sind bis dahin Vorschläge, keine beschlossenen Anforderungen. Auch ein anderer Agent darf diesen Entwurf nicht ungeprüft als freigegebenen Arbeitsauftrag übernehmen.
+**Verbindlicher Hinweis des Nutzers (2026-11-15): Dieser Plan ist vorläufig und darf nicht direkt übernommen oder umgesetzt werden.** Vor einer Freigabe sind passende Fragen zu klären, die Antworten einzuarbeiten und die überarbeitete Fassung ausdrücklich freizugeben. Q10 beantwortet inzwischen die Frage nach dem ersten Bauabschnitt. Die unten konkretisierten technischen Festlegungen und Abnahmefälle bleiben bis zur Bestätigung dieser Fassung ein prüfbarer Vorschlag. Auch ein anderer Agent darf den ursprünglichen Entwurf nicht ungeprüft als freigegebenen Arbeitsauftrag übernehmen.
 
 ## Nutzen und kleiner erster Schritt
 
@@ -17,62 +17,110 @@ Angebotene Antworten:
 1. Ja: Portal aus Karriere-Link zuerst erkennen
 2. Gleich vollständige Firmenanbindung planen
 
-Antwort: ausstehend. Empfehlung und unterstützte Portale dadurch noch nicht freigegeben; kein Anwendungscode für diesen Entwurf implementiert. CV-Fragen Q8/Q9 stehen im [CV-Fragenprotokoll](2026-11-16-cv-abgleich-fragen.md). Neue Fragen ab Q11 nummerieren.
+**Nutzerantwort am 2026-11-17 im Wortlaut:**
 
-### Bisheriger Vorschlag
+> Ja: Portal aus Karriere-Link zuerst erkennen
 
-Später soll eine Firma per Karriere-Link angebunden werden können. Heute muss in `data/companies.csv` von Hand stehen, welches Bewerbungsportal sie nutzt und welche Kennung dazu gehört. Der erste Baustein erkennt diese Angaben aus übergebenen URLs und optional bereits vorliegendem HTML. Er führt selbst keine Netzwerkanfrage aus und speichert nichts.
+**Bestätigte Ableitung:** Zuerst aus einem eingegebenen Karriere-Link das Portal erkennen; Greenhouse, Ashby und Personio gemäß Empfehlung zuerst. Keine automatische Anbindung oder Quellenaktivierung. Diese Antwort gibt nicht pauschal alle technischen Vorschläge des alten Entwurfs frei. Kein Anwendungscode für diesen Baustein implementiert. CV-Fragen Q8/Q9 und Q11/Q12 stehen im [CV-Fragenprotokoll](2026-11-16-cv-abgleich-fragen.md). Weitere tatsächlich gestellte Fragen dort bzw. im passenden Fachdokument vollständig dokumentieren; neue IDs ab Q14.
 
-Künstliches Beispiel: `https://jobs.ashbyhq.com/testfirma` ergibt einen Kandidaten mit `ats_typ=ashby` und `ats_id=testfirma`. Das beweist weder die Identität der Firma noch das Vorhandensein offener Stellen. Erst spätere Prüfung und ausdrückliche Zuordnung dürfen daraus eine aktive Quelle machen.
+### Gestellte Frage Q13 – überarbeitete Fassung bestätigen
 
-Empfehlung: Mit diesem kleinen Offline-Baustein beginnen. Ein vollständiges Formular für eigene Wunschfirmen wäre die Alternative; dafür fehlen noch die Klärung der privaten Sichtbarkeit und deren Durchsetzung in Stellen, Facetten, Detailseiten und Berichten.
+Gestellt am 2026-11-17 nach Überarbeitung und Prüfung des vollständigen Plans. Wortlaut:
+
+> ❓ Q13 – Überarbeiteten Portalplan freigeben: Soll ich den jetzt konkretisierten Baustein bauen: einen Karriere-Link prüfen, Greenhouse/Ashby/Personio mit Portal-Kennung erkennen und unbekannte Links verständlich melden? ➡️ Meine Empfehlung: ja; ohne Seitenabruf, automatische Firmenanbindung oder neue Pakete. Der vollständige überarbeitete Plan ist dokumentiert.
+
+Angebotene Antworten:
+
+1. Ja: überarbeiteten Portalplan jetzt umsetzen
+2. Den Plan vorher noch anpassen
+
+Antwort: ausstehend. Grund der gesonderten Frage ist der ausdrückliche Nutzer-Haltepunkt zum vorläufigen Plan: erst Fragen/Antworten einarbeiten und „die überarbeitete Fassung ausdrücklich freizugeben“. Q10 bestätigt den ersten Umfang; Q13 betrifft die nun konkrete überarbeitete Fassung. Keine stillschweigende Freigabe aus der Empfehlung ableiten.
+
+### Konkretes Ergebnis des ersten Bausteins
+
+Später soll eine Firma per Karriere-Link angebunden werden können. Heute stammen aktive Firmen aus `data/companies.csv`, einschließlich Portaltyp und Kennung. Der erste Baustein erhält **genau einen absoluten Link als Text** und liefert einen begründeten Portal-Kandidaten oder eine kontrollierte Ablehnung. Er führt keine Netzwerkanfrage aus und speichert nichts.
+
+Künstliches Beispiel: `https://jobs.ashbyhq.com/demo-fiktiv` ergibt den Kandidaten `ats_typ=ashby`, `ats_id=demo-fiktiv`, Herkunft „direktes URL-Muster“. Das beweist weder die Firmenidentität noch die Existenz des Boards oder offener Stellen. Erst gesonderte Prüfung und Zuordnung dürfen daraus eine aktive Quelle machen.
+
+**Nicht im ersten Bauabschnitt:** HTML-Auswertung, Linklisten, relative Links, Verfolgen einer fremden Karriereseite oder deren Weiterleitungen, Internet-Namenssuche, Erkennung neuer Anbieter, Oberfläche, CSV-/Datenbankschreiben, private Zusatzfirmen und täglicher Abruf. Die früher vorgeschlagene optionale HTML-Suche ist ausdrücklich zurückgestellt; Q10 bestätigt einen Karriere-Link als Eingang, keinen HTML-Import.
 
 ## Geprüfter Bestand im Repository
 
 | Anschlussstelle | Was bereits vorhanden ist | Konsequenz |
 |---|---|---|
-| `scraper/ats/__init__.py` | Abrufmodule für Greenhouse, Ashby, Personio, Recruitee und Sitemap | Bestehende Module weiterverwenden; keine neuen Anbieter nötig. |
-| `scraper/ats/greenhouse.py`, `ashby.py` | Firmenkennung wird in einen festen API-Pfad eingesetzt | Kennungen vor jeder späteren Übergabe auf zulässige Zeichen prüfen. |
-| `scraper/ats/personio.py` | Festes Hostmuster `<kennung>.jobs.personio.de` | Nur diese im Code unterstützte Variante als direkt anschließbar melden. |
+| `scraper/ats/__init__.py` | `ADAPTER` registriert Greenhouse, Ashby, Personio, Recruitee und Sitemap; Lever fehlt. Paketimport lädt bereits die Adaptermodule. | Keine Adapter ändern, ergänzen oder ausführen. Reinen Erkenner neben diesem Paket anlegen, damit er dessen HTTP-Importe nicht benötigt. |
+| `scraper/ats/greenhouse.py` | `hole_stellen(ats_id)` setzt die Kennung in den Board-API-Pfad ein. | Ergebnis darf nur eine geprüfte Boardkennung enthalten, keine vollständige URL oder Jobnummer. |
+| `scraper/ats/ashby.py` | `hole_stellen(ats_id)` setzt die Kennung in den Posting-API-Pfad ein. | Boardkennung aus direktem Host-/Pfadmuster, nicht aus Firmenname oder Suchparameter erraten. |
+| `scraper/ats/personio.py` | `hole_stellen(ats_id)` verwendet `<kennung>.jobs.personio.de/xml`. | Nur das tatsächlich vorhandene `.jobs.personio.de`-Muster vorschlagen; keine anderen Personio-Domains als schon angeschlossen ausgeben. |
 | `scraper/ats/recruitee.py` | `ats_id` ist ein vollständiger Host; vorhandener Test nutzt eine eigene Firmendomain | Recruitee nicht aus einem beliebigen Domainnamen erraten. Sonderdomains brauchen gesonderten Nachweis. |
-| `web/lib/link-import.ts` | Erkennt einzelne Stellenlinks; zusätzlich Lever, jedoch kein Firmenabruf im Python-Scraper | Keine zweite Bewerbungs-Linkfunktion bauen; Erkennung einer Firmenquelle ist eine andere Aufgabe. Lever vorerst nicht als anschließbar ausgeben. |
-| `scraper/http.py` | Robots-Prüfung und Abrufpause; `requests.get` ohne ausdrückliche Umleitungsbegrenzung | Für spätere fremde URL-Eingaben erst Abrufschutz prüfen und erweitern; bestehender Zugang ist dafür noch kein Nachweis. |
-| `scraper/run.py`, `companies.py` | Aktive Firmen kommen aus der gemeinsamen CSV; Berichte enthalten Firmennamen | Private Wunschfirmen nicht einfach dort eintragen oder durch diesen Berichtspfad schicken. |
+| `web/lib/link-import.ts` | `analysiereLink` kennt `boards.greenhouse.io`/`job-boards.greenhouse.io`, `jobs.ashbyhq.com` und `<kennung>.jobs.personio.de` für einzelne Stellen; außerdem Lever und fremde Links. | Bestehende Hostmuster als Vergleichsgrundlage nutzen. Bewerbungs-Linkimport nicht umbauen und dessen zusätzliche Anbieter nicht als Firmenadapter ausgeben. `gh_jid` allein enthält keine Boardkennung. |
+| `web/app/api/stellen-import/route.ts`, `web/lib/stellen-import.ts` und `browser-erweiterung/chrome/` | Getrennter bewusster Import einer einzelnen Fremdanzeige ins private Board. | Diese Firmenportal-Erkennung ist kein weiterer Kanban-Import und ersetzt dessen Anmeldung/Datentrennung nicht. |
+| `scraper/http.py` | Seit Paket 18 kontrollierte Weiterleitungen mit Robots-/Pausenprüfung; `MAX_REDIRECTS` ist vorhanden. | Der frühere Befund „automatische unbeschränkte Weiterleitungen“ ist überholt. Dieser reine URL-Erkenner braucht keinen HTTP-Zugang; Schutz beliebiger späterer Ziele gesondert abnehmen. |
+| `scraper/run.py`, `scraper/companies.py` | Aktive Firmen kommen aus der gemeinsamen CSV; Berichte enthalten Firmennamen. | Private Wunschfirmen nicht einfach dort eintragen oder durch diesen Berichtspfad schicken. |
 
-Das sind Feststellungen aus lokalem Code und vorhandenen Tests. Aktuelle Anbieter-Dokumentation, Nutzungserlaubnis und tatsächliche Erreichbarkeit wurden für diese Vorbereitung nicht extern geprüft. Kein bestehender Test wird dadurch als neue Live-Abnahme ausgegeben.
+Anschlusspfade am 2026-11-17 im lokalen Quellcode geprüft. Kein privater Datenbestand und keine Firmen-CSV eingelesen. Die Hostmuster sind ein enges lokales Erkennungsangebot, keine Behauptung vollständiger aktueller Anbieterunterstützung. Anbieterbedingungen und echte Erreichbarkeit wurden für diese reine Planung nicht extern geprüft. Kein vorhandener Test gilt dadurch als neue Live-Abnahme.
 
-## Vorgeschlagener Umfang
+## Vorgeschlagener Eingangs- und Ergebnisvertrag
 
-1. **Direkte Karriere- und Stellenlinks:** Greenhouse über die bereits bekannte Board-Domain, Ashby über `jobs.ashbyhq.com`, Personio über die unterstützte `.jobs.personio.de`-Domain. Pfadvarianten ausdrücklich aus vorhandenen Beispielen ableiten und testen; keine beliebigen Anbieter-Endpunkte ausprobieren. Zusätzliche Domains erst nach gesonderter Bestätigung.
-2. **Bereits vorliegendes HTML:** Nur normale Linkziele und eingebettete Portal-URLs auswerten. Relative Ziele gegen die mitgelieferte Seitenadresse auflösen. Keine Skripte ausführen, keine Linkziele laden, fremde `<base>`-Angaben nicht übernehmen. Anbietername irgendwo im Text reicht nicht als Nachweis.
-3. **Eindeutige Ergebnisse:** Wiederholungen desselben Portals zusammenfassen. Mehrere unterschiedliche Firmenkennungen oder Anbieter als mehrdeutig melden und alle Kandidaten zur Prüfung zurückgeben. Auch bei einem direkten Link widersprechende beigefügte Hinweise nicht still übergehen.
-4. **Ergebnisvertrag:** Status `erkannt`, `nicht_erkannt`, `mehrdeutig` oder `ungueltig`; Kandidaten mit `ats_typ`, `ats_id` und Herkunft des Hinweises. Bei `erkannt` genau ein Kandidat. Keine automatische Aktivierung, kein Erraten des Firmennamens aus der Kennung, keine Gleichsetzung von Konzern und Marke.
-5. **Recruitee und Sonderdomains:** Im ersten Paket als offen behandeln, soweit der Anbieter nicht aus einem belegten Portal-Link hervorgeht. Insbesondere vorhandene Firmendomains nicht automatisch mit `/api/offers/` abfragen. Weitere Erkennungsregeln mit gespeicherten Beispielen und aktueller Anbieterprüfung separat ergänzen.
+Kleine reine Python-Funktion, vorgeschlagen `erkenne_portal(url)` in `scraper/ats_erkennung.py`. Nur Standardbibliothek, insbesondere URL-Zerlegung und explizite Muster. Keine Importabhängigkeit von `scraper.ats`, `http`, `db`, `ki` oder `run`. Der gegenüber dem alten Entwurf geänderte Ablageort vermeidet die automatischen Adapterimporte aus `scraper/ats/__init__.py`.
 
-Keine Namenssuche im Internet, keine neuen Abrufmodule, keine KI, kein Browser-Roboter und keine Bibliothek nötig. Website, Datenbank, Firmen-CSV und täglicher Lauf bleiben außerhalb dieses ersten Vorschlags.
+**Eingabe:** Ein String bis 4096 Zeichen, genau eine absolute HTTPS-URL. Gewöhnliche Leerzeichen am Anfang/Ende dürfen entfernt werden. Bereits vor der URL-Zerlegung Steuerzeichen, innere Leerzeichen, Backslashes und Zugangsdaten ablehnen. Nur Standardport bzw. explizit 443; keine DNS-Abfrage. Rohpfad auf `.`/`..` und kodierte Trenn-/Steuerzeichen prüfen; Kennungen nicht durch Dekodieren oder Pfadnormalisierung „reparieren“. Relative URLs und HTML gehören nicht zum Vertrag.
+
+**Ergebnis:** Kleines Datenobjekt mit Status, lesbarem Grund und bei Erkennung genau einem Kandidaten (`ats_typ`, `ats_id`, Herkunft „direktes URL-Muster“). Kein Feld wie „aktiv“, „Firma verifiziert“ oder „Abruf erfolgreich“.
+
+| Status / Fall | Bedeutung und Folge |
+|---|---|
+| `erkannt` | Ein direkt unterstütztes Muster liefert genau eine sichere Kennung. Ein Kandidat zur späteren Zuordnung, keine Anbindung. |
+| `nicht_erkannt` | Syntaktisch brauchbarer Link, aber kein unterstütztes vollständiges Muster; Kandidaten leer. Grund unterscheidet unbekannte Domain, nicht unterstützten Anbieter/Pfad und fehlende Boardkennung. |
+| `ungueltig` | Eingang für diesen Baustein nicht verwendbar, etwa HTML, relative URL, Zugangsdaten, verbotener Port oder unsichere Pfadkennung. Kandidaten leer. Das sagt nicht, dass jede solche Adresse im Internet grundsätzlich ungültig wäre. |
+| Mehrdeutigkeit | Niemals automatisch einen Kandidaten auswählen. Die drei disjunkten Hostmuster für genau eine URL liefern in diesem Abschnitt höchstens einen Kandidaten. Linklisten, HTML und Query-Hinweise werden nicht ergänzt, nur um einen `mehrdeutig`-Status zu erzeugen. Sollte eine Erweiterung später mehrere gültige Kandidaten liefern, sind ein ausdrücklich beschriebenes `mehrdeutig`-Ergebnis und Nutzerwahl Voraussetzung; diese Erweiterung gehört in einen neuen Umfang. |
+
+Keine Firmenkennung aus dem Firmennamen, Seitentitel, Query oder Fragment ableiten. Query/Fragment können am gültigen direkten Link vorhanden sein, beeinflussen aber nie `ats_typ`/`ats_id` und werden nicht als weitere Linkquellen durchsucht. Ein fremder Karriere-Link, der nur zu Ashby weiterleiten würde, bleibt ohne Netzabruf `nicht_erkannt`.
+
+### Die drei direkten Muster
+
+| Portal | Im ersten Abschnitt vorgeschlagene URLs | Kennung und Grenze |
+|---|---|---|
+| Greenhouse | `https://boards.greenhouse.io/<board>` bzw. `https://job-boards.greenhouse.io/<board>`, jeweils auch `/<board>/jobs/<job-id>` | Erstes vollständiges Pfadsegment als Boardkennung; Jobnummer nicht übernehmen. Keine `embed`-/Query-Sonderform, kein `gh_jid` auf fremder Domain. |
+| Ashby | `https://jobs.ashbyhq.com/<board>`, auch `/<board>/<job-id>` | Erstes vollständiges Pfadsegment als Boardkennung. Host exakt, kein Subdomain-/Suffix-Raten. |
+| Personio | `https://<kennung>.jobs.personio.de/`, auch `/job/<job-id>` | Genau ein nichtleeres DNS-Label vor `.jobs.personio.de`. Keine `.com`-/Sonderdomains oder mehrstufigen Mandantenhosts ableiten. |
+
+Ein abschließender Slash ist zulässig. Hostvergleich ohne Beachtung der Groß-/Kleinschreibung; Boardkennungen aus Pfaden unverändert lassen. Konservativer Vorschlag für Greenhouse-/Ashby-Boardkennungen: 1–100 ASCII-Buchstaben/Ziffern, Bindestrich oder Unterstrich, Beginn mit Buchstabe/Ziffer. Personio-Kennung als DNS-Label mit 1–63 Kleinbuchstaben/Ziffern/Bindestrichen, kein Bindestrich am Rand. Grenzen dienen dem kleinen sicheren Eingang und sind keine Behauptung sämtlicher vom Anbieter zugelassener Kennungen. Abweichende Formen kontrolliert als nicht unterstützt erklären.
+
+**Nicht als unterstützte Firmenquelle ausgeben:** Lever (nur Einzelstellen-Linkimport vorhanden), Recruitee (Adapter vorhanden, aber keine sichere Erkennungsregel in diesem Abschnitt), Sitemap (Adapter vorhanden, aber eine beliebige Karrieredomain beweist keine passende Sitemap). Keine Probe-API-Aufrufe auf geratenen Hosts.
 
 ## Umsetzung nach Planfreigabe
 
-- [ ] **1. Vertrag und Fehlfälle zuerst:** Neue `tests/test_ats_erkennung.py` ausschließlich mit künstlichen URLs/HTML-Beispielen. Eindeutigkeit, Kennungen und Ablehnungsfälle festlegen; erst rot sehen, dann Code schreiben.
-- [ ] **2. Direkte Erkennung:** Kleine reine Funktion in `scraper/ats/erkennung.py`, passend zur bestehenden Projektstruktur. Nur Python-Standardbibliothek. Keine Importe aus `db`, `ki` oder dem Gesamtlauf; kein automatischer Aufruf eines Adapters.
-- [ ] **3. HTML-Hinweise und Mehrdeutigkeit:** Begrenzte Eingabegröße und Zahl untersuchter Ziele ausdrücklich festlegen; lineare Verarbeitung, keine beliebig tiefe Suche. Identische Kandidaten stabil zusammenfassen, widersprüchliche Ergebnisse erhalten.
-- [ ] **4. Offline-Abnahme und Review:** Isolierte Python-Suite mit gesperrtem Netzwerk und deaktiviertem Laden lokaler Zugangsdaten; unabhängiger Helfer prüft Hostvergleich, Kennungen und Ausnahmen. Bestehende Abrufmodule und Website nicht umbauen. STATUS und Agentenprotokoll aktualisieren.
+- [x] **0. Umfang klären und Entwurf nachführen:** Q10-Antwort vom 2026-11-17 samt Wortlaut festgehalten; Link zuerst, drei direkte Muster, HTML zurückgestellt. Aktuelle Anschlusspfade geprüft; keine Anwendung implementiert.
+- [ ] **1. Überarbeitete Fassung gemeinsam bestätigen:** Eingang, unterstützte Muster, Ablehnungsgründe und Offline-Grenze dieses Dokuments bestätigen. Zustimmung zum alten ungeklärten HTML-Entwurf daraus nicht ableiten.
+- [ ] **2. Vertrag und Fehlfälle zuerst:** `tests/test_ats_erkennung.py` mit künstlichen absoluten URLs, HTML nur als abzulehnender Eingabe. Die unten genannten beobachtbaren Ergebnisse und Begründungen prüfen; gezielte Tests zunächst rot sehen.
+- [ ] **3. Kleine URL-Erkennung:** `scraper/ats_erkennung.py` ohne neue Pakete implementieren. Eingang prüfen, genau die drei Host-/Pfadmuster auswerten, keine automatische Adapterausführung oder Seitensuche. Kein zweites Linkimport-System und keine allgemeine Crawler-Bibliothek.
+- [ ] **4. Offline-Abnahme und unabhängiger Review:** Geschützten vorhandenen Einstieg verwenden, etwa `py -B -m pruefe_offline tests/test_ats_erkennung.py`, danach reguläre Offline-Suite. Netzwerk und Zugangsdaten bleiben gesperrt. Hosttäuschung, sichere Kennungen und tatsächliche Importabhängigkeiten unabhängig prüfen. Keine Live-Testmodule importieren.
+- [ ] **5. Abgabe:** STATUS, Entscheidungen und Agentenprotokoll mit lokalem Commit, Ergebnissen und offenen Grenzen aktualisieren. Ergebnis zunächst als abgegrenzten Baustein abgeben; spätere Website-/Privatfirmenanbindung ist ein gesonderter Auftrag.
 
 ## Konkrete Abnahmefälle
 
-- Board-Link und einzelner Stellenlink derselben Testfirma ergeben dieselbe Firmenkennung; ein fehlender Boardname bleibt unbekannt.
-- Mehrfach derselbe Link und mehrere Stellen derselben Firma ergeben einen Kandidaten. Zwei Firmen auf demselben Anbieter sowie zwei unterschiedliche Anbieter ergeben `mehrdeutig`, unabhängig von Eingabereihenfolge.
-- `jobs.ashbyhq.com.evil.example`, `jobs.ashbyhq.com@evil.example` und ein Portalname im Suchparameter oder normalen Fließtext ergeben keinen Anschluss an Ashby.
-- Kein Akzeptieren von `javascript:`, `file:`, Zugangsdaten, Steuerzeichen, Backslashes oder fremden Ports. Ein nicht unterstütztes Schema wird abgelehnt; unbekannter sauberer HTTPS-Link bleibt `nicht_erkannt`.
-- Leere Kennung, Pfad-Traversierung und kodierte Trennzeichen werden abgewiesen; etwaige Dekodierung darf keine ungeprüften Pfadteile für die Adapter erzeugen.
-- Groß-/Kleinschreibung eines DNS-Hosts ändert das Ergebnis nicht. Pfadkennungen werden nicht pauschal kleingeschrieben.
-- Relative Links werden anhand der übergebenen Quelle aufgelöst; ein fremdes `<base>` verändert die Vertrauensquelle nicht. Ein leerer oder kaputter HTML-Ausschnitt führt zu einem kontrollierten Ergebnis.
-- Ein Link zu Lever wird nicht als vorhandenes Python-Abrufmodul ausgegeben. Eine beliebige eigene Karrieredomain wird weder als Recruitee noch als funktionierende Sitemap eingestuft.
-- Nachweislich keine HTTP-Anfrage, DNS-Abfrage, Datei-/Datenbankänderung oder KI-Anfrage. Wiederholter Aufruf verändert weder Eingaben noch Ergebnisreihenfolge.
+| Künstlicher Fall | Erwartung / Nutzen |
+|---|---|
+| Greenhouse-Board und Stellenlink derselben fiktiven Kennung, beide bekannten Hosts | Derselbe Greenhouse-Kandidat; `<job-id>` wird nicht zur Firmenkennung. |
+| Ashby-Board und zwei verschiedene Stellenlinks desselben Boards | Je Aufruf derselbe Ashby-Kandidat, kein Job-Scraping. |
+| Personio-Startseite und `/job/123` desselben fiktiven Mandanten | Derselbe Personio-Kandidat, Kennung nur aus dem passenden Host. |
+| Bekannter Host ohne Boardkennung oder mit nicht vorgeschlagenem Pfad | `nicht_erkannt`, verständlicher Grund; kein leeres `ats_id` und keine geratene Firma. |
+| `https://jobs.ashbyhq.com.evil.example/demo`, `https://evil.example/?portal=jobs.ashbyhq.com/demo` | `nicht_erkannt`; Domainnamen in Suffix/Query schaffen keinen Anschluss. |
+| `https://jobs.ashbyhq.com@evil.example/demo` | `ungueltig` wegen Zugangsdaten; niemals Ashby-Kandidat. |
+| Ein fremder sauberer Karriere-Link, dessen Query zwei verschiedene Portal-URLs enthält | `nicht_erkannt`; nicht die erste, vermeintlich beste oder häufigste Kennung wählen. Mehrere Hinweise werden im URL-only-Abschnitt nicht ausgewertet. |
+| `javascript:`, `file:`, `http:`, relative URL, HTML, leere oder überlange Eingabe, Steuerzeichen/Backslash, Port 444 | Kontrolliert `ungueltig`; keine Ausnahme nach außen und kein Abruf. |
+| Rohpfad mit `.`/`..`, `%2f`, `%5c`, kodiertem Steuerzeichen oder unbrauchbarer Kennung | Kein Kandidat mit ungeprüftem Pfadteil; Ablehnungsgrund unterscheidet unsicher und nicht unterstützt. |
+| Großgeschriebener DNS-Host und zulässige gemischte Groß-/Kleinschreibung einer Boardkennung | Host gleich erkannt; Pfadkennung bleibt unverändert. |
+| Gültiges direktes Muster mit Tracking-Query/Fragment | Gleicher Kandidat wie ohne Zusatz; keine weiteren Kandidaten aus den Zusätzen. |
+| Lever-Link, Recruitee-Link/Sonderdomain, beliebige eigene Karrieredomain, Personio-Sonderdomain | `nicht_erkannt` mit Hinweis auf den engen Umfang; kein als verfügbar behaupteter neuer Firmenadapter. |
+| Wiederholter Aufruf unter dem geschützten Offline-Testeinstieg | Gleiche Daten, kein globaler Zustand. Keine HTTP-/DNS-/KI-Anfrage, kein Lesen von Zugangsdaten, keine Datei-/Datenbankänderung. |
+
+Diese Tabelle sind geplante Abnahmen, keine bereits bestandenen Tests. Die Sperren des vorhandenen Offline-Einstiegs und eine Prüfung des tatsächlichen Importpfads belegen die fehlenden Seiteneffekte; kein unnötiges zweites Testframework einführen. Ein grüner URL-Test bestätigt kein existierendes Board, keine Anbieterbedingungen, keine Firmenidentität und keine Rechte einer echten Datenbank.
 
 ## Anschließend getrennt klären
 
-- **Welche Anbieter zuerst?** Vorschlag: zunächst die drei unmittelbar passenden Portal-Muster; Recruitee-Sonderdomains und weitere Systeme nach belegten Beispielen. Das ist noch keine Nutzerentscheidung.
+- **Weitere Hinweise/Anbieter:** HTML, relative Links, mehrere Portalhinweise, Recruitee-Sonderdomains und weitere Systeme erst als eigenen Umfang klären. Greenhouse/Ashby/Personio als erster Link-Baustein sind durch Q10 bestätigt; diese Entscheidung nicht erneut als ausstehend behandeln.
 - **Echte automatische Anbindung:** Vor jedem tatsächlichen Abruf Anbieterbedingungen, Robots-Regeln und Zugriffsschutz prüfen; Umleitungen, interne Zieladressen und wechselnde DNS-Auflösung berücksichtigen. Ein Offline-Ergebnis ersetzt diese Prüfung nicht. Keine echte Probe im vorliegenden Auftrag.
 - **Firmenidentität:** Karriereportal kann mehrere Gesellschaften bedienen. Kein unscharfer Namensabgleich und keine automatische Freigabe allein wegen ähnlicher Namen.
 - **Private Wunschfirmen:** Eigener Daten-/Rechteplan erforderlich, einschließlich Gastansicht, Facetten, gemeinsamer Firmenmetadaten, Berichte und Admin-Freigabe. Keine persönlichen Wunschlisten im öffentlichen Repo oder ungeschützten Laufberichten.
@@ -80,4 +128,4 @@ Keine Namenssuche im Internet, keine neuen Abrufmodule, keine KI, kein Browser-R
 
 ## Übergabestand
 
-Vorläufigen Entwurf vorbereitet: Anschlussstellen und wesentliche Grenzen geprüft, Vorschläge für Umsetzung und Abnahmefälle liegen vor. Kein Anwendungscode geändert, keine Probe durchgeführt. Nächster Schritt ist eine passende Fragerunde mit dem Nutzer; anschließend Antworten einarbeiten und die überarbeitete Fassung ausdrücklich freigeben lassen. Bis dahin nicht direkt übernehmen oder umsetzen. Diese Vorbereitung erteilt weder eine Anbieter-/Quellenfreigabe noch eine Freigabe für Live-Zugriffe oder Veröffentlichung.
+Q10 wurde am 2026-11-17 beantwortet und in diese engere Fassung eingearbeitet. Der Plan beschreibt jetzt einen konkret prüfbaren URL-only-Baustein für drei vorhandene Portal-Muster; die alte optionale HTML-Suche ist zurückgestellt. Aktuelle Anschlussstellen und geplante Offline-Abnahmen sind benannt. **Nächster Schritt: diese überarbeitete Fassung gemeinsam bestätigen, dann erst Schritte 2–5 umsetzen.** Kein Anwendungscode für die Firmenportal-Erkennung geändert, keine echte Probe durchgeführt. Keine automatische Anbindung, Anbieter-/Quellenaktivierung, Installation, Live-Verbindung, Migration oder Veröffentlichung freigegeben.

@@ -1,6 +1,6 @@
 # CV-Abgleich: vollständiges Fragenprotokoll
 
-Stand: 2026-11-16. Dieses Protokoll enthält alle bisher im aktuellen CV-Interview gestellten Fragen Q1–Q5 und Q8/Q9 im Wortlaut, ihre Antwortoptionen und die eingegangenen Antworten. Die zwischenzeitlichen Importfragen Q6/Q7 und die Portalfrage Q10 sind unten verlinkt. Fachliche Anforderungen und Anbieterrecherche stehen im [Klärungsdokument](2026-11-16-cv-abgleich-klaerung.md). Es wurde noch kein CV-Abgleich implementiert oder freigegeben.
+Stand: 2026-11-17 (Clientdatum). Dieses Protokoll enthält alle bisher im aktuellen CV-Interview gestellten Fragen Q1–Q5, Q8/Q9 und Q11/Q12 im Wortlaut, ihre Antwortoptionen und die eingegangenen Antworten. Die zwischenzeitlichen Importfragen Q6/Q7 und die Portalfrage Q10 sind unten verlinkt. Fachliche Anforderungen und Anbieterrecherche stehen im [Klärungsdokument](2026-11-16-cv-abgleich-klaerung.md). Es wurde noch kein CV-Abgleich implementiert oder freigegeben.
 
 ## Dokumentationsauftrag und Fortschreibung
 
@@ -21,8 +21,10 @@ Der genaue Sendezeitpunkt der einzelnen Chatnachrichten ist hier nicht verfügba
 | Q3 | Beantwortet | Grün = belegt, Gelb = teilweise oder noch nicht belegt, Rot = nachweislich nicht erfüllt. Ganze Anforderung markieren; Klick zeigt Beleg oder Begründung. |
 | Q4 | Mit eigener Präzisierung beantwortet | Alle CVs abgleichen, besten passenden CV als Grundlage des angezeigten Vergleichs verwenden und benennen. Kein Gesamtprofil aus zusammengelegten CV-Belegen. Eine manuelle Auswahl zum Wechseln wurde nicht ausdrücklich bestätigt. |
 | Q5 | Auf Nutzerwunsch zurückgestellt | Mistral als offenes To-do später klären. Keine Auswahl einer Betriebsart und keine Datenfreigabe. Claude-Pro-Klärung kann fortgesetzt werden. |
-| Q8 | Antwort ausstehend | Auslösung und Wiederverwendung des CV-Abgleichs noch nicht festlegen. |
-| Q9 | Antwort ausstehend | Priorität der Anforderungen und Gleichstand bei CV-Empfehlung noch nicht festlegen. |
+| Q8 | Beantwortet am 2026-11-17 | Nachts alle eigenen gemerkten Stellen abgleichen. Diese Auswahl allein entschied Wiederverwendung noch nicht; anschließend durch Q11 bestätigt. |
+| Q9 | Beantwortet am 2026-11-17 | Muss vor Soll, Gleichstand offen zeigen; weiterhin ohne Prozentwert. Keine Teilbeleg- oder Gewichtungsformel daraus ableiten. |
+| Q11 | Beantwortet am 2026-11-17 | Nachts nur fehlende oder veraltete Ergebnisse neu berechnen; unveränderte Ergebnisse wiederverwenden. |
+| Q12 | Beantwortet am 2026-11-17 | Textvorschau und Auslesekorrektur ermöglichen; Originaldatei erhalten. |
 
 ## Runde 1
 
@@ -136,7 +138,7 @@ Vor Eingang der Antworten wurde Runde 2 im abschließenden Chattext noch einmal 
 
 Die verbindlichen Nutzerantworten stehen unter Q3–Q5. Insbesondere ist der hier empfohlene manuelle CV-Wechsel dadurch nicht zusätzlich bestätigt, und keine Mistral-Alternative wurde gewählt.
 
-## Runde 4 – CV-Bauplan, Antworten ausstehend
+## Runde 4 – CV-Bauplan, Antworten am 2026-11-17 eingegangen
 
 ### Q8 – Start und Wiederverwendung
 
@@ -148,7 +150,11 @@ Angebotene Antworten:
 2. Automatisch beim Öffnen einer Anzeige
 3. Nachts alle gemerkten Stellen abgleichen
 
-Antwort: ausstehend. Keine Auslösung oder Speicherung allein aus der Empfehlung ableiten.
+Nutzerantwort im Wortlaut:
+
+> Nachts alle gemerkten Stellen abgleichen
+
+Ableitung: Nächtlicher Abgleich aller eigenen gemerkten Stellen, nicht nur ein Knopf pro Anzeige. Alle CV-Versionen bleiben gemäß Q4 Vergleichsgrundlage; beste Version benennen. Wiederverwendung, Veraltet-Markierung und zusätzliche manuelle Auslösung waren Teil der angebotenen Empfehlung, wurden durch Auswahl der dritten Option aber nicht ausdrücklich bestätigt. Ausbleibende neue Analyse bei Abo-Limit darf keinen Erfolg vortäuschen.
 
 ### Q9 – Auswahl der besten CV-Version
 
@@ -159,10 +165,46 @@ Angebotene Antworten:
 1. Ja: Muss vor Soll, Gleichstand offen zeigen
 2. Alle Anforderungen gleich behandeln
 
-Antwort: ausstehend. Noch keine Gewichtungsformel oder Behandlung von Teilbelegen beschlossen.
+Nutzerantwort im Wortlaut:
+
+> Ja: Muss vor Soll, Gleichstand offen zeigen
+
+Ableitung: Belegte Muss-Anforderungen vor belegten Soll-Anforderungen berücksichtigen; bei Gleichstand mehrere gleich gute CVs transparent nennen, weiterhin ohne Prozentwert. Keine numerischen Gewichte, Rangfolge zwischen unterschiedlichen Teilbelegen oder verdeckte Auswahl eines einzigen Gleichstandsgewinners bestätigt.
+
+## Runde 5 – Nachtlauf und Auslesung, Antworten am 2026-11-17 eingegangen
+
+### Q11 – Nächtliche Wiederverwendung
+
+> ❓ Q11 – Nächtliche Wiederverwendung: Soll der Nachtlauf alle gemerkten Stellen prüfen, aber nur fehlende oder durch Änderungen an Anzeige/CV veraltete Abgleiche neu berechnen? ➡️ Meine Empfehlung: ja; unveränderte Ergebnisse wiederverwenden, damit dein Claude-Pro-Kontingent für neue Fälle reicht.
+
+Angebotene Antworten:
+
+1. Ja: nur fehlende oder veraltete Ergebnisse neu berechnen
+2. Jede Nacht alle Abgleiche neu berechnen
+
+Nutzerantwort im Wortlaut:
+
+> Ja: nur fehlende oder veraltete Ergebnisse neu berechnen
+
+Ableitung: Nachtlauf prüft weiterhin alle eigenen gemerkten Stellen, verwendet unveränderte Ergebnisse erneut und berechnet nur fehlende oder durch Änderungen an Anzeige/CV veraltete Abgleiche neu. Q8 allein hatte Wiederverwendung noch nicht bestätigt; Q11 entscheidet diesen Punkt jetzt. Technische Versionszuordnung darf korrigierten Auslesetext nicht als unveränderte Grundlage behandeln.
+
+### Q12 – CV-Auslesung prüfen
+
+> ❓ Q12 – CV-Auslesung prüfen: Sollst du den aus PDF/Word erkannten Text ansehen und bei Auslesefehlern korrigieren können, ohne die Originaldatei zu ändern? ➡️ Meine Empfehlung: ja; ein leerer oder fehlerhafter Text darf nicht zu scheinbar fehlenden Fähigkeiten führen.
+
+Angebotene Antworten:
+
+1. Ja: Textvorschau und Korrektur ermöglichen
+2. Kein Korrektureditor; bei Fehlern den Abgleich stoppen
+
+Nutzerantwort im Wortlaut:
+
+> Ja: Textvorschau und Korrektur ermöglichen
+
+Ableitung: Aus PDF/Word gewonnenen Text ansehen und bei Auslesefehlern korrigieren können, ohne die Originaldatei zu ändern. Keine Pflicht zur manuellen Bestätigung jedes Nachtlaufs. Korrigierte Grundlage nachvollziehbar von Original und früheren Ergebnissen unterscheiden. Neue Parserinstallation oder echte CV-Verarbeitung dadurch noch nicht freigegeben.
 
 ## Weitere, noch nicht gestellte Folgefragen
 
 Die Themen unter „Weitere Zweige“ im [Klärungsdokument](2026-11-16-cv-abgleich-klaerung.md) sind vorbereitete Zweige, keine bereits gestellten oder beantworteten Interviewfragen. Fortsetzung dort priorisieren, tatsächliche CV-Fragen anschließend hier lückenlos ergänzen. Der Mistral-Zweig bleibt auf Nutzerwunsch zurückgestellt.
 
-Themenübergreifende Fortsetzung: Die gestellten und beantworteten **Q6/Q7 zum Ein-Klick-Import** stehen vollständig im [eigenen Import-Fragenprotokoll](2026-11-16-ein-klick-import.md). **Q10 zur Firmenportal-Erkennung** steht im [vorläufigen Portalplan](2026-11-15-firmenportal-erkennung.md#gestellte-frage-q10--erster-bauabschnitt). Diese Fragen sind keine zusätzlichen CV-Entscheidungen. Neue Fragen ab Q11 nummerieren.
+Themenübergreifende Fortsetzung: Die gestellten und beantworteten **Q6/Q7 zum Ein-Klick-Import** stehen vollständig im [eigenen Import-Fragenprotokoll](2026-11-16-ein-klick-import.md). **Q10 zum Portalumfang und Q13 zur Bestätigung der überarbeiteten Fassung** stehen im [Portalplan](2026-11-15-firmenportal-erkennung.md). Diese Fragen sind keine zusätzlichen CV-Entscheidungen. Neue Fragen ab Q14 nummerieren.
