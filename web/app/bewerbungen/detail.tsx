@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ERGEBNIS_LABEL, STATUS_LABEL, datumDe } from "@/lib/bewerbung";
+import { istUmgerechnet, UMGERECHNET_HINWEIS } from "@/lib/steckbrief";
 import { BOARD_SPALTEN, type Karte } from "@/lib/tracker-karte";
 import type { Detail } from "@/lib/tracker-daten";
 import FirmenLogo from "../firmenlogo";
@@ -34,7 +35,7 @@ export default function DetailAnsicht({ karte, detail }: { karte: Karte; detail:
       <dl className="fakten">
         <div className="fakt"><dt>Nächster Schritt</dt><dd>{detail?.naechster_schritt || detail?.naechster_schritt_faellig
           ? <>{detail.naechster_schritt || "Nächster Schritt"}{detail.naechster_schritt_faellig && <> · <b>{datumDe(detail.naechster_schritt_faellig)}</b></>}</> : leer}</dd></div>
-        <div className="fakt"><dt>Gehalt</dt><dd>{karte.gehalt || leer}</dd></div>
+        <div className="fakt"><dt>Gehalt</dt><dd title={karte.gehalt && istUmgerechnet(karte.gehalt) ? UMGERECHNET_HINWEIS : undefined}>{karte.gehalt || leer}</dd></div>
         <div className="fakt"><dt>Ort</dt><dd>{ort || leer}</dd></div>
         <div className="fakt"><dt>Interesse</dt><dd>{karte.interesse
           ? <span className="sterne" role="img" aria-label={`Interesse ${karte.interesse} von 5`}>{"★".repeat(karte.interesse)}{"☆".repeat(5 - karte.interesse)}</span> : leer}</dd></div>

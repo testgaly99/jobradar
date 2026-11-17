@@ -25,6 +25,7 @@ class FakeDB:
         self.ohne_spalten = False
         self.ohne_funktion = False
         self.ohne_logo_spalte = False
+        self.ohne_ki_spalten = False
         self.nachgeruestet = 0
         self.pruefungen = 0
         self.t = {"companies": {}, "jobs": {}, "laeufe": [], "applications": []}
@@ -45,6 +46,38 @@ class FakeDB:
                 if self.ohne_spalten:
                     assert not {"abschnitte", "land", "steckbrief"} & set(z)
                 self.t[pfad].setdefault(z[key], {}).update(z)  # merge wie PostgREST
+        elif method == "GET" and pfad == "jobs" and params.get("select") == "ki":
+            if self.ohne_ki_spalten:
+                raise RuntimeError("Supabase GET jobs: 400 column jobs.ki does not exist")
+            return []
+        elif method == "GET" and pfad == "jobs" and params.get("select", "").startswith("id,text_hash"):
+            assert params["status"] == "eq.offen" and params["text"] == "neq."
+            rows = [z for z in self.t["jobs"].values() if z["status"] == "offen" and z.get("text") not in (None, "")]
+            rows.sort(key=lambda z: z["id"])
+            rows = rows[params["offset"]:params["offset"] + params["limit"]]
+            return [{k: z.get(k) for k in params["select"].split(",")} for z in rows]
+        elif method == "GET" and pfad == "jobs" and params.get("select") == "text,abschnitte":
+            return [{"text": z.get("text"), "abschnitte": z.get("abschnitte")} for z in self.t["jobs"].values() if z["id"] == params["id"][3:]]
+        elif method == "PATCH" and pfad == "jobs" and "studium" in params:
+            assert {k: v for k, v in params.items() if k != "select"} == {"studium": "eq.nein", "status": "eq.offen",
+                                                                          "sichtbar": "eq.true"}
+            self.letzte_params = params
+            treffer = [z for z in self.t["jobs"].values()
+                       if z.get("studium") == "nein" and z["status"] == "offen" and z["sichtbar"]]
+            for z in treffer:
+                z.update(json)
+            return [{"id": z["id"]} for z in treffer]
+        elif method == "PATCH" and pfad == "jobs" and params["id"].startswith("eq."):
+            self.t["jobs"][params["id"][3:]].update(json)
+        elif method == "GET" and pfad == "applications" and params.get("select") == "id,snapshot_text":
+            assert params["firma"] == params["titel"] == "is.null"
+            return [{"id": a["id"], "snapshot_text": a["snapshot_text"]} for a in self.t["applications"]
+                    if a["firma"] is None and a["titel"] is None]
+        elif method == "PATCH" and pfad == "applications":
+            assert params["firma"] == params["titel"] == "is.null"
+            for a in self.t["applications"]:
+                if a["id"] == params["id"][3:] and a["firma"] is None and a["titel"] is None:
+                    a.update(json)
         elif method == "GET" and pfad == "jobs" and params.get("select") == "abschnitte,land,steckbrief":
             self.pruefungen += 1
             if self.ohne_spalten:
@@ -62,7 +95,10 @@ class FakeDB:
             return list(self.t["companies"].values())
         elif method == "GET" and pfad == "applications":
             ids = _in(params["job_id"])
-            return [{"job_id": a} for a in self.t["applications"] if a in ids]
+            rows = [{"job_id": a} for a in self.t["applications"] if a in ids]
+            rows.sort(key=lambda a: a["job_id"])
+            offset = params.get("offset", 0)
+            return rows[offset:offset + params.get("limit", len(rows))]
         elif method == "PATCH" and pfad == "companies":
             self.t["companies"][params["name"][3:]].update(json)
         elif method == "PATCH":

@@ -2,8 +2,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-
-const ARTEN = ["cv", "anschreiben", "anlage"];
+import { pruefeDokument } from "@/lib/dokumente";
 
 async function nutzer() {
   const sb = await createClient();
@@ -15,12 +14,9 @@ async function nutzer() {
 export async function dokumentAnlegen(art: string, name: string, versionDatum: string, pfad: string): Promise<{ fehler?: string }> {
   const { sb, uid } = await nutzer();
   if (!uid) return { fehler: "Bitte melde dich an." };
-  if (!ARTEN.includes(art)) return { fehler: "Ungültige Art." };
-  if (!pfad.startsWith(`${uid}/`) || pfad.includes("..")) return { fehler: "Ungültiger Speicherpfad." };
-  name = name.trim();
-  if (!name || name.length > 120) return { fehler: "Der Versionsname muss 1 bis 120 Zeichen lang sein." };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(versionDatum)) return { fehler: "Ungültiges Datum." };
-  const { error } = await sb.from("documents").insert({ art, name, version_datum: versionDatum, storage_pfad: pfad });
+  const ergebnis = pruefeDokument(uid, art, name, versionDatum, pfad);
+  if ("fehler" in ergebnis) return ergebnis;
+  const { error } = await sb.from("documents").insert(ergebnis.daten);
   if (error) return { fehler: "Dokument konnte nicht gespeichert werden." };
   revalidatePath("/dokumente");
   return {};

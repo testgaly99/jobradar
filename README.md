@@ -12,7 +12,7 @@ jobradar holt jeden Tag die offenen Stellen von ausgewählten Unternehmen und ze
 - **Seitenfenster:** Ein Klick auf eine Karte öffnet die Bewerbung in einem Fenster neben dem Board. Schließen mit Esc, „Schließen“ oder Klick daneben. Ein direkter Link zeigt dieselbe Bewerbung als ganze Seite.
 - **Diese Woche:** Ein Kasten mit den Terminen der Woche; erledigte Punkte hakst du ab.
 - **Auswertung:** Ein eigener Reiter zeigt Gesprächsquote, Angebotsquote, Antwortzeit und Bewerbungen pro Woche. Bei weniger als 5 Bewerbungen steht dort „Noch zu wenig Daten“.
-- **Filter ohne Knopf:** Auf „Stellen“ und „Bewerbungen“ wirken Filter sofort beim Auswählen. Nur Suche und Firma warten auf Enter oder „Suchen“. Die Stellen sortierst du nach Online seit, Firma, Titel oder Größe (Größe sortiert nur die gerade geladene Seite).
+- **Filter ohne Knopf:** Auf „Stellen“ und „Bewerbungen“ wirken Filter sofort beim Auswählen. Nur Suche und Firma warten auf Enter oder „Suchen“. Die Stellen sortierst du nach Online seit, Firma, Titel oder Größe (im aktuellen Entwurf sortiert „Größe“ über alle Seiten und braucht dafür Migration `010_rankings.sql`).
 - **Dokumente:** Lebenslauf und Anschreiben hochladen, jede Bewerbung merkt sich die benutzte Version.
 - **Konto:** Deine Daten, deine Bewerbungen nach Stand, „Wichtige Punkte“ und Einstellungen für die Stellenliste.
 
@@ -99,9 +99,19 @@ py -3.12 -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 py -m scraper.run      # braucht .env mit SUPABASE_URL und SUPABASE_SERVICE_KEY
-py -m pytest
+py -B -m pruefe_offline
 cd web; npm test
 ```
+
+## Prüfen ohne Zugangsdaten
+
+Für Entwickler und KI-Agenten; du musst nichts davon regelmäßig selbst starten. Alle drei Wege lesen keine `.env`-Dateien und rufen nichts im Internet auf.
+
+1. **Python:** im Projektordner `py -B -m pruefe_offline`. *Warum:* `tests/test_rls.py` lädt Zugangsdaten schon beim Import, `test_konto_loeschen.py` importiert es; ein bloßes `-m "not supabase"` verhindert das nicht. Der Befehl schließt beide Live-Dateien vor dem Import aus und sperrt während des Laufs `*.env*`, Python-Netz (requests, Sockets, DNS) und Prozessstarts; geerbte pytest-Optionen und Plugins sind aus. Gezielt: `py -B -m pruefe_offline tests/test_rankings.py` (auch `::Testname`), `-k rankings`, `--collect-only`; andere Optionen, Pfade außerhalb `tests/` und die Live-Dateien (auch über Hardlinks) werden abgewiesen. Erfolg: Exit-Code 0. Ein gesperrter Zugriff ist ein Fehler zum Untersuchen, kein Grund, Netz oder Zugangsdaten freizugeben. Kein Schutz gegen absichtlich bösartigen Code; bisher nur unter Windows ausgeführt.
+2. **Website-Logik und Typen:** in `web/` `npm.cmd test` und `.\node_modules\.bin\tsc.cmd --noEmit --incremental false` (`npm.cmd`, weil PowerShell `npm.ps1` sperrt). Erfolg: beide Exit-Code 0. Das belegt keine echte Anmeldung oder Datenbankabschirmung.
+3. **Build und Browser:** in `web/` `npm.cmd run pruefe:build` bzw. `npm.cmd run pruefe:browser` (erkennt der Launcher Python nicht: `-- --python <Pfad>` anhängen; nichts nachinstallieren). *Warum:* Ein normaler Next.js-Build lädt `.env`-Dateien automatisch; dieser Weg baut eine bereinigte Kopie im ignorierten Ordner `.pruefung/` mit künstlichen Einstellungen und gesperrtem Netz und prüft mit Chrome auf `localhost:3002` (1280/390 Pixel) Stellen, Rankings, Tracker, Dokumente, CSV-Export, Konto und Import-API mit künstlichen Diensten. Ein laufender fremder Server wird nicht gestoppt. Erfolg: Exit-Code 0.
+
+Ergebnisse immer mit Code-Stand, Datum, Befehlen und Grenzen ins Agentenprotokoll (`docs/agenten-protokoll.md`). Die echte Datenbankabnahme (PostgreSQL/PostgREST) ist vorbereitet, aber nicht ausgeführt: [tests/sql/README.md](tests/sql/README.md). Automatisch unter Linux läuft dasselbe als Workflow `.github/workflows/codepruefung.yml`, sobald der Zweig hochgeladen ist.
 
 ## Freunde einladen
 

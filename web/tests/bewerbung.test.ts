@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { STATUS, STATUS_LABEL, istUuid, parseAbschnitt, leseTabelle, tabelleZuUrl, escapeLike, berlinZuIso, beworbenPatch } from "../lib/bewerbung.ts";
+import { STATUS, STATUS_LABEL, istUuid, parseAbschnitt, leseTabelle, tabelleZuUrl, escapeLike, berlinZuIso, beworbenPatch, datumOk } from "../lib/bewerbung.ts";
+import { pruefeDokument } from "../lib/dokumente.ts";
 
 const fd = (o: Record<string, string>) => ({ get: (k: string) => (k in o ? o[k] : null) });
 
@@ -115,4 +116,45 @@ test("A8 datumDe: TT.MM.JJJJ über Intl, robust bei leer und Unsinn", async () =
   assert.equal(datumDe("2026-01-05T23:30:00+00:00"), "05.01.2026");
   assert.equal(datumDe(null), "");
   assert.equal(datumDe("kein datum"), "");
+});
+
+test("Gemeinsame Kalenderprüfung unterscheidet reine Daten von Zeitpunkten und prüft Schaltjahre", () => {
+  for (const s of ["0001-01-01", "0096-02-29", "0099-12-31", "2000-02-29", "2026-11-16", "9999-12-31"]) assert.equal(datumOk(s), true, s);
+  for (const s of ["0000-01-01", "1900-02-29", "2026-02-29", "2026-04-31", "2026-00-01", "2026-13-01", "2026-01-00",
+    "2026-11-16T10:00", "2026-11-16\n", " 2026-11-16", "2026-1-01"]) assert.equal(datumOk(s), false, s);
+});
+
+test("Direkte Berliner Umrechnung lehnt kaputte Daten, Uhren und übersprungene Zeiten ab", () => {
+  for (const s of ["2026-02-29T10:00", "2026-04-31T10:00", "2026-11-16T24:00", "2026-11-16T12:60",
+    "2026-03-29T02:00", "2026-03-29T02:30", "2026-03-29T02:59", "2026-11-16", "2026-11-16T12:00Z"]) {
+    assert.equal(berlinZuIso(s), null, s);
+  }
+});
+
+test("Berliner Zeiten direkt vor und nach der Frühlingslücke bleiben richtig", () => {
+  assert.equal(berlinZuIso("2026-03-29T01:59"), "2026-03-29T00:59:00.000Z");
+  assert.equal(berlinZuIso("2026-03-29T03:00"), "2026-03-29T01:00:00.000Z");
+  assert.equal(berlinZuIso(" 2026-07-15T10:00 "), "2026-07-15T08:00:00.000Z");
+});
+
+test("Doppelte Herbstzeit behält den zuvor verwendeten Winterzeit-Zeitpunkt", () => {
+  assert.equal(berlinZuIso("2026-10-25T02:30"), "2026-10-25T01:30:00.000Z");
+  const r = parseAbschnitt("interview", fd({ datum: "2026-10-25T02:30" }));
+  assert.ok("daten" in r);
+  assert.equal(r.daten.datum, "2026-10-25T01:30:00.000Z");
+});
+
+test("Interview-Formular gibt bei unmöglichen Zeiten den vorhandenen Datumsfehler zurück", () => {
+  for (const datum of ["2026-03-29T02:30", "2026-11-16T24:00", "2026-02-29T12:00"]) {
+    assert.deepEqual(parseAbschnitt("interview", fd({ datum })), { fehler: "Ungültiges Datum." });
+  }
+});
+
+test("Dokument-Version und Tracker-Datum teilen Kalenderregeln, reine Daten werden nicht in Zeiten umgewandelt", () => {
+  for (const datum of ["0096-02-29", "2024-02-29", "2026-02-29", "2026-11-16T10:00"]) {
+    const tracker = parseAbschnitt("rahmen", fd({ starttermin: datum }));
+    const dokument = pruefeDokument("testnutzer", "cv", "Test", datum, "testnutzer/test.pdf");
+    assert.equal("daten" in tracker, "daten" in dokument, datum);
+    if ("daten" in tracker) assert.equal(tracker.daten.starttermin, datum);
+  }
 });

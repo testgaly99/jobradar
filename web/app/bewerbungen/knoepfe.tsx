@@ -1,7 +1,7 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { bewerbungAusLink } from "./actions";
+import { bewerbungAusLink, firmaTitelVorschlag } from "./actions";
 import { MAX_TEXT } from "@/lib/uebernahme";
 
 // Absende-Knopf: sperrt sich, solange das Formular läuft.
@@ -30,6 +30,13 @@ export function LinkFormular() {
   const [firma, setFirma] = useState("");
   const [titel, setTitel] = useState("");
   const [text, setText] = useState("");
+  const [laeuft, starte] = useTransition();
+  const [vorschlagFehler, setVorschlagFehler] = useState("");
+  const erkennen = () => starte(async () => {
+    const r = await firmaTitelVorschlag(text);
+    if ("fehler" in r) return setVorschlagFehler(r.fehler);
+    setVorschlagFehler(""); setFirma((f) => f || r.firma); setTitel((t) => t || r.titel); // Eingetipptes bleibt
+  });
   const [zustand, aktion] = useActionState<Zustand, FormData>(
     async () => {
       const r = await bewerbungAusLink(url, firma, titel, text);
@@ -45,16 +52,19 @@ export function LinkFormular() {
         <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
       </label>
       {brauchtEingabe && <p className="meldung info">Aus dem Link ist nichts erkennbar. Bitte Firma und Titel eintragen.</p>}
-      <p className="gedaempft">Mit Link wird übernommen, was sich daraus erkennen lässt; was du einträgst, geht vor. Ohne Link sind Firma und Titel Pflicht.</p>
+      <p className="gedaempft">Mit Link wird übernommen, was sich daraus erkennen lässt; was du einträgst, geht vor. Ohne Link sind Firma und Titel Pflicht, außer du fügst den Anzeigentext ein.</p>
       <label>Firma
-        <input value={firma} required={!url.trim() || brauchtEingabe} onChange={(e) => setFirma(e.target.value)} />
+        <input value={firma} required={(!url.trim() && !text.trim()) || brauchtEingabe} onChange={(e) => setFirma(e.target.value)} />
       </label>
       <label>Titel
-        <input value={titel} required={!url.trim() || brauchtEingabe} onChange={(e) => setTitel(e.target.value)} />
+        <input value={titel} required={(!url.trim() && !text.trim()) || brauchtEingabe} onChange={(e) => setTitel(e.target.value)} />
       </label>
       <label>Anzeigentext (optional)
         <textarea value={text} onChange={(e) => setText(e.target.value)} maxLength={MAX_TEXT} rows={4} placeholder="Den ganzen Text der Anzeige hier einfügen…" />
       </label>
+      <p className="gedaempft">Nur den Anzeigentext einfügen, keine eigenen Daten.</p>
+      <button type="button" className="knopf knopf-rand knopf-schmal" disabled={!text.trim() || laeuft} onClick={erkennen}>{laeuft ? "Erkenne …" : "Firma und Titel aus Text erkennen"}</button>
+      {vorschlagFehler && <p className="meldung fehler" role="alert">{vorschlagFehler}</p>}
       {zustand && "fehler" in zustand && <p className="meldung fehler" role="alert">{zustand.fehler}</p>}
       <SendeKnopf text="Anlegen" />
     </form>

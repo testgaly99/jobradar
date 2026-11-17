@@ -23,7 +23,9 @@ export async function proxy(request: NextRequest) {
 
   // getClaims prueft das JWT und erneuert die Sitzung bei Bedarf (auch auf öffentlichen Seiten, damit Angemeldete angemeldet bleiben).
   const { data } = await supabase.auth.getClaims();
-  if (!data?.claims && !istOeffentlich(request.nextUrl.pathname)) {
+  // Die Import-API antwortet bei fehlender Sitzung selbst mit 401-JSON statt
+  // einer Login-Seite; andere private Pfade behalten die Weiterleitung.
+  if (!data?.claims && request.nextUrl.pathname !== "/api/stellen-import" && !istOeffentlich(request.nextUrl.pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = "";

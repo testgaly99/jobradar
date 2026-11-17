@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import requests
+from scraper.fehler import DatenbankFehler, kurzfehler
 
 BATCH = 500
 SEITE = 1000
@@ -25,10 +26,22 @@ def _req(method, pfad, **kw):
     _lade_env()
     url, key = os.environ["SUPABASE_URL"].rstrip("/"), os.environ["SUPABASE_SERVICE_KEY"]
     headers = {"apikey": key, "Authorization": f"Bearer {key}", **kw.pop("headers", {})}
-    r = requests.request(method, f"{url}/rest/v1/{pfad}", headers=headers, timeout=60, **kw)
+    try:
+        r = requests.request(method, f"{url}/rest/v1/{pfad}", headers=headers, timeout=60, **kw)
+    except requests.RequestException as e:
+        raise DatenbankFehler(method, pfad, getattr(getattr(e, "response", None), "status_code", None),
+                              ursache=type(e).__name__) from None
     if not r.ok:
-        raise RuntimeError(f"Supabase {method} {pfad}: {r.status_code} {r.text[:200]}")
-    return r.json() if r.text else None
+        try:
+            daten = r.json()
+        except ValueError:
+            daten = None
+        code = daten.get("code") if isinstance(daten, dict) else None
+        raise DatenbankFehler(method, pfad, r.status_code, code) from None
+    try:
+        return r.json() if r.text else None
+    except ValueError as e:
+        raise DatenbankFehler(method, pfad, r.status_code, ursache=type(e).__name__) from None
 
 
 def _upsert(tabelle, zeilen, konflikt):
@@ -55,6 +68,63 @@ def _spalten_da():
     return _spalten
 
 
+def ki_spalten_da():
+    """Gibt es jobs.ki schon (Migration 009)? Sonst antwortet PostgREST mit 400."""
+    try:
+        _req("GET", "jobs", params={"select": "ki", "limit": 0})
+        return True
+    except RuntimeError as e:
+        if ": 400 " not in str(e):
+            raise
+        print("Hinweis: Spalte jobs.ki fehlt (Migration 009 offen), KI-Auswertung übersprungen.")
+        return False
+
+
+def ki_kandidaten():
+    """Offene Stellen mit nicht-leerem Text, seitenweise gelesen."""
+    zeilen = []
+    while True:
+        teil = _req("GET", "jobs", params={"select": "id,text_hash,ki_hash,ki_modell,erstmals_gesehen", "status": "eq.offen",
+                                           "text": "neq.", "order": "id", "limit": SEITE, "offset": len(zeilen)})
+        zeilen += teil
+        if len(teil) < SEITE:
+            return zeilen
+
+
+def lade_anzeige(job_id):
+    """(text, abschnitte) einer Stelle; (None, None), wenn es sie nicht gibt."""
+    z = _req("GET", "jobs", params={"select": "text,abschnitte", "id": f"eq.{job_id}"})
+    return (z[0]["text"], z[0]["abschnitte"]) if z else (None, None)
+
+
+def speichere_ki(job_id, ergebnis, modell, text_hash):
+    """ergebnis=None (Fehler): nur Modell/Hash vermerken. studium/taetigkeit liegen in eigenen Spalten, 'nein' blendet aus."""
+    patch = {"ki": None, "ki_modell": modell, "ki_hash": text_hash}
+    if ergebnis:
+        patch["ki"] = {k: v for k, v in ergebnis.items() if k not in ("studium", "taetigkeit")}
+        patch["studium"], patch["taetigkeit"] = ergebnis["studium"], ergebnis["taetigkeit"]
+        if ergebnis["studium"] == "nein":
+            patch["sichtbar"] = False
+    _req("PATCH", "jobs", params={"id": f"eq.{job_id}"}, json=patch)
+
+
+def nein_ausblenden():
+    """Blendet offene Stellen mit studium=nein aus (z. B. nach Nutzer-Korrektur). Gibt die Anzahl zurück."""
+    r = _req("PATCH", "jobs", params={"studium": "eq.nein", "status": "eq.offen", "sichtbar": "eq.true", "select": "id"},
+             json={"sichtbar": False}, headers={"Prefer": "return=representation"})
+    return len(r or [])
+
+
+def bewerbungen_ohne_firma():
+    z = _req("GET", "applications", params={"select": "id,snapshot_text", "firma": "is.null", "titel": "is.null"})
+    return [a for a in z if a["snapshot_text"]]
+
+
+def setze_firma_titel(app_id, firma, titel):
+    # firma/titel=is.null: hat der Nutzer inzwischen selbst etwas eingetragen, bleibt das unberührt
+    _req("PATCH", "applications", params={"id": f"eq.{app_id}", "firma": "is.null", "titel": "is.null"}, json={"firma": firma, "titel": titel})
+
+
 def firmen_ohne_logo():
     """Namen aller Firmen ohne logo_url. Fehlt die Spalte (Migration 006 offen), Hinweis und leere Menge."""
     try:
@@ -75,14 +145,28 @@ def _in(werte):
     return "in.(" + ",".join('"' + w.replace('"', '\\"') + '"' for w in werte) + ")"
 
 
+def _objektliste(antwort, kontext):
+    if not isinstance(antwort, list) or not all(isinstance(z, dict) for z in antwort):
+        raise ValueError(f"Ungültige {kontext}")
+    return antwort
+
+
 def _bestand(firma):
-    zeilen = []
+    bestand = {}
     while True:
-        teil = _req("GET", "jobs", params={"unternehmen": f"eq.{firma}", "select": "id,status,erstmals_gesehen",
-                                           "order": "id", "limit": SEITE, "offset": len(zeilen)})
-        zeilen += teil
+        teil = _objektliste(_req("GET", "jobs", params={
+            "unternehmen": f"eq.{firma}", "select": "id,status,erstmals_gesehen",
+            "order": "id", "limit": SEITE, "offset": len(bestand),
+        }), "Bestandsantwort")
+        for z in teil:
+            id_, datum = z.get("id"), z.get("erstmals_gesehen", "")
+            if (not isinstance(id_, str) or not id_.startswith(firma + ":") or id_ == firma + ":"
+                    or id_ in bestand or z.get("status") not in ("offen", "geschlossen")
+                    or (datum is not None and (not isinstance(datum, str) or not datum.strip()))):
+                raise ValueError("Ungültige Bestandszeile")
+            bestand[id_] = z
         if len(teil) < SEITE:
-            return {z["id"]: z for z in zeilen}
+            return bestand
 
 
 def lade_offene(firma):
@@ -102,8 +186,9 @@ def sync_companies(firmen):
     } for f in firmen], "name")
 
 
-def schreibe(firma, neue, heute, unveraendert=()):
-    """Gibt (Anzahl neuer, Anzahl geschlossener Stellen) zurueck. `unveraendert`: ext_ids, nur zuletzt_gesehen wird gesetzt."""
+def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):
+    """Gibt (Anzahl neuer, Anzahl geschlossener Stellen) zurueck. `unveraendert`: ext_ids, nur zuletzt_gesehen wird gesetzt.
+    `schliessen=False`: nicht gesehene Stellen bleiben offen (Lauf hat Einzelstellen übersprungen)."""
     alt = _bestand(firma)
     zeilen, neue_spalten = [], _spalten_da()
     for n in neue:
@@ -118,17 +203,30 @@ def schreibe(firma, neue, heute, unveraendert=()):
             **({"abschnitte": n.get("abschnitte"), "land": n.get("land", ""),
                                                   "steckbrief": n.get("steckbrief")} if neue_spalten else {}),
         })
-    _upsert("jobs", zeilen, "id")
     gesehen = {z["id"] for z in zeilen}
     unv = [i for i in (f"{firma}:{e}" for e in unveraendert) if i in alt]
-    for i in range(0, len(unv), CHUNK):
-        _req("PATCH", "jobs", params={"id": _in(unv[i:i + CHUNK])}, json={"zuletzt_gesehen": heute})
     gesehen_alle = gesehen | set(unv)
-    fehlend = [i for i, z in alt.items() if z["status"] == "offen" and i not in gesehen_alle]
+    fehlend = [i for i, z in alt.items() if schliessen and z["status"] == "offen" and i not in gesehen_alle]
     mit_bewerbung = set()
     for i in range(0, len(fehlend), CHUNK):
-        r = _req("GET", "applications", params={"select": "job_id", "job_id": _in(fehlend[i:i + CHUNK])})
-        mit_bewerbung |= {a["job_id"] for a in r}
+        angefragt = fehlend[i:i + CHUNK]
+        offset = 0
+        while True:
+            r = _objektliste(_req("GET", "applications", params={
+                "select": "job_id", "job_id": _in(angefragt), "order": "job_id",
+                "limit": SEITE, "offset": offset,
+            }), "Bewerbungsantwort")
+            for a in r:
+                if not isinstance(a.get("job_id"), str) or a["job_id"] not in angefragt:
+                    raise ValueError("Ungültige Bewerbungszuordnung")
+                mit_bewerbung.add(a["job_id"])
+            if len(r) < SEITE:
+                break
+            offset += len(r)
+    # Erst nach allen kritischen Schutzlesungen schreiben; keine HTTP-Transaktion behaupten.
+    _upsert("jobs", zeilen, "id")
+    for i in range(0, len(unv), CHUNK):
+        _req("PATCH", "jobs", params={"id": _in(unv[i:i + CHUNK])}, json={"zuletzt_gesehen": heute})
     for liste, patch in (([i for i in fehlend if i not in mit_bewerbung],
                           {"status": "geschlossen", "text": None, "sichtbar": False}),
                          ([i for i in fehlend if i in mit_bewerbung], {"status": "geschlossen"})):
@@ -150,6 +248,6 @@ def snapshot_nachruesten():
         if ": 404 " in str(e) or "PGRST202" in str(e):
             print("Hinweis: snapshot_nachruesten fehlt (Migration 005 offen), übersprungen.")
         else:
-            print(f"Hinweis: snapshot_nachruesten fehlgeschlagen: {e}")
+            print(f"Hinweis: snapshot_nachruesten fehlgeschlagen: {kurzfehler(e)}")
     except Exception as e:  # Netzwerk o. Ä.: Lauf geht trotzdem weiter
-        print(f"Hinweis: snapshot_nachruesten fehlgeschlagen: {type(e).__name__}: {e}")
+        print(f"Hinweis: snapshot_nachruesten fehlgeschlagen: {kurzfehler(e)}")

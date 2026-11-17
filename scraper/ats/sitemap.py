@@ -34,9 +34,14 @@ def _ext_id(url):
 
 def _urls(sitemap, index_aufloesen=True):
     wurzel = ET.fromstring(http.hole(sitemap).content)
+    if wurzel.tag.rsplit("}", 1)[-1] not in ("urlset", "sitemapindex"):
+        raise ValueError("Unerwartete Sitemap-XML-Wurzel")
     # nur <url>/<sitemap>-Einträge, nicht image:loc/video:loc der Erweiterungen
-    locs = wurzel.findall("{*}url/{*}loc") + wurzel.findall("{*}sitemap/{*}loc")
-    urls = [loc.text.strip() for loc in locs if loc.text]
+    eintraege = wurzel.findall("{*}url") + wurzel.findall("{*}sitemap")
+    locs = [eintrag.find("{*}loc") for eintrag in eintraege]
+    if any(loc is None or not loc.text or not loc.text.strip() for loc in locs):
+        raise ValueError("Sitemap-Eintrag ohne Link")
+    urls = [loc.text.strip() for loc in locs]
     if index_aufloesen and wurzel.tag.endswith("sitemapindex"):
         return [u for teil in urls for u in _urls(teil, False)]
     return urls
@@ -138,12 +143,18 @@ def _stelle(seite, url, ext_id, heute):
 def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[dict]:
     sitemap, _, filter_ = ats_id.partition("#")  # das Fragment wird nie abgerufen
     heute = date.today().isoformat()
-    stellen, gesehen, zaehler, fehlserie = [], set(), Counter(), 0
+    # Gleiche ID, andere URL: die erste gilt, jede weitere wird gemeldet (run.py schließt dann nichts).
+    urls, stellen = {}, []
     for url in _urls(sitemap):  # Fehler der Sitemap selbst kippen die Firma
-        ext_id = _ext_id(url)
-        if filter_ not in url or ext_id in gesehen:
+        if filter_ not in url:
             continue
-        gesehen.add(ext_id)
+        ext_id = _ext_id(url)
+        if ext_id in urls and urls[ext_id] != url:
+            stellen.append({"uebersprungen": "doppelte ID"})
+            continue
+        urls[ext_id] = url
+    zaehler, fehlserie = Counter(), 0
+    for ext_id, url in urls.items():
         if _vorgefiltert(url):
             zaehler["vorgefiltert"] += 1
             continue
@@ -170,5 +181,5 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
         else:
             zaehler["geladen"] += 1
             stellen.append(s)
-    print(f"Hinweis: {sitemap}: {len(gesehen)} Stellen-URLs, " + ", ".join(f"{k}: {v}" for k, v in zaehler.items()))
+    print(f"Hinweis: {sitemap}: {len(urls)} Stellen-URLs, " + ", ".join(f"{k}: {v}" for k, v in zaehler.items()))
     return stellen

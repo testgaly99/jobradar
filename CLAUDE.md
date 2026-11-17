@@ -25,7 +25,7 @@ Eine eigene Website zur Jobsuche, die besser filtert als Stepstone, Indeed, Link
 - Dazu kommt ein **persönlicher Bewerbungs-Tracker**.
 - **Nur Stellen, die ein Studium voraussetzen** (Entscheidung 2026-11-09). Andere Stellen werden gar nicht gespeichert.
   - Stufe 1, sofort per Regeln: Titel eindeutig nicht-akademischer Berufe fliegen beim Abrufen raus (z. B. Warenverräumer, Reinigungskraft, Filialleitung, Mechatroniker, Fahrer).
-  - Stufe 2, mit dem Groq-Paket: Groq stuft jede Anzeige ein: Studium „ja“, „nein“ oder „unklar“ und Tätigkeit „anspruchsvoll“ oder „einfach“. Gespeichert wird bei „ja“ und „unklar“.
+  - Stufe 2, mit dem Groq-Paket: Groq stuft jede Anzeige ein: Studium „ja“, „nein“ oder „unklar“ und Tätigkeit „anspruchsvoll“ oder „einfach“. Sichtbar bleiben „ja“ und „unklar“; „nein“ wird vorerst **ausgeblendet statt gelöscht**, bis die Prestige-Bewertung steht (Entscheidung 2026-11-12).
   - **Ausnahme Prestige-Arbeitgeber** (z. B. Magnificent 7): Dort bleiben auch Stellen ohne Studium, wenn die Tätigkeit anspruchsvoll ist (z. B. Program Manager bei Google). Einfache Tätigkeiten fliegen auch dort raus. Welche Firmen als Prestige gelten, bestimmen die Prestige-Listen unter den Ranking-Listen (Abschnitt 4.8).
 - Freunde bekommen später eigene Konten.
 
@@ -42,8 +42,8 @@ Wichtigste Filter, in dieser Reihenfolge:
 1. **Kostenlos.** Keine Dienste, die Geld kosten oder eine Kreditkarte verlangen, ohne meine ausdrückliche Zustimmung. Grenzen von Gratis-Tarifen nennst du mir, bevor wir uns festlegen.
 2. **Keine API-Kosten für KI.**
    - KI im laufenden Betrieb ist erlaubt, nur auf zwei Wegen (Stand 2026-11-09):
-     - **Öffentliche Stellenanzeigen zusammenfassen:** Groq im Gratis-Tarif (großes Llama-Modell), Secret `GROQ_API_KEY`. An Groq gehen **nur Anzeigentexte**, nie persönliche Daten. Ist das Tageslimit erreicht, folgt der Rest am nächsten Tag. Kein Ausweichen auf Claude.
-     - **Alles mit persönlichen Daten** (Lebenslauf-Abgleich, CV-Empfehlung, Anschreiben): nur über meinen Claude-Abo-Token (`claude setup-token`, in GitHub Actions als Secret `CLAUDE_CODE_OAUTH_TOKEN`).
+     - **Öffentliche Stellenanzeigen zusammenfassen:** Groq im Gratis-Tarif (nur `gpt-oss-120b`; nur gute Modelle, kein Ausweichen auf kleinere; Rest am nächsten Tag; Entscheidung 2026-11-13, Llama 70B gibt es nicht mehr), Secret `GROQ_API_KEY`. An Groq gehen **nur Anzeigentexte**, nie persönliche Daten. Ist das Tageslimit erreicht, folgt der Rest am nächsten Tag. Kein Ausweichen auf Claude.
+     - **Alles mit persönlichen Daten** (Lebenslauf-Abgleich, CV-Empfehlung, Anschreiben): nur über meinen Claude-Abo-Token (`claude setup-token`, in GitHub Actions als Secret `CLAUDE_CODE_OAUTH_TOKEN`). CV-Daten gehen ausdrücklich **nicht** an Mistral (Entscheidung 2026-11-17, Q15); Mistral ist nur Kandidat der Phase-4-Prüfung für öffentliche Anzeigentexte.
    - Es gibt keine Ausweichlösung. GitHub Models wurde am 30.07.2026 abgeschaltet.
    - Ist das Kontingent erschöpft, wird der Rest in der nächsten Nacht ausgewertet.
    - **Nie ein kostenpflichtiger API-Schlüssel.**
@@ -148,7 +148,7 @@ Wichtigste Filter, in dieser Reihenfolge:
 - **Per KI:** Seniority, Präsenztage, normalisiertes Gehalt, Vermittler, Personalverantwortung, Abschluss, Vertriebsanteil, Remote-Gebiet, Workation, variable Vergütung, Ghost-Job-Ampel.
 - **Ablauf:** ein nächtlicher Batch-Lauf, nur für neue oder geänderte Stellen. Das Ergebnis ist JSON pro Stelle, gespeichert unter einem Hash des Anzeigentexts.
 - **Modell:** Groq im Gratis-Tarif (nur öffentliche Anzeigentexte, Entscheidung 2026-11-09).
-- **Passungs-Score und Skill-Lücken** laufen nur über Claude, damit mein CV nicht bei weiteren Anbietern landet.
+- **Passungs-Score und Skill-Lücken** laufen nur über Claude, damit mein CV nicht bei weiteren Anbietern landet (auch nicht bei Mistral, Q15).
 
 ### 4.3 Selbstreparatur
 - **Erkennen:** Nach jedem Lauf gibt es einen Gesundheitscheck ohne KI. Ein Problem liegt vor, wenn:
@@ -175,6 +175,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Ist nichts erkennbar, gibt es zwei Felder für Firma und Titel.
   - LinkedIn-Links aus Sammlung oder Suche (`currentJobId`) werden zu `linkedin.com/jobs/view/<nummer>/` vereinheitlicht, damit die Dublettenprüfung greift.
   - Optional lässt sich der Anzeigentext einfügen (z. B. am Handy); er landet in `snapshot_text`, falls es keinen Text aus Stellenliste oder ATS gibt.
+- **Ein Klick per Browser-Erweiterung** (Ein-Klick-Import, Entscheidungen 2026-11-16/17, Q6/Q7/Q14/Q16): übernimmt die gerade geöffnete Anzeige als „Gemerkt“ ohne Bewerbungsdatum. Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox. **Jobradar öffnet Jobportale (LinkedIn, StepStone, Indeed, XING …) nie selbst; die Erweiterung übernimmt dort nur Adresse und Titel.** Plan `docs/plans/2026-11-16-ein-klick-import.md`.
 - **Manuell**, z. B. bei Empfehlung, Headhunter oder nachgetragenen Bewerbungen.
 - **Stelle:**
   - Firma, verknüpft mit den Firmendaten
@@ -280,7 +281,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - **Offene Lizenzen, automatisch:** EU R&D Scoreboard (CC BY), Technology Dashboard des Europäischen Patentamts, DPMA Top 50, EIC-Accelerator-Geförderte über CORDIS, Börsenindex-Mitglieder über Wikidata (CC0), Wikipedia-Unicorn-Liste (CC BY-SA), US-Arbeitsministerium Visa-Gehaltsdaten (gemeinfrei, nur als Gehalts-Indikator).
   - **Über die Text-und-Data-Mining-Schranke (§ 44b UrhG), automatisch:** Great Place to Work Deutschland, Top Employers Deutschland, TOP 100 Innovatoren. Nur solange die Seite kein Verbot und keinen maschinenlesbaren Vorbehalt setzt; jede Quelle hat einen Schalter zum sofortigen Abschalten. **Nicht:** HTGF (setzt ein Vorbehalts-Signal).
   - **Von Hand, einmal im Jahr:** Pressemitteilungen von trendence, Universum und LinkedIn (Beliebtheit bei Absolventen), Spitzenplätze aus Statistas CC-BY-ND-Infografiken.
-    - **Erinnerung per E-Mail (Entscheidung 2026-11-10):** Der 4-Wochen-Lauf legt zum Erscheinungstermin jeder Hand-Quelle ein GitHub-Issue an („trendence Top 50 2026 übernehmen“, mit Link und Klick-Anleitung). GitHub schickt dafür automatisch eine E-Mail an den Repo-Besitzer; kein eigener Mail-Dienst nötig. Das Issue bleibt offen, bis die Daten eingelesen sind. **Sobald die Gmail-Anbindung (Phase 3) steht, geht die Erinnerung zusätzlich als E-Mail an den Admin** (`ADMIN_EMAIL`); To-do in `docs/STATUS.md`.
+    - **Erinnerung per E-Mail (Entscheidung 2026-11-10):** Der 4-Wochen-Lauf legt zum Erscheinungstermin jeder Hand-Quelle ein GitHub-Issue an („trendence Top 50 2026 übernehmen“, mit Link und Klick-Anleitung). GitHub schickt dafür automatisch eine E-Mail an den Repo-Besitzer; kein eigener Mail-Dienst nötig. Das Issue bleibt offen, bis die Daten eingelesen sind. **Sobald die Gmail-Anbindung (Phase 3) steht, geht die Erinnerung zusätzlich als E-Mail an den Admin** (`ADMIN_EMAIL`); To-do in `docs/phasen-vorarbeit.md`.
   - **Nicht, auch nicht privat:** Statista-Gesamtlisten (stern, Forbes, FT, TIME, Capital, FOCUS), Levels.fyi, LinkedIn-Website, zeit.de, Sifted, Glassdoor, Crunchbase, abgeschriebene Listen auf Wikipedia/Kaggle, die Website von Y Combinator (Nutzungsbedingungen verbieten Scraping und Data-Mining ausdrücklich, geprüft 2026-11-12). Höchstens ein Link zur Ranking-Seite.
   - **Y Combinator über Wikidata prüfen (Wunsch 2026-11-12, Phase 4):** YC-Firmen nur aus Wikidata (CC0) holen, z. B. Firmen mit Investor „Y Combinator“, und vorher prüfen, wie vollständig das ist. Bedingung wie immer: Die Firma bietet Stellen in Deutschland an.
 - **Speicherregeln (Entscheidung 2026-11-10):** Rohseiten werden sofort nach dem Auslesen gelöscht. Gespeichert werden nur Firmenname, Rang, Listenname, Jahr und Quell-Link. Jede Ausgabe lebt bis zur nächsten Ausgabe, höchstens 13 Monate, dann wird sie gelöscht. Quelle und Lizenz stehen sichtbar in der Website. Abruf höchstens 1× je Quelle und Monat, eigener User-Agent mit Kontakt-E-Mail, robots.txt vor jedem Abruf.
@@ -302,7 +303,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 |---|---|---|
 | Datenbank, Login, Dateien | Supabase, Region Frankfurt | Pausiert nach ca. 1 Woche ohne Datenbank-Aktivität. Der tägliche Scraper-Lauf schreibt in die Datenbank und hält sie wach. Limits: 500 MB Datenbank, 1 GB Dateien, 50 MB pro Datei, 2 Projekte. |
 | Scraper und Hintergrundjobs | Python, zeitgesteuert per GitHub Actions (Digest, Alarme, Briefings, Gmail-Abgleich, Erinnerungen) | Im öffentlichen Repo unbegrenzt gratis. Abschaltung nach 60 Tagen ohne Aktivität; der tägliche Commit verhindert sie. |
-| KI-Auswertung der Anzeigen | Groq Gratis-Tarif (Llama 70B) | Etwa 1.000 Anfragen pro Tag; Rest am nächsten Tag. Nur öffentliche Texte. |
+| KI-Auswertung der Anzeigen | Groq Gratis-Tarif (`gpt-oss-120b`) | 1.000 Anfragen und ca. 200.000 Tokens pro Tag, 8.000 Tokens pro Minute (≈ 100–200 Anzeigen/Tag, nur relevante Abschnitte); Rest am nächsten Tag. Nur öffentliche Texte. |
 | KI mit persönlichen Daten und Reparatur | Claude Code Action mit Abo-Token | Der Verbrauch zählt gegen das Abo-Kontingent. |
 | Website | Next.js auf Vercel (Hobby) | Nur private, nicht-kommerzielle Nutzung. Zeitgesteuerte Jobs laufen deshalb über GitHub Actions statt über Vercel. |
 | Benachrichtigung | Telegram-Bot, später zusätzlich Google Kalender (kein Teams). E-Mail erst mit dem Mail-Paket. | – |
@@ -368,14 +369,15 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
      - Der Scraper zieht per Regeln heraus: Erfahrung in Jahren, Sprachen, Gehalt (falls angegeben), Sicherheitsüberprüfung.
      - Die Detailseite zeigt oben den Steckbrief, die gegliederte Anzeige eingeklappt darunter.
      - In der Stellenliste steht eine Kurzbeschreibung. Welche Felder sie zeigt, stellt jeder Nutzer auf der Konto-Seite selbst ein.
-     - „Kurz gesagt“, Top-3-Anforderungen und „Auffällig“ brauchen KI: per Groq, nach einer Probe mit 20 Anzeigen (eigenes Paket direkt nach 2b).
+     - KI-Zusammenfassung per Groq (Groq-Paket, Design `docs/superpowers/specs/2026-11-12-groq-paket-design.md`): 3–5 Stichpunkte zu den nicht-trivialen Aufgaben plus „Das musst du mitbringen“ (3 Muss-Anforderungen ohne Sprachen); kein Bereich „Auffällig“. Erst nach einer Probe mit 20 Anzeigen.
    - **Wichtige Punkte:** Auf der Konto-Seite pflege ich Begriffe, die mir bei einer Stelle wichtig sind. Kommen sie in einem Stichpunkt der Anzeige vor, werden sie auf der Detailseite hervorgehoben. Reiner Textvergleich, ohne KI: Ein Begriff trifft ganze Wörter und Wortanfänge („Team“ trifft „Teamfähigkeit“). Übergangslösung; in Phase 6 kommt der Abgleich nach Bedeutung per KI dazu.
    - **Gegliederte Snapshots für alle:** Jede Bewerbung bekommt die gegliederte Anzeige, auch bestehende. Der tägliche Lauf rüstet fehlende Snapshots automatisch nach, solange die Stelle noch online ist.
 3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung, Erinnerungs-Mail an den Admin für die jährlichen Hand-Quellen der Rankings (4.8).
    - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
 4. **Ranking-Listen und Scraper für alle Listen-Firmen:** Listen anhand realer Rankings festlegen (Recherche läuft seit 2026-11-09), Listen in der Datenbank, 4-Wochen-Check, Filter „Liste“, automatische Erkennung des Bewerbermanagement-Systems und Anbindung (rund 1000 Firmen), Zusatzfirmen pro Nutzer mit Admin-Freigabe (4.8), Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern. Offen: TK (Stellen nur per „Mehr laden“, bräuchte Playwright).
+   - **Prüfung Mistral als Alternative oder Ergänzung zu Groq (Wunsch 2026-11-13):** Nur für öffentliche Anzeigentexte, nie für CVs (Q15). Kriterien und Ablauf in `docs/phasen-vorarbeit.md` („Mistral prüfen“). Erst nach bestandener Prüfung und deiner Entscheidung wird die Groq-Regel in Abschnitt 3.2 geändert.
 5. **KI-Auswertung und Filter:** Extraktion aus Anzeigen per Groq (Gratis-Tarif), alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
-6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (Anforderungen, die mein CV abdeckt, fett; nicht abgedeckte rot) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token; dazu „Wichtige Punkte“ nach Bedeutung statt nach Wortanfang, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Dafür das günstigste Modell (Haiku), um das Abo-Kontingent zu schonen; ein größeres Modell nur, wenn Stichproben zeigen, dass Haiku zu oft danebenliegt. Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
+6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (jede Anforderung farbig: Grün = belegt, Gelb = teilweise oder noch nicht belegt, Rot = nachweislich nicht erfüllt, jeweils mit Beleg oder Begründung (Q3); Entscheidung 2026-11-17, Details und offene Klärung zur Bedeutung von Rot gegenüber Q3 in `docs/plans/2026-11-16-cv-abgleich.md`) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token; dazu „Wichtige Punkte“ nach Bedeutung statt nach Wortanfang, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Dafür das günstigste Modell (Haiku), um das Abo-Kontingent zu schonen; ein größeres Modell nur, wenn Stichproben zeigen, dass Haiku zu oft danebenliegt. Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
 
 **Backlog (noch keiner Phase zugeordnet):**
 - **Live gehen (Freunde oder öffentlich), Entscheidung 2026-11-10:** Vorerst nutze nur ich Jobradar. Vor dem Einladen von Freunden oder einer Veröffentlichung:
@@ -395,7 +397,8 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
   - kein manuelles Abtippen bekannter Stellen.
   - Eigene Fragerunde in einer späteren Phase.
 - **Login für Freunde:** E-Mail und Passwort zusätzlich zu Google (braucht das Mail-Paket).
-- **„In Jobradar speichern“ per Lesezeichen (Wunsch 2026-11-12, aus der Wettbewerbsanalyse):** Ein Browser-Lesezeichen, das auf jeder Stellenseite die Adresse an „Manuell anlegen“ übergibt. Kein Plugin, keine fremden Daten.
+- **„In Jobradar speichern“ per Chrome-Erweiterung (Ein-Klick-Import; Wunsch 2026-11-12 aus der Wettbewerbsanalyse, statt Lesezeichen entschieden 2026-11-17, Q14):** Chrome-Erweiterung übernimmt die geöffnete Anzeige ins eigene Board (Abschnitt 4.4). Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox. Auf Jobportalen nur Adresse und Titel (Q16); deren aktuelle Nutzungsbedingungen noch prüfen.
+- **Umbau-Plan für eine kommerzielle Nutzung (Wunsch 2026-11-17):** vor jeder kommerziellen/öffentlichen Nutzung erstellen – Datenquellen nur lizenziert (siehe Rechte-Audit in `docs/ranking-recherche-v3.md`), Vercel-Plan, Groq-/KI-Bedingungen, Impressum/Datenschutz, Haftung, Rankings.
 - **Geschätztes Gehalt für jede Stelle (Wunsch 2026-11-12, Phase 4 bei „Passung und Analyse“):** Spanne je Stelle, möglichst stellen-, firmen- und landesspezifisch, mit Quellenangabe („geschätzt aus …“) und klar getrennt von Gehältern aus der Anzeige. Reihenfolge der Quellen: (1) Anzeige selbst, (2) andere Anzeigen derselben Firma, (3) Anzeigen mit ähnlichem Titel im selben Land, (4) Entgeltatlas der Bundesagentur für Arbeit nach Beruf und Region. kununu, Glassdoor und levels.fyi nur als Link (Nutzungsbedingungen verbieten automatisches Auslesen). Vor dem Bau prüfen: Stand der deutschen Umsetzung der EU-Entgelttransparenzrichtlinie (Gehaltsspannen in Anzeigen).
 - **Nachweis der Eigenbemühungen (nur bei Bedarf):** Export aller Bewerbungen für die Arbeitsagentur (Datum, Firma, Stelle, Weg, Ergebnis) als PDF/CSV. Die Daten liegen im Tracker vor; aktuell kein Thema für mich.
 - **Automatisch bewerben (Wunsch 2026-11-12, später bewerten):** Bots wie LazyApply schicken Bewerbungen selbst ab. Vor einer Entscheidung prüfen: Nutzungsbedingungen der ATS und Jobbörsen (Kontosperren), Qualität, Datenschutz, Regel 5 „legal und fair“.
@@ -429,6 +432,10 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 5. **Prüfen:** Tests, bei Website-Änderungen durchklicken, `/ponytail-review`. Beim Testen: **Screenshots nur bei fehlgeschlagenen Prüfungen.**
 6. **Abschluss:** `docs/STATUS.md` aktualisieren, bei Bedarf auch diese Datei. Mir in wenigen Sätzen sagen, was jetzt geht und was ich tun muss.
 
+**Arbeit anderer KI-Agenten prüfen (Entscheidung 2026-11-14):** Andere Agenten (z. B. Codex) folgen `AGENTS.md` und tragen jede Sitzung in `docs/agenten-protokoll.md` ein; ihre Commits enden mit `Agent: <Name>`. Zu Beginn **jeder** Sitzung prüfst du: neue Einträge im Protokoll und `git log --grep "Agent:"` seit dem letzten Prüfvermerk. Gibt es Neues, liest du die Diffs, lässt die Tests laufen, prüfst die Regeln (Verbote, Dokumentation, Plan) und schreibst einen Prüfvermerk unter den Eintrag; Probleme meldest du mir, bevor weitergearbeitet wird.
+
+**Alle Fragen und Antworten dokumentieren (Nutzeranweisung 2026-11-17, gekürzt nach Q17):** Jede Frage im Projekt – vom Nutzer oder von einem Agenten, auch Rück-, Status- und Freigabefragen – wird beim Stellen mit Datum, Kennung, Empfehlung und Antwortoptionen im passenden Protokoll festgehalten, die Antwort und spätere Präzisierungen werden im Wortlaut ergänzt, ohne frühere Fassungen zu überschreiben. Empfehlungen, vorausgewählte Optionen oder Schweigen sind keine Antwort; Entscheidungen, Empfehlungen und offene Punkte bleiben getrennt und werden zusätzlich in `docs/ENTSCHEIDUNGEN.md` bzw. `docs/STATUS.md` nachgeführt. Einstieg ist `docs/fragen-und-antworten.md`: vor jeder neuen Frage dort nachsehen und nichts erneut abfragen, keine Geheimnisse oder persönlichen Daten aufnehmen (Schwärzungen kennzeichnen) und fehlenden historischen Wortlaut als Lücke benennen statt ihn zu erfinden.
+
 **Bei Fehlern:** Ich beschreibe, was passiert ist, oder kopiere die Meldung. Du suchst systematisch die Ursache, bevor du etwas änderst, und erklärst sie mir in einem Satz.
 
 **Hochladen auf GitHub** (Push) und das Übernehmen in `main` (Merge) nur nach meiner Zustimmung.
@@ -439,7 +446,10 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 
 - `docs/STATUS.md`: Was funktioniert, was in Arbeit ist, bekannte Probleme, nächster Schritt. **Zu Beginn jeder Sitzung lesen.**
 - `docs/ENTSCHEIDUNGEN.md`: jede Entscheidung mit Datum und einem Satz Begründung.
-- `docs/plans/`: die Pläne.
+- `docs/fragen-und-antworten.md`: projektweiter Einstieg zu allen Fragen-/Antwortprotokollen und offenen Fragen. **Zu Beginn jeder Sitzung lesen**, vor weiteren Rückfragen das passende Protokoll prüfen.
+- `docs/plans/`: die Pläne; abgeschlossene Codex-Pakete gesammelt in `docs/plans/2026-11-16-codex-pakete.md`.
+- `docs/phasen-vorarbeit.md`: Vorarbeit und offene To-dos für Phase 3–5.
+- `docs/agenten-protokoll.md`: Sitzungen anderer Agenten und alle Testzahlen.
 - `data/kategorien.md`: die feste Kategorienliste.
 
 ---

@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { anlegenAusJob, aufBeworben } from "@/lib/bewerbung-anlegen";
 import { fehlerText } from "@/lib/fehler";
 import { heuteLokal } from "@/lib/filter";
-import { darfEntmerken, hatEigeneEingaben } from "@/lib/schalter";
+import { entmerkenMit } from "@/lib/bewerbung-schutz";
 
 // Merkt die Stelle (Status gemerkt) und bleibt auf der Liste. Doppelklick legt dank anlegenAusJob keine zweite Bewerbung an.
 export async function merken(jobId: string) {
@@ -42,22 +42,11 @@ export async function entmerken(jobId: string) {
   const sb = await createClient();
   const { data: claims } = await sb.auth.getClaims();
   if (!claims?.claims) redirect("/login");
-  const { data: a } = await sb.from("applications").select("*").eq("job_id", jobId).limit(1).maybeSingle();
-  if (a && darfEntmerken(a.status)) {
-    // C1: Hat der Nutzer schon etwas eingetragen, nicht still löschen, sondern zur Bewerbung führen (dort gibt es „Bewerbung löschen“ mit Rückfrage).
-    const anzahl = { count: "exact", head: true } as const;
-    const [k, i, n] = await Promise.all([
-      sb.from("contacts").select("id", anzahl).eq("application_id", a.id),
-      sb.from("interviews").select("id", anzahl).eq("application_id", a.id),
-      sb.from("application_events").select("id", anzahl).eq("application_id", a.id).is("neuer_status", null), // Verlaufsnotizen
-    ]);
-    const weitere = (k.count ?? 0) + (i.count ?? 0) + (n.count ?? 0);
-    if (hatEigeneEingaben(a, weitere)) {
-      redirect(`/bewerbung/${a.id}?fehler=${encodeURIComponent("Diese gemerkte Stelle enthält schon deine Eingaben und wurde deshalb nicht gelöscht. Wenn du sie wirklich entfernen willst: unten „Bewerbung löschen“.")}`);
-    }
-    const { error } = await sb.from("applications").delete().eq("id", a.id).eq("status", "gemerkt");
-    if (error) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Das Merken konnte nicht zurückgenommen werden. Bitte erneut versuchen.")}`);
+  const r = await entmerkenMit(sb, jobId);
+  if (r.art === "eigene_eingaben") {
+    redirect(`/bewerbung/${r.id}?fehler=${encodeURIComponent("Diese gemerkte Stelle enthält schon deine Eingaben und wurde deshalb nicht gelöscht. Wenn du sie wirklich entfernen willst: unten „Bewerbung löschen“.")}`);
   }
+  if (r.art === "fehler") redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Das Merken konnte nicht zurückgenommen werden. Bitte erneut versuchen.")}`);
   revalidatePath("/stellen");
   revalidatePath(`/stellen/${jobId}`);
 }

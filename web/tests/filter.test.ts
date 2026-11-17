@@ -149,3 +149,36 @@ test("Ausschluss: Rundreise ueber die Adresse", () => {
   assert.equal(filterZuUrl(f), "/stellen?ohne=Praktikum%2C+Sales");
   assert.equal(leseFilter({}).ohne, "");
 });
+
+test("Ungültige Seitenzahlen und nicht sicher darstellbare Seitenbereiche fallen auf Seite 1 zurück", () => {
+  for (const seite of ["", " ", "0", "-1", "1.5", "NaN", "Infinity", "-Infinity", "1e309", "falsch",
+    "9007199254740991", "9007199254740992", "180143985094820", "180143985094821"]) {
+    assert.equal(leseFilter({ seite }).seite, 1, seite);
+  }
+});
+
+test("Bestehende Zahlenformate und größte vollständig sichere Seite bleiben erhalten", () => {
+  for (const [roh, seite] of [["1", 1], ["2", 2], [" 3 ", 3], ["2.0", 2], ["2e0", 2], ["0x2", 2],
+    ["1000000", 1000000], ["180143985094819", 180143985094819]] as const) {
+    assert.equal(leseFilter({ seite: roh }).seite, seite, roh);
+  }
+});
+
+test("Erster bereinigter Mehrfachwert und übrige Filter bleiben bei Seitenfehlern erhalten", () => {
+  const f = leseFilter({ seite: [" ", "2", "3"], stadt: [" Berlin ", "Remote", "Berlin"], q: " Data ", sort: "titel" });
+  assert.equal(f.seite, 2);
+  assert.deepEqual(f.stadt, ["Berlin", "Remote"]);
+  assert.equal(f.q, "Data");
+  assert.equal(f.sort, "titel");
+  assert.equal(leseFilter({ seite: ["Infinity", "2"] }).seite, 1);
+});
+
+test("URL-Schreiber lässt ungültige programmatische Seiten weg und erhält gültige Seiten und Filter", () => {
+  const f = leseFilter({ level: ["Senior", "Lead"], q: "Data", sort: "titel" });
+  const basis = filterZuUrl(f);
+  for (const seite of [0, -2, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER, 180143985094820]) {
+    assert.equal(filterZuUrl({ ...f, seite }), basis, String(seite));
+  }
+  assert.equal(filterZuUrl({ ...f, seite: 2 }), basis + "&seite=2");
+  assert.equal(filterZuUrl({ ...f, seite: 180143985094819 }), basis + "&seite=180143985094819");
+});

@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { kiStand, ladeAlle, sichererLink } from "@/lib/ki-stand";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 import { selbstLoeschenErlaubt, nutzerZeilen } from "@/lib/nutzerliste";
@@ -21,6 +23,23 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
   const { data: punkte, error: punkteFehler } = await sb.from("wichtige_punkte").select("id,begriff").order("erstellt_am");
   const fz = await sb.from("listen_felder").select("felder").maybeSingle();
   const gewaehlt = waehleFelder(fz.error ? null : fz.data?.felder);
+  // Nur für Admins, nur serverseitig: der Service-Key verlässt diesen Code nie. Ohne "text" (zu groß, nicht nötig).
+  let ki: { stand: ReturnType<typeof kiStand>; weg: { id: string; unternehmen: string | null; titel: string | null; url: string | null }[]; wegAnzahl: number } | "fehler" | null = null;
+  if (n?.admin) {
+    try {
+      const a = createAdminClient();
+      const [offen, weg, anzahl] = await Promise.all([
+        ladeAlle(async (von, bis) => {
+          const r = await a.from("jobs").select("text_hash,ki_hash,ki_modell").eq("status", "offen").neq("text", "").order("id").range(von, bis);
+          if (r.error) throw r.error;
+          return r.data;
+        }),
+        a.from("jobs").select("id,unternehmen,titel,url").eq("status", "offen").eq("studium", "nein").order("unternehmen").limit(500),
+        a.from("jobs").select("id", { count: "exact", head: true }).eq("status", "offen").eq("studium", "nein"),
+      ]);
+      ki = weg.error || anzahl.error ? "fehler" : { stand: kiStand(offen), weg: weg.data ?? [], wegAnzahl: anzahl.count ?? 0 };
+    } catch { ki = "fehler"; }
+  }
   return (
     <div className="karte">
       <h1>Konto</h1>
@@ -77,6 +96,29 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
           </form>
         )}
       </section>
+      {ki && (
+        <section className="abschnitt">
+          <h2>KI-Auswertung</h2>
+          {ki === "fehler" ? <p className="gedaempft">Der Stand konnte gerade nicht geladen werden.</p> : (
+            <>
+              <p>Noch {ki.stand.wartend} Anzeigen warten auf Auswertung.</p>
+              {ki.stand.fehler > 0 && <p>{ki.stand.fehler} Anzeigen nicht auswertbar.</p>}
+              <details className="klein">
+                <summary>Ausgeblendet wegen Studium: nein ({ki.wegAnzahl})</summary>
+                {ki.wegAnzahl > ki.weg.length && <p className="gedaempft klein">(die ersten {ki.weg.length})</p>}
+                {ki.weg.length ? (
+                  <ul className="ausgeblendet">
+                    {ki.weg.map((j) => (
+                      <li key={j.id}>{j.unternehmen}: {sichererLink(j.url)
+                        ? <a href={sichererLink(j.url)!} target="_blank" rel="noopener noreferrer">{j.titel ?? j.url}</a> : j.titel}</li>
+                    ))}
+                  </ul>
+                ) : <p className="gedaempft">Keine.</p>}
+              </details>
+            </>
+          )}
+        </section>
+      )}
       <section className="abschnitt">
         <h2>Meine Daten exportieren</h2>
         <p>Wir empfehlen dir, deine Bewerbungen vorher zu exportieren. Nach dem Löschen sind sie nicht wiederherstellbar.</p>

@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "minimum_chrome_version": "102",
+  "name": "Jobradar – Anzeige merken",
+  "version": "0.1.0",
+  "description": "Übernimmt die bewusst ausgewählte Stellenanzeige in dein eigenes Jobradar-Board.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "optional_host_permissions": ["https://*/*", "http://localhost:3002/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": { "default_title": "Anzeige in Jobradar merken" },
+  "options_ui": { "page": "options.html", "open_in_tab": true }
+}

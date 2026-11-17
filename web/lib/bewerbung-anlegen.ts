@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { beworbenPatch, escapeLike } from "./bewerbung";
+import { escapeLike } from "./bewerbung";
+export { aufBeworben } from "./bewerbung-schutz";
 
 export type JobZeile = { id: string; unternehmen: string | null; titel: string | null; url: string | null; ort: string | null; arbeitsmodell: string | null; text: string | null; abschnitte?: unknown };
 
@@ -24,16 +25,6 @@ export async function anlegenAusJob(sb: SupabaseClient, job: JobZeile, extra: { 
     if (dup) return { id: dup };
   }
   return error || !data ? { fehler: true } : { id: data.id };
-}
-
-// Vorhandene Bewerbung als beworben markieren: nur von "gemerkt" aus vorwärts, ein späterer Status bleibt. false = Fehler.
-export async function aufBeworben(sb: SupabaseClient, id: string, heute: string): Promise<boolean> {
-  const { data: a } = await sb.from("applications").select("status,beworben_am").eq("id", id).maybeSingle();
-  if (!a) return true;
-  const patch: Record<string, string> = { ...beworbenPatch("beworben", a.beworben_am, heute) };
-  if (a.status === "gemerkt") patch.status = "beworben";
-  if (!Object.keys(patch).length) return true;
-  return !(await sb.from("applications").update(patch).eq("id", id)).error;
 }
 
 // Wie oft hat sich der Nutzer bei dieser Firma beworben (ohne "gemerkt", Archiv zählt mit)? ohneId: die gerade offene Bewerbung.

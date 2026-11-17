@@ -16,7 +16,10 @@ test("Auswahl: feste Reihenfolge, unbekannte Namen und Doppelte fallen weg", () 
 test("Gehaltsformat", () => {
   assert.equal(gehaltText({ min: 70000, max: 85000, waehrung: "EUR", zeitraum: "Jahr" }), "70–85k €");
   assert.equal(gehaltText({ min: 90000, max: 110000, waehrung: "CHF", zeitraum: "Jahr" }), "90–110k CHF");
-  assert.equal(gehaltText({ min: 6000, max: 6000, waehrung: "EUR", zeitraum: "Monat" }), "6.000 € / Monat");
+  assert.equal(gehaltText({ min: 6000, max: 6000, waehrung: "EUR", zeitraum: "Monat" }), "≈ 72k €");
+  assert.equal(gehaltText({ min: 4500, max: 5500, waehrung: "CHF", zeitraum: "Monat" }), "≈ 54–66k CHF");
+  assert.equal(gehaltText({ min: 50, max: 50, waehrung: "EUR", zeitraum: "Stunde" }), "≈ 104k €");
+  assert.equal(gehaltText({ min: 25, max: 32.5, waehrung: "EUR", zeitraum: "Stunde" }), "≈ 52.000–67.600 €");
   assert.equal(gehaltText({ min: 72500, max: 80000, waehrung: "EUR", zeitraum: "Jahr" }), "72.500–80.000 €");
 });
 

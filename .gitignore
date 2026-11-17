@@ -21,3 +21,6 @@ Thumbs.db
 
 # Arbeitsordner von playwright-cli (Seitenabbilder, Browser-Protokolle)
 .playwright-cli/
+
+# Isolierte lokale Prüfkopien, keine Produktdaten
+.pruefung/
