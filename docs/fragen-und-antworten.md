@@ -24,7 +24,7 @@ Der vollständige Wortlaut liegt jeweils im Fachdokument; diese Übersicht verwe
 | Ein-Klick-Import fremder Anzeigen, dasselbe Gespräch | Q6/Q7 beantwortet: Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox; Gemerkt ohne Bewerbungsdatum. Q14/Q16 (2026-11-17): Erweiterung statt Lesezeichen; auf Portalen nur Adresse und Titel. | [Importplan und Fragenprotokoll](plans/2026-11-16-ein-klick-import.md) |
 | Firmenportal-Erkennung, dasselbe Gespräch | Q10 zum ersten Umfang beantwortet. **Q13 am 2026-11-17 beantwortet: „Ja, bauen (Empfohlen)“.** Die allgemeine Dokumentationsanweisung beantwortet Q13 nicht. | [Portalplan und Fragenprotokoll](plans/2026-11-15-firmenportal-erkennung.md) |
 
-In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q69**. Der genaue Sendezeitpunkt einzelner älterer Nachrichten ist nicht verfügbar; vorhandene Datums-/Reihenfolgeangaben erhalten und keine Uhrzeiten erfinden. Fachliche Anforderungen stehen zusätzlich im [CV-Plan](plans/2026-11-16-cv-abgleich.md), der aktuelle Arbeits-/Übergabestand in [STATUS](STATUS.md).
+In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q71**. Der genaue Sendezeitpunkt einzelner älterer Nachrichten ist nicht verfügbar; vorhandene Datums-/Reihenfolgeangaben erhalten und keine Uhrzeiten erfinden. Fachliche Anforderungen stehen zusätzlich im [CV-Plan](plans/2026-11-16-cv-abgleich.md), der aktuelle Arbeits-/Übergabestand in [STATUS](STATUS.md).
 
 ## Runde 2026-11-17 mit Claude Code (Q14–Q21)
 
@@ -135,6 +135,15 @@ Prüfung 2026-11-18 (Nutzerfrage „Hast du das mit den Sprachkenntnissen schon 
 | Q68 | Vage Worte ohne Stufe | „Übersetzen (Empfohlen)“ | „gute“ = B2; „sehr gute“, „fließend/fluent/fluency“, „business-level“, „excellent“ = C1; „verhandlungssicher“ = C2; „Muttersprache/native“ = Muttersprache; im Filter mit „≈“ als geschätzt markiert. | entschieden |
 
 Fragetexte Q67/Q68 (Claude, Auswahl): Q67 bessere Regeln (Empfohlen) / Groq zusätzlich fragen. Q68 übersetzen (Empfohlen) / als „nicht angegeben“.
+
+Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: „Es hat geklappt. Die Funktionalität ist mir aber ehrlich gesagt nicht so wichtig. Mir ist wichtiger, dass die Seite aus einem Link direkt die Stelle erkennt“.
+
+| Q69 | Bei welchen Links klappt die Erkennung heute nicht? (Mehrfachauswahl: LinkedIn / StepStone, Indeed, XING / Karriereseiten großer Firmen / andere Karriereseiten) | „All das. Stell aber sicher, dass du nichts verbotenes machst!!! Wenn du das mit Linkedin und StepStone regeln willst, musst du wirklich die Stelle auf der originalquelle finden, ohne linkedin aufzurufen“ | Alle vier Arten verbessern. Jobportale werden nie aufgerufen (Q16 bleibt); bei Portal-Links wird die Stelle auf der Karriereseite der Firma gesucht. | entschieden |
+| Q70 | Was heißt „direkt erkennen“? | „Komplette Stelle (Empfohlen)“ | Firma, Titel, ganzer Anzeigentext, Steckbrief und Groq-Zusammenfassung wie bei Stellen der Stellenliste. | entschieden |
+
+| Q71 | Wann wird die bessere Link-Erkennung gebaut? | „Schnellstart + Rest in Phase 4 (Empfohlen)“ | Paket Link-Schnellstart (JobPosting von beliebigen Firmenseiten) vor Phase 4, Design `docs/superpowers/specs/2026-11-18-link-schnellstart-design.md`; Workday/SuccessFactors und Suche zu Jobportal-Links als Teil 4g nach 4c. | entschieden |
+
+Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
 Fragetexte Q56/Q57 (Claude, Auswahl, jeweils frei beantwortet): Q56 Vorschlag + Häkchen des Admins (Empfohlen) / vollautomatisch / automatisch mit Wochen-Stichprobe. Q57 Mehrfachauswahl EU R&D Scoreboard / Börsenindizes / Top 20 je Branche (Wikidata) / EIC-Startups + Behörden/Forschung.
 
