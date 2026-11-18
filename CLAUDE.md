@@ -26,7 +26,7 @@ Eine eigene Website zur Jobsuche, die besser filtert als Stepstone, Indeed, Link
 - **Nur Stellen, die ein Studium voraussetzen** (Entscheidung 2026-11-09). Andere Stellen werden gar nicht gespeichert.
   - Stufe 1, sofort per Regeln: Titel eindeutig nicht-akademischer Berufe fliegen beim Abrufen raus (z. B. Warenverräumer, Reinigungskraft, Filialleitung, Mechatroniker, Fahrer).
   - Stufe 2, mit dem Groq-Paket: Groq stuft jede Anzeige ein: Studium „ja“, „nein“ oder „unklar“ und Tätigkeit „anspruchsvoll“ oder „einfach“. Sichtbar bleiben „ja“ und „unklar“; „nein“ wird vorerst **ausgeblendet statt gelöscht**, bis die Prestige-Bewertung steht (Entscheidung 2026-11-12).
-  - **Ausnahme Prestige-Arbeitgeber** (z. B. Magnificent 7): Dort bleiben auch Stellen ohne Studium, wenn die Tätigkeit anspruchsvoll ist (z. B. Program Manager bei Google). Einfache Tätigkeiten fliegen auch dort raus. Welche Firmen als Prestige gelten, bestimmen die Prestige-Listen unter den Ranking-Listen (Abschnitt 4.8).
+  - **Ausnahme Whitelist (Q45–Q47, ersetzt die frühere Prestige-Regel):** Bei Firmen auf der Whitelist wird keine Stelle wegen „Studium: nein“ ausgeblendet, auch einfache Tätigkeiten nicht. Der Admin pflegt sie per Häkchen auf der Konto-Seite (sofort wirksam); Prestige-Listen ergänzen sie automatisch, die Häkchen haben Vorrang.
 - Freunde bekommen später eigene Konten.
 
 Wichtigste Filter, in dieser Reihenfolge:
@@ -275,17 +275,17 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 - **Alle 4 Wochen** prüft ein Lauf, ob es neue Ausgaben gibt. Firmen auf einer Liste werden **automatisch** aufgenommen und angebunden. Fällt eine Firma von allen Listen, verschwinden ihre Stellen beim nächsten Check; Bewerbungen bleiben immer erhalten.
 - **Listen-Firmen plus Zusatzfirmen.** Bis die Listen live sind, bleiben die heutigen Firmen aus `data/companies.csv`; danach bleibt, wer auf einer Liste steht, dazu die Zusatzfirmen der Nutzer.
 - **Zusatzfirmen (Entscheidung 2026-11-12, kommt mit Phase 4):** Jeder Nutzer kann einen Firmennamen oder Link eingeben; Karriereseite und ATS werden automatisch erkannt. Standard: Die Stellen sieht nur dieser Nutzer (in der Datenbank abgeschirmt, nicht in der öffentlichen `companies.csv`). Der Admin kann eine Firma für alle freigeben. Welche ATS-Systeme dazukommen, wird zu Beginn von Phase 4 geklärt.
-- In der Stellenliste ist **„Liste“ der erste Filter**. Bei jeder Firma steht immer, **welchen Rang sie in welchem Ranking** hat (z. B. „stern Beste Arbeitgeber 2026: Platz 12“). Nach **jedem einzelnen Ranking** kann man filtern und sortieren (Entscheidung 2026-11-10).
-- Startup-Listen dürfen europäisch oder amerikanisch sein, Gehaltslisten dürfen nur Tech abdecken. Bedingung: Die Firma bietet Stellen in Deutschland an.
-- **Quellen (Entscheidung 2026-11-10, Recherche `docs/ranking-recherche-v2.md`, vorerst nur Eigennutzung):**
-  - **Offene Lizenzen, automatisch:** EU R&D Scoreboard (CC BY), Technology Dashboard des Europäischen Patentamts, DPMA Top 50, EIC-Accelerator-Geförderte über CORDIS, Börsenindex-Mitglieder über Wikidata (CC0), Wikipedia-Unicorn-Liste (CC BY-SA), US-Arbeitsministerium Visa-Gehaltsdaten (gemeinfrei, nur als Gehalts-Indikator).
-  - **Über die Text-und-Data-Mining-Schranke (§ 44b UrhG), automatisch:** Great Place to Work Deutschland, Top Employers Deutschland, TOP 100 Innovatoren. Nur solange die Seite kein Verbot und keinen maschinenlesbaren Vorbehalt setzt; jede Quelle hat einen Schalter zum sofortigen Abschalten. **Nicht:** HTGF (setzt ein Vorbehalts-Signal).
-  - **Von Hand, einmal im Jahr:** Pressemitteilungen von trendence, Universum und LinkedIn (Beliebtheit bei Absolventen), Spitzenplätze aus Statistas CC-BY-ND-Infografiken.
-    - **Erinnerung per E-Mail (Entscheidung 2026-11-10):** Der 4-Wochen-Lauf legt zum Erscheinungstermin jeder Hand-Quelle ein GitHub-Issue an („trendence Top 50 2026 übernehmen“, mit Link und Klick-Anleitung). GitHub schickt dafür automatisch eine E-Mail an den Repo-Besitzer; kein eigener Mail-Dienst nötig. Das Issue bleibt offen, bis die Daten eingelesen sind. **Sobald die Gmail-Anbindung (Phase 3) steht, geht die Erinnerung zusätzlich als E-Mail an den Admin** (`ADMIN_EMAIL`); To-do in `docs/phasen-vorarbeit.md`.
-  - **Nicht, auch nicht privat:** Statista-Gesamtlisten (stern, Forbes, FT, TIME, Capital, FOCUS), Levels.fyi, LinkedIn-Website, zeit.de, Sifted, Glassdoor, Crunchbase, abgeschriebene Listen auf Wikipedia/Kaggle, die Website von Y Combinator (Nutzungsbedingungen verbieten Scraping und Data-Mining ausdrücklich, geprüft 2026-11-12). Höchstens ein Link zur Ranking-Seite.
-  - **Y Combinator über Wikidata prüfen (Wunsch 2026-11-12, Phase 4):** YC-Firmen nur aus Wikidata (CC0) holen, z. B. Firmen mit Investor „Y Combinator“, und vorher prüfen, wie vollständig das ist. Bedingung wie immer: Die Firma bietet Stellen in Deutschland an.
+- In der Stellenliste ist **„Liste“ der erste Filter**. Bei jeder Firma steht, **welchen Rang sie in welcher Liste** hat (z. B. „EU R&D Scoreboard 2025: Platz 12“), sofern die Lizenz das für den jeweiligen Nutzer erlaubt. Nach jeder einzelnen Liste kann man filtern und sortieren (Entscheidung 2026-11-10).
+- Startup-Listen dürfen europäisch oder amerikanisch sein, Gehaltslisten dürfen nur Tech abdecken. Bedingung: Die Firma bietet Stellen in Deutschland an, vor Ort oder remote, auch remote weltweit (Q44).
+- **Quellen (Entscheidung 2026-11-17, Q41–Q43, ersetzt 2026-11-10):**
+  - **Grundlage sind offene Quellen:** EU R&D Scoreboard (CC BY), Wikidata (CC0, auch Börsenindex-Mitglieder), Technology Dashboard des Europäischen Patentamts, DPMA-Anmelderstatistik, EIC-Geförderte über CORDIS, offen lizenzierte Listen (z. B. Wikipedia CC BY-SA, MIT-Listen auf GitHub), US-Arbeitsministerium Visa-Gehaltsdaten (nur als Gehalts-Indikator). Dazu Behörden und Forschungseinrichtungen (Q42). Eine Firma ist ein Eintrag je Karriereportal (Q43).
+  - **Ziel:** rund 1.000 Firmen, darunter Startups, Mittelstand und mindestens die Top 20 je Branche (Wunsch 2026-11-17); Lücken der offenen Quellen werden in Phase 4 gemessen.
+  - **Sichtbarkeit:** Jeder Rang-Eintrag hat eine Sichtbarkeit (Admin / angemeldet / öffentlich), per RLS durchgesetzt. Gezeigt wird ein Rang nur, wenn die Lizenz der Quelle das für diesen Nutzerkreis erlaubt.
+  - **Liste von Hand einfügen (Admin):** Freitextfeld für kopierte Liste oder HTML, alternativ PDF; Groq extrahiert Firma, Rang und Jahr (öffentlicher Text); Vorschau-Tabelle, erst dann speichern. Nie automatischer Abruf solcher Seiten.
+  - **Linksammlung „Rankings zum Stöbern“ (Q51):** einfache Links auf aktuelle Ranglisten, ohne Ränge, Logos oder Einbettung.
+  - **Y Combinator über Wikidata prüfen (Wunsch 2026-11-12, Phase 4):** YC-Firmen nur aus Wikidata (CC0) holen und vorher prüfen, wie vollständig das ist.
 - **Speicherregeln (Entscheidung 2026-11-10):** Rohseiten werden sofort nach dem Auslesen gelöscht. Gespeichert werden nur Firmenname, Rang, Listenname, Jahr und Quell-Link. Jede Ausgabe lebt bis zur nächsten Ausgabe, höchstens 13 Monate, dann wird sie gelöscht. Quelle und Lizenz stehen sichtbar in der Website. Abruf höchstens 1× je Quelle und Monat, eigener User-Agent mit Kontakt-E-Mail, robots.txt vor jedem Abruf.
-- **Für Freunde oder öffentlich (Backlog „Live gehen“):** Eine Liste wird nur genutzt, wenn der Herausgeber die Weiterverwendung ausdrücklich erlaubt (Lizenz, Nutzungsbedingungen, offene Lizenz wie CC) oder schriftlich zugestimmt hat. „Unklar“, „nur robots.txt erlaubt es“ oder „sind ja nur Fakten“ reicht nicht. Lässt sich für eine Liste kein solcher Weg finden, wird sie weggelassen. Auch Herunterladen von Hand ersetzt die Erlaubnis nicht. Der Katalog: `docs/ranking-katalog.md`, die rechtliche Prüfung: `docs/ranking-legal.md`.
+- **Vor einem öffentlichen Start:** Lizenzlage jeder angezeigten Quelle erneut prüfen; anwaltliche Prüfung der Datenherkunft (Rechte-Audit, `docs/ranking-recherche-v3.md`).
 - Die Prestige-Listen bestimmen die Ausnahme beim Studiums-Filter (Abschnitt 2).
 
 ---
@@ -325,7 +325,7 @@ Tabellen im Zielbild:
 
 Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung und einem eigenen Plan (Abschnitt 7).
 
-**Reihenfolge ab 2026-11-09:** 2b abschließen → Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`, freigegeben) **erledigt (2026-11-11)** → Groq-Paket (Zusammenfassungen, Studium ja/nein, Firma/Titel aus eingefügtem Text) → Phase 4 → Phase 3 → Phase 5 → Phase 6. Das Paket „Firmen anbinden“ (8 weitere Firmen, Plan `docs/plans/2026-11-09-firmen-anbinden.md`) läuft parallel.
+**Reihenfolge ab 2026-11-09:** 2b abschließen → Tracker-Paket (Design `docs/superpowers/specs/2026-11-09-tracker-paket-design.md`, freigegeben) **erledigt (2026-11-11)** → Groq-Paket (Zusammenfassungen, Studium ja/nein, Firma/Titel aus eingefügtem Text) → Phase 4 → Phase 6 → Phase 5 → Phase 3 (Q55, 2026-11-17; Pläne so genau, dass Codex sie ausführen kann). Das Paket „Firmen anbinden“ (8 weitere Firmen, Plan `docs/plans/2026-11-09-firmen-anbinden.md`) läuft parallel.
 
 0. **Erledigt:** Scraper-Grundlage mit 4 Firmen, statische Website und täglicher Lauf (Version 1, 2026-11-07).
 1. **Erledigt (Code, 2026-11-08): Tracker und neue Website für mich allein:**
@@ -381,7 +381,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 
 **Backlog (noch keiner Phase zugeordnet):**
 - **Live gehen (Freunde oder öffentlich), Entscheidung 2026-11-10:** Vorerst nutze nur ich Jobradar. Vor dem Einladen von Freunden oder einer Veröffentlichung:
-  - Erlaubnis-E-Mails an die Ranking-Herausgeber schicken (7 nötig, 1 optional; Vorlage und Empfänger in `docs/ranking-legal.md`, Abschnitt 5). Nur Listen mit schriftlicher Zusage dürfen dann gezeigt werden.
+  - Lizenzlage aller angezeigten Ranglisten für den neuen Nutzerkreis prüfen (CLAUDE.md 4.8).
   - Den ersten Freund als Google-Testnutzer eintragen (README „Freunde einladen“), dazu das Mail-Paket prüfen.
 - **Mail-Paket:**
   - eigene Domain

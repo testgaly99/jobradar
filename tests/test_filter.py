@@ -104,3 +104,21 @@ def test_deutsche_staedte(ort, staedte):
 def test_erfahrungslevel_aus_jahren(titel, jahre, level):
     """Jahre aus der Anzeige gewinnen; nur ohne Angabe wird aus dem Titel geschätzt."""
     assert erfahrungslevel(titel, jahre) == level
+
+
+@pytest.mark.parametrize("titel", [
+    "Sales Representative (m/w/d) Porsche Design Store Frankfurt Airport in Teilzeit (32h/Woche)",
+    "Controller (m/w/d) in Teilzeit", "Office Manager (part-time)", "Part time Data Analyst",
+    "Assistenz (w/m/d) 20 Std./Wo.", "Buchhalter 30 Stunden pro Woche",
+])
+def test_unter_35_stunden_raus(titel):
+    assert ist_relevant(titel, "Berlin", False) == (False, "Stellenart: teilzeit")
+
+
+@pytest.mark.parametrize("titel", [
+    "Nachwuchsführungskraft (w/m/d) 37,5 Std./Wo. Großraum Kaiserslautern", "Controller (m/w/d) Voll- oder Teilzeit",
+    "Engineer (full-time or part-time)", "Projektleiter (m/w/d) in Teilzeit (35h/Woche)", "Teilzeit/Vollzeit Analyst",
+    "24h-Service Techniker Leitstelle", "Senior Consultant 40h/Woche",
+])
+def test_ab_35_stunden_oder_vollzeit_bleibt(titel):
+    assert ist_relevant(titel, "Berlin", False) == (True, "")

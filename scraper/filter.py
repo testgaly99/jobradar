@@ -37,9 +37,24 @@ _DE_CODE = re.compile(r"\bDE\b")
 _REMOTE_RE = re.compile(r"\b(Europe|EMEA|EU)\b", re.IGNORECASE)
 
 
+# Nutzer (Q23): Stellen unter 35 Wochenstunden ausblenden, ab 35 behalten. Nur mit Wochenbezug, sonst träfe es "24h-Service".
+_WOCHENSTUNDEN_RE = re.compile(r"(\d{1,2}(?:[,.]\d+)?)\s*(?:h|std\.?|stunden|hours|hrs)\s*(?:/|pro|per|je|a)\s*(?:wo|week|wk)",
+                               re.IGNORECASE)
+_TEILZEIT_RE = re.compile(r"teilzeit|part[- ]?time", re.IGNORECASE)
+_VOLLZEIT_RE = re.compile(r"vollzeit|voll-|full[- ]?time", re.IGNORECASE)
+
+
+def _ist_teilzeit(titel: str) -> bool:
+    if stunden := [float(z.replace(",", ".")) for z in _WOCHENSTUNDEN_RE.findall(titel)]:
+        return max(stunden) < 35
+    return bool(_TEILZEIT_RE.search(titel)) and not _VOLLZEIT_RE.search(titel)
+
+
 def ist_relevant(titel: str, ort_text: str, remote: bool) -> tuple[bool, str]:
     if m := _TITEL_RE.search(titel):
         return False, f"Stellenart: {m.group(1).lower()}"
+    if _ist_teilzeit(titel):
+        return False, "Stellenart: teilzeit"
     if _DE_RE.search(ort_text) or _DE_CODE.search(ort_text):
         return True, ""
     if remote and (not ort_text.strip() or _REMOTE_RE.search(ort_text)):

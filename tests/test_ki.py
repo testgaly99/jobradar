@@ -595,3 +595,45 @@ def test_429_meldung_enthaelt_keinen_rohtext():
     with pytest.raises(ki.GroqWeg) as e:
         ki.anfrage("Text", ki.GROSS, post=post, schlaf=lambda s: None)
     assert "org_ABC" not in str(e.value) and "429" in str(e.value)
+
+
+def test_pruefe_streicht_eindeutige_verstoesse():
+    r = ki.pruefe({**GUT, "rahmen": ["Unbefristet, Vollzeit", "Full-time, permanent", "Competitive salary",
+                                     "Befristet auf 2 Jahre"],
+                   "muss": ["Fließend Deutsch", "Python", "Deutschkenntnisse C1"],
+                   "erfahrung": "Mehrere Jahre in der Produktion (optional)"})
+    assert r["rahmen"] == ["Befristet auf 2 Jahre"] and r["muss"] == ["Python"] and r["erfahrung"] is None
+
+
+def test_pruefe_laesst_gekennzeichnetes_und_aehnliches_stehen():
+    muss = ["LangGraph (wünschenswert)", "Rust (nice to have)", "Deutsches Steuerrecht"]
+    r = ki.pruefe({**GUT, "muss": muss, "rahmen": ["3 Büro-Tage pro Woche"], "erfahrung": "3+ Jahre, ideally SaaS"})
+    assert r["muss"] == muss and r["rahmen"] == ["3 Büro-Tage pro Woche"] and r["erfahrung"] == "3+ Jahre, ideally SaaS"
+
+
+def test_anfrage_temperatur_null():
+    post = poster(Antwort(content=json.dumps(GUT)))
+    ki.anfrage("text", ki.GROSS, post=post, schlaf=lambda s: None)
+    assert post.aufrufe[0]["json"]["temperature"] == 0
+
+
+def test_probe_zeigt_gestrichenes_durchgestrichen(tmp_path):
+    from scraper.ki_probe import probe
+    roh = json.dumps({**GUT, "rahmen": ["Vollzeit", "Reisen"], "muss": ["Fluent English", "Go"], "erfahrung": "x (optional)"})
+    out = tmp_path / "p.html"
+    probe([_stelle(1)], out, post=poster(Antwort(content=roh)), schlaf=lambda s: None)
+    h = out.read_text(encoding="utf-8")
+    assert "<li><s>Vollzeit</s></li>" in h and "<li>Reisen</li>" in h
+    assert "<li><s>Fluent English</s></li>" in h and "<li>Go</li>" in h and "<s>x (optional)</s>" in h
+
+
+def test_pruefe_ohne_abschluss_nie_nein_bei_anspruchsvoll():
+    assert ki.pruefe({**GUT, "abschluss": None, "studium": "nein"})["studium"] == "unklar"
+    assert ki.pruefe({**GUT, "abschluss": None, "studium": "nein", "taetigkeit": "einfach"})["studium"] == "nein"
+    assert ki.pruefe({**GUT, "abschluss": "Ausbildung Elektronik", "studium": "nein"})["studium"] == "nein"
+
+
+def test_pruefe_streicht_muss_das_schon_in_erfahrung_steht():
+    r = ki.pruefe({**GUT, "erfahrung": "Multiple years hands-on experience in robotics, defence tech",
+                   "muss": ["multiple years hands-on experience in robotics", "ROS2", "Robotics"]})
+    assert r["muss"] == ["ROS2", "Robotics"]
