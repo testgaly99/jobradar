@@ -142,8 +142,14 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q70 | Was heißt „direkt erkennen“? | „Komplette Stelle (Empfohlen)“ | Firma, Titel, ganzer Anzeigentext, Steckbrief und Groq-Zusammenfassung wie bei Stellen der Stellenliste. | entschieden |
 
 | Q71 | Wann wird die bessere Link-Erkennung gebaut? | „Schnellstart + Rest in Phase 4 (Empfohlen)“ | Paket Link-Schnellstart (JobPosting von beliebigen Firmenseiten) vor Phase 4, Design `docs/superpowers/specs/2026-11-18-link-schnellstart-design.md`; Workday/SuccessFactors und Suche zu Jobportal-Links als Teil 4g nach 4c. | entschieden |
+| Q72 | Linksammlung „Rankings zum Stöbern“: wo läuft die monatliche Pflege durch Claude? (Anlass, Nutzer 2026-11-18: „Ich möchte aber, dass die Links zu den Rankings von Claude erstellt werden und einmal pro Monat aktualisiert werden“) | „Privates Repo (Empfohlen)“ | Monatlicher Claude-Ablauf im privaten Repo schreibt nur Titel und Link in die Datenbank (wie Q51). Kein Admin-Formular für die Links in 4d. | entschieden |
+| Q73 | Sollen Gäste ohne Konto Ränge sehen? (Nutzerfrage: „Warum ist das der Fall?“) | Nutzer: „Rände nur für Angemeldete!!! Falls ich das jemals kommerziell machen wollen würde, müssen wir nochmal bewerten, was wer sehen kann. Schreibe das in den Backlog mit dem Hinweis“ | Ränge nie für Gäste; Sichtbarkeitswerte nur `admin`/`angemeldet`. Backlog-Hinweis beim Umbau-Plan für kommerzielle Nutzung. | entschieden |
+| Q74 | Wie viele neue Reparaturen durch Claude pro Nacht? (Nutzerfrage: „Reparatur Issues die behoben werden, oder die gespeichert/festgehalten werden?“) | „3 pro Nacht (Empfohlen)“ | Höchstens 3 neue Issues mit Reparatur je Nacht; alle Probleme werden immer im Laufbericht gespeichert und per Telegram gemeldet. | entschieden |
+| Q75 | Wie viele eigene Firmen je Nutzer? (Nutzerfrage: „Woher kommt diese Regel?“ – die 20 war Claudes Vorschlag) | „50 je Nutzer (Empfohlen)“ | Grenze 50 je Nutzer; Portale: alle, die der Nachtlauf lesen kann (Greenhouse, Ashby, Personio, Recruitee; später Adapter aus 4c-3). | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
+
+Fragetexte Q72–Q75 (Claude, 2026-11-18, Auswahl): Q72 privates Repo (Empfohlen) / Morgensitzung mit Claude. Q73 so lassen (Empfohlen) / offene Quellen für Gäste. Q74 3 pro Nacht (Empfohlen) / unbegrenzt / keine automatisch. Q75 50 je Nutzer (Empfohlen) / 20 / unbegrenzt.
 
 Fragetexte Q56/Q57 (Claude, Auswahl, jeweils frei beantwortet): Q56 Vorschlag + Häkchen des Admins (Empfohlen) / vollautomatisch / automatisch mit Wochen-Stichprobe. Q57 Mehrfachauswahl EU R&D Scoreboard / Börsenindizes / Top 20 je Branche (Wikidata) / EIC-Startups + Behörden/Forschung.
 
