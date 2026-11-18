@@ -24,7 +24,7 @@ Der vollständige Wortlaut liegt jeweils im Fachdokument; diese Übersicht verwe
 | Ein-Klick-Import fremder Anzeigen, dasselbe Gespräch | Q6/Q7 beantwortet: Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox; Gemerkt ohne Bewerbungsdatum. Q14/Q16 (2026-11-17): Erweiterung statt Lesezeichen; auf Portalen nur Adresse und Titel. | [Importplan und Fragenprotokoll](plans/2026-11-16-ein-klick-import.md) |
 | Firmenportal-Erkennung, dasselbe Gespräch | Q10 zum ersten Umfang beantwortet. **Q13 am 2026-11-17 beantwortet: „Ja, bauen (Empfohlen)“.** Die allgemeine Dokumentationsanweisung beantwortet Q13 nicht. | [Portalplan und Fragenprotokoll](plans/2026-11-15-firmenportal-erkennung.md) |
 
-In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q64**. Der genaue Sendezeitpunkt einzelner älterer Nachrichten ist nicht verfügbar; vorhandene Datums-/Reihenfolgeangaben erhalten und keine Uhrzeiten erfinden. Fachliche Anforderungen stehen zusätzlich im [CV-Plan](plans/2026-11-16-cv-abgleich.md), der aktuelle Arbeits-/Übergabestand in [STATUS](STATUS.md).
+In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q67**. Der genaue Sendezeitpunkt einzelner älterer Nachrichten ist nicht verfügbar; vorhandene Datums-/Reihenfolgeangaben erhalten und keine Uhrzeiten erfinden. Fachliche Anforderungen stehen zusätzlich im [CV-Plan](plans/2026-11-16-cv-abgleich.md), der aktuelle Arbeits-/Übergabestand in [STATUS](STATUS.md).
 
 ## Runde 2026-11-17 mit Claude Code (Q14–Q21)
 
@@ -115,6 +115,17 @@ Fragetext Q61 (Claude, Auswahl): Weg 1: Repo + DB (Empfohlen) / Weg 2: nur Daten
 | Q62 | Rückmeldung zum Phase-4-Design (Nutzer, frei) | „zusatzfirmen werden dem Admin ebenfalls gemeldet. Der Admin kann die Zusatzfirmen auch für sich selbst oder alle freigeben. […] 4. Warum immer nur 100 Firmen pro Nacht? Das kann doch zu 90% durch reinen code geregelt werden. Alles, wo durch reinen Code nicht die Karriereseite gefunden werden kann, kann gemeinsam am näcshten morgen mittels Claude Code geprüft werden.“ | Neue Zusatzfirmen erscheinen in einer Admin-Liste (Firmenname, Link, Anzahl Nutzer, ohne Nutzernamen); Admin gibt für sich oder für alle frei; Formular und Datenschutzerklärung nennen das (Ausnahme von CLAUDE.md 4.6 nur für Firmenname/Link). Einrichtungslauf für alle Kandidaten auf einmal (Fortsetzung in der nächsten Nacht nur bei Zeitlimit); Rest gemeinsam am Morgen in einer Claude-Code-Sitzung, kein nächtlicher Claude-Workflow. | entschieden |
 
 | Q63 | Wie nutzen alle Nutzer die Chrome-Erweiterung, sobald die Seite live ist? (Nutzerfrage) | Claudes Empfehlung: jetzt Download von der Konto-Seite (ZIP, „Entpackte Erweiterung laden“, Anleitung mit eigener Adresse zum Kopieren); Chrome Web Store „nicht gelistet“ erst bei mehr Freunden oder öffentlichem Start (kostet einmalig Gebühr, ausdrückliche Zustimmung nötig). Antwort: „Der von dir genannte Plan passt“ | Paket „Erweiterung verteilen“ (Weg A) für Codex; Store-Veröffentlichung später als eigene Entscheidung (CLAUDE.md 3.1). | entschieden |
+
+| Q64 | Anzeige ohne Abschluss (Groq `abschluss = null`) auf der Stellenseite (Anlass, Nutzerfrage 2026-11-18: „Wenn bei Abschluss "null" steht, wie wird das am Ende auf meiner Seite angezeigt?“) | „Nichts anzeigen (wie heute)“ | Leere Felder bleiben in „Das bringst du mit“ weggelassen; keine Zeile „nicht genannt“. | entschieden |
+
+Fragetext Q64 (Claude, Auswahl): „Abschluss: nicht genannt“ (Empfohlen) / nichts anzeigen (wie heute).
+
+Nutzer 2026-11-18 zur Groq-Probe v13 (A und B je 20 Anzeigen): „Das passt alles für mich als Admin.“ Dazu: „Lass für andere Leute, die die Website nutzen das Sprachniveau drin. Meine Freundin soll eine der testerinnen sein. Deutsch ist nicht ihre Muttersprache. Bei ihren soll einerseits die erforderlichen Sprachkenntnisse in der Zusammenfassung angezeigt werden, andererseits soll sie einen Filter setzen können, der ihr nur Stellen anzeigt mit Deutsch B1, B2, C1, Muttersprache, damit sie das vorab entscheiden kann. Für andere meiner Freunde ist das aber vielleicht nicht relevant, daher sollen meine aktuellen Ausschlusskriterien bei der Zusammenfassung zusätzlich für jeden Nutzer auswählbar sein, damit jemand sagen kann, dass z.B. die Sprache doch in der Zusammenfassung auftaucht“ (personenbezogene Angabe zur Testerin hier nur sinngemäß nötig; Wortlaut ohne Namen).
+
+| Q65 | Filter „Mein Deutschniveau“: Stellen ohne Niveau-Angabe | „Zeigen mit Hinweis (Empfohlen)“ | Sichtbar mit Markierung „Deutsch: Niveau nicht angegeben“. | entschieden |
+| Q66 | Welche Ausschlussregeln sind je Nutzer wieder einschaltbar? | „Sprachkenntnisse“ | Nur Sprachen (aus dem Steckbrief, ohne KI) sind wählbar; Standard aus für den Admin, an für alle anderen. Vollzeit/Befristung und Qualitätsregeln bleiben fest. | entschieden |
+
+Fragetexte Q65/Q66 (Claude, Auswahl): Q65 zeigen mit Hinweis (Empfohlen) / ausblenden / eigenes Häkchen im Filter. Q66 Mehrfachauswahl Sprachkenntnisse / Vollzeit-Befristung / Qualitätsregeln (Empfehlung: nicht wählbar).
 
 Fragetexte Q56/Q57 (Claude, Auswahl, jeweils frei beantwortet): Q56 Vorschlag + Häkchen des Admins (Empfohlen) / vollautomatisch / automatisch mit Wochen-Stichprobe. Q57 Mehrfachauswahl EU R&D Scoreboard / Börsenindizes / Top 20 je Branche (Wikidata) / EIC-Startups + Behörden/Forschung.
 
