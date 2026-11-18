@@ -55,6 +55,11 @@ Stand 2026-11-18 (Q65, Q66; Wunsch des Nutzers im Fragenprotokoll). Kleines Pake
 
   Ziel mindestens 22 von 24 richtig, danach erneut an 20 neuen Anzeigen messen (Halte-Punkt mit Claude).
 
+**Prototyp und Messung (2026-11-18, auf Nutzerwunsch „Nochmal das mit Deutschregeln testen damit es zuverlässig erkannt wird“):** Getesteter Wegwerf-Prototyp `docs/superpowers/specs/2026-11-18-sprachniveau-prototyp.py` (Funktion `deutsch(text, englisch) -> {status: pflicht|vorteil|ohne_niveau|keins, stufe, geschaetzt}`, 39 Testsätze in `FAELLE`, alle richtig). Er ist die **verbindliche Referenz** für die Umsetzung: Logik übernehmen, Testsätze als pytest-Fälle übernehmen.
+- Vorgehen: Sätze/Stichpunkte trennen (Abkürzungen wie „mind.“ geschützt); Sprachnamen zu Gruppen zusammenfassen, wenn nur Bindewörter dazwischen stehen („Deutsch- und Englisch…“, „German, French, or Italian“); Niveau-Marke gehört zur Gruppe, wenn kein anderer Sprachname dazwischen steht; echte Stufe (C1) vor vagem Wort, dann die nächste; vage Worte höchstens 45 Zeichen, Stufen höchstens 60 Zeichen entfernt (lange Absätze ohne Satzzeichen); „or/oder“ zwischen Sprachen oder Vorteil-Wort danach → „Vorteil“; „wünschenswert C1“ macht nur die Stufe erwünscht, nicht Deutsch; „German“ vor kleingeschriebenem Hauptwort ist Adjektiv („German aviation“) und zählt nicht.
+- Ergebnis auf ganze Anzeigen: Runde 1 an 30 neuen Anzeigen 24/30, danach Lücken ergänzt; Runde 2 an 30 anderen 25/30 (ein schädlicher Fehler: „strong asset“ → C1, behoben); Runde 3 nach Korrekturen ~29/30; **Runde 4, unabhängig gemessen vor den letzten Korrekturen: 27/30, kein Fall mit zu hoher Stufe**, die zwei Lücken („are an advantage“, „German a plus“) danach behoben. Verbleibende Fehler fallen fast immer auf „Niveau nicht angegeben“ (Stelle bleibt sichtbar).
+- Verteilung über alle 869 offenen Stellen: keins 268, ≈C1 210, ohne Niveau 156, Vorteil 125, C1 56, ≈B2 25, B2 14, ≈C2 11, ≈Muttersprache 3, C2 1.
+
 **Dem Bauenden überlassen:** Spaltenname, genaue Stelle im Filterbereich, Wortlaut der Hinweise.
 
-**Prüfung vor dem Bau:** erledigt 2026-11-18 (Ergebnis oben); Nachmessung nach dem Ausbau an 20 neuen Anzeigen (Halte-Punkt mit Claude, nicht Codex).
+**Prüfung vor dem Bau:** erledigt 2026-11-18 (Prototyp oben). Nach dem Bau: Claude prüft live 20 neue Anzeigen (Halte-Punkt, nicht Codex).
