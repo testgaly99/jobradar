@@ -24,7 +24,36 @@ Stand 2026-11-18 (Q65, Q66; Wunsch des Nutzers im Fragenprotokoll). Kleines Pake
 - Stufen auch mit Leerzeichen („C 1“), „mind./mindestens/ab“ davor.
 - Vage Worte (Q68): „gute“ = B2; „sehr gute“, „fließend/fluent/fluency“, „business-level/business fluent“, „excellent“, „sicher“ = C1; „verhandlungssicher“ = C2; „Muttersprache/native“ = Muttersprache. Geschätzte Stufen tragen eine Markierung (Anzeige „≈ C1“).
 - „is a plus/advantage/von Vorteil/wünschenswert/nice to have“ → Deutsch **keine Pflicht**: zählt im Filter wie „kein Deutsch gefordert“, Hinweis „Deutsch von Vorteil“.
-- Testfälle: je ein kurzer Satz aus den 24 Fällen der Prüfung (Liste im Fragenprotokoll-Eintrag vom 2026-11-18 nachvollziehbar); Ziel mindestens 22 von 24 richtig, danach erneut an 20 neuen Anzeigen messen (Halte-Punkt mit Claude).
+- Testfälle (kurze Sätze aus echten Anzeigen der Prüfung, erwartetes Deutsch-Ergebnis):
+
+| Satz | Erwartet |
+|---|---|
+| „Sehr gute Deutsch- und Englischkenntnisse sowie Bereitschaft zu Kundenterminen“ | ≈ C1, Pflicht |
+| „Are fluent in German and English“ | ≈ C1, Pflicht |
+| „Are fluent in English and German, written and spoken“ | ≈ C1, Pflicht |
+| „Gute Deutschkenntnisse (mindestens auf C 1-Niveau)“ | C1, Pflicht |
+| „Your written and verbal communication in German and English is excellent.“ | ≈ C1, Pflicht |
+| „Sprache: Deutsch und Englisch (jeweils ab Level C1 bzw. verhandlungssicher)“ | C1, Pflicht |
+| „Confident communication skills in German or English.“ | keine Pflicht (oder Englisch) |
+| „Fluency in English; additional fluency in German, French, or Italian is a strong advantage“ | Vorteil |
+| „Verhandlungssichere Deutschkenntnisse (mind. C1) sowie gute Englischkenntnisse (mind. B2)“ | C1, Pflicht |
+| „you’re a strong communicator in both English and German“ | ≈ C1, Pflicht |
+| „sehr gute Deutsch- und Englischkenntnisse“ | ≈ C1, Pflicht |
+| „Sehr gute deutsche und gute englische Sprachkenntnisse“ | ≈ C1, Pflicht |
+| „Excellent Python. Excellent English. German is a plus.“ | Vorteil |
+| „You communicate confidently in English. German is an advantage.“ | Vorteil |
+| „A clear and professional communicator in English (German is a plus)“ | Vorteil |
+| „Fluency in English and German to effectively engage with our customer base“ | ≈ C1, Pflicht |
+| „Auch mit der deutschen Sprache und mit Zahlen gehst Du sicher um.“ | ≈ C1, Pflicht |
+| „You speak business-level German and English“ | ≈ C1, Pflicht |
+| „Speak German at native level (non-negotiable) and fluent English“ | Muttersprache, Pflicht |
+| „Gute Kommunikationsfähigkeit in deutscher Sprache“ | ≈ B2, Pflicht |
+| „Sehr gute Deutschkenntnisse und gute Englischkenntnisse“ | ≈ C1, Pflicht |
+| „Gute Deutsch- und Englischkenntnisse“ | ≈ B2, Pflicht |
+| „Willingness to undergo a German security clearance (Sicherheitsüberprüfung). Business-fluent English. German is a strong advantage.“ | Vorteil |
+| „10 % Mitarbeiterrabatt in allen deutschen dm-Märkten“ / „Die Deutsche Bundesbank ist eine besondere Bank“ | kein Treffer |
+
+  Ziel mindestens 22 von 24 richtig, danach erneut an 20 neuen Anzeigen messen (Halte-Punkt mit Claude).
 
 **Dem Bauenden überlassen:** Spaltenname, genaue Stelle im Filterbereich, Wortlaut der Hinweise.
 
