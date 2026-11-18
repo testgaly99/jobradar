@@ -18,6 +18,14 @@ Stand 2026-11-18 (Q65, Q66; Wunsch des Nutzers im Fragenprotokoll). Kleines Pake
 - Gespeichert als eigene Spalte an `jobs` (vom Scraper beim Steckbrief gesetzt; Migration), damit der Filter in der Datenbank läuft und Trefferzahlen stimmen. Bestehende Stellen bekommt sie über den nächsten Nachtlauf (Nachrüsten wie bei Snapshots).
 - Einstellung und Filterwahl liegen beim Nutzer (wie die vorhandene Feldauswahl der Kurzbeschreibung).
 
+**Erkennung (Q67/Q68, nach Prüfung 2026-11-18):** Die heutige Regel `_sprachen` traf an 40 Probe-Anzeigen nur 3 von 24 Deutsch-Erwähnungen richtig. Ausbau ohne KI:
+- Wortformen: „Deutsch“, „Deutschkenntnisse“, „Deutsch-“ (in „Deutsch- und Englischkenntnisse“), „deutsche Sprache“/„deutscher Sprache“, „German“; nicht „Deutschland“, „deutschen dm-Märkten“, „Deutsche Bundesbank“, „German security clearance“.
+- Niveau im **selben Satz** bzw. Stichpunkt statt 25 Zeichen; bei mehreren Sprachen im Satz gilt das Niveau, das sich grammatisch auf beide bezieht („Deutsch und Englisch (jeweils ab C1)“ → beide C1), sonst das nächststehende **ohne** dazwischenliegenden anderen Sprachnamen („Business-fluent English. German is a strong advantage“ → Deutsch kein Niveau).
+- Stufen auch mit Leerzeichen („C 1“), „mind./mindestens/ab“ davor.
+- Vage Worte (Q68): „gute“ = B2; „sehr gute“, „fließend/fluent/fluency“, „business-level/business fluent“, „excellent“, „sicher“ = C1; „verhandlungssicher“ = C2; „Muttersprache/native“ = Muttersprache. Geschätzte Stufen tragen eine Markierung (Anzeige „≈ C1“).
+- „is a plus/advantage/von Vorteil/wünschenswert/nice to have“ → Deutsch **keine Pflicht**: zählt im Filter wie „kein Deutsch gefordert“, Hinweis „Deutsch von Vorteil“.
+- Testfälle: je ein kurzer Satz aus den 24 Fällen der Prüfung (Liste im Fragenprotokoll-Eintrag vom 2026-11-18 nachvollziehbar); Ziel mindestens 22 von 24 richtig, danach erneut an 20 neuen Anzeigen messen (Halte-Punkt mit Claude).
+
 **Dem Bauenden überlassen:** Spaltenname, genaue Stelle im Filterbereich, Wortlaut der Hinweise.
 
-**Prüfung vor dem Bau:** an 20 echten Anzeigen kontrollieren, wie oft der Steckbrief das Deutschniveau richtig erkennt (Halte-Punkt mit Claude, nicht Codex).
+**Prüfung vor dem Bau:** erledigt 2026-11-18 (Ergebnis oben); Nachmessung nach dem Ausbau an 20 neuen Anzeigen (Halte-Punkt mit Claude, nicht Codex).

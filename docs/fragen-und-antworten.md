@@ -24,7 +24,7 @@ Der vollständige Wortlaut liegt jeweils im Fachdokument; diese Übersicht verwe
 | Ein-Klick-Import fremder Anzeigen, dasselbe Gespräch | Q6/Q7 beantwortet: Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox; Gemerkt ohne Bewerbungsdatum. Q14/Q16 (2026-11-17): Erweiterung statt Lesezeichen; auf Portalen nur Adresse und Titel. | [Importplan und Fragenprotokoll](plans/2026-11-16-ein-klick-import.md) |
 | Firmenportal-Erkennung, dasselbe Gespräch | Q10 zum ersten Umfang beantwortet. **Q13 am 2026-11-17 beantwortet: „Ja, bauen (Empfohlen)“.** Die allgemeine Dokumentationsanweisung beantwortet Q13 nicht. | [Portalplan und Fragenprotokoll](plans/2026-11-15-firmenportal-erkennung.md) |
 
-In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q67**. Der genaue Sendezeitpunkt einzelner älterer Nachrichten ist nicht verfügbar; vorhandene Datums-/Reihenfolgeangaben erhalten und keine Uhrzeiten erfinden. Fachliche Anforderungen stehen zusätzlich im [CV-Plan](plans/2026-11-16-cv-abgleich.md), der aktuelle Arbeits-/Übergabestand in [STATUS](STATUS.md).
+In dieser aktuellen Gesprächsfolge ist die nächste freie Fragennummer **Q69**. Der genaue Sendezeitpunkt einzelner älterer Nachrichten ist nicht verfügbar; vorhandene Datums-/Reihenfolgeangaben erhalten und keine Uhrzeiten erfinden. Fachliche Anforderungen stehen zusätzlich im [CV-Plan](plans/2026-11-16-cv-abgleich.md), der aktuelle Arbeits-/Übergabestand in [STATUS](STATUS.md).
 
 ## Runde 2026-11-17 mit Claude Code (Q14–Q21)
 
@@ -126,6 +126,13 @@ Nutzer 2026-11-18 zur Groq-Probe v13 (A und B je 20 Anzeigen): „Das passt alle
 | Q66 | Welche Ausschlussregeln sind je Nutzer wieder einschaltbar? | „Sprachkenntnisse“ | Nur Sprachen (aus dem Steckbrief, ohne KI) sind wählbar; Standard aus für den Admin, an für alle anderen. Vollzeit/Befristung und Qualitätsregeln bleiben fest. | entschieden |
 
 Fragetexte Q65/Q66 (Claude, Auswahl): Q65 zeigen mit Hinweis (Empfohlen) / ausblenden / eigenes Häkchen im Filter. Q66 Mehrfachauswahl Sprachkenntnisse / Vollzeit-Befristung / Qualitätsregeln (Empfehlung: nicht wählbar).
+
+Prüfung 2026-11-18 (Nutzerfrage „Hast du das mit den Sprachkenntnissen schon geprüft?“): Steckbrief-Regel an den 40 Probe-Anzeigen: 24 erwähnen Deutsch; 3 richtig mit Niveau, 1 falsch, 6 verpasst trotz Niveau, 9 nur vage Worte, 5 nur „von Vorteil“.
+
+| Q67 | Wie wird das verlangte Deutschniveau zuverlässig erkannt? | „Bessere Regeln (Empfohlen)“ | Steckbrief-Regel ausbauen und an den 40 Anzeigen als Testfälle messen; keine Groq-Änderung. | entschieden |
+| Q68 | Vage Worte ohne Stufe | „Übersetzen (Empfohlen)“ | „gute“ = B2; „sehr gute“, „fließend/fluent/fluency“, „business-level“, „excellent“ = C1; „verhandlungssicher“ = C2; „Muttersprache/native“ = Muttersprache; im Filter mit „≈“ als geschätzt markiert. | entschieden |
+
+Fragetexte Q67/Q68 (Claude, Auswahl): Q67 bessere Regeln (Empfohlen) / Groq zusätzlich fragen. Q68 übersetzen (Empfohlen) / als „nicht angegeben“.
 
 Fragetexte Q56/Q57 (Claude, Auswahl, jeweils frei beantwortet): Q56 Vorschlag + Häkchen des Admins (Empfohlen) / vollautomatisch / automatisch mit Wochen-Stichprobe. Q57 Mehrfachauswahl EU R&D Scoreboard / Börsenindizes / Top 20 je Branche (Wikidata) / EIC-Startups + Behörden/Forschung.
 
