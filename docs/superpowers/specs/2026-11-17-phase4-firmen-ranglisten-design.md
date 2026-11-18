@@ -97,6 +97,13 @@ Erweitert die Q13-Grenze bewusst: Für 1.000 Firmen muss das Programm Karrierese
 - **Täglicher Digest (Q60):** neue Stellen, die zu Wunscharbeitgebern oder zur Titel-Stichwortliste passen (eine Liste, gemeinsam mit „Automatisch abgleichen bei“ aus Q35; ab Phase 5 auch gespeicherte Filter), je Stelle eine Zeile mit Link, dazu „X weitere neue Stellen“ als Link. Zunächst nur für den Admin.
 - **Wunscharbeitgeber:** Stern je Firma, je Nutzer.
 
+### 4g Stelle aus Link vollständig erkennen (Q69–Q71, 2026-11-18)
+Baut auf 4b, 4c-2 und 4c-3 auf; der Schnellstart (JobPosting von beliebigen Firmenseiten) ist vorgezogen (`docs/superpowers/specs/2026-11-18-link-schnellstart-design.md`).
+- **Firmen-Karriereseiten mit Workday/SuccessFactors:** Link erkennen und die Stelle über die Bausteine aus 4c-3 holen.
+- **Jobportal-Links (LinkedIn, StepStone, Indeed, XING):** Das Portal wird **nie** aufgerufen (Q16; Nutzer: „ohne linkedin aufzurufen“). Firma und Titel kommen aus der Adresse (StepStone/Indeed enthalten sie oft) oder aus dem Tab-Titel, den die Chrome-Erweiterung mitschickt. Dann Suche auf der Originalquelle: Firma in jobradar → deren Stellen nach Titel durchsuchen; Firma neu → Website über Wikidata, Portal erkennen (4b/4c-2), dort nach Titel suchen. Ein eindeutiger Treffer → komplette Stelle aus der Originalquelle, Bewerbung verweist zusätzlich auf den Portal-Link; mehrere → Auswahl für den Nutzer; keiner → Bewerbung mit Firma/Titel, Hinweis „Original nicht gefunden“.
+- **Grenze:** Ein von Hand eingefügter LinkedIn-Link enthält nur eine Nummer; ohne Erweiterung fragt das Formular nach Firma und Titel.
+- **Titelvergleich:** ohne KI (Normalisierung von Geschlechtszusätzen wie „(m/w/d)“, Groß/klein, Satzzeichen); „eindeutig“ nur bei genau einem Treffer mit gleichem Titel und passendem Ort.
+
 ## Halte-Punkte für Codex (in jedem Teilplan an der passenden Stelle)
 
 | Halte-Punkt | Wer |
