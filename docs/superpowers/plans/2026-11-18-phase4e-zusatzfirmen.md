@@ -13,8 +13,8 @@
 ## Global Constraints
 
 - Private Firmen und ihre Stellen erscheinen für niemanden außer den eingetragenen Nutzern: nicht in Stellenliste, Facetten (`facetten`), Ranglisten-Funktionen, `laeufe`, `data/bericht.md`, GitHub-Issues (4f) oder Telegram-Digest anderer.
-- Unterstützte Portale nur, wenn der Python-Nachtlauf sie abrufen kann: `greenhouse`, `ashby`, `personio` (+ später neue Adapter aus 4c-3). Sonst Meldung (exakt): „Diese Seite kann jobradar nicht lesen.“
-- Höchstens 20 Zusatzfirmen je Nutzer; Formular-Abrufe höchstens 10 je Minute je Nutzer (`darfAbrufen` aus dem Link-Schnellstart).
+- Unterstützte Portale nur, wenn der Python-Nachtlauf sie abrufen kann: `greenhouse`, `ashby`, `personio`, `recruitee` (Q75; + später neue Adapter aus 4c-3). Sonst Meldung (exakt): „Diese Seite kann jobradar nicht lesen.“
+- Höchstens 50 Zusatzfirmen je Nutzer (Q75); Formular-Abrufe höchstens 10 je Minute je Nutzer (`darfAbrufen` aus dem Link-Schnellstart).
 - Keine Claude-Recherche für Nicht-Admins (Q38).
 - Hinweistext im Formular und in der Datenschutzerklärung (exakt): „Der Admin sieht den Firmennamen und kann die Firma für alle freigeben.“
 - Meldeliste für den Admin zeigt nie Nutzernamen oder E-Mails, nur Firmenname, Link, Portal, Anzahl Nutzer.
@@ -51,19 +51,19 @@
 
 **Files:**
 - Create: `web/lib/zusatzfirma.ts`
-- Modify: `web/app/konto/page.tsx`, `web/app/konto/actions.ts`, `web/app/datenschutz/page.tsx`
+- Modify: `web/app/konto/page.tsx`, `web/app/konto/actions.ts`, `web/app/datenschutz/page.tsx`, `web/lib/link-import.ts`, `web/lib/ats-abruf.ts` (Recruitee)
 - Test: `web/tests/zusatzfirma.test.ts`
 
 **Interfaces:**
 - Consumes: `analysiereLink` (`web/lib/link-import.ts`), `alleStellen` (`web/lib/ats-abruf.ts`), `holeFirmenseite`, `darfAbrufen` (`web/lib/seiten-abruf.ts`, Link-Schnellstart).
-- `UNTERSTUETZT = ["greenhouse", "ashby", "personio"] as const`.
+- `UNTERSTUETZT = ["greenhouse", "ashby", "personio", "recruitee"] as const`. Recruitee kennt das Web bisher nicht: `analysiereLink` (`web/lib/link-import.ts`) erkennt zusätzlich `https://<id>.recruitee.com/…` (Typ `recruitee`, `id` = Subdomain), `alleStellen` (`web/lib/ats-abruf.ts`) liest `https://<id>.recruitee.com/api/offers/` (gleiches Format wie `scraper/ats/recruitee.py`, Fixture `tests/fixtures/recruitee_quantum.json` wiederverwenden).
 - `erkennePortal(link: string, dep?): Promise<{ typ: string; id: string } | { fehler: string }>`: erst `analysiereLink`; ohne Treffer Seite mit `holeFirmenseite` holen und alle `href` durch `analysiereLink`; genau ein unterstütztes Portal → Treffer; keins/mehrere/nicht unterstützt → `{ fehler: "Diese Seite kann jobradar nicht lesen." }`.
 - `pruefeZusatzfirma(name: string, link: string, dep?)`: Name 2–80 Zeichen; Portal erkennen; Probeabruf `alleStellen` → mindestens eine Stelle, sonst `„Bei dieser Firma hat jobradar gerade keine Stellen gefunden.“`.
-- Action `zusatzfirmaHinzufuegen(formData)`: Nutzer prüfen, Limit 20, `pruefeZusatzfirma`; mit `createAdminClient()`: gibt es eine Firma mit gleichem `ats_typ` + `ats_id` → `fuer_alle` → Meldung Review Focus 3; privat → Nutzer in `firmen_sichtbar` eintragen; sonst neue Firma (`herkunft 'nutzer'`, `fuer_alle false`, `status 'aktiv'`, `aktiv true`, `careers_url` = Link) + Zeile in `firmen_sichtbar`. Namensgleichheit mit einer anderen Firma (anderes Portal) → Name bekommt Zusatz „ (eigene)“.
+- Action `zusatzfirmaHinzufuegen(formData)`: Nutzer prüfen, Limit 50, `pruefeZusatzfirma`; mit `createAdminClient()`: gibt es eine Firma mit gleichem `ats_typ` + `ats_id` → `fuer_alle` → Meldung Review Focus 3; privat → Nutzer in `firmen_sichtbar` eintragen; sonst neue Firma (`herkunft 'nutzer'`, `fuer_alle false`, `status 'aktiv'`, `aktiv true`, `careers_url` = Link) + Zeile in `firmen_sichtbar`. Namensgleichheit mit einer anderen Firma (anderes Portal) → Name bekommt Zusatz „ (eigene)“.
 - Action `zusatzfirmaEntfernen(formData)`: eigene Zeile in `firmen_sichtbar` löschen.
 - Konto-Abschnitt „Eigene Firmen“: Liste (Name, Portal, Entfernen), Formular Name + Link, Hinweistext aus Global Constraints. Datenschutzerklärung: ein Satz mit demselben Hinweis.
 
-- [ ] **Step 1: Tests:** Greenhouse-Link direkt → Treffer ohne Seitenabruf; Karriereseite mit einem Personio-Link → Treffer; mit zwei Portalen → Fehler; Workday-Link → Fehler; keine Stellen → Meldung; Review Focus 2 und 3 mit Supabase-Attrappe.
+- [ ] **Step 1: Tests:** Greenhouse-Link direkt → Treffer ohne Seitenabruf; Recruitee-Link → Treffer, `alleStellen` liest die Fixture; 51. Firma → Meldung „Du kannst höchstens 50 eigene Firmen anlegen.“; Karriereseite mit einem Personio-Link → Treffer; mit zwei Portalen → Fehler; Workday-Link → Fehler; keine Stellen → Meldung; Review Focus 2 und 3 mit Supabase-Attrappe.
 - [ ] **Step 2–4:** `npm test` FAIL → umsetzen → `npm test`, `npx tsc --noEmit`, `npm run build` grün.
 - [ ] **Step 5: Commit** — „4e: eigene Firmen auf der Konto-Seite“ + `Agent: Codex`.
 
@@ -99,6 +99,6 @@
 
 ### Task 5: Doku und Halt
 
-- [ ] `docs/STATUS.md` (Nutzer-To-do: Migration 016 einspielen), `docs/ENTSCHEIDUNGEN.md` (nur Portale mit Python-Adapter; Grenze 20 je Nutzer; Namenszusatz „(eigene)“; Freigabe ohne Browser-Dialog), `docs/agenten-protokoll.md`, Warteschlange `🛑`.
+- [ ] `docs/STATUS.md` (Nutzer-To-do: Migration 016 einspielen), `docs/ENTSCHEIDUNGEN.md` (nur Portale mit Python-Adapter inkl. Recruitee; Grenze 50 je Nutzer (Q75); Namenszusatz „(eigene)“; Freigabe ohne Browser-Dialog), `docs/agenten-protokoll.md`, Warteschlange `🛑`.
 - [ ] Commit — „4e: Doku“ + `Agent: Codex`.
 - [ ] **🛑 Halte-Punkt:** Nutzer spielt Migration 016 ein; Claude prüft live mit zwei Wegwerf-Konten `…@example.com` (A legt Firma an, B und Gast sehen sie nicht, Facettenzahlen gleich; Admin-Meldeliste ohne Namen) und danach einen Nachtlauf (`bericht.md` ohne private Firma).

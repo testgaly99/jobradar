@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Codex: Auftrag über `docs/codex-warteschlange.md`. Setzt 4c voraus (Spalten aus Migration 014, `scraper/einrichtung.py`).
 
-**Goal:** Jede Ranglisten-Ausgabe hat eine Sichtbarkeit (Admin / angemeldet / öffentlich); der Admin kann Listen von Hand einfügen und eine Linksammlung „Rankings zum Stöbern“ pflegen; Firmen aus Hand-Listen werden Admin-Firmen (nur Datenbank) und vom Nachtlauf abgerufen.
+**Goal:** Jede Ranglisten-Ausgabe hat eine Sichtbarkeit (Admin / angemeldet); der Admin kann Listen von Hand einfügen; Angemeldete sehen eine Linksammlung „Rankings zum Stöbern“ (gepflegt von Claude, Q72); Firmen aus Hand-Listen werden Admin-Firmen (nur Datenbank) und vom Nachtlauf abgerufen.
 
 **Architecture:** Migration 015 ergänzt `ranking_ausgaben.sichtbarkeit`, eine Tabelle `admins` mit Funktion `ist_admin()`, `companies.herkunft` und `stoebern_links`; `ranking_ausgabe_aktuell` prüft die Sichtbarkeit. Die Admin-Seite `/admin/ranglisten` liest eingefügten Text zuerst per Regel, sonst per Groq, zeigt eine Vorschau und schreibt erst bei „Speichern“ (Server-Action mit Service-Rolle nach Admin-Prüfung). Filter „Liste“, Rang-Sortierung und Rang-Anzeige gibt es schon (Migration 010, `web/lib/rankings.ts`) und bleiben.
 
@@ -12,7 +12,8 @@
 
 ## Global Constraints
 
-- Sichtbarkeitswerte (exakt): `admin`, `angemeldet`, `oeffentlich`; Standard `angemeldet`. Gäste (anon) sehen vorerst keine Ränge (CLAUDE.md 4.6); `oeffentlich` wirkt deshalb wie `angemeldet`, bis der Nutzer Gäste freigibt.
+- Sichtbarkeitswerte (exakt): `admin`, `angemeldet`; Standard `angemeldet`. Gäste (anon) sehen **nie** Ränge (CLAUDE.md 4.6, Q73: „Rände nur für Angemeldete!!!“); kein Wert `oeffentlich` (ersetzt die Spec, neu bewerten erst beim Umbau-Plan für kommerzielle Nutzung).
+- „Rankings zum Stöbern“ pflegt Claude monatlich über einen Ablauf im privaten Repo (Q72), nicht Codex und nicht per Formular. Dieser Plan baut nur Tabelle und Anzeige; Linktitel und Adressen stehen nur in der Datenbank (Q51).
 - Hand-Listen und ihre Firmen stehen **nur in der Datenbank**, nie in `data/`, Tests, Fixtures, Commits oder `data/bericht.md` (Q61). Testdaten nur erfunden („Beispiel AG“).
 - Gespeichert werden nur Firmenname, Rang, Listenname, Jahr, Quell-Link, Lizenz (CLAUDE.md 4.8); der eingefügte Rohtext wird nie gespeichert.
 - Groq nur `openai/gpt-oss-120b`, nur der eingefügte öffentliche Listentext, höchstens 12.000 Zeichen je Durchgang. Kein PDF-Upload (bräuchte ein neues Paket, CLAUDE.md 10): Text aus dem PDF kopieren und einfügen.
@@ -37,10 +38,10 @@
 
 **Interfaces:**
 - `public.admins (user_id uuid primary key references auth.users on delete cascade)`; RLS an, keine Rechte für `anon`/`authenticated`; `public.ist_admin() returns boolean` (`security definer`, leerer `search_path`, prüft `auth.uid()`), Ausführen für `authenticated`, `service_role`.
-- `ranking_ausgaben.sichtbarkeit text not null default 'angemeldet' check (sichtbarkeit in ('admin','angemeldet','oeffentlich'))`.
+- `ranking_ausgaben.sichtbarkeit text not null default 'angemeldet' check (sichtbarkeit in ('admin','angemeldet'))`. Keine Rechte für `anon` auf Ranglisten-Tabellen und -Funktionen (bleibt wie in 010).
 - `ranking_ausgabe_aktuell(p_id)` zusätzlich: `sichtbarkeit <> 'admin' or public.ist_admin()`. Die „neuere Ausgabe“-Prüfung zählt nur Ausgaben, die der Aufrufer sehen darf.
 - `companies.herkunft text not null default 'datei' check (herkunft in ('datei','admin','nutzer'))`.
-- `public.stoebern_links (id bigint generated always as identity primary key, titel text not null check (length(btrim(titel)) between 1 and 120), url text not null check (url ~ '^https://'), reihenfolge int not null default 0)`; lesen für `authenticated`, schreiben nur `service_role`.
+- `public.stoebern_links (id bigint generated always as identity primary key, titel text not null check (length(btrim(titel)) between 1 and 120), url text not null check (url ~ '^https://'), reihenfolge int not null default 0, geprueft_am date not null default current_date)`; lesen für `authenticated`, schreiben nur `service_role` (der monatliche Claude-Ablauf ersetzt den Inhalt).
 
 - [ ] **Step 1:** Prüftest: Datei idempotent, `ist_admin` mit `security definer` und `set search_path = ''`, `revoke … from public, anon` vor jedem `grant`, keine E-Mail-Adresse in der Datei.
 - [ ] **Step 2–4:** FAIL → schreiben → `py -m pytest -q` grün.
@@ -74,7 +75,7 @@
 - Seite: ohne `nutzer.admin` → `notFound()` (wie `web/app/admin/nutzer/page.tsx`). Formular: Listenname, Herausgeber, Jahr, Quell-Link (https), Lizenz, Sichtbarkeit (Standard `admin`), Textfeld. Knopf „Vorschau“ → Tabelle Rang | Firma | Zuordnung (`vorhanden` / `neu`), Abgleich mit `companies.name` über `normFirma`. Knopf „Speichern“ schickt die Vorschau als verstecktes JSON zurück.
 - `baueAusgabe(eingabe, eintraege, vorhandeneFirmen: string[], heute: string)` → `{ liste, ausgabe, firmen, neueFirmen: string[] }`; IDs: Liste `hand-<slug>` (`slugAusFirma`), Ausgabe `<liste-id>-<jahr>`; `gueltig_bis` = heute + 12 Monate; `freigegeben: true`.
 - Action `listeSpeichern(formData)`: Admin prüfen, mit `createAdminClient()` schreiben: neue Firmen in `companies` (`herkunft 'admin'`, `status 'offen'`, `aktiv false`, `ats_typ ''`), dann Liste/Ausgabe upserten, dann `ranking_firmen` upserten (Ergänzen, nichts löschen). Rohtext nie speichern.
-- Zweiter Abschnitt „Rankings zum Stöbern“: Liste mit Entfernen, Formular Titel + Link (https), Reihenfolge per Zahl. Für alle Angemeldeten erscheint die Linksammlung auf `/stellen` unter dem Filter (eingeklappt, Überschrift „Rankings zum Stöbern“), nur Titel als Link (`rel="noopener noreferrer"`, `target="_blank"`).
+- „Rankings zum Stöbern“ (kein Formular, Q72): Für Angemeldete erscheint die Linksammlung aus `stoebern_links` auf `/stellen` unter dem Filter (eingeklappt, Überschrift „Rankings zum Stöbern“, darunter klein „Stand: <geprueft_am>“), nur Titel als Link (`rel="noopener noreferrer"`, `target="_blank"`); Gäste sehen den Abschnitt nicht; fehlt die Tabelle oder ist sie leer, entfällt der Abschnitt.
 
 - [ ] **Step 1: Tests** für `baueAusgabe` (IDs, Gültigkeit, neue Firmen) und Review Focus 2/3 mit einer Supabase-Attrappe (Reihenfolge der Schreibaufrufe, kein Rohtext im Aufruf, gleiches Jahr → gleiche Ausgabe-ID).
 - [ ] **Step 2–4:** FAIL → umsetzen → `npm test`, `npx tsc --noEmit`, `npm run build` grün; lokal `http://localhost:3002/admin/ranglisten` als Nicht-Admin → 404.
@@ -112,4 +113,4 @@
 
 - [ ] `docs/STATUS.md` (Nutzer-To-dos: Migration 015 einspielen; danach im SQL Editor einmal die eigene Kennung in `admins` eintragen – Claude gibt die Zeile vor, die E-Mail steht nie im Repo), `docs/ENTSCHEIDUNGEN.md` (Admin in der Datenbank über `admins`; kein PDF-Upload ohne neues Paket; Gäste sehen weiter keine Ränge; Teil-Import ergänzt), Datenschutzerklärung prüfen (keine Änderung nötig, falls nur Admin-Daten), `docs/agenten-protokoll.md`, Warteschlange `🛑`.
 - [ ] Commit — „4d: Doku“ + `Agent: Codex`.
-- [ ] **🛑 Halte-Punkt:** Nutzer spielt Migration 015 ein und trägt sich als Admin ein; Claude prüft mit dem Nutzer die Groq-Extraktion live an einer echten, von Hand kopierten Liste (Vorschau vergleichen, dann speichern) und prüft mit einem Wegwerf-Konto `…@example.com`, dass Admin-Listen dort nicht erscheinen.
+- [ ] **🛑 Halte-Punkt:** Nutzer spielt Migration 015 ein und trägt sich als Admin ein; Claude richtet im privaten Repo den monatlichen Ablauf für „Rankings zum Stöbern“ ein (Nutzer legt dort das Secret `CLAUDE_CODE_OAUTH_TOKEN` an); Claude prüft mit dem Nutzer die Groq-Extraktion live an einer echten, von Hand kopierten Liste (Vorschau vergleichen, dann speichern) und prüft mit einem Wegwerf-Konto `…@example.com`, dass Admin-Listen dort nicht erscheinen.

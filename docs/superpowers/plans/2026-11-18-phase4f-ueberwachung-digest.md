@@ -14,7 +14,7 @@
 
 - Problem-Kriterien (CLAUDE.md 4.3, exakt): (a) 0 Stellen, obwohl in den letzten 7 Tagen > 0; (b) Rückgang um mehr als 50 % gegenüber dem Höchstwert der letzten 7 Tage; (c) Fehler (HTTP, Timeout, Parser) im Bericht; (d) übersprungene Stellen ohne Titel oder Link; (e) Firmendaten fehlen (`careers_url`, `ats_typ` oder `groesse_klasse` leer bei aktiver Firma).
 - GitHub-Issues (öffentliches Repo!) nur für Firmen mit `herkunft = 'datei'`; Admin- und private Firmen nur per Telegram an den Admin, private Firmen anderer Nutzer gar nicht.
-- Ein offenes Issue je Firma (Titel exakt `Scraper defekt: <Firma>`); ist es schon offen, Kommentar statt neuem Issue. Höchstens 3 neue Issues je Nacht (schont das Claude-Kontingent); weitere stehen nur in der Telegram-Nachricht.
+- Ein offenes Issue je Firma (Titel exakt `Scraper defekt: <Firma>`); ist es schon offen, Kommentar statt neuem Issue. Höchstens 3 neue Issues je Nacht (schont das Claude-Kontingent); **Gespeichert werden immer alle Probleme** (Q74): im Laufbericht in `laeufe` (Feld `gesundheit`) und in der Telegram-Nachricht; die übrigen bekommen ihr Issue in der nächsten Nacht, wenn das Problem dann noch besteht.
 - Issue-Inhalt: Problemart, Fehlertext (höchstens 1.000 Zeichen), Karriere-Link, Stellenzahlen der letzten 7 Läufe als Tabelle. Kein HTML-Schnappschuss (der Reparatur-Lauf holt die Seite selbst; spart Platz und vermeidet fremde Inhalte im Repo).
 - Reparatur: Claude Code Action mit Secret `CLAUDE_CODE_OAUTH_TOKEN` öffnet einen Pull Request mit Stellenzahl vorher/nachher; **kein Auto-Merge**.
 - Telegram: Secrets `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`; Link-Basis `SEITE_URL` als Secret (Adresse steht nie im Code). Fehlt ein Secret: Hinweis im Log, kein Fehler. Nachricht höchstens 4.096 Zeichen.
@@ -54,11 +54,12 @@
 - Test: `tests/test_gesundheit.py`
 
 **Interfaces:**
-- `melde_issues(probleme, firmen: dict[str, dict], post=requests.post, get=requests.get, token=os.environ.get("GITHUB_TOKEN"), repo=os.environ.get("GITHUB_REPOSITORY")) -> list[str]` (Issue-Links): filtert auf `herkunft == "datei"`, sucht offene Issues mit Label `scraper-defekt` und gleichem Titel, kommentiert oder legt an (Label `scraper-defekt`), höchstens 3 neue.
-- `main()`: lädt heutigen Bericht (`letzte_laeufe(8)[0]` ist heute) und Vorgeschichte, ruft `pruefe`, `melde_issues`, dann `telegram.sende` (Task 3) mit einer Sammelnachricht; Rückgabecode immer 0.
+- `melde_issues(probleme, firmen: dict[str, dict], post=requests.post, get=requests.get, token=os.environ.get("GITHUB_TOKEN"), repo=os.environ.get("GITHUB_REPOSITORY")) -> list[str]` (Issue-Links): filtert auf `herkunft == "datei"`, sucht offene Issues mit Label `scraper-defekt` und gleichem Titel, kommentiert oder legt an (Label `scraper-defekt`), höchstens 3 neue (Q74).
+- `db.ergaenze_lauf(datum: str, felder: dict) -> None` (PATCH auf die heutige `laeufe`-Zeile, ergänzt das `bericht`-Objekt um `felder`).
+- `main()`: lädt heutigen Bericht (`letzte_laeufe(8)[0]` ist heute) und Vorgeschichte, ruft `pruefe`, speichert **alle** Probleme per `ergaenze_lauf(heute, {"gesundheit": probleme})`, dann `melde_issues`, dann `telegram.sende` (Task 3) mit einer Sammelnachricht; Rückgabecode immer 0.
 - `reparatur.yml`: `on: issues: types: [labeled]`, nur wenn `github.event.label.name == 'scraper-defekt'`; `permissions: contents: write, pull-requests: write, issues: write`; Schritt `anthropics/claude-code-action@v1` mit `claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}` und einem Prompt: AGENTS.md/CLAUDE.md lesen, Ursache für die Firma aus dem Issue finden, Adapter oder Firmendaten reparieren, Tests, Pull Request mit Stellenzahl vorher/nachher, nie mergen, keine `.env`. Eingabenamen vor dem Commit mit der README der Action abgleichen (Abweichung im Protokoll begründen).
 
-- [ ] **Step 1: Tests** mit Attrappen: neues Problem → ein POST `/issues`; offenes Issue → POST `/comments`; 5 Probleme → 3 neue; Review Focus 2 und 3; Admin-Firma → kein Issue.
+- [ ] **Step 1: Tests** mit Attrappen: neues Problem → ein POST `/issues`; offenes Issue → POST `/comments`; 5 Probleme → 3 neue Issues, aber alle 5 in `ergaenze_lauf` und in der Telegram-Nachricht; Review Focus 2 und 3; Admin-Firma → kein Issue.
 - [ ] **Step 2–4:** FAIL → umsetzen → `py -m pytest -q` grün.
 - [ ] **Step 5: Commit** — „4f: Issues bei defekten Firmen, Reparatur durch Claude“ + `Agent: Codex`.
 
