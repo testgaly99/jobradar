@@ -2,6 +2,14 @@
 
 Dieses Projekt wird hauptsächlich mit Claude Code gebaut. Arbeitest du (ein anderer Agent) daran, gelten **ausnahmslos dieselben Regeln**. Diese Datei fasst die wichtigsten zusammen; im Zweifel gilt `CLAUDE.md`. Weichst du von einer Regel ab, ist die Arbeit unbrauchbar, auch wenn der Code funktioniert.
 
+## 0. Auftrag ohne Kopieren: die Warteschlange
+Der Nutzer kopiert dir keine Aufträge. Stattdessen gilt zu Beginn **jeder** Sitzung:
+1. Lies Abschnitt 1 (unten) und dann `docs/codex-warteschlange.md`.
+2. Nenne dem Nutzer in 2–3 Sätzen auf Deutsch den **obersten Eintrag mit Status `offen`**: was gebaut wird, welcher Plan, wo du anhältst. Frage: „Soll ich loslegen? Ein ‚okay‘ genügt.“
+3. Antwortet der Nutzer mit „okay“, „ok“, „ja“ oder „los“: Setze genau diesen Plan Aufgabe für Aufgabe um, Tests zuerst (rot sehen, dann grün), nach den Regeln dieser Datei. Status in der Warteschlange auf `in Arbeit`.
+4. Am ersten 🛑 Halte-Punkt des Plans **anhalten**: Status `🛑 wartet auf Nutzer/Claude`, dem Nutzer in einfachen Worten sagen, was er jetzt tun muss (Was/Warum/Woran erkennen). Den nächsten Eintrag **nicht** von selbst beginnen; jeder Eintrag braucht ein eigenes „okay“.
+5. Ist kein Eintrag `offen`: das sagen und nichts bauen.
+
 ## 1. Bevor du irgendetwas tust
 1. Lies **vollständig**: `CLAUDE.md` (Anforderungen, harte Regeln, Arbeitsweise), `docs/STATUS.md` (Stand, offene To-dos, „Nächster Schritt“ mit Halte-Punkten), `docs/ENTSCHEIDUNGEN.md` (warum etwas so ist), `docs/fragen-und-antworten.md` (Fragenprotokolle und bereits gegebene Antworten).
 2. Arbeitet gerade ein Paket nach Plan, lies dessen Plan und Design (`docs/superpowers/plans/…`, `docs/superpowers/specs/…`). Das Design geht dem Plan vor; Abschnitte wie „Änderungen nach der Probe“ gehen älteren Abschnitten vor. Abgeschlossene Codex-Pakete stehen gesammelt in `docs/plans/2026-11-16-codex-pakete.md`; Testzahlen nur in `docs/agenten-protokoll.md`.
