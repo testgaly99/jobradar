@@ -125,6 +125,8 @@ Nutzer 2026-11-18 zur Groq-Probe v13 (A und B je 20 Anzeigen): „Das passt alle
 | Q65 | Filter „Mein Deutschniveau“: Stellen ohne Niveau-Angabe | „Zeigen mit Hinweis (Empfohlen)“ | Sichtbar mit Markierung „Deutsch: Niveau nicht angegeben“. | entschieden |
 | Q66 | Welche Ausschlussregeln sind je Nutzer wieder einschaltbar? | „Sprachkenntnisse“ | Nur Sprachen (aus dem Steckbrief, ohne KI) sind wählbar; Standard aus für den Admin, an für alle anderen. Vollzeit/Befristung und Qualitätsregeln bleiben fest. | entschieden |
 
+Präzisierung zu Q65 (Nutzer 2026-11-18): „„Deutsch von Vorteil“: Die Stelle bleibt immer sichtbar.“ sollte aber trotzdem genau so angegeben werden“ → Hinweis „Deutsch von Vorteil“ wird immer ausdrücklich angezeigt (Design ergänzt).
+
 Fragetexte Q65/Q66 (Claude, Auswahl): Q65 zeigen mit Hinweis (Empfohlen) / ausblenden / eigenes Häkchen im Filter. Q66 Mehrfachauswahl Sprachkenntnisse / Vollzeit-Befristung / Qualitätsregeln (Empfehlung: nicht wählbar).
 
 Prüfung 2026-11-18 (Nutzerfrage „Hast du das mit den Sprachkenntnissen schon geprüft?“): Steckbrief-Regel an den 40 Probe-Anzeigen: 24 erwähnen Deutsch; 3 richtig mit Niveau, 1 falsch, 6 verpasst trotz Niveau, 9 nur vage Worte, 5 nur „von Vorteil“.

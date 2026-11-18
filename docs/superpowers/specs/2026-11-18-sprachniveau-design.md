@@ -23,7 +23,7 @@ Stand 2026-11-18 (Q65, Q66; Wunsch des Nutzers im Fragenprotokoll). Kleines Pake
 - Niveau im **selben Satz** bzw. Stichpunkt statt 25 Zeichen; bei mehreren Sprachen im Satz gilt das Niveau, das sich grammatisch auf beide bezieht („Deutsch und Englisch (jeweils ab C1)“ → beide C1), sonst das nächststehende **ohne** dazwischenliegenden anderen Sprachnamen („Business-fluent English. German is a strong advantage“ → Deutsch kein Niveau).
 - Stufen auch mit Leerzeichen („C 1“), „mind./mindestens/ab“ davor.
 - Vage Worte (Q68): „gute“ = B2; „sehr gute“, „fließend/fluent/fluency“, „business-level/business fluent“, „excellent“, „sicher“ = C1; „verhandlungssicher“ = C2; „Muttersprache/native“ = Muttersprache. Geschätzte Stufen tragen eine Markierung (Anzeige „≈ C1“).
-- „is a plus/advantage/von Vorteil/wünschenswert/nice to have“ → Deutsch **keine Pflicht**: zählt im Filter wie „kein Deutsch gefordert“, Hinweis „Deutsch von Vorteil“.
+- „is a plus/advantage/von Vorteil/wünschenswert/nice to have“ → Deutsch **keine Pflicht**: zählt im Filter wie „kein Deutsch gefordert“, Hinweis „Deutsch von Vorteil“. **Angezeigt wird das immer ausdrücklich** (Nutzer 2026-11-18: „„Deutsch von Vorteil“ … sollte aber trotzdem genau so angegeben werden“): in „Das bringst du mit“ (bei eingeschalteter Spracheinstellung) und als Hinweis in der Stellenliste, wenn der Deutsch-Filter aktiv ist; nennt die Anzeige dabei eine Stufe („German at B2 to C1 is a strong plus“), steht sie dahinter („Deutsch von Vorteil (B2–C1)“; der Prototyp liefert die Stufe bei „Vorteil“ noch nicht, beim Bau ergänzen). Ebenso ausdrücklich: „Deutsch: Niveau nicht angegeben“ und „Deutsch ≈ C1“.
 - Testfälle (kurze Sätze aus echten Anzeigen der Prüfung, erwartetes Deutsch-Ergebnis):
 
 | Satz | Erwartet |
