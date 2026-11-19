@@ -401,3 +401,8 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 - Ergebnis: Übergabe berichtigt (Tasks 6 und 7 bereits fertig). Keine Änderung an Anwendungscode, Modellanleitungen, Datenbank oder Hosting. Keine Zugangsdaten gelesen, keine Live-Abfragen oder Groq-Aufrufe ausgeführt.
 - Nicht geprüft / offen: KI-Qualität (A+B, höchstens 1 Fehler je 20), Live-Auswertung und Schlüsselkonfiguration, Browser-Klicktests, Produktions-Build. `/ponytail-review` nicht ausgeführt, Claude-Artifact nicht bearbeitet. Bekannte Restpunkte aus dem bisherigen Review in STATUS übernommen. Freigaben „passt“, erster Live-Schreibtest und „Ja, hochladen“ fehlen.
 - Abweichungen mit Begründung: geschützter Offline-Lauf statt unbeschränktem Python-Testbefehl, weil Live-Testmodule Zugangsdaten schon beim Import lesen. Dokumentation bleibt uncommittet; der vor einem Commit vorgeschriebene Produktions-Build wurde nicht ausgeführt. Task 8 bleibt offen; Haltepunkt nicht überschritten.
+
+## 2026-11-19 – Claude: Link-Schnellstart (Warteschlange Nr. 1)
+- Gebaut statt Codex nach „Mach weiter mit der nächsten Phase“. Commits be652a9, b104ffb, 3c5262a, afc6851.
+- Tests: `cd web && npm test` → 341 bestanden; `npx tsc --noEmit` ohne Fehler; `npm run pruefe:build` und `npm run pruefe:browser` bestanden; `py -B -m pruefe_offline` → 811 bestanden.
+- Keine Live-Abrufe, keine Live-DB, keine Migration eingespielt, nichts hochgeladen. Offen: Migration 012 (Nutzer), 10 echte Firmen-Links und Morgenprüfung (Claude).
