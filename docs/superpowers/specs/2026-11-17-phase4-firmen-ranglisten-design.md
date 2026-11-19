@@ -125,14 +125,20 @@ Baut auf 4b, 4c-2 und 4c-3 auf; der Schnellstart (JobPosting von beliebigen Firm
 7. **Claude-Recherche (Q62):** kein nächtlicher Workflow. Der Einrichtungslauf schreibt die Liste „Karriereseite nicht gefunden“ als Datei bzw. in den Bericht; Admin und Claude Code arbeiten sie am Morgen in einer Sitzung ab und ändern `data/companies.csv` (Nutzer gibt frei). Codex baut nur die Liste, nicht die Recherche.
 8. **Remote weltweit (4a):** zählt, wenn der Ortstext oder das Remote-Feld „worldwide“, „anywhere“, „global“, „weltweit“ oder „remote“ ohne Ländernamen enthält und kein anderes Land ausdrücklich verlangt wird.
 
+## Änderungen nach Q94–Q96 (2026-11-19, gehen allem Folgenden vor)
+
+- Aus jeder Liste höchstens die Top 200; Listen mit weniger Firmen ganz; Listen ohne Rang mit mehr als 200 Firmen (EIC): die 200 zuletzt aufgenommenen. Damit: Scoreboard Top 200, „Top 200 Arbeitgeber“ (statt 300), Hand-Listen je höchstens Platz 1–200.
+- Kategorien statt Einzellisten für Nutzer: Spalte `kategorie` an `ranking_listen` (sieben feste Werte, siehe CLAUDE.md 4.8); Filter „Kategorie“ für Angemeldete über eine Funktion, die nur (Firma, Kategorie) liefert – auch aus Listen, deren Ränge nur der Admin sieht; einzelne Listen, Ränge und Sortierung nach Rang nur nach Sichtbarkeit.
+- Schätzung Firmenzahl: roh ~3.100, ohne Doppelte ~1.500–2.000, aktiv (Stellen in DE/remote) ~900–1.300.
+
 ## Änderungen nach Q80–Q93 (2026-11-19, gehen 4c-1 und Q57 vor)
 
 | Quelle | Regel |
 |---|---|
-| EU R&D Scoreboard | nur Rang 1–250 weltweit (keine EU-800) |
+| EU R&D Scoreboard | nur Rang 1–250 weltweit (keine EU-800); seit Q94: 1–200 |
 | Börsenindizes | DAX, MDAX, SDAX, TecDAX vollständig |
 | EPA | Top 100 Patentanmelder, Rang nur Admin |
-| Top 300 Arbeitgeber (ersetzt „Top 20 je Branche“) | Wikidata, Sitz-Land DE, ≥ 1.000 Mitarbeitende, nicht aufgelöst, Ausschluss nach `data/top300_ausschluss.csv` (Typ, Namensteil, Ausnahmen „behalten“), die 300 größten; automatisch live, Fehler über `firmen_korrekturen.csv`. Probe 2026-11-19: 1.156 Kandidaten, 636 nach Ausschluss, Platz 300 hat 3.500 Mitarbeitende |
+| Top 300 Arbeitgeber (ersetzt „Top 20 je Branche“; seit Q94: Top 200) | Wikidata, Sitz-Land DE, ≥ 1.000 Mitarbeitende, nicht aufgelöst, Ausschluss nach `data/arbeitgeber_ausschluss.csv` (Typ, Namensteil, Ausnahmen „behalten“), die 300 größten; automatisch live, Fehler über `firmen_korrekturen.csv`. Probe 2026-11-19: 1.156 Kandidaten, 636 nach Ausschluss, Platz 300 hat 3.500 Mitarbeitende |
 | EIC | Accelerator, ganz Europa, ohne Rang; Datei 1×/Jahr vom Nutzer |
 | entfällt | Wikipedia-Liste (Q77), Behörden/Forschung (Q82 ersetzt Q42), Top 20 je Branche (Q80) |
 | heutige 13 Firmen | werden mit 4e private Firmen des Admins (Q93) |
