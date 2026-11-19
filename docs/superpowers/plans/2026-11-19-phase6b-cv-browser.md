@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Codex: Auftrag über `docs/codex-warteschlange.md` (Nr. 10). Setzt 6a vollständig voraus (Migration 018, `web/lib/cv-regeln.json`, Modelldatei, `web/lib/cv-ergebnis.ts`).
 
-**Goal:** Alle angemeldeten Nutzer außer dem Admin bekommen den CV-Abgleich kostenlos im eigenen Browser; der Admin bekommt beim Merken sofort vorläufige Farben aus Stufe 1, die der Nachtlauf ersetzt (Q103).
+**Goal:** Alle angemeldeten Nutzer außer dem Admin bekommen den CV-Abgleich kostenlos im eigenen Browser (Chrome-KI auf Knopfdruck, Q105); der Admin bekommt beim Merken sofort vorläufige Farben aus Stufe 1, die der Nachtlauf ersetzt (Q103); „Wichtige Punkte“ treffen für alle auch nach Bedeutung (Q106).
 
 **Architecture:** Ein Web Worker lädt dieselbe e5-small-Datei aus `/modell/e5-small/` über `@huggingface/transformers` (nur lokal, keine Hugging-Face-Abrufe) und wendet dieselben Regeln aus `cv-regeln.json` an wie `scraper/cv_stufe1.py`. Grenzfälle prüft Chromes eingebautes Modell (Prompt API), falls vorhanden; sonst bleiben sie Gelb. Das Ergebnis wird in `cv_ergebnisse` gespeichert (`weg 'browser'` bzw. `'browser-vorlaeufig'` beim Admin).
 
@@ -68,12 +68,14 @@
 - Modify: `web/lib/cv-ergebnis.ts` (`LABEL.nicht_automatisch`)
 
 **Interfaces:**
-- `chromeVerfuegbar() -> Promise<boolean>`: `typeof LanguageModel !== "undefined" && (await LanguageModel.availability()) === "available"`; sonst `false` (kein Download auslösen).
+- `chromeStatus() -> Promise<"bereit"|"ladbar"|"nein">`: `LanguageModel.availability()` → `available` = `bereit`, `downloadable`/`downloading` = `ladbar`, sonst/fehlt = `nein`.
+- `chromeLaden(fortschritt: (anteil: number) => void) -> Promise<boolean>`: startet `LanguageModel.create` mit Download-Überwachung; **nur** aus dem Klick-Handler des Knopfs aufrufen (Q105).
+- Anzeige bei `ladbar`: Hinweis „Genauer prüfen: Chrome-KI einmalig laden (ca. <Größe laut Chrome-Doku>)“ mit Knopf und Fortschritt; danach Grenzfälle der offenen Stelle neu prüfen.
 - `pruefeGrenzfaelle(grenzfaelle, belege, cvText) -> Promise<Ergebnis[]>`: eine Sitzung, Anweisung auf Deutsch mit JSON-Schema (`responseConstraint`), Antwort durch dieselbe Prüfung wie 6a (`antwort_pruefen` als TS-Funktion `antwortPruefen` in dieser Datei): Beleg nicht wörtlich → `nicht_pruefbar`; Rot ohne Begründung → `nicht_pruefbar`.
 - Ohne Chrome-Modell: Grenzfälle → `gelb`/`nicht_automatisch`.
 
 - [ ] **Step 0:** Aktuelle Chrome-Doku zur Prompt API lesen (Verfügbarkeit auf normalen Webseiten ohne Origin Trial, Namen `LanguageModel.availability/create`, `responseConstraint`); Abweichungen im Protokoll und im Code übernehmen.
-- [ ] **Step 1: Tests (Attrappe für `LanguageModel`):** nicht vorhanden → kein Rot (Review Focus 1); erfundener Beleg → `nicht_pruefbar`; gültiges Rot mit Beleg bleibt Rot.
+- [ ] **Step 1: Tests (Attrappe für `LanguageModel`):** nicht vorhanden → kein Rot (Review Focus 1); `downloadable` → kein `create`-Aufruf ohne Klick, Status `ladbar`; erfundener Beleg → `nicht_pruefbar`; gültiges Rot mit Beleg bleibt Rot.
 - [ ] **Step 2–4:** FAIL → umsetzen → `npm test`, `npx tsc --noEmit` grün.
 - [ ] **Step 5: Commit** — „6b: Grenzfälle mit Chromes eingebautem Modell“ + `Agent: Codex`.
 
@@ -93,7 +95,22 @@
 - [ ] **Step 2–4:** FAIL → umsetzen → `npm test`, `npx tsc --noEmit`, `npm run build` grün.
 - [ ] **Step 5: Commit** — „6b: Abgleich beim Merken, Öffnen und CV-Upload“ + `Agent: Codex`.
 
-### Task 5: Klicktest, Doku und Halt
+### Task 5: Wichtige Punkte nach Bedeutung (Q106)
+
+**Files:**
+- Create: `web/lib/wichtig-bedeutung.ts`, `web/tests/wichtig-bedeutung.test.ts`
+- Modify: `web/app/cv-abgleich.worker.ts` (Nachricht `{art: "wichtig", begriffe, punkte}`), `web/app/abschnitte.tsx`, `web/app/stellen/[id]/page.tsx`, `web/lib/cv-regeln.json` (`wichtig_schwelle`)
+
+**Interfaces:**
+- `wichtigTreffer(aehnlich: number[][], begriffe: string[], punkte: string[], schwelle: number) -> {punkt: string, begriff: string}[]`: reine Funktion; Punkte, die schon per Wortanfang treffen (`zaehleTreffer`-Logik), bleiben unverändert und erscheinen hier nicht doppelt.
+- Anzeige: zusätzlich hervorgehoben mit „ähnlich: <Begriff>“; der Zähler „N deiner wichtigen Punkte kommen vor“ zählt beide Arten. Für alle Angemeldeten, auch den Admin; kein Speichern in der Datenbank.
+- Schwelle mit 10 künstlichen Paaren (5 passend, 5 nicht) festlegen und im Protokoll begründen.
+
+- [ ] **Step 1: Tests:** „Teamarbeit“ ↔ „Zusammenarbeit im Team“ trifft (Fixture-Ähnlichkeit über Schwelle); Wortanfang-Treffer nicht doppelt; leere Begriffsliste → keine Worker-Nachricht.
+- [ ] **Step 2–4:** FAIL → umsetzen → `npm test`, `npx tsc --noEmit`, `npm run build` grün.
+- [ ] **Step 5: Commit** — „6b: Wichtige Punkte nach Bedeutung“ + `Agent: Codex`.
+
+### Task 6: Klicktest, Doku und Halt
 
 - [ ] Klicktest-Skript `tests/klick/cv_browser.py` (webapp-testing, `channel="chrome"`, Wegwerf-Konto `…@example.com`, künstlicher CV aus `docs/beispiele/cv-abgleich.json` als PDF erzeugt): Einwilligung, Upload, Stelle öffnen, Markierungen und Labels sichtbar, kein Rot ohne Chrome-Modell. Läuft erst am Halte-Punkt (braucht `.env` und Live-DB) – Codex schreibt es nur.
 - [ ] `docs/STATUS.md`, `docs/ENTSCHEIDUNGEN.md` (Profil = Sätze; `nicht_automatisch`; Admin-Vorläufig überschreibt nie Claude), `docs/agenten-protokoll.md`, Datenschutzerklärung prüfen (Browser-Abgleich schon in 6a beschrieben), Warteschlange Nr. 10 → `🛑`. Commit „6b: Doku“ + `Agent: Codex`.

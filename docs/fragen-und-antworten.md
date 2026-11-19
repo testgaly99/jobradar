@@ -174,6 +174,9 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q101 | Wie viele Stellen merkst du dir pro Woche ungefähr vor? (für die Kontingent-Schätzung Phase 6) | Nutzer: „10–30“ | Normale Woche ≈ 40 Abgleiche inkl. Stichwort-Treffer, ≈ 0,4 Mio. Tokens (Schätzung, `docs/plans/2026-11-16-cv-abgleich.md`). | beantwortet |
 | Q102 | Wie viele CV-Versionen wirst du hochladen? | Nutzer: „5 oder mehr“ | Mit 6 Versionen gerechnet; mehrere Stellen je Aufruf bündeln, damit die CVs nur einmal mitgelesen werden. | beantwortet |
 | Q103 | Admin: sofort vorläufige Farben aus dem kostenlosen Bedeutungsvergleich im Browser, Grenzfälle nachts durch Claude? (Anlass, Nutzer: „Aber die Farben werden ja auch erstellt beim gratis Modell ohne Claude, oder?“) | Nutzer: „Ja, sofort + nachts genauer (Empfohlen)“ | Admin bekommt beim Merken sofort Grün/Gelb aus Stufe 1, Grenzfälle als „wird heute Nacht geprüft“; der Nachtlauf ersetzt das vorläufige Ergebnis. Kein zusätzliches Kontingent. Ergänzt Q37. | entschieden |
+| Q104 | Welchen Bereich als Nächstes klären und planen? | Nutzer: „Phase 4g Stelle aus Link“ | Nächster Plan: 4g (Stelle aus Portal-Link auf der Originalquelle finden); Codex baut es erst nach 4b/4c. | entschieden |
+| Q105 | Freunde: Chromes eingebautes Modell muss erst heruntergeladen werden (mehrere GB, Klick nötig). Wie umgehen? (Anlass, Nutzer: „Hast du für Phase 6 keine Fragen an mich? Ist alles endgültig geklärt?“) | Nutzer: „Knopf anbieten (Empfohlen)“ | Hinweis mit Größe und Knopf „Genauer prüfen: Chrome-KI einmalig laden“; ohne Klick bleibt es bei Grün/Gelb. Ersetzt „kein Download auslösen“ im Plan 6b. | entschieden |
+| Q106 | „Wichtige Punkte“ nach Bedeutung (CLAUDE.md 6) fehlte im Konzept. Was damit tun? | Nutzer: „In 6b mitnehmen (Empfohlen)“ | Neuer Task 5 in Plan 6b: gleicher Bedeutungsvergleich im Browser, für alle, kein Claude-Kontingent. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -188,6 +191,8 @@ Fragetexte Q95–Q96 (Claude, 2026-11-19, Auswahl): Q95 die 200 neuesten (Empfoh
 Fragetexte Q97–Q100 (Claude, 2026-11-19, Auswahl): Q97 200 zuletzt geförderte (Empfohlen) / 200 mit höchster Förderung / nur DACH, dafür alle. Q98 erst ab 2 Listen zeigen (Empfohlen) / in Top-Arbeitgeber aufgehen / so lassen. Q99 nichts, war ein Versehen / schlag mir weitere vor. Q100 Phase 6 CV-Abgleich (Empfohlen) / Phase 5 Zusatzfilter / Phase 3 Google / Chrome-Erweiterung verteilen.
 
 Fragetexte Q101–Q102 (Claude, 2026-11-19, Auswahl): Q101 bis 10 / 10–30 / 30–70 / weiß ich noch nicht. Q102 1–2 / 3–4 / 5 oder mehr.
+
+Fragetexte Q104–Q106 (Claude, 2026-11-19, Auswahl): Q104 Phase 5 Filter (Empfohlen) / Phase 4g Stelle aus Link / Phase 3 Kalender/Gmail / Chrome-Erweiterung verteilen. Q105 Knopf anbieten (Empfohlen) / Nie laden / Stufe 2 bei Freunden weglassen. Q106 In 6b mitnehmen (Empfohlen) / Eigenes kleines Paket danach / Streichen.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

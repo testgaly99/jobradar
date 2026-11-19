@@ -12,6 +12,7 @@ Der Nutzer will bei jeder interessanten Stelle auf einen Blick sehen, welche Anf
 - Empfehlung der besten CV-Version nach „Muss vor Soll“; Gleichstand offen zeigen mit Umschalter, zuerst der Standard-CV (A10, Q27). Kein Prozentwert (A2).
 - Admin: automatisch nachts 03:00 deutscher Zeit über das Claude-Abo (Q29, Q32, Q37); dazu sofort vorläufige Farben aus Stufe 1 im Browser, die der Nachtlauf ersetzt (Q103).
 - Alle anderen Angemeldeten: kostenlos im eigenen Browser, ausgelöst beim Merken, beim CV-Upload und beim Öffnen einer Stelle (Q34, Q37).
+- „Wichtige Punkte“ (Konto-Seite) treffen auch nach Bedeutung, nicht nur nach Wortanfang – kostenlos im Browser mit demselben Bedeutungsmodell, für alle Angemeldeten (CLAUDE.md 6, Q106; kommt mit 6b).
 - Umfang: eigene gemerkte Stellen, dazu offene Stellen mit einem Stichwort aus „Automatisch abgleichen bei“ im Titel; gemerkte zuerst (A9, Q35, Q36).
 
 ## Nicht-Ziele
@@ -81,9 +82,10 @@ Der Nutzer will bei jeder interessanten Stelle auf einen Blick sehen, welche Anf
 2. CV-Text beim Upload im Browser auslesen (PDF und Word). Scans kann der Browser nicht lesen: Hinweis „Kein Text erkannt – bitte in der Vorschau einfügen“ (Claudes Entscheidung, weil Freunde kein Claude haben, Q38).
 3. Profil ohne Sprachmodell: Sätze und Stichpunkte des CV-Texts sind die Belege (Aussage = Beleg).
 4. Stufe 1 mit derselben Modelldatei (im Browser über ein ONNX-Laufzeitpaket), beim ersten Mal geladen und vom Browser zwischengespeichert.
-5. Stufe 2 nur, wenn Chromes eingebautes Modell verfügbar ist; sonst bleiben Grenzfälle Gelb mit dem Grund „nicht automatisch prüfbar“.
+5. Stufe 2 nur, wenn Chromes eingebautes Modell verfügbar ist; sonst bleiben Grenzfälle Gelb mit dem Grund „nicht automatisch prüfbar“. Muss Chrome das Modell erst herunterladen, zeigt die Seite einen Hinweis mit Größe und Knopf „Genauer prüfen: Chrome-KI einmalig laden“; nur dieser Klick startet den Download (Q105).
 6. Ergebnis wird gespeichert (gleiche Tabelle, Weg „browser“), damit es auf anderen Geräten sichtbar ist.
 7. Das CV verlässt das Gerät nur zur eigenen Datenbank; nie zu einem KI-Anbieter.
+9. **Wichtige Punkte nach Bedeutung (Q106):** Jeder Begriff der Konto-Seite wird mit den Stichpunkten der Anzeige verglichen (Stufe-1-Modell, eigene Schwelle); ein Treffer wird wie heute hervorgehoben, zusätzlich mit dem Hinweis „ähnlich: <Begriff>“. Wortanfang-Treffer bleiben unverändert.
 8. **Admin (Q103):** Dieselben Auslöser starten beim Admin nur Stufe 1 (kein Chrome-Modell). Das Ergebnis wird als vorläufig gespeichert (Weg „browser-vorlaeufig“); der Nachtlauf behandelt Stellen mit nur vorläufigem Ergebnis wie Stellen ohne Ergebnis und ersetzt es. Kein zusätzliches Abo-Kontingent. Damit kommen die Sofort-Farben für den Admin erst mit 6b.
 
 **Halte-Punkte:** (a) Migration 019, falls nötig; (b) Test mit Wegwerf-Konto `…@example.com` und künstlichem CV in Chrome mit und ohne eingebautes Modell; Nutzer sieht sich das Ergebnis an.
