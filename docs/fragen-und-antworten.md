@@ -263,6 +263,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q190 | Frühester Start aus der Kündigungsfrist: wie rechnen? | Nutzer: „Frist + Endtermin wählbar (Empfohlen)“ | Dauer + Endtermin (beliebig/Monatsende/Quartalsende/sofort), täglich neu; Start = Tag nach Fristende. | entschieden |
 | Q191 | Design Bewerben-Helfer freigeben? | Nutzer: „Das klingt sehr gut. Prüfe aber noch, wie bei jobradar gekennzeichnet wird, dass ich mich beworben habe“ | Geprüft: `aufBeworben`, Verlaufs-Trigger, „Beworben ✓“ in Liste/Stellenseite/Board; „Abgeschickt“ nutzt `aufBeworben`, Bewerbungsweg „Karriereseite“ wenn leer. Freigabe-Rückfrage Q192. | entschieden |
 | Q192 | Wie erfährt jobradar, dass eine vom Helfer ausgefüllte Bewerbung abgeschickt wurde? (Nutzer: „Ich meinte, wenn eine automatisierte Bewerbung gelaufen ist, wie erfährt Jobradar davon“) | Nutzer: „Alle vier kombiniert (Empfohlen)“ | Knopf, Danke-Seite erkennen (mit Rückgängig), Nachfrage nach 30 min, Eingangsbestätigung per Mail (Admin, Phase 3; Gmail liest dafür auch gemerkte mit Bewerben-Klick ≤ 14 Tage). | entschieden |
+| Q193 | Design Bewerben-Helfer (mit vier Abschick-Wegen) freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Warteschlange Nr. 11a. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -329,6 +330,8 @@ Fragetexte Q190 (Claude, 2026-11-19, Auswahl): Frist + Endtermin wählbar (Empfo
 Fragetexte Q191 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden (Antwort frei).
 
 Fragetexte Q192 (Claude, 2026-11-19, Auswahl): Alle vier kombiniert (Empfohlen) / Knopf + Danke-Seite + Nachfrage / Nur Knopf.
+
+Fragetexte Q193 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
