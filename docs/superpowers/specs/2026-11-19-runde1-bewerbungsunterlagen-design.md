@@ -63,6 +63,7 @@ Pakete (neu in `web/package.json`, Versionen fest, per `import()` erst beim Klic
 - `anschreiben_vorlagen(id, owner_id → auth.users on delete cascade, name, betreff default 'Bewerbung als {{stelle}}', text, geaendert_am)`; `text` höchstens 20 000 Zeichen
 - `bewerbung_anlagen(application_id → applications on delete cascade, document_id → documents on delete restrict, primary key (application_id, document_id))`
 - `contacts.anrede text check (anrede in ('frau','herr','ohne'))`, darf leer sein
+- `documents.anlage_art text check (anlage_art in ('zeugnis','zertifikat','sonstiges'))`, nur bei Anlagen; Pflichtauswahl beim Hochladen (Q182, für den Bewerben-Helfer)
 - RLS auf allen drei neuen Tabellen: nur `owner_id = auth.uid()`. Bei `bewerbung_anlagen` gilt das über die Bewerbung **und** das Dokument; beide müssen dem Nutzer gehören.
 - Konto löschen räumt über `cascade` mit ab. Die Dateien im Bucket entfernt die bestehende Löschlogik (`web/lib/nutzer-loeschen-kern.ts` löscht alles unter `<uid>/`, geprüft 2026-11-19).
 

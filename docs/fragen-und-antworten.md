@@ -242,6 +242,25 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q169 | Vorlagen für andere freigeben? | Nutzer: „Vorerst privat, aber Freunde sollen auch Vorlagen einfügen können“ | Jeder Nutzer hat eigene private Vorlagen; Teilen zwischen Konten in den Backlog. | entschieden |
 | Q170 | Design Runde 1 freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Codex-Warteschlange Nr. 0. | entschieden |
 | Q171 | Plan Runde 1 hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q172 | Was als Nächstes nach Runde 1? | Nutzer: „Runde Bewerben-Helfer planen“ | Planungsrunde Bewerben-Helfer beginnt (Claude hatte Task 0 von Runde 1 empfohlen). | entschieden |
+| Q173 | Bewerben-Helfer: Auslöser des Ausfüllens? | Nutzer: „Ganz automatisch“ | Formular füllt sich beim Öffnen aus jobradar von selbst (Claude hatte „Klick aufs Symbol“ empfohlen); braucht erweiterte Seitenberechtigung. | entschieden |
+| Q174 | Bewerben-Helfer: welche Felder? | Nutzer: „Kontaktdaten, Gehalt + Termine, CV + Anschreiben, Anlagen“ | Alle vier Gruppen. | entschieden |
+| Q175 | Bewerben-Helfer: Reichweite der Seiten-Berechtigung? | Nutzer: „Alle Websites“ | Automatisch auch auf eigenen Karriereseiten; Ausfüllen nur in Tabs, die jobradar geöffnet hat, nie auf LinkedIn/StepStone/XING (Claude hatte „Nur Bewerbungssysteme“ empfohlen). | entschieden |
+| Q176 | Status nach dem Absenden? | Nutzer: „Knopf „Abgeschickt“ (Empfohlen)“ | Kasten „Abgeschickt? → Als beworben markieren“ setzt Status Beworben und Datum. | entschieden |
+| Q177 | Nutzerfrage: „Brauche ich dafür nicht im Idealfall erst noch den Knopf "Bewerbung anlegen", damit ich die Dokumente aussuchen kann, bevor ich auf bewerben klicke?“ | Claude: ja | Beantwortet durch Q178. | entschieden |
+| Q178 | Wie vom Fund zum Bewerben, damit Unterlagen feststehen? | Nutzer: „Ich klicke auf Bebwerbung anlegen (unter merken). Dann wird der passende CV bereits ausgewählt und alle Zeugnisse sind per Default ausgewählt. Dann werde ich gefragt, ob ich ein Anschreiben einfügen möche. Dann kann ich auf bewerben klicken. Dafür braucht es eine sehr übersichtliche und seamless Benutzeroberfläche, damit das mit der minimalen Anzahl an Klicks geht“; Nachtrag: „Ich möchte, dass wenn ich auf Bewerbung anlegen klicke, der passende CV und alle Zeugnisse schon vorausgewählt sind“ | Knopf „Bewerbung anlegen“ unter „Merken“; CV und alle Anlagen vorausgewählt; Frage nach Anschreiben; dann „Bewerben“; minimale Klicks. | entschieden |
+| Q179 | Welcher CV vorausgewählt, bis Phase 6 da ist? | Nutzer: „Erst mit Phase 6“ | Bewerben-Helfer wird erst nach Phase 6 gebaut; dann ist der empfohlene CV vorausgewählt. | entschieden |
+| Q180 | Alle Anlagen oder nur Zeugnisse vorausgewählt? | Nutzer: „Gilt für alle Anlagen, aber Anlagen sollen trotzdem eine Art bekommen, damit beim automatischen Bewerben die richtigen Anlagen an die richtigen Orte hochgeladen werden können. Am besten gehen immer alle Anlagen mit, es werden aber nur die benötigten angehängt auf der Karriereseite“ | Alle Anlagen vorausgewählt; Art je Anlage; Helfer hängt je Upload-Feld nur passende an. | entschieden |
+| Q181 | Bewerben-Helfer: wie Formularfelder erkennen? | Nutzer: „A: Adapter + Allgemein (Empfohlen)“ | Je ein Adapter für Greenhouse, Personio, Workday, SmartRecruiters, Lever; sonst Erkennung über Beschriftungen. | entschieden |
+| Q182 | Art je Anlage schon in Runde 1? | Nutzer: „Ja, in Runde 1 (Empfohlen)“ | Plan Runde 1 wird ergänzt (Zeugnis/Zertifikat/Sonstiges). | entschieden |
+| Q183 | Nutzerwunsch: „Baue diese automatischen Bewerbungen unbedingt so, dass keiner merkt, dass das automatisch passiert. Also verschiedene Time delays, nicht zu schnell, und mir ist ganz wichtig, dass ich jede Bewerbung auf der Karriereseite reviewen kann bevor sie final eingereicht wird“ | siehe Q184 | Review vor dem Absenden: ja (Helfer klickt nie „Absenden“, markiert Ausgefülltes). Keine Tarnung (Q184). | entschieden |
+| Q184 | Ausfüllhilfe ohne Tarnung, Nutzer prüft und schickt selbst ab, Nutzungsbedingungen entscheiden je System? | Nutzer: „Einverstanden (Empfohlen)“; Nachtrag: „Prüfe, ob für diese Erweiterung, die wir gerade planen weitere Anpassungen in anderen Phasen erforderlich sind. Führe eine Umfassende Prüfung durch. Prüfe auch, ob das rechtlich überhaupt erlaubt ist“ | Keine Zufalls-Verzögerungen oder Tarnung; normales Autofill-Tempo; Prüfung Phasen + Recht läuft. | entschieden |
+| Q185 | Nutzerwunsch: „Auf vielen Seiten muss man sich ja zusätzlich registrieren. Ich möchte, dass du das auch automatisch für mich machst, falls ich dort noch keinen Account habe. Dafür muss eben auch geklärt werden, ob ich da schon einen Account habe“ | siehe Q186 | Registrierung vorausfüllen; Passwort nie in jobradar (CLAUDE.md 3.6); Häkchen, Captcha, Bestätigungsmail macht der Nutzer; Konto-Merker ohne Passwort. | entschieden |
+| Q186 | Registrierung auf Karriereseiten: so bauen? | Nutzer: „Vorausfüllen + Konto-Merker (Empfohlen)“ | Helfer füllt Registrierung vor, Chrome-Passwort-Manager, Konto-Merker je Seite ohne Passwort. | entschieden |
+| Q187 | Helfer auf Indeed/Glassdoor/Monster? | Nutzer: „Auf allen Portalen aus (Empfohlen)“ | Helfer nur auf Firmen-Karriereseiten und Bewerbungssystemen, auf allen `PORTALE` aus. | entschieden |
+| Q188 | Woher Gehaltswunsch, Kündigungsfrist, frühester Start? | Nutzer: „Standard im Profil, aber Kündigungsfrist und frühester Start sollen laufened aktualisiert werden. Also wenn ich heute 3 monate eingebe, dann aktualisert sich der früheste Start entsprechend mit“ | Standardwerte im Profil; frühester Start wird täglich aus Kündigungsfrist berechnet (Detail Q190). | entschieden |
+| Q189 | Kein CV-Ergebnis beim Klick auf „Bewerbung anlegen“? | Nutzer: „Abgleich sofort im Browser (Empfohlen)“ | Browser-Abgleich (6b) startet sofort; bei zwei Empfehlungen die erste, zweite als Alternative. | entschieden |
+| Q190 | Frühester Start aus der Kündigungsfrist: wie rechnen? | Nutzer: „Frist + Endtermin wählbar (Empfohlen)“ | Dauer + Endtermin (beliebig/Monatsende/Quartalsende/sofort), täglich neu; Start = Tag nach Fristende. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -286,6 +305,24 @@ Fragetexte Q166 (Claude, 2026-11-19, Auswahl): A: Im Browser (Empfohlen) / B: Au
 Fragetexte Q167–Q169 (Claude, 2026-11-19, Auswahl): Q167 Feld am Kontakt (Empfohlen) / Immer neutral / Selbst eintippen. Q168 Als Nächstes (Empfohlen) / Hinten anstellen. Q169 Backlog (Empfohlen) / Jetzt mitbauen (Antwort frei formuliert).
 
 Fragetexte Q170–Q171 (Claude, 2026-11-19, Auswahl): Q170 Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden. Q171 Ja, hochladen (Empfohlen) / Passt, noch nicht hochladen / Erst ändern.
+
+Fragetexte Q172 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Runde Bewerben-Helfer planen / Pause.
+
+Fragetexte Q173–Q174 (Claude, 2026-11-19, Runde Bewerben-Helfer, Auswahl): Q173 Klick aufs Symbol (Empfohlen) / Ganz automatisch. Q174 (Mehrfachauswahl) Kontaktdaten / Gehalt + Termine / CV + Anschreiben / Anlagen.
+
+Fragetexte Q175–Q176 (Claude, 2026-11-19, Auswahl): Q175 Nur Bewerbungssysteme (Empfohlen) / Alle Websites. Q176 Knopf „Abgeschickt“ (Empfohlen) / Automatisch erkennen / Nichts.
+
+Fragetexte Q178 (Claude, 2026-11-19, Auswahl): Schritt „Vorbereiten“ (Empfohlen) / Nur in der Bewerbung; Nutzer antwortete frei (siehe Tabelle).
+
+Fragetexte Q179–Q180 (Claude, 2026-11-19, Auswahl): Q179 Standard-CV (Empfohlen) / Neuester CV / Erst mit Phase 6. Q180 Alle Anlagen (Empfohlen) / Häkchen „Standard“ je Anlage (Antwort frei formuliert).
+
+Fragetexte Q181–Q182 (Claude, 2026-11-19, Auswahl): Q181 A: Adapter + Allgemein (Empfohlen) / B: Nur allgemein. Q182 Ja, in Runde 1 (Empfohlen) / Erst mit dem Helfer.
+
+Fragetexte Q184 (Claude, 2026-11-19, Auswahl): Einverstanden (Empfohlen) / Helfer weglassen.
+
+Fragetexte Q186–Q189 (Claude, 2026-11-19, Auswahl): Q186 Vorausfüllen + Konto-Merker (Empfohlen) / Backlog. Q187 Auf allen Portalen aus (Empfohlen) / Nur LinkedIn/StepStone/XING aus. Q188 Standard im Profil (Empfohlen) / Je Bewerbung (Antwort frei ergänzt). Q189 Abgleich sofort im Browser (Empfohlen) / Keinen vorauswählen. Vorab-Prüfung Recht und Phasen: `docs/phasen-vorarbeit.md` „Bewerben-Helfer: Vorab-Prüfung“.
+
+Fragetexte Q190 (Claude, 2026-11-19, Auswahl): Frist + Endtermin wählbar (Empfohlen) / Nur Dauer.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
