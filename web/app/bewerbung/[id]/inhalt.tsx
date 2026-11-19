@@ -18,6 +18,9 @@ import { ANLAGE_ARTEN } from "@/lib/dokumente";
 import { anzeigeText } from "@/lib/anschreiben";
 import type { Briefkopf } from "@/lib/brief-datei";
 import { dokumentHerunterladen } from "@/app/unterlagen/actions";
+import { SteckbriefKarte, Ueberblick } from "../../anzeige-bloecke";
+import { kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
+import { leseKi } from "@/lib/zusammenfassung";
 
 type Row = Record<string, string | number | string[] | null>;
 type Dok = { id: string; name: string | null; version_datum: string | null };
@@ -88,6 +91,13 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   const kopf = (bk.data ?? null) as Briefkopf | null;
   const ansprechpartner = personen.find((p) => p.art === "ansprechpartner") ?? null;
   const abschnitte = leseAbschnitte((a as { snapshot_abschnitte?: unknown }).snapshot_abschnitte);
+  // Link-Schnellstart (Migration 012): vom Nachtlauf nachgerüstete Zusammenfassung und Steckbrief der Firmenseite.
+  const nach = a as { nachruesten?: boolean; snapshot_ki?: unknown; snapshot_steckbrief?: unknown };
+  const kiSnap = leseKi(nach.snapshot_ki);
+  const steckSnap = nach.snapshot_steckbrief ? kurzzeile({
+    groesse: null, level: null, modell: null, vertrag: null, ort: null, erstmalsGesehen: null, branchen: [],
+    steckbrief: leseSteckbrief(nach.snapshot_steckbrief),
+  }, ["erfahrung", "gehalt", "sprachen", "sicherheit"]) : [];
   // B1: Kästen mit Inhalt sind offen, leere zugeklappt (eine Zeile statt eines leeren Formulars)
   const hat = (...felder: string[]) => felder.some((f) => { const x = row[f]; return x !== null && x !== undefined && x !== "" && !(Array.isArray(x) && x.length === 0); });
   const interesse = typeof row.interesse === "number" ? row.interesse : null;
@@ -336,6 +346,9 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         </form>
       </details>
 
+      {nach.nachruesten && <p className="meldung hinweis">Gliederung und Zusammenfassung folgen nach dem nächsten Nachtlauf.</p>}
+      {kiSnap && <Ueberblick ki={kiSnap} ohne="" />}
+      <SteckbriefKarte eintraege={steckSnap} />
       <details className="karte block">
         <summary><h2>Snapshot der Anzeige</h2></summary>
         <div className="kopfzeile"><DruckKnopf /></div>

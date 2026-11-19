@@ -47,3 +47,17 @@ test("Schritt 1d: nur ohne Treffer, ohne ATS, nicht für Portale, mit Abrufgrenz
   const k = readFileSync(new URL("../app/bewerbungen/knoepfe.tsx", import.meta.url), "utf8");
   assert.ok(k.includes("Diese Seite enthält keine maschinenlesbare Anzeige. Bitte Firma und Titel eintragen oder den Anzeigentext einfügen."));
 });
+
+test("Nachgerüstete Snapshots im Format des Nachtlaufs werden gelesen", async () => {
+  const { leseKi } = await import("../lib/zusammenfassung.ts");
+  const { kurzzeile, leseSteckbrief } = await import("../lib/steckbrief.ts");
+  // so speichert scraper/nachruesten.py snapshot_ki (ohne studium/taetigkeit) und snapshot_steckbrief
+  const ki = { aufgaben: ["Abschluss", "Reporting", "Planung"], rahmen: ["Hybrid"], abschluss: null, erfahrung: "3 Jahre",
+    muss: ["SAP"], benefits: [], sprache: "de" };
+  assert.deepEqual(leseKi(ki)?.aufgaben, ki.aufgaben);
+  assert.equal(leseKi(null), null);
+  const sb = leseSteckbrief({ erfahrung_jahre: 3, sprachen: [{ sprache: "Deutsch", niveau: "C1" }], gehalt: null, sicherheitsueberpruefung: false });
+  const e = kurzzeile({ groesse: null, level: null, modell: null, vertrag: null, ort: null, erstmalsGesehen: null, branchen: [], steckbrief: sb },
+    ["erfahrung", "gehalt", "sprachen", "sicherheit"]);
+  assert.deepEqual(e.map((x) => x.text), ["ab 3 Jahren Erfahrung", "Deutsch C1"]);
+});
