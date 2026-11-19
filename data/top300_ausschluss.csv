@@ -1,0 +1,66 @@
+art,wert,bezeichnung,grund
+typ,Q163740,Non-Profit-Organisation,Wohlfahrt (Nutzer 2026-11-19)
+typ,Q336473,Hilfsorganisation,Wohlfahrt
+typ,Q708676,karitative Vereinigung,Wohlfahrt
+typ,Q76515363,diakonische Einrichtung,Wohlfahrt
+typ,Q1208280,Diakonie,Wohlfahrt
+typ,Q113805953,gemeinnützige Körperschaft,Wohlfahrt
+typ,Q17084016,gemeinnütziges Unternehmen,Wohlfahrt
+typ,Q1071015,Sozialunternehmen,Wohlfahrt
+typ,Q157031,Stiftung,Wohlfahrt
+typ,Q15911314,Verein,Wohlfahrt
+typ,Q48204,Freiwilligenverein,Wohlfahrt
+typ,Q18744396,Landesverband,Wohlfahrt
+typ,Q105208650,Bezirksverband,Wohlfahrt
+typ,Q1156831,Dachverband,Wohlfahrt
+typ,Q1666019,Interessenverband,Wohlfahrt
+typ,Q3918,Universität,Universitäten (Nutzer 2026-11-19)
+typ,Q875538,staatliche Universität,Universitäten
+typ,Q1767829,Volluniversität,Universitäten
+typ,Q115427560,Exzellenzuniversität,Universitäten
+typ,Q62078547,staatliche Forschungsuniversität,Universitäten
+typ,Q1365560,Fachhochschule (Deutschland),Universitäten
+typ,Q23002037,öffentliche Bildungseinrichtung,Universitäten
+typ,Q56525733,European University Alliance,Universitäten
+typ,Q45400320,Open-Access-Herausgeber,Universitäten
+typ,Q16917,Krankenhaus,Kliniken und Pflegeheime (Q85)
+typ,Q1059324,Universitätsklinikum,Kliniken und Pflegeheime
+typ,Q1813474,Lehrkrankenhaus,Kliniken und Pflegeheime
+typ,Q4287745,Gesundheitsorganisation,Kliniken und Pflegeheime
+typ,Q1774587,Klinikgruppe,Kliniken und Pflegeheime
+typ,Q123527120,Klinikverbund,Kliniken und Pflegeheime
+typ,Q30114662,Pflegeeinrichtung für ältere Menschen,Kliniken und Pflegeheime
+typ,Q772547,Streitkräfte,Bundeswehr (Nutzer 2026-11-19)
+typ,Q37726,Heer,Bundeswehr
+typ,Q61883,Luftstreitkräfte,Bundeswehr
+typ,Q4508,Seestreitkräfte,Bundeswehr
+typ,Q781132,Teilstreitkraft,Bundeswehr
+typ,Q98533657,Organisationsbereich,Bundeswehr
+typ,Q6667200,militärischer Sanitätsdienst,Bundeswehr
+typ,Q143467,Unified Combatant Command,Bundeswehr
+typ,Q35535,Polizei,Polizei (Nutzer 2026-11-19)
+typ,Q20821044,Bundespolizei,Polizei
+typ,Q651031,Landespolizei,Polizei
+typ,Q1679012,Kreispolizeibehörde,Polizei
+typ,Q2101700,Polizeidirektion,Polizei
+typ,Q87816084,Oberste Landesbehörde,Landesministerien (Q85)
+name,klinik,,Kliniken und Pflegeheime (Name)
+name,krankenhaus,,Kliniken und Pflegeheime (Name)
+name,hospital,,Kliniken und Pflegeheime (Name)
+name,pflege,,Kliniken und Pflegeheime (Name)
+name,senior,,Kliniken und Pflegeheime (Name)
+name,bundeswehr,,Bundeswehr (Name)
+name,polizei,,Polizei (Name)
+typ,Q327333,Behörde,Behörden (Q91)
+typ,Q99934885,Bundesoberbehörde,Behörden
+typ,Q99935030,Oberste Bundesbehörde,Behörden
+typ,Q314024,Bundesbehörde in Deutschland,Behörden
+typ,Q1005420,Bundesamt,Behörden
+typ,Q896375,Bundesministerium,Behörden
+typ,Q1802122,Landesbehörde,Behörden
+typ,Q6501447,Kommunalverwaltung,Behörden
+typ,Q6621940,kommunale Selbstverwaltung,Behörden
+typ,Q1148446,Patentamt,Behörden
+behalten,Q56034,Auswärtiges Amt,Ausnahme (Q91)
+behalten,Q272969,Bundesnachrichtendienst,Ausnahme (Q91)
+behalten,Q162222,Deutsche Bundesbank,öffentliche Bank (Q85)

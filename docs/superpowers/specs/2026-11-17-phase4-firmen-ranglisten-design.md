@@ -125,6 +125,18 @@ Baut auf 4b, 4c-2 und 4c-3 auf; der Schnellstart (JobPosting von beliebigen Firm
 7. **Claude-Recherche (Q62):** kein nächtlicher Workflow. Der Einrichtungslauf schreibt die Liste „Karriereseite nicht gefunden“ als Datei bzw. in den Bericht; Admin und Claude Code arbeiten sie am Morgen in einer Sitzung ab und ändern `data/companies.csv` (Nutzer gibt frei). Codex baut nur die Liste, nicht die Recherche.
 8. **Remote weltweit (4a):** zählt, wenn der Ortstext oder das Remote-Feld „worldwide“, „anywhere“, „global“, „weltweit“ oder „remote“ ohne Ländernamen enthält und kein anderes Land ausdrücklich verlangt wird.
 
+## Änderungen nach Q80–Q93 (2026-11-19, gehen 4c-1 und Q57 vor)
+
+| Quelle | Regel |
+|---|---|
+| EU R&D Scoreboard | nur Rang 1–250 weltweit (keine EU-800) |
+| Börsenindizes | DAX, MDAX, SDAX, TecDAX vollständig |
+| EPA | Top 100 Patentanmelder, Rang nur Admin |
+| Top 300 Arbeitgeber (ersetzt „Top 20 je Branche“) | Wikidata, Sitz-Land DE, ≥ 1.000 Mitarbeitende, nicht aufgelöst, Ausschluss nach `data/top300_ausschluss.csv` (Typ, Namensteil, Ausnahmen „behalten“), die 300 größten; automatisch live, Fehler über `firmen_korrekturen.csv`. Probe 2026-11-19: 1.156 Kandidaten, 636 nach Ausschluss, Platz 300 hat 3.500 Mitarbeitende |
+| EIC | Accelerator, ganz Europa, ohne Rang; Datei 1×/Jahr vom Nutzer |
+| entfällt | Wikipedia-Liste (Q77), Behörden/Forschung (Q82 ersetzt Q42), Top 20 je Branche (Q80) |
+| heutige 13 Firmen | werden mit 4e private Firmen des Admins (Q93) |
+
 ## Quellen-Formate (Task 0, geprüft 2026-11-19)
 
 | Quelle | Abruf | Format | Lizenz | Hinweise |

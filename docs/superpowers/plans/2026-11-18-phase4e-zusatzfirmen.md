@@ -14,7 +14,7 @@
 
 - Private Firmen und ihre Stellen erscheinen für niemanden außer den eingetragenen Nutzern: nicht in Stellenliste, Facetten (`facetten`), Ranglisten-Funktionen, `laeufe`, `data/bericht.md`, GitHub-Issues (4f) oder Telegram-Digest anderer.
 - Unterstützte Portale nur, wenn der Python-Nachtlauf sie abrufen kann: `greenhouse`, `ashby`, `personio`, `recruitee` (Q75; + später neue Adapter aus 4c-3). Sonst Meldung (exakt): „Diese Seite kann jobradar nicht lesen.“
-- Höchstens 50 Zusatzfirmen je Nutzer (Q75); Formular-Abrufe höchstens 10 je Minute je Nutzer (`darfAbrufen` aus dem Link-Schnellstart).
+- Höchstens 50 Zusatzfirmen je Nutzer (Q75); **für den Admin gilt kein Limit** (Nutzer 2026-11-19); Formular-Abrufe höchstens 10 je Minute je Nutzer (`darfAbrufen` aus dem Link-Schnellstart).
 - Keine Claude-Recherche für Nicht-Admins (Q38).
 - Hinweistext im Formular und in der Datenschutzerklärung (exakt): „Der Admin sieht den Firmennamen und kann die Firma für alle freigeben.“
 - Meldeliste für den Admin zeigt nie Nutzernamen oder E-Mails, nur Firmenname, Link, Portal, Anzahl Nutzer.
@@ -59,11 +59,11 @@
 - `UNTERSTUETZT = ["greenhouse", "ashby", "personio", "recruitee"] as const`. Recruitee kennt das Web bisher nicht: `analysiereLink` (`web/lib/link-import.ts`) erkennt zusätzlich `https://<id>.recruitee.com/…` (Typ `recruitee`, `id` = Subdomain), `alleStellen` (`web/lib/ats-abruf.ts`) liest `https://<id>.recruitee.com/api/offers/` (gleiches Format wie `scraper/ats/recruitee.py`, Fixture `tests/fixtures/recruitee_quantum.json` wiederverwenden).
 - `erkennePortal(link: string, dep?): Promise<{ typ: string; id: string } | { fehler: string }>`: erst `analysiereLink`; ohne Treffer Seite mit `holeFirmenseite` holen und alle `href` durch `analysiereLink`; genau ein unterstütztes Portal → Treffer; keins/mehrere/nicht unterstützt → `{ fehler: "Diese Seite kann jobradar nicht lesen." }`.
 - `pruefeZusatzfirma(name: string, link: string, dep?)`: Name 2–80 Zeichen; Portal erkennen; Probeabruf `alleStellen` → mindestens eine Stelle, sonst `„Bei dieser Firma hat jobradar gerade keine Stellen gefunden.“`.
-- Action `zusatzfirmaHinzufuegen(formData)`: Nutzer prüfen, Limit 50, `pruefeZusatzfirma`; mit `createAdminClient()`: gibt es eine Firma mit gleichem `ats_typ` + `ats_id` → `fuer_alle` → Meldung Review Focus 3; privat → Nutzer in `firmen_sichtbar` eintragen; sonst neue Firma (`herkunft 'nutzer'`, `fuer_alle false`, `status 'aktiv'`, `aktiv true`, `careers_url` = Link) + Zeile in `firmen_sichtbar`. Namensgleichheit mit einer anderen Firma (anderes Portal) → Name bekommt Zusatz „ (eigene)“.
+- Action `zusatzfirmaHinzufuegen(formData)`: Nutzer prüfen, Limit 50 (nicht für `nutzer.admin`), `pruefeZusatzfirma`; mit `createAdminClient()`: gibt es eine Firma mit gleichem `ats_typ` + `ats_id` → `fuer_alle` → Meldung Review Focus 3; privat → Nutzer in `firmen_sichtbar` eintragen; sonst neue Firma (`herkunft 'nutzer'`, `fuer_alle false`, `status 'aktiv'`, `aktiv true`, `careers_url` = Link) + Zeile in `firmen_sichtbar`. Namensgleichheit mit einer anderen Firma (anderes Portal) → Name bekommt Zusatz „ (eigene)“.
 - Action `zusatzfirmaEntfernen(formData)`: eigene Zeile in `firmen_sichtbar` löschen.
 - Konto-Abschnitt „Eigene Firmen“: Liste (Name, Portal, Entfernen), Formular Name + Link, Hinweistext aus Global Constraints. Datenschutzerklärung: ein Satz mit demselben Hinweis.
 
-- [ ] **Step 1: Tests:** Greenhouse-Link direkt → Treffer ohne Seitenabruf; Recruitee-Link → Treffer, `alleStellen` liest die Fixture; 51. Firma → Meldung „Du kannst höchstens 50 eigene Firmen anlegen.“; Karriereseite mit einem Personio-Link → Treffer; mit zwei Portalen → Fehler; Workday-Link → Fehler; keine Stellen → Meldung; Review Focus 2 und 3 mit Supabase-Attrappe.
+- [ ] **Step 1: Tests:** Greenhouse-Link direkt → Treffer ohne Seitenabruf; Recruitee-Link → Treffer, `alleStellen` liest die Fixture; 51. Firma → Meldung „Du kannst höchstens 50 eigene Firmen anlegen.“; Admin mit 51. Firma → angelegt; Karriereseite mit einem Personio-Link → Treffer; mit zwei Portalen → Fehler; Workday-Link → Fehler; keine Stellen → Meldung; Review Focus 2 und 3 mit Supabase-Attrappe.
 - [ ] **Step 2–4:** `npm test` FAIL → umsetzen → `npm test`, `npx tsc --noEmit`, `npm run build` grün.
 - [ ] **Step 5: Commit** — „4e: eigene Firmen auf der Konto-Seite“ + `Agent: Codex`.
 
@@ -96,6 +96,15 @@
 - [ ] **Step 1: Tests:** Nicht-Admin → Action bricht ab, nichts geschrieben; Freigabe für alle setzt nur `fuer_alle`, nicht `herkunft`; Meldeliste-Daten enthalten keine Felder `owner_id`/`email`.
 - [ ] **Step 2–4:** FAIL → umsetzen → `npm test`, `npx tsc --noEmit`, `npm run build` grün.
 - [ ] **Step 5: Commit** — „4e: Admin-Meldeliste für Zusatzfirmen“ + `Agent: Codex`.
+
+### Task 4b: Die 13 heutigen Firmen werden private Firmen des Admins (Q83/Q93)
+
+**Files:** Modify: `scraper/run.py` oder eigenes kleines Skript `scraper/bestand_umziehen.py`, `data/companies.csv`; Test: `tests/test_run.py`
+
+- Firmen mit `quellen == ["bestand"]` (nur diese Herkunft) werden in der Datenbank zu `herkunft='nutzer'`, `fuer_alle=false`, mit einer Zeile in `firmen_sichtbar` für den Admin (Kennung aus `admins`, 4d). Danach werden sie aus `data/companies.csv` entfernt (Stellen, Bewerbungen und Logos bleiben, weil die Firma in der Datenbank weiterlebt). Firmen mit `bestand` **und** einer Liste (dm, Porsche, Bundesbank) verlieren nur `bestand`.
+- Läuft einmal im ersten Nachtlauf nach Migration 016, danach nie wieder (prüft, ob noch `bestand`-Zeilen da sind). Ohne `admins`-Eintrag: nichts tun, Hinweis im Bericht.
+- [ ] Tests: `bestand`-Firma → privat für Admin, nicht mehr in der CSV; `bestand;dax` → bleibt für alle, nur `dax`; ohne Admin → unverändert.
+- [ ] Commit — „4e: heutige Firmen werden private Firmen des Admins“ + `Agent: Codex`.
 
 ### Task 5: Doku und Halt
 

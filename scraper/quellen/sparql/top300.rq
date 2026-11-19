@@ -1,0 +1,15 @@
+# Größte Arbeitgeber mit Sitz-Land Deutschland (Wikidata, CC0) für die Liste "Top 300 Arbeitgeber" (Q80).
+# Bewusst ohne Unterklassen-Prüfung (P279*): läuft in Zeitüberschreitung. Stattdessen liefert die Abfrage die direkten
+# Typen (P31); das Programm schließt nach data/top300_ausschluss.csv aus (Typ oder Namensteil), sortiert nach
+# Mitarbeitenden und nimmt die ersten 300. Aufgelöste Organisationen (P576) fehlen schon hier.
+SELECT ?firma ?name (MAX(?ma) AS ?mitarbeitende)
+       (GROUP_CONCAT(DISTINCT STRAFTER(STR(?typ), "entity/"); separator=" ") AS ?typen)
+       (GROUP_CONCAT(DISTINCT STRAFTER(STR(?branche), "entity/"); separator=" ") AS ?branchen)
+       (SAMPLE(?web) AS ?website) WHERE {
+  ?firma wdt:P17 wd:Q183 ; wdt:P1128 ?ma . FILTER(?ma >= 1000)
+  FILTER NOT EXISTS { ?firma wdt:P576 ?aufgeloest }
+  OPTIONAL { ?firma wdt:P31 ?typ }
+  OPTIONAL { ?firma wdt:P452 ?branche }
+  OPTIONAL { ?firma wdt:P856 ?web }
+  ?firma rdfs:label ?name FILTER(lang(?name) = "de")
+} GROUP BY ?firma ?name

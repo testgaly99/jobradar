@@ -1,0 +1,912 @@
+{
+ "head": {
+  "vars": [
+   "firma",
+   "name",
+   "mitarbeitende",
+   "typen",
+   "branchen",
+   "website"
+  ]
+ },
+ "results": {
+  "bindings": [
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q156578"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Volkswagen AG"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "672800"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q161726 Q778575 Q786820 Q891723 Q4830453"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.volkswagenag.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q190117"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q489815"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "DHL"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "590000"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q783794 Q1529128 Q4830453 Q6881511"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.dhl.com"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q177777 Q319224 Q651658"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q157645"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "DHL AG"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "547692"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q891723 Q1529128 Q4830453 Q6881511"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.dpdhl.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q49845 Q177777 Q107605278"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q712034"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Schwarz-Gruppe"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "442000"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q219577 Q4830453"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://gruppe.schwarz/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q177777 Q180388 Q483639 Q540912"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q234021"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Robert Bosch"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "413000"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q161726 Q641347 Q778575 Q4830453"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.bosch.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q2986369 Q3477381 Q56604188"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q701755"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "EDEKA"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "413000"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q4830453 Q18043413 Q25508351"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.edeka.de"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q126793"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q9322"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Deutsche Bahn"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "336990"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q206361 Q249556 Q270791"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.deutschebahn.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q177777 Q3565868 Q112166041"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q81230"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Siemens"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "320000"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q778575 Q4830453 Q6881511"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.siemens.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q43035 Q101333 Q327092 Q609131 Q1326885 Q1786253 Q2401742 Q5358497 Q6554101 Q17177506"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q705361"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Fresenius"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "316920"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q891723 Q21980538"
+    },
+    "website": {
+     "type": "uri",
+     "value": "http://fresenius.com"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q507443 Q15067276"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q2307760"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Sparkassen-Finanzgruppe"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "280500"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q1976393 Q4830453"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.dsgv.de/de/sparkassen-finanzgruppe/index.html"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q837171"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q573266"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "REWE Group"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "224931"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q507619 Q778575"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.rewe-group.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q49389 Q126793 Q484847 Q1502514 Q15825471"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q163241"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Continental AG"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "202763"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q891723 Q3477381"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://continental.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q190117 Q17018236 Q29585181 Q107598157"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q41171672"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Aldi Süd"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "200410"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q206361 Q261428 Q18043413"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.aldi-sued.de/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q126793"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q9396"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Deutsche Telekom"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "199652"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q11371 Q891723 Q1941618 Q2401749 Q4830453"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.telekom.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q2401742 Q56598901"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q151954"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Lidl"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "178741"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q261428 Q4830453 Q18043413"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.lidl.de"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q126793 Q15825471"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q1533296"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Prosegur"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "175000"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q891723 Q1116826 Q4830453"
+    },
+    "website": {
+     "type": "uri",
+     "value": "http://prosegur.de/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q1499541 Q125504123"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q16968817"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "REWE"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "170000"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q4830453 Q18043413"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.rewe.de/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q126793"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q27530"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Mercedes-Benz Group"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "168336"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q43229 Q786820 Q891723 Q4830453 Q6881511"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://group.mercedes-benz.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q190117"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q137910"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "thyssenkrupp AG"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "167961"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q778575 Q891723 Q4830453"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.thyssenkrupp.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q392933 Q2285982"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q156913"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Bertelsmann"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "164691"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q206361 Q1320047 Q91615393"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.bertelsmann.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q446760 Q7406919 Q56611639"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q76754241"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Mercedes-Benz AG"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "158000"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q786820 Q4830453"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.mercedes-benz.de/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q190117"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q487292"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Allianz SE"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "157883"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q43229 Q891723 Q2143354 Q4830453"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.allianz.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q43183 Q837171 Q2518196"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q26678"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "BMW"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "149475"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q786820 Q891723 Q6881511 Q15081030"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.bmw.com"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q190117 Q4828699 Q29584629 Q112122778"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q62589018"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Lufthansa Group"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "138353"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q46970 Q206361"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.lufthansagroup.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q1875606"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q650259"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Fresenius Medical Care"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "125364"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q891723 Q4830453 Q63383584"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://fmcna.com/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q31207 Q507443 Q63383285"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q55044"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Ludwig-Maximilians-Universität München"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "16049"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q1767829 Q62078547 Q115427560"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.lmu.de/"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q56010"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Bundeswehr"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "186221"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q772547"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.bundeswehr.de/en"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q56026"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Bundespolizei"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "42500"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q20821044"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.bundespolizei.de/"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q29508174"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Deutscher Caritasverband"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "693082"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q163740 Q1156831 Q23955632 Q113805953"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.caritas-germany.org"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q1361384"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Landeshauptstadt München"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "44868"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q327333 Q6501447 Q6621940 Q15734684"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://stadt.muenchen.de/rathaus.html"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q1254151"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Helios Kliniken"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "72687"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q21980538"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.helios-gesundheit.de"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q56034"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Auswärtiges Amt"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "13627"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q327333 Q896375 Q20901295"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.auswaertiges-amt.de/"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q162222"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Deutsche Bundesbank"
+    },
+    "mitarbeitende": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+     "type": "literal",
+     "value": "10970"
+    },
+    "typen": {
+     "type": "literal",
+     "value": "Q66344 Q99935030"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.bundesbank.de/"
+    },
+    "branchen": {
+     "type": "literal",
+     "value": "Q294217 Q29584334"
+    }
+   }
+  ]
+ }
+}
