@@ -406,3 +406,8 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 - Gebaut statt Codex nach „Mach weiter mit der nächsten Phase“. Commits be652a9, b104ffb, 3c5262a, afc6851.
 - Tests: `cd web && npm test` → 341 bestanden; `npx tsc --noEmit` ohne Fehler; `npm run pruefe:build` und `npm run pruefe:browser` bestanden; `py -B -m pruefe_offline` → 811 bestanden.
 - Keine Live-Abrufe, keine Live-DB, keine Migration eingespielt, nichts hochgeladen. Offen: Migration 012 (Nutzer), 10 echte Firmen-Links und Morgenprüfung (Claude).
+
+## 2026-11-20 – Claude: Phase 4a Remote weltweit und Whitelist (Warteschlange Nr. 2)
+- Gebaut statt Codex nach „Arbeite weiter an der nächsten Aufgabe“. Commits 126bba2, cfeda57, 7ee3c22, e98d59f.
+- Tests: `cd web && npm test` → 344 bestanden; `npx tsc --noEmit` ohne Fehler; `npm run pruefe:build` und `npm run pruefe:browser` bestanden; `py -B -m pruefe_offline` → 825 bestanden.
+- Nicht gelaufen: `tests/sql/whitelist.sql` (kein lokales Postgres). Keine Live-DB, keine Migration eingespielt, nichts hochgeladen.
