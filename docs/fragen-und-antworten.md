@@ -227,6 +227,19 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q154 | Gespeicherte Mails beim Trennen? | Nutzer: „Behalten (Empfohlen)“ | Bleiben; Knopf „Gespeicherte Mails löschen“. | entschieden |
 | Q155 | Erinnerung für jährliche Hand-Quellen der Rankings mit Phase 3? | Nutzer: „Ja, per Telegram (Empfohlen)“ | Telegram, wenn Quelle älter als 12 Monate. | entschieden |
 | Q156 | Markierung „Anzeige offline“ mitnehmen? | Nutzer: „Ja, mit Phase 3 (Empfohlen)“ | Hinweis in der Bewerbung plus Telegram. | entschieden |
+| Q157 | Runde 1: In welcher Form liegen Anschreiben-Vorlagen in jobradar? | Nutzer: „Text + Briefkopf (Empfohlen)“ | Word-Datei hochladen oder Text einfügen, jobradar übernimmt nur den Text; Briefkopf einmal eintragen; PDF und Word im gleichen DIN-5008-Layout. | entschieden |
+| Q158 | Fertiges Anschreiben an der Bewerbung speichern? | Nutzer: „Ja, an der Bewerbung (Empfohlen)“ | Wird als Anschreiben der Bewerbung abgelegt (bestehendes Feld). | entschieden |
+| Q159 | „Mit Claude bearbeiten“: Rückweg des Texts? | Nutzer: „Claude macht die Datei“ | jobradar öffnet claude.ai mit Vorlage + Anzeige; Claude erstellt das Dokument selbst, kein Rückweg in jobradar (Claude hatte „Zurück einfügen“ empfohlen). | entschieden |
+| Q160 | „Über meine Seite bewerben“ (Erweiterung füllt Karriereseite vor, Nutzer schickt selbst ab): wann planen? | Nutzer: „Eigene Runde danach (Empfohlen)“ | Eigene Runde „Bewerben-Helfer“ direkt nach Runde 1, mit Prüfung der Nutzungsbedingungen der ATS; nie auf LinkedIn/StepStone/XING. | entschieden |
+| Q161 | Knopf „Endfassung hochladen“ nach Claude? | Nutzer: „Ja, Knopf (Empfohlen)“ | Hochgeladene Endfassung ersetzt das gespeicherte Anschreiben der Bewerbung. | entschieden |
+| Q162 | Textbausteine noch nötig? | Nutzer: „Weglassen (Empfohlen)“ | Nicht bauen; Backlog. Vorlagen + Claude decken es ab. | entschieden |
+| Q163 | Anlagen einmal hochladen und je Bewerbung anhaken? | Nutzer: „Ja (Empfohlen)“ | Ja; Grundlage für den Bewerben-Helfer. | entschieden |
+| Q164 | Wo Vorlagen, Briefkopf, CVs, Anlagen verwalten? | Nutzer: „Reiter „Unterlagen“ (Empfohlen)“ | Reiter kommt als „Unterlagen“ zurück (beantwortet Backlog „Dokumente klären“). | entschieden |
+| Q165 | Bewerbungsformular neu definieren: wann? | Nutzer: „Eigene Runde (Empfohlen)“ | Eigene Runde nach dem Bewerben-Helfer. | entschieden |
+| Q166 | Runde 1: Wie entstehen PDF und Word des Anschreibens? | Nutzer: „A: Im Browser (Empfohlen)“ | Im Browser mit docx, pdfmake, mammoth (dynamisch geladen); PDF wird direkt an der Bewerbung gespeichert. | entschieden |
+| Q167 | Platzhalter {{anrede}}: woher? | Nutzer: „Feld am Kontakt (Empfohlen)“ | Feld Frau/Herr/ohne am Ansprechpartner; sonst „Sehr geehrte Damen und Herren,“. | entschieden |
+| Q168 | Wann baut Codex Runde 1? | Nutzer: „Als Nächstes (Empfohlen)“ | Direkt nach dem laufenden Paket in der Codex-Warteschlange. | entschieden |
+| Q169 | Vorlagen für andere freigeben? | Nutzer: „Vorerst privat, aber Freunde sollen auch Vorlagen einfügen können“ | Jeder Nutzer hat eigene private Vorlagen; Teilen zwischen Konten in den Backlog. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -259,6 +272,16 @@ Fragetexte Q135–Q136 (Claude, 2026-11-19, Auswahl): Q135 „LinkedIn verbietet
 Fragetexte Q138–Q150 (Claude, 2026-11-19, Auswahl): Q138 Nur für mich (Empfohlen) / Auch für Freunde / Erst ich, Freunde später. Q139 Interview-Briefing / Status-Vorschläge aus Gmail / Nachfass-Erinnerung / Mailverlauf an Bewerbung (Antwort mit freiem Zusatz). Q140 Eigener Kalender (Empfohlen) / Nur lesen. Q141 Telegram (Empfohlen) / E-Mail / Beides. Q142 Setzen, mit Hinweis (Empfohlen) / Alles automatisch, still / Nur vorschlagen. Q143 Firma + Bewerbungssysteme (Empfohlen) / Nur Firmen-Domain / Alles mit Firmennamen. Q144 Volltext (Empfohlen) / Nur Kopfzeile + Link. Q145 Kurz + Link (Empfohlen) / Alles in Telegram; Claude erstellt sie (Empfohlen) / Nur meine Notizen. Q146 A: GitHub-Secret (Empfohlen) / B: Knopf auf der Website. Q147 Ja, so bauen (Empfohlen) / Nein, wie im Konzept. Q148 Mein heutiges Postfach / Eigene Bewerbungs-Adresse / Entscheide ich noch. Q149 freier Nachtrag. Q150 Stündlich (Empfohlen) / Einmal täglich / Alle 15 Minuten.
 
 Fragetexte Q151–Q156 (Claude, 2026-11-19, Auswahl): Q151 Nicht sichern (Empfohlen) / Mitsichern. Q152 Mit Firma (Empfohlen) / Ohne Firma. Q153 Solange die Bewerbung (Empfohlen) / 12 Monate nach Abschluss / 3 Monate nach Abschluss. Q154 Behalten (Empfohlen) / Mit löschen. Q155 Ja, per Telegram (Empfohlen) / Backlog. Q156 Ja, mit Phase 3 (Empfohlen) / Ja, ohne Telegram / Backlog. Nutzerauftrag dazu: „Prüfe alles rund um Datenschutz, was zu prüfen ist“ und „Wie würde das aber für mich laufen? Also die Google Verbindung. Bewerte generell alles rund um die Google Verbindung und gib mir eine Analyse dazu“.
+
+Fragetexte Q157–Q159 (Claude, 2026-11-19, Runde 1 Bewerbungsunterlagen, Auswahl): Q157 Text + Briefkopf (Empfohlen) / Eigene Word-Datei / Nur Word, kein PDF. Q158 Ja, an der Bewerbung (Empfohlen) / Nur merken, welche Vorlage / Nichts speichern. Q159 Zurück einfügen (Empfohlen) / Claude macht die Datei. Nutzerwunsch dazu: „Ich werde mehrere Vorlagen für Anschreiben hochladen und möchte dann zwei buttons haben, entweder Anschreiben übernehmen, dann wird einfach Firma etc eingetragen und ein Download button (download pdf und download word), oder Anschreiben edit with Claude, dann öffnet sich einfach Claude im neuen Tab“. Nachtrag (offen, Q160): „Können wir zusätzlich einbauen, dass ich mich über meine Seite bewerben kann? Dass also alles, was möglich ist, bereits auf den Karriereseiten vorausgefüllt wird, sobald ich auf "Bewerben" klicke“.
+
+Fragetexte Q160–Q161 (Claude, 2026-11-19, Auswahl): Q160 Eigene Runde danach (Empfohlen) / In Runde 1 mit dazu / Backlog. Q161 Ja, Knopf (Empfohlen) / Beide behalten / Nein.
+
+Fragetexte Q162–Q165 (Claude, 2026-11-19, Auswahl): Q162 Weglassen (Empfohlen) / Ja, einbauen. Q163 Ja (Empfohlen) / Nein. Q164 Reiter „Unterlagen“ (Empfohlen) / Auf der Konto-Seite. Q165 Eigene Runde (Empfohlen) / In Runde 1 mit dazu.
+
+Fragetexte Q166 (Claude, 2026-11-19, Auswahl): A: Im Browser (Empfohlen) / B: Auf dem Server / C: Druckfunktion. Zuvor als Textfrage gestellt; Nutzer daraufhin: „Alle Fragen sollen immer klickbar sein. Speicher diese Regel ab“ (gespeichert im Claude-Gedächtnis).
+
+Fragetexte Q167–Q169 (Claude, 2026-11-19, Auswahl): Q167 Feld am Kontakt (Empfohlen) / Immer neutral / Selbst eintippen. Q168 Als Nächstes (Empfohlen) / Hinten anstellen. Q169 Backlog (Empfohlen) / Jetzt mitbauen (Antwort frei formuliert).
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
