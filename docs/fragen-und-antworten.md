@@ -182,6 +182,10 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q109 | 4g: Kein Treffer mit gleichem Titel auf der Firmenseite? | Nutzer: „Ähnliche zur Auswahl (Empfohlen)“ | Bis zu 5 ähnliche Stellen (ohne KI, gemeinsame Wörter) zur Auswahl; „Keine davon“ behält Firma/Titel mit Hinweis. | entschieden |
 | Q110 | 4g: Firma ohne Website in Wikidata? | Nutzer: „Nur Hinweis“ | Hinweis „Original nicht gefunden“, kein Website-Feld. | entschieden |
 | Q111 | Phase 6: Bewerbungen ohne Stelle in jobradar auch abgleichen? (Fund der Kontrollfrage beim 4g-Plan) | Nutzer: „Ja, auch abgleichen (Empfohlen)“ | Anforderungen aus der gespeicherten Anzeige der Bewerbung; 6a/6b und Migration 018 ergänzt. | entschieden |
+| Q112 | Firmendaten falsch (z. B. Mitarbeiterzahl): soll Claude auf Wunsch recherchieren und eine Korrektur mit Quelle vorschlagen? (Fund der Kontrollfrage vor dem Hochladen; erste Fassung mit Label/Pull Request – Nutzer: „Ich verstehe die Frage nicht“) | Nutzer: „Ja, auf Klick (Empfohlen)“ | Knopf „Firmendaten prüfen lassen“ für den Admin; Claude recherchiert, Pull Request auf die Korrekturdatei, Nutzer bestätigt. Neuer Task 2b in 4f. | entschieden |
+| Q113 | Wöchentlicher Kurzbericht (CLAUDE.md 4.3) fehlt in den Plänen. Was tun? | Nutzer: „Streichen“ | Entfällt; CLAUDE.md 4.3 angepasst. | entschieden |
+| Q114 | Firmendaten anreichern (Rolle im Markt, Eigentümer, Gründungsjahr)? | Nutzer: „Mit Phase 5 Filtern (Empfohlen)“ | Felder und Quellen werden mit den Filtern in Phase 5 geklärt. | entschieden |
+| Q115 | TK nur per „Mehr laden“: Playwright-Entscheidung? | Nutzer: „Nach Portal-Messung 4c (Empfohlen)“ | Entscheidung, wenn die Messung zeigt, wie viele Firmen nur per Browser gehen. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -200,6 +204,8 @@ Fragetexte Q101–Q102 (Claude, 2026-11-19, Auswahl): Q101 bis 10 / 10–30 / 30
 Fragetexte Q104–Q106 (Claude, 2026-11-19, Auswahl): Q104 Phase 5 Filter (Empfohlen) / Phase 4g Stelle aus Link / Phase 3 Kalender/Gmail / Chrome-Erweiterung verteilen. Q105 Knopf anbieten (Empfohlen) / Nie laden / Stufe 2 bei Freunden weglassen. Q106 In 6b mitnehmen (Empfohlen) / Eigenes kleines Paket danach / Streichen.
 
 Fragetexte Q107–Q111 (Claude, 2026-11-19, Auswahl): Q107 Sofort + neue Firmen nachts (Empfohlen) / Alles sofort / Alles nachts. Q108 Nur Stelle + Knopf (Empfohlen) / Automatisch Zusatzfirma / Nur die Stelle. Q109 Ähnliche zur Auswahl (Empfohlen) / Nur exakter Treffer. Q110 Nach Website fragen (Empfohlen) / Nur Hinweis. Q111 Ja, auch abgleichen (Empfohlen) / Nein, nur Stellenliste.
+
+Fragetexte Q112–Q115 (Claude, 2026-11-19, Auswahl): Q112 erste Fassung In 4f ergänzen (Empfohlen) / Später, eigenes Paket / Streichen; zweite Fassung Ja, auf Klick (Empfohlen) / Später entscheiden / Nein, ich korrigiere selbst. Q113 In 4f per Telegram (Empfohlen) / Streichen. Q114 Mit Phase 5 Filtern (Empfohlen) / Gründungsjahr jetzt in 4c / Streichen. Q115 Nach Portal-Messung 4c (Empfohlen) / TK weglassen / Playwright jetzt planen.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

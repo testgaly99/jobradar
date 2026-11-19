@@ -63,6 +63,21 @@
 - [ ] **Step 2–4:** FAIL → umsetzen → `py -m pytest -q` grün.
 - [ ] **Step 5: Commit** — „4f: Issues bei defekten Firmen, Reparatur durch Claude“ + `Agent: Codex`.
 
+### Task 2b: Firmendaten prüfen lassen (Q112, CLAUDE.md 4.3)
+
+**Files:**
+- Create: `.github/workflows/firmendaten.yml`, `web/lib/firmendaten-issue.ts`, `web/tests/firmendaten-issue.test.ts`
+- Modify: `web/app/stellen/[id]/page.tsx` (Abschnitt „Über {firma}“), `web/app/stellen/actions.ts`
+
+**Interfaces:**
+- Knopf „Firmendaten prüfen lassen“ nur für den Admin (`istAdmin`) und nur bei Firmen mit `herkunft = 'datei'` (öffentliches Repo: private Firmen nie in einem Issue). Optionales Feld „Was stimmt nicht?“ (höchstens 300 Zeichen).
+- `firmendatenIssue(firma: string, hinweis: string, dep?) -> Promise<{ link: string } | { fehler: string }>`: `POST /repos/<repo>/issues` mit Titel exakt `Firmendaten prüfen: <Firma>`, Label `firmendaten-pruefen`, Text: Firmenname, heutige Werte (Größe, Branche, Hauptsitz, Karriere-Link), Hinweis des Admins. Kein Listen- oder Rangname im Text. Ist ein Issue mit gleichem Titel offen → dessen Link zurück, kein neues. Secrets in Vercel: `GITHUB_ISSUE_TOKEN` (fein abgestuftes Token, nur Issues dieses Repos), `GITHUB_REPOSITORY`. Fehlen sie → Meldung „Firmendaten-Prüfung ist noch nicht eingerichtet.“
+- `firmendaten.yml`: `on: issues: types: [labeled]`, nur bei Label `firmendaten-pruefen`; `anthropics/claude-code-action@v1` mit `CLAUDE_CODE_OAUTH_TOKEN`; Prompt: AGENTS.md/CLAUDE.md lesen; Wert nur aus Impressum, Geschäftsbericht oder Handelsregister (nie kununu, Glassdoor, LinkedIn o. Ä.); Pull Request auf `data/firmen_korrekturen.csv` mit Quelle je Zeile; nie mergen; ohne belastbare Quelle nur Kommentar am Issue.
+
+- [ ] **Step 1: Tests:** Nicht-Admin → Fehler; private Firma → Fehler; offenes Issue → kein POST; Text enthält keine Listennamen (Prüfung gegen die Listen-IDs aus `data/`).
+- [ ] **Step 2–4:** FAIL → umsetzen → `npm test`, `npx tsc --noEmit`, `npm run build` grün.
+- [ ] **Step 5: Commit** — „4f: Firmendaten prüfen lassen (Recherche durch Claude)“ + `Agent: Codex`.
+
 ### Task 3: Telegram
 
 **Files:**
@@ -97,6 +112,6 @@
 
 ### Task 5: Doku und Halt
 
-- [ ] `docs/STATUS.md` (Nutzer-To-dos: Migration 017; Telegram-Bot bei @BotFather anlegen, Secrets `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `SEITE_URL` und `CLAUDE_CODE_OAUTH_TOKEN` in GitHub eintragen – Claude erklärt es Schritt für Schritt; Label `scraper-defekt` in GitHub anlegen), `docs/ENTSCHEIDUNGEN.md` (kein HTML-Schnappschuss im Issue; höchstens 3 neue Issues je Nacht; Issues nur für Dateifirmen; Issue wird nicht automatisch geschlossen), `docs/agenten-protokoll.md`, Warteschlange `🛑`.
+- [ ] `docs/STATUS.md` (Nutzer-To-dos: Migration 017; Telegram-Bot bei @BotFather anlegen, Secrets `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `SEITE_URL` und `CLAUDE_CODE_OAUTH_TOKEN` in GitHub eintragen – Claude erklärt es Schritt für Schritt; Labels `scraper-defekt` und `firmendaten-pruefen` in GitHub anlegen; Token `GITHUB_ISSUE_TOKEN` und `GITHUB_REPOSITORY` in Vercel), `docs/ENTSCHEIDUNGEN.md` (kein HTML-Schnappschuss im Issue; höchstens 3 neue Issues je Nacht; Issues nur für Dateifirmen; Issue wird nicht automatisch geschlossen), `docs/agenten-protokoll.md`, Warteschlange `🛑`.
 - [ ] Commit — „4f: Doku“ + `Agent: Codex`.
 - [ ] **🛑 Halte-Punkt:** Nutzer legt Bot und Secrets an und spielt Migration 017 ein; Claude startet mit ihm einen Lauf von Hand, prüft Telegram-Nachricht und Digest und löst einen Test-Issue an einer absichtlich falschen Firmen-Kennung auf einem Wegwerf-Zweig aus (Reparatur-PR ansehen, nicht mergen).

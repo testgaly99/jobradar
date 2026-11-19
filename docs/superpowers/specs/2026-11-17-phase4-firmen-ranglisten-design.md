@@ -19,6 +19,7 @@ Heute hat jobradar 13 Firmen aus `data/companies.csv`. Ziel sind rund 1.000 Firm
 - Kein automatischer Abruf von Ranglisten-Seiten, deren Lizenz das nicht erlaubt; solche Listen nur über das Admin-Formular (Q41).
 - Kein Browser (Playwright) im Nachtlauf (Q49); Firmen, deren Stellen nur per JavaScript erscheinen, bleiben vorerst draußen.
 - Keine „Ähnlichen Stellen“, keine Gehaltsschätzung, keine Suchprofile (Phase 5).
+- Wöchentlicher Kurzbericht aus CLAUDE.md 4.3 entfällt (Q113). Firmendaten anreichern (Rolle im Markt, Eigentümer, Gründungsjahr) kommt mit Phase 5 (Q114). TK/Playwright: Entscheidung nach der Portal-Messung 4c-3 (Q115).
 - Mistral-Prüfung (Q50) gehört nicht in die Codex-Pläne; sie braucht ein Nutzerkonto und Live-Proben und läuft mit Claude.
 
 ## Anti-Ziele (wäre ein Fehlschlag, auch wenn es technisch läuft)
