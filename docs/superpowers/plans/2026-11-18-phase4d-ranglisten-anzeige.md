@@ -12,6 +12,8 @@
 
 ## Global Constraints
 
+- **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** `admins` hat mehrere Zeilen (der Nutzer trägt beide Admin-Konten ein); dazu Spalte `telegram_chat_id text` (je Konto eigener Telegram-Chat, darf leer sein, nur `service_role` liest sie). `ist_admin()` prüft `exists` – gilt für beide Konten.
+
 - Sichtbarkeitswerte (exakt): `admin`, `angemeldet`; Standard `angemeldet`. Gäste (anon) sehen **nie** Ränge (CLAUDE.md 4.6, Q73: „Rände nur für Angemeldete!!!“); kein Wert `oeffentlich` (ersetzt die Spec, neu bewerten erst beim Umbau-Plan für kommerzielle Nutzung).
 - „Rankings zum Stöbern“ pflegt Claude monatlich über einen Ablauf im privaten Repo (Q72), nicht Codex und nicht per Formular. Dieser Plan baut nur Tabelle und Anzeige; Linktitel und Adressen stehen nur in der Datenbank (Q51).
 - Hand-Listen und ihre Firmen stehen **nur in der Datenbank**, nie in `data/`, Tests, Fixtures, Commits oder `data/bericht.md` (Q61). Testdaten nur erfunden („Beispiel AG“).

@@ -12,6 +12,8 @@
 
 ## Global Constraints
 
+- **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** `google_erlaubt(userId)` = `istAdmin` (Website) bzw. `owner_id in db.admin_ids()` (Lauf); jedes Admin-Konto verbindet sein **eigenes** Google-Konto (Token je `owner_id`); der stündliche Lauf geht über alle verbundenen Konten, Mails und Termine werden nur Bewerbungen desselben Kontos zugeordnet; Briefings und Status-Telegram an dessen `telegram_chat_id`. Beide Gmail-Adressen müssen in der Google Cloud Console als Testnutzer stehen. Test: Mail aus Postfach A ändert nie eine Bewerbung von Konto B.
+
 - **Nur Admin:** `google_erlaubt(userId)` = `istAdmin` (Website) bzw. `owner_id == db.admin_id()` (Lauf). Alle anderen Pfade so gebaut, dass später nur diese Funktion geändert wird.
 - **Scopes exakt:** `openid email https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/calendar.events.owned.readonly https://www.googleapis.com/auth/calendar.app.created`; `access_type=offline`, `prompt=consent`, PKCE (S256), `state` signiert im Cookie `google_state` (HttpOnly, Secure, SameSite=Lax, 10 Minuten).
 - **Token-Schutz (Q147):** Website hat nur `GOOGLE_TOKEN_PUBLIC_KEY` (SPKI, PEM); `GOOGLE_TOKEN_PRIVATE_KEY` (PKCS#8, PEM) nur als Secret im privaten Repo. Format des Chiffrats (Text, Base64url, durch `.` getrennt): `v1.<RSA-OAEP-SHA256(aes-key)>.<iv 12 Byte>.<AES-256-GCM(token)+tag>`. Access-Tokens werden nie gespeichert.

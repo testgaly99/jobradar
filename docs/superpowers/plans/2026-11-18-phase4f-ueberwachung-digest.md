@@ -12,6 +12,8 @@
 
 ## Global Constraints
 
+- **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** statt `db.admin_id()` gibt es `db.admin_ids() -> list[dict]` (`user_id`, `telegram_chat_id`); der Digest läuft je Admin-Konto mit dessen Wunschfirmen und Stichwörtern und geht an dessen `telegram_chat_id` (`sende(text, chat=...)`); fehlt sie, wird für dieses Konto nichts gesendet (Log nur Zahlen). Systemmeldungen ohne Bewerbungsbezug (Gesundheitscheck, Lauf fehlgeschlagen) gehen an `TELEGRAM_CHAT_ID`. Test: zwei Admins mit je eigenem Chat bekommen je nur ihre eigenen Zeilen.
+
 - Problem-Kriterien (CLAUDE.md 4.3, exakt): (a) 0 Stellen, obwohl in den letzten 7 Tagen > 0; (b) Rückgang um mehr als 50 % gegenüber dem Höchstwert der letzten 7 Tage; (c) Fehler (HTTP, Timeout, Parser) im Bericht; (d) übersprungene Stellen ohne Titel oder Link; (e) Firmendaten fehlen (`careers_url`, `ats_typ` oder `groesse_klasse` leer bei aktiver Firma).
 - GitHub-Issues (öffentliches Repo!) nur für Firmen mit `herkunft = 'datei'`; Admin- und private Firmen nur per Telegram an den Admin, private Firmen anderer Nutzer gar nicht.
 - Ein offenes Issue je Firma (Titel exakt `Scraper defekt: <Firma>`); ist es schon offen, Kommentar statt neuem Issue. Höchstens 3 neue Issues je Nacht (schont das Claude-Kontingent); **Gespeichert werden immer alle Probleme** (Q74): im Laufbericht in `laeufe` (Feld `gesundheit`) und in der Telegram-Nachricht; die übrigen bekommen ihr Issue in der nächsten Nacht, wenn das Problem dann noch besteht.

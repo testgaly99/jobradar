@@ -12,6 +12,8 @@
 
 ## Global Constraints
 
+- **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** „Telegram nur an den Admin“ heißt: je Admin-Konto an dessen `telegram_chat_id` (aus `db.admin_ids()`, 4f), nur dessen Bewerbungen. Test: Fixture mit zwei Admins, keine Erinnerung landet im falschen Chat.
+
 - Nach Nr. 0 (Runde 1: `claudeAuftrag`, Anrede), Nr. 8 (4f: `scraper/digest.py`, `scraper/telegram.py`), Nr. 11b (Angebotskasten).
 - Codex nach `AGENTS.md` (kein `.env`, keine Live-DB, kein Push, Migration nicht einspielen, Protokoll, `Agent: Codex`).
 - Werte: Standard 30 Tage, erlaubt 7–90; Vorschau wie „Diese Woche fällig“ (heute + 7); Antwortfrist-Erinnerung ab Frist − 2 Tage.

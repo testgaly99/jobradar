@@ -12,6 +12,8 @@
 
 ## Global Constraints
 
+- **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** der Nachtlauf läuft je Konto aus `db.admin_ids()` mit dessen CVs und gemerkten Stellen; Ergebnisse nur für dieses Konto. Das Abo-Kontingent wird dadurch bis zu doppelt beansprucht; Reihenfolge der Konten wechselt täglich, damit bei knappem Kontingent nicht immer dasselbe zu kurz kommt.
+
 - **Abo-Weg:** nur das unveränderte Programm `claude -p` (npm-Paket `@anthropic-ai/claude-code`) mit `CLAUDE_CODE_OAUTH_TOKEN`; kein Agent SDK, kein eigener HTTP-Aufruf an Anthropic, kein `ANTHROPIC_API_KEY` im Workflow. Modell `haiku`. Nur Daten des Admins (`db.admin_id()`).
 - **Codex selbst** ruft `claude -p` nie mit echtem Token auf und berührt keine Live-DB; Tests nutzen Attrappen für den Prozessaufruf.
 - **Logs:** nie CV-Text, Anzeigentext, Prompt oder Claude-Antwort ausgeben; nur Zahlen und Gründe, z. B. `CV-Abgleich: 12 Stellen, 3 Aufrufe, Abbruch: Limit`.

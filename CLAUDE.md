@@ -239,7 +239,8 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 - **Datentrennung** auf Datenbankebene (Row Level Security). Getestet wird, dass Person A die Daten von Person B nicht sieht. Das gilt auch für mich als Admin.
 - **Gemeinsam genutzt** werden Firmendaten und gescrapte Stellen. Freunde sehen die Stellenliste und ihren eigenen Tracker.
 - **Rollen:**
-  - Ich bin Admin. Auf der Seite „Nutzer“ sehe ich alle angemeldeten Nutzer mit Name, E-Mail und „dabei seit“.
+  - Ich bin Admin, mit **zwei Admin-Konten** für zwei trennscharfe Bewerbungs-Identitäten (je eigene E-Mail, eigenes Gmail, eigener Telegram-Chat; Q234–Q237, 2026-11-19). `ADMIN_EMAIL` enthält beide Adressen, mit Komma getrennt. Hintergrundläufe arbeiten je Admin-Konto (`db.admin_ids()`), nie gemischt.
+  - Auf der Seite „Nutzer“ sehe ich alle angemeldeten Nutzer mit Name, E-Mail und „dabei seit“.
   - „Entfernen“ löscht nach Bestätigung Konto und Daten. Vorher erscheint der Hinweis, die Person solle zuerst exportieren.
   - Später verwalte ich als Admin auch Scraper-Quellen und Firmendaten. Alle anderen sind normale Nutzer.
 - **Export und Löschen:**
