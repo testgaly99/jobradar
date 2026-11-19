@@ -39,6 +39,8 @@
 - [x] **Step 2:** Aktuelle Versionen und Lizenzen von `docx`, `pdfmake`, `mammoth` auf npm prüfen (gepflegt, MIT/BSD), Versionen hier eintragen: `docx@9.15.2` (MIT), `pdfmake@0.3.13` (MIT), `mammoth@1.13.0` (BSD-2-Clause). **Erledigt 2026-11-19 (Claude):** jeweils neueste Version, die mindestens 2 Wochen alt ist (docx 9.16.0 erschien am 19.11., pdfmake 0.3.14 am 08.11. – zu frisch); alle drei gepflegt.
 - [x] **Step 3:** Ergebnis vermerkt (dieser Plan, `docs/fragen-und-antworten.md` Q226). Task 0 erledigt.
 
+**Gebaut von Claude 2026-11-19** (statt Codex, auf Nutzerwunsch); Commits enden mit `Co-Authored-By: Claude`. Abweichungen: `anschreiben_dokument_id` nicht mehr im Formular „Bewerbung“ (sonst leert Speichern das Anschreiben); `anzeigeText` nimmt ohne passende Snapshot-Abschnitte den Auszug; Anrede nur beim Anlegen einer Person.
+
 ### Task 1: Migration 023
 
 **Files:**
@@ -48,11 +50,11 @@
 **Interfaces:**
 - Produces: Tabellen `briefkopf(owner_id uuid pk default auth.uid() → auth.users on delete cascade, name, strasse, plz_ort, telefon, email, linkedin text, geaendert_am timestamptz default now())`, `anschreiben_vorlagen(id uuid pk, owner_id default auth.uid() → auth.users on delete cascade, name text not null, betreff text not null default 'Bewerbung als {{stelle}}', text text not null check (char_length(text) <= 20000), geaendert_am timestamptz default now())`, `bewerbung_anlagen(owner_id default auth.uid() → auth.users on delete cascade, application_id → applications on delete cascade, document_id → documents on delete restrict, primary key (application_id, document_id))`, Spalte `contacts.anrede text check (anrede in ('frau','herr','ohne'))`, Spalte `documents.anlage_art text check (anlage_art in ('zeugnis','zertifikat','sonstiges'))` (nur bei `art='anlage'` gesetzt, Q182: der spätere Bewerben-Helfer lädt Anlagen nach Art in die passenden Felder).
 
-- [ ] **Step 1: Failing test** `web/tests/unterlagen-migration.test.ts` liest die SQL-Datei und prüft per Regex: `enable row level security` für alle drei Tabellen; je eine Policy `for all to authenticated` mit `owner_id = auth.uid()`; bei `bewerbung_anlagen` zusätzlich `with check` mit `exists (select 1 from public.applications a where a.id = application_id and a.owner_id = auth.uid())` und dasselbe für `public.documents d`; `revoke all ... from anon` für alle drei; `on delete restrict` bei `document_id`; Datei enthält kein `drop table`.
-- [ ] **Step 2:** `cd web && node --test tests/unterlagen-migration.test.ts` → FAIL (Datei fehlt).
-- [ ] **Step 3:** Migration schreiben, wiederholbar wie `004_dokumente.sql` (`if not exists`, `drop policy if exists`), Kopfkommentar „Im Supabase SQL Editor ausführen“.
-- [ ] **Step 4:** Test → PASS.
-- [ ] **Step 5:** Commit `Migration 023: Briefkopf, Anschreiben-Vorlagen, Anlagen je Bewerbung, Anrede`.
+- [x] **Step 1: Failing test** `web/tests/unterlagen-migration.test.ts` liest die SQL-Datei und prüft per Regex: `enable row level security` für alle drei Tabellen; je eine Policy `for all to authenticated` mit `owner_id = auth.uid()`; bei `bewerbung_anlagen` zusätzlich `with check` mit `exists (select 1 from public.applications a where a.id = application_id and a.owner_id = auth.uid())` und dasselbe für `public.documents d`; `revoke all ... from anon` für alle drei; `on delete restrict` bei `document_id`; Datei enthält kein `drop table`.
+- [x] **Step 2:** `cd web && node --test tests/unterlagen-migration.test.ts` → FAIL (Datei fehlt).
+- [x] **Step 3:** Migration schreiben, wiederholbar wie `004_dokumente.sql` (`if not exists`, `drop policy if exists`), Kopfkommentar „Im Supabase SQL Editor ausführen“.
+- [x] **Step 4:** Test → PASS.
+- [x] **Step 5:** Commit `Migration 023: Briefkopf, Anschreiben-Vorlagen, Anlagen je Bewerbung, Anrede`.
 
 ### Task 2: Reine Anschreiben-Funktionen
 
@@ -71,7 +73,7 @@
   - `dateiname(firma: string | null, heute: Date, endung: "pdf" | "docx"): string`
   - `claudeAuftrag(o: { briefkopf: string; anschreiben: string; anzeige: string }): { art: "link"; url: string } | { art: "zwischenablage"; text: string; url: "https://claude.ai/new" }`
 
-- [ ] **Step 1: Failing tests:**
+- [x] **Step 1: Failing tests:**
 ```ts
 fuelleVorlage("Bei {{firma}} als {{ Stelle }}", { firma: "Beispiel AG", stelle: "Analyst" }).text === "Bei Beispiel AG als Analyst"
 fuelleVorlage("{{FIRMA}} {{firma}}", { firma: "X" }).text === "X X"
@@ -93,10 +95,10 @@ dateiname(null, new Date(2026, 10, 19), "docx") === "Anschreiben_2026-11-19.docx
 claudeAuftrag({ briefkopf: "B", anschreiben: "A", anzeige: "Z" }).art === "link"  // url beginnt mit "https://claude.ai/new?q=" und enthält den Auftragstext encodiert
 claudeAuftrag({ briefkopf: "B", anschreiben: "x".repeat(7000), anzeige: "" }).art === "zwischenablage"  // text beginnt mit dem Auftragstext
 ```
-- [ ] **Step 2:** `node --test tests/anschreiben.test.ts` → FAIL.
-- [ ] **Step 3:** Implementieren; Auftrag = fester Satz + `\n\nBriefkopf:\n` + briefkopf + `\n\nMein Anschreiben:\n` + anschreiben + `\n\nDie Stelle:\n` + anzeige; Grenze: Länge der fertigen URL > 6000.
-- [ ] **Step 4:** → PASS.
-- [ ] **Step 5:** Commit `Anschreiben: Platzhalter, Anrede, Quelle, Dateiname, Claude-Auftrag`.
+- [x] **Step 2:** `node --test tests/anschreiben.test.ts` → FAIL.
+- [x] **Step 3:** Implementieren; Auftrag = fester Satz + `\n\nBriefkopf:\n` + briefkopf + `\n\nMein Anschreiben:\n` + anschreiben + `\n\nDie Stelle:\n` + anzeige; Grenze: Länge der fertigen URL > 6000.
+- [x] **Step 4:** → PASS.
+- [x] **Step 5:** Commit `Anschreiben: Platzhalter, Anrede, Quelle, Dateiname, Claude-Auftrag`.
 
 ### Task 3: Dateien im Browser erzeugen
 
@@ -113,9 +115,9 @@ claudeAuftrag({ briefkopf: "B", anschreiben: "x".repeat(7000), anzeige: "" }).ar
   - `briefDocx(b: Brief): Promise<Uint8Array>` (docx, gleiche Maße)
   - `textAusDocx(daten: ArrayBuffer): Promise<string>` (mammoth `extractRawText`)
   - `briefAus(kopf: { name; strasse; plz_ort; telefon; email; linkedin }, ausgefuellt: { betreff: string; text: string }, werte: Werte): Brief` — Ort = `plz_ort` ohne führende PLZ; `empfaenger` = [firma] plus „z. Hd. <ansprechpartner>“ wenn vorhanden.
-- [ ] **Step 1: Failing tests:** `briefPdf` mit 3 Absätzen und dem Wort `"https://example.invalid/" + "a".repeat(300)` → Ergebnis beginnt mit `%PDF`, Länge > 1000; `briefDocx` → beginnt mit `PK`, und `textAusDocx` darauf enthält den Betreff; `briefAus({…, plz_ort: "80331 München"}, …).ortDatum === "München, 19. November 2026"`; ohne Ansprechpartner `empfaenger.length === 1`.
-- [ ] **Step 2:** → FAIL. **Step 3:** Pakete installieren (`npm install --save-exact`), implementieren; alle drei Pakete nur per `await import()` innerhalb der Funktionen. **Step 4:** → PASS; `npm run build` ohne Fehler.
-- [ ] **Step 5:** Commit `Anschreiben: PDF und Word im Browser erzeugen`.
+- [x] **Step 1: Failing tests:** `briefPdf` mit 3 Absätzen und dem Wort `"https://example.invalid/" + "a".repeat(300)` → Ergebnis beginnt mit `%PDF`, Länge > 1000; `briefDocx` → beginnt mit `PK`, und `textAusDocx` darauf enthält den Betreff; `briefAus({…, plz_ort: "80331 München"}, …).ortDatum === "München, 19. November 2026"`; ohne Ansprechpartner `empfaenger.length === 1`.
+- [x] **Step 2:** → FAIL. **Step 3:** Pakete installieren (`npm install --save-exact`), implementieren; alle drei Pakete nur per `await import()` innerhalb der Funktionen. **Step 4:** → PASS; `npm run build` ohne Fehler.
+- [x] **Step 5:** Commit `Anschreiben: PDF und Word im Browser erzeugen`.
 
 ### Task 4: Reiter „Unterlagen“ mit Briefkopf und Vorlagen
 
@@ -127,9 +129,9 @@ claudeAuftrag({ briefkopf: "B", anschreiben: "x".repeat(7000), anzeige: "" }).ar
 
 **Interfaces:**
 - Produces: `pruefeBriefkopf(f: FormData): { daten: BriefkopfDaten } | { fehler: string }` (E-Mail-Format, alles getrimmt, Name Pflicht); `pruefeVorlage(name: string, betreff: string, text: string): { daten } | { fehler: string }` (Name und Text Pflicht, Text ≤ 20 000 → sonst „Vorlage ist zu lang (höchstens 20 000 Zeichen).“); Server Actions `briefkopfSpeichern(f: FormData)`, `vorlageSpeichern(id: string | null, f: FormData)`, `vorlageLoeschen(id: string)` in `web/app/unterlagen/actions.ts`, je `{ fehler?: string }`.
-- [ ] **Step 1: Failing tests** für `pruefeBriefkopf` (fehlender Name → fehler; `email: "x"` → fehler; gültig → getrimmte Daten) und `pruefeVorlage` (20 001 Zeichen → genau die Meldung oben; leerer Text → fehler).
-- [ ] **Step 2:** → FAIL. **Step 3:** Implementieren. Seite in Reihenfolge Briefkopf, Anschreiben-Vorlagen, CV-Versionen, Anlagen. „Aus Word-Datei übernehmen“: `accept=".docx"`, > 5 MB oder Endung ≠ `.docx` → Meldung aus Global Constraints, sonst `textAusDocx` füllt das Textfeld (nichts wird hochgeladen). Klickbare Platzhalter-Liste fügt an der Cursorposition ein. **Step 4:** → PASS, `npm test` komplett grün.
-- [ ] **Step 5:** Commit `Reiter Unterlagen: Briefkopf und Anschreiben-Vorlagen`.
+- [x] **Step 1: Failing tests** für `pruefeBriefkopf` (fehlender Name → fehler; `email: "x"` → fehler; gültig → getrimmte Daten) und `pruefeVorlage` (20 001 Zeichen → genau die Meldung oben; leerer Text → fehler).
+- [x] **Step 2:** → FAIL. **Step 3:** Implementieren. Seite in Reihenfolge Briefkopf, Anschreiben-Vorlagen, CV-Versionen, Anlagen. „Aus Word-Datei übernehmen“: `accept=".docx"`, > 5 MB oder Endung ≠ `.docx` → Meldung aus Global Constraints, sonst `textAusDocx` füllt das Textfeld (nichts wird hochgeladen). Klickbare Platzhalter-Liste fügt an der Cursorposition ein. **Step 4:** → PASS, `npm test` komplett grün.
+- [x] **Step 5:** Commit `Reiter Unterlagen: Briefkopf und Anschreiben-Vorlagen`.
 
 ### Task 5: Anschreiben in der Bewerbung
 
@@ -141,9 +143,9 @@ claudeAuftrag({ briefkopf: "B", anschreiben: "x".repeat(7000), anzeige: "" }).ar
 **Interfaces:**
 - Consumes: Task 2, Task 3, Tabellen aus Task 1.
 - Produces: `anschreibenSetzen(sb: SupabaseClient, applicationId: string, neuesDokumentId: string): Promise<{ fehler?: string }>` in `web/lib/anschreiben-setzen.ts` — setzt `applications.anschreiben_dokument_id`, danach: altes Dokument löschen (Zeile, dann Speicherobjekt), wenn keine Bewerbung mehr darauf zeigt; Server Action `anschreibenSpeichern(applicationId, pfad, name)` legt `documents` (`art='anschreiben'`) an und ruft `anschreibenSetzen`.
-- [ ] **Step 1: Failing tests** mit dem Fetch-Attrappen-Muster aus `tests/stellen-import.test.ts`: (a) alt verknüpft und sonst unbenutzt → nach Aufruf zeigt Bewerbung auf neu, `documents` delete für alt und Storage remove für dessen Pfad aufgerufen; (b) alt von zweiter Bewerbung genutzt → kein delete; (c) Update schlägt fehl → `{ fehler }`, kein delete; (d) zweimal nacheinander (Review Focus 4) → am Ende nur das letzte verknüpft, beide vorigen gelöscht.
-- [ ] **Step 2:** → FAIL. **Step 3:** Implementieren. UI: Vorlagen-Auswahl, Vorschau (`fuelleVorlage` auf Betreff und Text), Hinweise „Ohne Wert: …“ und „Unbekannt: …“, Knöpfe „PDF herunterladen“ (erzeugt PDF, lädt es herunter, lädt es nach `<uid>/<uuid>.pdf` hoch, ruft `anschreibenSpeichern`), „Word herunterladen“ (Word herunter, PDF wie oben speichern), „Mit Claude bearbeiten“ (`claudeAuftrag`; Anzeige = Aufgaben/Anforderungen aus dem Snapshot der Bewerbung, sonst `link`; `window.open(url, "_blank", "noopener")` bzw. `navigator.clipboard.writeText` + Hinweis), „Endfassung hochladen“ (`.pdf`/`.docx` ≤ 10 MB, sonst Meldung „Bitte PDF oder Word bis 10 MB.“; Upload wie bestehender Upload, dann `anschreibenSpeichern`). Ohne Briefkopf: Hinweis mit Link „Briefkopf in Unterlagen eintragen“, Knöpfe außer Endfassung deaktiviert. **Step 4:** → PASS, Build grün.
-- [ ] **Step 5:** Commit `Bewerbung: Anschreiben aus Vorlage, Claude-Knopf, Endfassung`.
+- [x] **Step 1: Failing tests** mit dem Fetch-Attrappen-Muster aus `tests/stellen-import.test.ts`: (a) alt verknüpft und sonst unbenutzt → nach Aufruf zeigt Bewerbung auf neu, `documents` delete für alt und Storage remove für dessen Pfad aufgerufen; (b) alt von zweiter Bewerbung genutzt → kein delete; (c) Update schlägt fehl → `{ fehler }`, kein delete; (d) zweimal nacheinander (Review Focus 4) → am Ende nur das letzte verknüpft, beide vorigen gelöscht.
+- [x] **Step 2:** → FAIL. **Step 3:** Implementieren. UI: Vorlagen-Auswahl, Vorschau (`fuelleVorlage` auf Betreff und Text), Hinweise „Ohne Wert: …“ und „Unbekannt: …“, Knöpfe „PDF herunterladen“ (erzeugt PDF, lädt es herunter, lädt es nach `<uid>/<uuid>.pdf` hoch, ruft `anschreibenSpeichern`), „Word herunterladen“ (Word herunter, PDF wie oben speichern), „Mit Claude bearbeiten“ (`claudeAuftrag`; Anzeige = Aufgaben/Anforderungen aus dem Snapshot der Bewerbung, sonst `link`; `window.open(url, "_blank", "noopener")` bzw. `navigator.clipboard.writeText` + Hinweis), „Endfassung hochladen“ (`.pdf`/`.docx` ≤ 10 MB, sonst Meldung „Bitte PDF oder Word bis 10 MB.“; Upload wie bestehender Upload, dann `anschreibenSpeichern`). Ohne Briefkopf: Hinweis mit Link „Briefkopf in Unterlagen eintragen“, Knöpfe außer Endfassung deaktiviert. **Step 4:** → PASS, Build grün.
+- [x] **Step 5:** Commit `Bewerbung: Anschreiben aus Vorlage, Claude-Knopf, Endfassung`.
 
 ### Task 6: Anlagen-Haken, Anrede am Kontakt, Export
 
@@ -151,14 +153,14 @@ claudeAuftrag({ briefkopf: "B", anschreiben: "x".repeat(7000), anzeige: "" }).ar
 - Modify: `web/app/bewerbung/[id]/inhalt.tsx` (Häkchen-Liste Anlagen; Auswahl Anrede beim Kontakt mit Optionen „Frau“, „Herr“, „ohne“), `web/lib/bewerbung.ts` (Kontaktfeld `anrede`, erlaubte Werte), `web/lib/export.ts` (Spalte „Anlagen“ mit Namen, `; `-getrennt), `web/app/unterlagen/actions.ts` (Löschen einer angehakten Anlage)
 - Test: `web/tests/bewerbung.test.ts`, `web/tests/export.test.ts`, `web/tests/dokumente.test.ts`
 - Zusätzlich: Beim Hochladen einer Anlage in „Unterlagen“ Pflichtauswahl „Art“ mit „Zeugnis“, „Zertifikat“, „Sonstiges“; in der Liste der Anlagen sichtbar und änderbar (Q182). `pruefeDokument` lehnt `anlage_art` bei anderen Arten als `anlage` ab.
-- [ ] **Step 1: Failing tests:** `pruefeDokument(uid, "anlage", …, anlage_art: "zeugnis")` angenommen, `anlage_art: "foto"` abgewiesen, `art: "cv"` mit `anlage_art` abgewiesen; Kontakt mit `anrede: "divers"` wird abgewiesen, `"frau"` angenommen; Export enthält Spalte „Anlagen“ mit „Zeugnis A; Zertifikat B“; Löschen einer Anlage, deren Delete den Fehler `23503` liefert → `{ fehler: "Dokument wird noch in einer Bewerbung verwendet." }` (Review Focus 5).
-- [ ] **Step 2:** → FAIL. **Step 3:** Implementieren; Haken setzen/entfernen per Server Action `anlageUmschalten(applicationId, documentId, an: boolean)`. **Step 4:** → PASS.
-- [ ] **Step 5:** Commit `Bewerbung: Anlagen anhaken, Anrede am Kontakt, Anlagen im Export`.
+- [x] **Step 1: Failing tests:** `pruefeDokument(uid, "anlage", …, anlage_art: "zeugnis")` angenommen, `anlage_art: "foto"` abgewiesen, `art: "cv"` mit `anlage_art` abgewiesen; Kontakt mit `anrede: "divers"` wird abgewiesen, `"frau"` angenommen; Export enthält Spalte „Anlagen“ mit „Zeugnis A; Zertifikat B“; Löschen einer Anlage, deren Delete den Fehler `23503` liefert → `{ fehler: "Dokument wird noch in einer Bewerbung verwendet." }` (Review Focus 5).
+- [x] **Step 2:** → FAIL. **Step 3:** Implementieren; Haken setzen/entfernen per Server Action `anlageUmschalten(applicationId, documentId, an: boolean)`. **Step 4:** → PASS.
+- [x] **Step 5:** Commit `Bewerbung: Anlagen anhaken, Anrede am Kontakt, Anlagen im Export`.
 
 ### Task 7: Datenschutz, Doku, Halt
 
 **Files:**
 - Modify: `web/app/datenschutz/page.tsx` (Satz: „Briefkopf und Anschreiben-Vorlagen liegen wie deine Bewerbungen in Supabase (Frankfurt). Der Knopf „Mit Claude bearbeiten“ öffnet dein eigenes Claude-Konto; der Text geht dann an Claude.“), `docs/STATUS.md`, `docs/agenten-protokoll.md`, `docs/codex-warteschlange.md` (Status 🛑)
-- [ ] **Step 1:** `cd web && npm test` → alle grün; `npm run build` → ohne Fehler; `npm run pruefe:build` → ok.
-- [ ] **Step 2:** Commit `Runde 1: Datenschutz und Doku`.
+- [x] **Step 1:** `cd web && npm test` → alle grün; `npm run build` → ohne Fehler; `npm run pruefe:build` → ok.
+- [x] **Step 2:** Commit `Runde 1: Datenschutz und Doku`.
 - [ ] **Step 3: 🛑 Halt.** Nutzer spielt `supabase/migrations/023_unterlagen.sql` ein. Claude prüft danach live mit zwei Wegwerf-Konten `…@example.com` (B sieht nichts von A: Briefkopf, Vorlagen, Anlagen-Haken) und klickt mit webapp-testing durch: Vorlage per `.docx` anlegen → PDF herunterladen → Anschreiben gespeichert → Endfassung ersetzt es → alte Datei weg; danach Wegwerf-Konten löschen.

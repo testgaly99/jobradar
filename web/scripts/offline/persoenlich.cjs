@@ -115,7 +115,7 @@ function bearbeiten({ url, init, headers, claims, mode, body, methode, loggen })
     ? [{ application_id: '00000', name: 'Fiktiver Kontakt', rolle: 'Recruiting', email: 'kontakt@example.invalid', telefon: '' }] : []);
   if (p === '/rest/v1/interviews') return antwort(mode.startsWith('export-')
     ? [{ application_id: '00000', datum: '2026-11-16T12:00:00Z', format: 'Video', teilnehmer: 'Fiktive Gesprächspartner' }] : []);
-  if (['/rest/v1/wichtige_punkte', '/rest/v1/listen_felder'].includes(p)) return antwort([]);
+  if (['/rest/v1/wichtige_punkte', '/rest/v1/listen_felder', '/rest/v1/briefkopf', '/rest/v1/anschreiben_vorlagen', '/rest/v1/bewerbung_anlagen'].includes(p)) return antwort([]);
   if (p === '/storage/v1/object/list/dokumente' && admin) return antwort([{ name: 'verwendet.pdf' }, { name: 'anlage.pdf' }]);
   if (p === '/storage/v1/object/dokumente' && methode === 'DELETE') return antwort([]);
   if (p.startsWith('/storage/v1/object/sign/dokumente/') && methode === 'POST') return mode.startsWith('dokument-downloadfehler-')
