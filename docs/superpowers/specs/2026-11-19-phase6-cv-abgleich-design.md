@@ -10,7 +10,7 @@ Der Nutzer will bei jeder interessanten Stelle auf einen Blick sehen, welche Anf
 
 - Farben direkt im unveränderten Anzeigentext: ganze Anforderung markiert; Grün = belegt, Gelb = teilweise oder noch nicht belegt (beide Gründe unterscheidbar), Rot = nachweislich nicht erfüllt; Klick zeigt CV-Beleg bzw. Begründung (Q3, A6, Q28: ähnliche statt geforderter Fähigkeit = Gelb mit Begründung).
 - Empfehlung der besten CV-Version nach „Muss vor Soll“; Gleichstand offen zeigen mit Umschalter, zuerst der Standard-CV (A10, Q27). Kein Prozentwert (A2).
-- Admin: automatisch nachts 03:00 deutscher Zeit über das Claude-Abo (Q29, Q32, Q37).
+- Admin: automatisch nachts 03:00 deutscher Zeit über das Claude-Abo (Q29, Q32, Q37); dazu sofort vorläufige Farben aus Stufe 1 im Browser, die der Nachtlauf ersetzt (Q103).
 - Alle anderen Angemeldeten: kostenlos im eigenen Browser, ausgelöst beim Merken, beim CV-Upload und beim Öffnen einer Stelle (Q34, Q37).
 - Umfang: eigene gemerkte Stellen, dazu offene Stellen mit einem Stichwort aus „Automatisch abgleichen bei“ im Titel; gemerkte zuerst (A9, Q35, Q36).
 
@@ -59,7 +59,7 @@ Der Nutzer will bei jeder interessanten Stelle auf einen Blick sehen, welche Anf
 
 **Ergebnis.** Je (Nutzer, Stelle) ein gespeichertes Ergebnis: geprüfte CV-Versionen, empfohlene Version(en), je Anforderung Farbe/Grund/Beleg/CV-Version, Weg („claude“ oder „browser“), Prüfsummen der Anforderungsliste und der CV-Texte. Weicht eine Prüfsumme ab, wird das Ergebnis gelöscht (Q31) und neu berechnet; es wird nie als aktuell gezeigt.
 
-**Anzeige.** Auf der Stellenseite markiert die Anzeige jede Anforderung farbig; Farbe immer zusammen mit Text („belegt“, „teilweise“, „noch nicht belegt“, „nicht erfüllt“), damit sie ohne Farbsehen lesbar ist. Klick oder Tastatur öffnet Beleg/Begründung und nennt die CV-Version. Oben: „Am besten passt: CV X“ bzw. „Gleich gut: CV A und CV B“ mit Umschalter, zuerst der Standard-CV (neue Markierung „Standard“ auf der Seite „Dokumente“, ohne Standard der erste der Liste). Ohne Ergebnis: „Noch nicht abgeglichen“ (Admin: „wird heute Nacht abgeglichen“).
+**Anzeige.** Auf der Stellenseite markiert die Anzeige jede Anforderung farbig; Farbe immer zusammen mit Text („belegt“, „teilweise“, „noch nicht belegt“, „nicht erfüllt“), damit sie ohne Farbsehen lesbar ist. Klick oder Tastatur öffnet Beleg/Begründung und nennt die CV-Version. Oben: „Am besten passt: CV X“ bzw. „Gleich gut: CV A und CV B“ mit Umschalter, zuerst der Standard-CV (neue Markierung „Standard“ auf der Seite „Dokumente“, ohne Standard der erste der Liste). Ohne Ergebnis: „Noch nicht abgeglichen“. Vorläufiges Ergebnis des Admins (Q103): Grenzfälle grau mit „wird heute Nacht genauer geprüft“, oben der Hinweis „vorläufig“.
 
 **Daten (Migration 018).** Neue Tabellen mit Zeilen nur für den Eigentümer (RLS), Gäste ohne Zugriff: CV-Text, CV-Profil, Ergebnisse, Einwilligung. `documents` bekommt die Markierung „Standard“; `jobs` die Anforderungsliste. Export und Kontolöschung umfassen alles; das Backup im privaten Repo schließt die CV-Tabellen aus.
 
@@ -84,6 +84,7 @@ Der Nutzer will bei jeder interessanten Stelle auf einen Blick sehen, welche Anf
 5. Stufe 2 nur, wenn Chromes eingebautes Modell verfügbar ist; sonst bleiben Grenzfälle Gelb mit dem Grund „nicht automatisch prüfbar“.
 6. Ergebnis wird gespeichert (gleiche Tabelle, Weg „browser“), damit es auf anderen Geräten sichtbar ist.
 7. Das CV verlässt das Gerät nur zur eigenen Datenbank; nie zu einem KI-Anbieter.
+8. **Admin (Q103):** Dieselben Auslöser starten beim Admin nur Stufe 1 (kein Chrome-Modell). Das Ergebnis wird als vorläufig gespeichert (Weg „browser-vorlaeufig“); der Nachtlauf behandelt Stellen mit nur vorläufigem Ergebnis wie Stellen ohne Ergebnis und ersetzt es. Kein zusätzliches Abo-Kontingent. Damit kommen die Sofort-Farben für den Admin erst mit 6b.
 
 **Halte-Punkte:** (a) Migration 019, falls nötig; (b) Test mit Wegwerf-Konto `…@example.com` und künstlichem CV in Chrome mit und ohne eingebautes Modell; Nutzer sieht sich das Ergebnis an.
 
@@ -103,3 +104,4 @@ Bibliotheken für PDF/Word in Python und im Browser; Spaltennamen; genaue Prompt
 4. Freunde: Scans nicht automatisch lesbar, Hinweis statt Ausweg über Claude.
 5. Ohne Chromes eingebautes Modell kein Rot für Freunde, nur Grün/Gelb.
 6. Einwilligung gilt für alle, auch den Admin.
+7. Sofort-Farben des Admins nutzen nur Stufe 1, nicht Chromes Modell – der Nachtlauf mit Claude ist für ihn die genauere Prüfung.

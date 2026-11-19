@@ -173,6 +173,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q100 | Für welche Phase als Nächstes Fragen klären bzw. den Plan schreiben? | Nutzer: „Phase 6 CV-Abgleich (Empfohlen)“ | Als Nächstes Phase 6: Claude prüft Abo-Kontingent und Abo-Bedingungen, dann Design und Plan. | entschieden |
 | Q101 | Wie viele Stellen merkst du dir pro Woche ungefähr vor? (für die Kontingent-Schätzung Phase 6) | Nutzer: „10–30“ | Normale Woche ≈ 40 Abgleiche inkl. Stichwort-Treffer, ≈ 0,4 Mio. Tokens (Schätzung, `docs/plans/2026-11-16-cv-abgleich.md`). | beantwortet |
 | Q102 | Wie viele CV-Versionen wirst du hochladen? | Nutzer: „5 oder mehr“ | Mit 6 Versionen gerechnet; mehrere Stellen je Aufruf bündeln, damit die CVs nur einmal mitgelesen werden. | beantwortet |
+| Q103 | Admin: sofort vorläufige Farben aus dem kostenlosen Bedeutungsvergleich im Browser, Grenzfälle nachts durch Claude? (Anlass, Nutzer: „Aber die Farben werden ja auch erstellt beim gratis Modell ohne Claude, oder?“) | Nutzer: „Ja, sofort + nachts genauer (Empfohlen)“ | Admin bekommt beim Merken sofort Grün/Gelb aus Stufe 1, Grenzfälle als „wird heute Nacht geprüft“; der Nachtlauf ersetzt das vorläufige Ergebnis. Kein zusätzliches Kontingent. Ergänzt Q37. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -187,6 +188,8 @@ Fragetexte Q95–Q96 (Claude, 2026-11-19, Auswahl): Q95 die 200 neuesten (Empfoh
 Fragetexte Q97–Q100 (Claude, 2026-11-19, Auswahl): Q97 200 zuletzt geförderte (Empfohlen) / 200 mit höchster Förderung / nur DACH, dafür alle. Q98 erst ab 2 Listen zeigen (Empfohlen) / in Top-Arbeitgeber aufgehen / so lassen. Q99 nichts, war ein Versehen / schlag mir weitere vor. Q100 Phase 6 CV-Abgleich (Empfohlen) / Phase 5 Zusatzfilter / Phase 3 Google / Chrome-Erweiterung verteilen.
 
 Fragetexte Q101–Q102 (Claude, 2026-11-19, Auswahl): Q101 bis 10 / 10–30 / 30–70 / weiß ich noch nicht. Q102 1–2 / 3–4 / 5 oder mehr.
+
+Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
 Fragetexte Q56/Q57 (Claude, Auswahl, jeweils frei beantwortet): Q56 Vorschlag + Häkchen des Admins (Empfohlen) / vollautomatisch / automatisch mit Wochen-Stichprobe. Q57 Mehrfachauswahl EU R&D Scoreboard / Börsenindizes / Top 20 je Branche (Wikidata) / EIC-Startups + Behörden/Forschung.
 
