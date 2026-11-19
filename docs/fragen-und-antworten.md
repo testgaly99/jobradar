@@ -273,6 +273,14 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q200 | Stellendaten als Text mit ✎ statt Eingabefeldern? | Nutzer: „Als Text, ✎ zum Ändern (Empfohlen)“ | Bei bekannter Stelle Text mit ✎; bei Hand-Bewerbungen Eingabefelder. | entschieden |
 | Q201 | Design Bewerbungsformular freigeben (inkl. Löschen der zwei Spalten nach Kopie in Notizen)? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan als Warteschlange Nr. 11b, Migration 025. | entschieden |
 | Q202 | Design und Plan Bewerbungsformular hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q203 | Was als Nächstes? | Nutzer: „Runde Phase 6 Teil 2“ | Planungsrunde Phase 6 Teil 2 beginnt (Claude hatte Task 0 von Runde 1 empfohlen). | entschieden |
+| Q204 | Phase 6 Teil 2: welche Bausteine (Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit)? | Nutzer: „Pendelzeit“ | Nur Pendelzeit; Passungs-Score, Skill-Lücken, Gehaltsbenchmark in den Backlog. | entschieden |
+| Q205 | Sofort-Alarm, monatliche Übersicht? | Nutzer: „/“ (nichts gewählt) | Beide in den Backlog. | entschieden |
+| Q206 | Pendelzeit wohin? | Nutzer: „Wenn keine Büro Adresse angegeben ist, nach dem Standort des Büros suchen und diese Adresse verwenden. Am besten direkt beim Anlegen der Firma in der Datenbank danach suchen“ | Büroadresse je Firma und Stadt beim Anlegen suchen: Anzeige → OpenStreetMap → Impressum (gleiche Stadt) → Wikidata (gleiche Stadt) → von Hand; mit Quelle gespeichert. | entschieden |
+| Q207 | Pendelzeit ab wo? | Nutzer: „Deine Haltestelle (Empfohlen)“ | Start-Haltestelle + Minuten Fußweg in „Unterlagen“; Wohnadresse nie für die Berechnung. | entschieden |
+| Q208 | ÖPNV-Fahrzeit: eigene Rechnung (MVV) oder Transitous? | Nutzer: „MVV ist gut, aber just in case brauchen wir das auch für andere deutsche Großstädte. Meine Freunde wohnen nicht in München“ | Eigene Rechnung mit dem Deutschland-Fahrplan von DELFI (CC BY 4.0), je Nutzer-Region (80 km um die Start-Haltestelle). | entschieden |
+| Q209 | Für welche Ankunftszeit gilt die Pendelzeit? | Nutzer: „Werktag, Ankunft bis 9:00 (Empfohlen)“ | Dienstag, Ankunft bis 9:00; Anzeige „35 Min. · 1 Umstieg“. | entschieden |
+| Q210 | Stellen ohne bekannte Pendelzeit im Filter? | Nutzer: „Durchlassen, markiert (Empfohlen)“ | Sichtbar mit „Pendelzeit unbekannt“; Häkchen „nur mit bekannter Pendelzeit“. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -353,6 +361,16 @@ Fragetexte Q199–Q200 (Claude, 2026-11-19, Auswahl, mit Beispiel neu gestellt):
 Fragetexte Q201 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Felder nicht löschen / Erst ändern.
 
 Fragetexte Q202 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht / Erst ändern.
+
+Fragetexte Q203 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Runde Phase 6 Teil 2 / Runde Erinnerungen / Pause.
+
+Fragetexte Q204–Q205 (Claude, 2026-11-19, Runde Phase 6 Teil 2, Mehrfachauswahl): Q204 Passungs-Score / Skill-Lücken / Gehaltsbenchmark / Pendelzeit. Q205 Sofort-Alarm / Monatliche Übersicht.
+
+Fragetexte Q206–Q207 (Claude, 2026-11-19, Auswahl): Q206 Büro, sonst „unbekannt“ (Empfohlen) / Büro, sonst Ortsmitte „ca.“ (Antwort frei). Q207 Deine Haltestelle (Empfohlen) / Deine Adresse.
+
+Fragetexte Q208 (Claude, 2026-11-19, Auswahl): A: Eigene Rechnung, MVV (Empfohlen) / B: Transitous (Antwort frei).
+
+Fragetexte Q209–Q210 (Claude, 2026-11-19, Auswahl): Q209 Werktag, Ankunft bis 9:00 (Empfohlen) / Selbst einstellbar. Q210 Durchlassen, markiert (Empfohlen) / Ausblenden.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
