@@ -284,6 +284,13 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q211 | Design Pendelzeit freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Warteschlange Nr. 12a. | entschieden |
 | Q212 | Design und Plan Pendelzeit hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
 | Q213 | Was als Nächstes? | Nutzer: „Gibt es sonst noch Pläne oder Fragen die zu klären sind“ | Bestandsaufnahme offener Fragen, Pläne und Backlog. | entschieden |
+| Q214 | Womit weiter nach der Bestandsaufnahme? | Nutzer: „Runde Erinnerungen (Empfohlen)“ | Planungsrunde Erinnerungen beginnt. | entschieden |
+| Q215 | Nachfass-Erinnerung: automatischer nächster Schritt oder eigene Liste? | Nutzer: „Ich verstehe die Frage nicht“ | Neu gestellt als Q219 mit einfacherem Beispiel. | ersetzt durch Q219 |
+| Q216 | Kanal für Erinnerungen? | Nutzer: „Website + Telegram für dich (Empfohlen)“ | Alle: „Diese Woche fällig“; Admin zusätzlich Telegram (Digest 4f). | entschieden |
+| Q217 | Antwortfrist bei Angebot? | Nutzer: „Feld + Erinnerung (Empfohlen)“ | Feld „Antwort bis“; Schritt 2 Tage vorher; am Fristtag Telegram an den Admin. | entschieden |
+| Q218 | Knopf „Nachfass-Mail mit Claude schreiben“? | Nutzer: „Ja (Empfohlen)“ | Öffnet eigenes claude.ai mit Firma, Stelle, Datum, Ansprechpartner; Mail schickt der Nutzer. | entschieden |
+| Q219 | Nach 14 Tagen ohne Antwort automatisch ans Nachfassen erinnern? | Nutzer: „Nein“ | Keine 14-Tage-Erinnerung (ersetzt CLAUDE.md 4.4 „Nachfassen nach 14 Tagen“). | entschieden |
+| Q220 | Wie oft ans Nachfassen erinnern? | Nutzer: „Nach 30 Tagen einmal, dann gar nicht mehr. Das soll aber in den Einstellungen änderbar sein. Ich möchte das auch ausstellen können“ | Einmal nach 30 Tagen (Standard), Tage einstellbar, abschaltbar. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -380,6 +387,12 @@ Fragetexte Q211 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfoh
 Fragetexte Q212 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht / Erst ändern.
 
 Fragetexte Q213 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Runde Erinnerungen / Pause (Antwort frei).
+
+Fragetexte Q214 (Claude, 2026-11-19, Auswahl): Runde Erinnerungen (Empfohlen) / Kleine Pakete planen / entwurf-ui in main übernehmen / Pause.
+
+Fragetexte Q215–Q218 (Claude, 2026-11-19, Runde Erinnerungen, Auswahl): Q215 Automatischer nächster Schritt (Empfohlen) / Eigene Erinnerungsliste. Q216 Website + Telegram für dich (Empfohlen) / Nur Website. Q217 Feld + Erinnerung (Empfohlen) / Nur Feld. Q218 Ja (Empfohlen) / Nein.
+
+Fragetexte Q219–Q220 (Claude, 2026-11-19, Auswahl): Q219 Ja, automatisch (Empfohlen) / Nein. Q220 Einmal, dann Frage (Empfohlen) / Zweimal erinnern / Nur einmal (Antwort frei).
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
