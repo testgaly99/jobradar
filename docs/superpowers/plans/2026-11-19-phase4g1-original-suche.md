@@ -35,8 +35,8 @@
 
 ### Task 0 (Claude, nicht Codex): Nutzungsbedingungen und Tab-Titel
 
-- [ ] Offene Prüfung aus Q16: aktuelle Nutzungsbedingungen von LinkedIn, StepStone, Indeed, XING zu (a) Speichern von Adresse und Titel durch den Nutzer selbst, (b) Suche derselben Stelle auf der Firmenseite. Nur die Rechtstexte lesen (Nutzerauftrag Q16), keine Stellenseiten. Ergebnis mit Quellen in `docs/ENTSCHEIDUNGEN.md`; widerspricht etwas, 🛑 Rückfrage an den Nutzer.
-- [ ] Nutzer kopiert aus dem eigenen Browser je Portal 2–3 Tab-Titel geöffneter Anzeigen (Nutzer-To-do); Claude legt sie anonymisiert (fiktive Firmen/Titel, gleiche Form) als `tests/fixtures/tab-titel.json` an: `[{host, tab_titel, firma, titel}]`.
+- [x] Nutzungsbedingungen (erledigt 2026-11-19, nur Rechtstexte gelesen): (b) Suche derselben Stelle auf der Firmenseite verbietet keines der Portale. (a) LinkedIn (User Agreement vom 3.11.2025, 8.2) verbietet Browser-Erweiterungen, die Inhalte kopieren → Erweiterung übernimmt auf LinkedIn nichts mehr (Q135, umgesetzt); LinkedIn-Links fügt der Nutzer selbst ein, Firma/Titel dann über `linkedin.com/jobs/view/<nummer>` nicht erkennbar → Felder Firma/Titel. StepStone (Stand 10.2025, 4.3.4/4.3.5) verbietet Scraping zur Weiterverwendung und Bots für Aktionen; Indeed (29.6.2026, A 3.5) Automatisierung des Bewerbens – ein einzelner Klick auf Adresse und Titel fällt nicht darunter. XING-AGB nicht abrufbar (Abruf gesperrt) → wie StepStone behandelt, vor öffentlichem Start nachlesen.
+- [ ] Nutzer kopiert aus dem eigenen Browser je Portal (StepStone, Indeed, XING; **ohne LinkedIn**, Q135) 2–3 Tab-Titel geöffneter Anzeigen (Nutzer-To-do); Claude legt sie anonymisiert (fiktive Firmen/Titel, gleiche Form) als `tests/fixtures/tab-titel.json` an: `[{host, tab_titel, firma, titel}]`.
 
 ### Task 1: Titelvergleich und Tab-Titel (TS und Python)
 

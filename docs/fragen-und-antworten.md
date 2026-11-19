@@ -205,6 +205,8 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q132 | Was ist mit „Rolle im Markt“ gemeint? (Geschäftsmodell / Marktposition / Beides) | Nutzer: „Geschäftsmodell (Empfohlen)“ | Hersteller, Zulieferer, Dienstleister, Beratung, Handel, Software/Plattform, Finanzdienstleister; Groq aus dem Firmenteil der Anzeigen. Marktposition entfällt (keine verlässliche Quelle). | entschieden |
 | Q133 | Gehaltsschätzung für Stellen ohne Angabe – wohin? (Anlass, Nutzer: „Haben wir irgendwo im Plan noch festgelegt, dass du Gehälter schätzen sollst?“ – war zwischen Phase 4 und 5 hin- und hergeschoben, ohne Rückfrage) | Nutzer: „Phase 5, mit Filter (Empfohlen)“ | Schätzung aus Daten ohne KI (Firma → ähnliche Titel → Entgeltatlas nach Prüfung), markiert „geschätzt aus …“, Häkchen „Schätzung beim Filtern mitzählen“. Plan Phase 5 Task 0 und 3b. | entschieden |
 | Q134 | Gehaltsschätzung Stufe 3: Entgeltatlas ohne offizielle Schnittstelle – was tun, wenn weder Angabe noch genug ähnliche Anzeigen? (Anlass, Nutzer: „Warum ist das nicht geprüft?“) | Nutzer: „Keine Schätzung (Empfohlen)“ | Stufe 3 entfällt; Stelle zeigt „Gehalt: nicht angegeben“. | entschieden |
+| Q135 | LinkedIn verbietet Browser-Erweiterungen, die Inhalte kopieren – was soll die Erweiterung auf LinkedIn tun? | Nutzer: „LinkedIn ganz raus“ | Erweiterung übernimmt auf LinkedIn nichts; Link fügt der Nutzer selbst ein. | entschieden |
+| Q136 | e5-small ist 118 MB statt ≤ 50 MB – wie für die Website lösen? | Nutzer: „Modell verkleinern (Empfohlen)“ | Codex kürzt den Wortschatz auf Deutsch/Englisch (6a Task 0b), Prüfung Ähnlichkeit ≥ 0,99. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -231,6 +233,8 @@ Fragetexte Q116–Q131 (Claude, 2026-11-19, Auswahl): Q116 Mitarbeiterzahl als S
 Fragetexte Q132–Q133 (Claude, 2026-11-19, Auswahl): Q132 Geschäftsmodell (Empfohlen) / Marktposition / Beides. Q133 Phase 5, mit Filter (Empfohlen) / Phase 6, mit Gehaltsbenchmark / Backlog lassen.
 
 Fragetexte Q134 (Claude, 2026-11-19, Auswahl): „Gehaltsschätzung, Stufe 3: Den Entgeltatlas der Arbeitsagentur dürfen wir nicht automatisch auslesen, weil es keine offizielle Schnittstelle gibt. Was soll passieren, wenn eine Stelle weder ein Gehalt nennt noch genug ähnliche Anzeigen mit Gehalt hat?“ Optionen: Keine Schätzung (Empfohlen) / Jährliche Tabelle von dir / Später entscheiden.
+
+Fragetexte Q135–Q136 (Claude, 2026-11-19, Auswahl): Q135 „LinkedIn verbietet in seinen Nutzungsbedingungen (Stand 3.11.2025) ausdrücklich Browser-Erweiterungen, die Inhalte „kopieren“. Unsere jobradar-Erweiterung übernimmt auf LinkedIn per Klick nur Adresse und Titel der geöffneten Anzeige. […] Was soll die Erweiterung auf LinkedIn tun?“ Optionen: Nur Adresse (Empfohlen) / Wie bisher lassen / LinkedIn ganz raus. Q136 „Das Sprachmodell für den CV-Abgleich (e5-small) ist 118 MB groß, geplant waren höchstens 50 MB. […] Wie lösen wir das für die Website?“ Optionen: Modell verkleinern (Empfohlen) / Von Hugging Face laden / Ohne Modell im Browser.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

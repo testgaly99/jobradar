@@ -16,6 +16,13 @@ export function istPortal(host) {
   });
 }
 
+// LinkedIn verbietet Erweiterungen, die Inhalte kopieren (User Agreement 8.2) → dort übernimmt die Erweiterung gar nichts (Q135).
+export const GESPERRT = ["linkedin.com"];
+export function istGesperrt(host) {
+  const h = String(host).toLowerCase().replace(/\.$/, "");
+  return GESPERRT.some((d) => h === d || h.endsWith(`.${d}`));
+}
+
 export function appOrigin(wert) {
   let url;
   try { url = new URL(wert.trim()); } catch { throw Error("Bitte die Adresse deiner Jobradar-Website eintragen."); }
@@ -148,6 +155,7 @@ export function erstelleImporteur(chrome, { jetzt = Date.now, uuid = () => crypt
       const origin = appOrigin(config.appOrigin);
       if (!(await chrome.permissions.contains({ origins: [`${origin}/*`] }))) { await chrome.runtime.openOptionsPage(); return; }
       if (!Number.isInteger(tab?.id) || !tab.url || new URL(tab.url).origin === origin) throw Error("Bitte den Knopf auf einer fremden Stellenanzeige benutzen.");
+      if (istGesperrt(new URL(tab.url).hostname)) throw Error("LinkedIn erlaubt keine Erweiterungen. Bitte den Link selbst kopieren und in Jobradar einfügen.");
       for (const [altKey, p] of await eintraege()) if (abgelaufen(p)) await entferne(altKey);
       const schon = (await eintraege()).find(([, p]) => p?.sourceTabId === tab.id && p.origin === origin);
       if (schon) {

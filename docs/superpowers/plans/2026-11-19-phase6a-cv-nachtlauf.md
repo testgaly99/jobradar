@@ -21,7 +21,7 @@
 - **Keine Mischung (A7):** ein Ergebnis nutzt je Anforderung Belege aus genau der empfohlenen Version; bei zwei empfohlenen Versionen gibt es je Version eine vollständige Spalte.
 - **Stufe-1-Regeln** stehen einmal in `web/lib/cv-regeln.json` (Python liest dieselbe Datei; 6b nutzt sie im Browser): `{"oben": <zahl>, "unten": <zahl>, "fachbegriff": "<regex>", "soll_woerter": ["wünschenswert","idealerweise","von vorteil","nice to have","plus"], "anforderungs_titel": [...]}`.
 - **e5-Konvention:** Anforderungen mit Präfix `"query: "`, Belege mit `"passage: "`, Mean-Pooling, L2-normiert, Ähnlichkeit = Skalarprodukt.
-- **Modelldatei:** `web/public/modell/e5-small/` (quantisierte ONNX-Datei, `tokenizer.json`, Lizenzdatei); nie zur Laufzeit von Hugging Face laden.
+- **Modelldatei:** `web/public/modell/e5-small/` (verkleinerte quantisierte ONNX-Datei aus Task 0b, `tokenizer.json`, Lizenzdatei); nie zur Laufzeit von Hugging Face laden. Grenze: jede Datei ≤ 50 MB, Ordner zusammen ≤ 60 MB (GitHub lehnt Dateien > 100 MB ab; Vercel Hobby erlaubt 100 MB statische Dateien insgesamt). Python (6a) und Browser (6b) nutzen dieselbe Datei.
 - **Datenschutz:** Tabellen nur für den Eigentümer (RLS), Gäste ohne Zugriff; Kontolöschung räumt alles per `on delete cascade`; CV-Tabellen nicht im Backup.
 - **Migration nur als Datei:** `supabase/migrations/018_cv_abgleich.sql`, wiederholbar ausführbar (Muster der bisherigen Migrationen).
 - **Abhängigkeiten:** nur die oben genannten; jede vor dem Hinzufügen in `docs/agenten-protokoll.md` begründen (wofür, gepflegt?).
@@ -38,11 +38,29 @@
 
 ### Task 0: Vorprüfung (ohne Produktcode)
 
-- [ ] **Step 1:** Lizenz und Größe von `intfloat/multilingual-e5-small` und einer quantisierten ONNX-Fassung (z. B. `Xenova/multilingual-e5-small`, `onnx/model_quantized.onnx`) prüfen. Weiter nur bei offener Lizenz (MIT/Apache) und Datei ≤ 50 MB.
+- [x] **Step 1 (Claude, erledigt 2026-11-19):** `intfloat/multilingual-e5-small` steht unter MIT. Die quantisierte ONNX-Fassung `Xenova/multilingual-e5-small` `onnx/model_quantized.onnx` ist **118 MB** groß (fp16 235 MB) und damit zu groß → Task 0b verkleinert sie (Nutzer Q136: „Modell verkleinern“).
 - [ ] **Step 2:** `claude --help` lokal lesen (ohne Anfrage): Schalter für Modell, JSON-Ausgabe, keine Werkzeuge bzw. nur `Read` für Bilddateien, Eingabe über stdin. Dokumentiertes Verhalten am Nutzungslimit (Exitcode/Text) in der offiziellen Doku suchen.
 - [ ] **Step 3:** Pflegezustand von `onnxruntime`, `tokenizers`, `pypdf`, `python-docx` (letzte Version, Lizenz).
-- [ ] **Step 4:** Ergebnis als Eintrag in `docs/agenten-protokoll.md` mit Quellen. **🛑 Wenn Step 1 scheitert: anhalten, Warteschlange auf „wartet auf Claude“.**
+- [ ] **Step 4:** Ergebnis als Eintrag in `docs/agenten-protokoll.md` mit Quellen.
 - [ ] **Step 5: Commit** — „6a: Vorprüfung Modell und Claude-CLI“ + `Agent: Codex`.
+
+### Task 0b: Modell verkleinern (Q136)
+
+Der Wortschatz von e5-small umfasst rund 250.000 Token aus etwa 100 Sprachen; die Einbettungstabelle dafür macht den Großteil der 118 MB aus. Behalten werden nur die Token, die für deutsche und englische Texte gebraucht werden.
+
+**Files:**
+- Create: `werkzeuge/modell_verkleinern.py` (einmaliges Werkzeug, nicht Teil des Nachtlaufs), `tests/fixtures/e5-pruefsaetze.json`, `tests/test_modell_verkleinert.py`, `web/public/modell/e5-small/` (Modell, `tokenizer.json`, `LICENSE` mit MIT-Text von intfloat, `HERKUNFT.md`: Quelle, Version, Verkleinerungsweg)
+- Modify: `requirements.txt` nur falls ein Laufzeit-Paket fehlt; Pakete nur für das Werkzeug (z. B. `onnx`, `transformers`) in `werkzeuge/requirements.txt`
+
+**Interfaces:**
+- `werkzeuge/modell_verkleinern.py --korpus <ordner> --ziel web/public/modell/e5-small/`: lädt das Original **einmalig** von Hugging Face (nur Codex beim Bau, nie zur Laufzeit), bestimmt den Wortschatz (alle Token, die beim Zerlegen des Korpus vorkommen, plus Sondertoken, Ziffern und Satzzeichen), baut Tokenizer und Einbettungstabelle passend um und quantisiert wie `model_quantized.onnx`.
+- Korpus (nur öffentliche Texte, keine CVs): deutsche und englische Stellenanzeigen aus `tests/fixtures/` und `docs/beispiele/`, dazu eine frei lizenzierte deutsch/englische Wortliste bzw. Textsammlung (Lizenz in `HERKUNFT.md`).
+
+- [ ] **Step 1:** `tests/fixtures/e5-pruefsaetze.json` anlegen: 200 Sätze, je zur Hälfte Deutsch und Englisch, je zur Hälfte Anforderungen (aus Beispiel-Anzeigen) und erfundene CV-Zeilen (Fachbegriffe wie SQL, C++, S/4HANA, Power BI; Umlaute; Zahlen). Mit dem **Original** die Einbettungen berechnen und als Referenz speichern.
+- [ ] **Step 2: Test** `test_modell_verkleinert.py`: verkleinertes Modell ergibt für jeden Prüfsatz eine Einbettung mit Kosinus-Ähnlichkeit ≥ 0,99 zur Referenz; jede Datei im Ordner ≤ 50 MB, zusammen ≤ 60 MB.
+- [ ] **Step 3:** Werkzeug schreiben und ausführen; Test grün. **🛑 Erreicht das Modell die Grenzen nicht oder fällt ein Prüfsatz unter 0,99: anhalten, Warteschlange auf „wartet auf Claude“, Zahlen ins Protokoll.**
+- [ ] **Step 4:** Größe vorher/nachher, Wortschatzgröße und schlechteste Ähnlichkeit in `docs/agenten-protokoll.md`.
+- [ ] **Step 5: Commit** — Dateien einzeln `git add`; „6a: e5-small auf Deutsch/Englisch verkleinert“ + `Agent: Codex`.
 
 ### Task 1: Anforderungsliste je Stelle
 
@@ -83,7 +101,7 @@
 ### Task 3: Stufe 1 in Python und Kalibrierung
 
 **Files:**
-- Create: `scraper/cv_stufe1.py`, `web/public/modell/e5-small/` (Modelldatei, `tokenizer.json`, `LICENSE`)
+- Create: `scraper/cv_stufe1.py` (nutzt das Modell aus Task 0b)
 - Modify: `web/lib/cv-regeln.json` (kalibrierte Schwellen), `requirements.txt`
 - Test: `tests/test_cv_stufe1.py`, `tests/fixtures/cv-aehnlichkeiten.json`
 
@@ -95,7 +113,7 @@
 
 - [ ] **Step 1: Tests (ohne Modell):** `bewerte` mit `tests/fixtures/cv-aehnlichkeiten.json` (Task-Step 3 erzeugt sie mit dem echten Modell aus dem Abnahmefall) ergibt kein `sicher` für eine im Abnahmefall nicht belegte Anforderung (a5 Power BI); „SQL“ fehlt im Beleg → nie `sicher`; `waehle`: Gleichstand → Standard zuerst; Abstand genau eine Muss → zwei Versionen; zwei Muss → eine.
 - [ ] **Step 2:** FAIL → umsetzen.
-- [ ] **Step 3:** Modelldatei einchecken (`git add` einzeln je Datei), Ähnlichkeiten für den Abnahmefall berechnen, als Fixture speichern; Schwellen so wählen, dass alle Abnahmefälle stimmen und möglichst viele Fälle `sicher` oder `nicht_belegt` statt `grenzfall` werden. Werte und Begründung in `docs/agenten-protokoll.md`.
+- [ ] **Step 3:** Mit dem Modell aus Task 0b die Ähnlichkeiten für den Abnahmefall berechnen, als Fixture speichern; Schwellen so wählen, dass alle Abnahmefälle stimmen und möglichst viele Fälle `sicher` oder `nicht_belegt` statt `grenzfall` werden. Werte und Begründung in `docs/agenten-protokoll.md`.
 - [ ] **Step 4:** `py -m pytest -q` grün.
 - [ ] **Step 5: Commit** — „6a: Stufe 1 Bedeutungsvergleich mit e5-small“ + `Agent: Codex`.
 

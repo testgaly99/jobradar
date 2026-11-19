@@ -175,7 +175,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Ist nichts erkennbar, gibt es zwei Felder für Firma und Titel.
   - LinkedIn-Links aus Sammlung oder Suche (`currentJobId`) werden zu `linkedin.com/jobs/view/<nummer>/` vereinheitlicht, damit die Dublettenprüfung greift.
   - Optional lässt sich der Anzeigentext einfügen (z. B. am Handy); er landet in `snapshot_text`, falls es keinen Text aus Stellenliste oder ATS gibt.
-- **Ein Klick per Browser-Erweiterung** (Ein-Klick-Import, Entscheidungen 2026-11-16/17, Q6/Q7/Q14/Q16): übernimmt die gerade geöffnete Anzeige als „Gemerkt“ ohne Bewerbungsdatum. Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox. **Jobradar öffnet Jobportale (LinkedIn, StepStone, Indeed, XING …) nie selbst; die Erweiterung übernimmt dort nur Adresse und Titel.** Plan `docs/plans/2026-11-16-ein-klick-import.md`.
+- **Ein Klick per Browser-Erweiterung** (Ein-Klick-Import, Entscheidungen 2026-11-16/17, Q6/Q7/Q14/Q16): übernimmt die gerade geöffnete Anzeige als „Gemerkt“ ohne Bewerbungsdatum. Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox. **Jobradar öffnet Jobportale (LinkedIn, StepStone, Indeed, XING …) nie selbst; die Erweiterung übernimmt dort nur Adresse und Titel, auf LinkedIn gar nichts (LinkedIn verbietet solche Erweiterungen, Q135).** Plan `docs/plans/2026-11-16-ein-klick-import.md`.
 - **Manuell**, z. B. bei Empfehlung, Headhunter oder nachgetragenen Bewerbungen.
 - **Stelle:**
   - Firma, verknüpft mit den Firmendaten

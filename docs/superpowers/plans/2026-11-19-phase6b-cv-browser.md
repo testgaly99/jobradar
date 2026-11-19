@@ -4,7 +4,7 @@
 
 **Goal:** Alle angemeldeten Nutzer außer dem Admin bekommen den CV-Abgleich kostenlos im eigenen Browser (Chrome-KI auf Knopfdruck, Q105); der Admin bekommt beim Merken sofort vorläufige Farben aus Stufe 1, die der Nachtlauf ersetzt (Q103); „Wichtige Punkte“ treffen für alle auch nach Bedeutung (Q106).
 
-**Architecture:** Ein Web Worker lädt dieselbe e5-small-Datei aus `/modell/e5-small/` über `@huggingface/transformers` (nur lokal, keine Hugging-Face-Abrufe) und wendet dieselben Regeln aus `cv-regeln.json` an wie `scraper/cv_stufe1.py`. Grenzfälle prüft Chromes eingebautes Modell (Prompt API), falls vorhanden; sonst bleiben sie Gelb. Das Ergebnis wird in `cv_ergebnisse` gespeichert (`weg 'browser'` bzw. `'browser-vorlaeufig'` beim Admin).
+**Architecture:** Ein Web Worker lädt dieselbe verkleinerte e5-small-Datei (6a Task 0b, Q136) aus `/modell/e5-small/` über `@huggingface/transformers` (nur lokal, keine Hugging-Face-Abrufe) und wendet dieselben Regeln aus `cv-regeln.json` an wie `scraper/cv_stufe1.py`. Grenzfälle prüft Chromes eingebautes Modell (Prompt API), falls vorhanden; sonst bleiben sie Gelb. Das Ergebnis wird in `cv_ergebnisse` gespeichert (`weg 'browser'` bzw. `'browser-vorlaeufig'` beim Admin).
 
 **Tech Stack:** Next.js 16 / TypeScript, `@huggingface/transformers`, `pdfjs-dist`, `mammoth` (Pflegezustand prüft Task 1), `node --test`, webapp-testing (Python + Playwright) für den Klicktest.
 
@@ -74,7 +74,7 @@
 - `pruefeGrenzfaelle(grenzfaelle, belege, cvText) -> Promise<Ergebnis[]>`: eine Sitzung, Anweisung auf Deutsch mit JSON-Schema (`responseConstraint`), Antwort durch dieselbe Prüfung wie 6a (`antwort_pruefen` als TS-Funktion `antwortPruefen` in dieser Datei): Beleg nicht wörtlich → `nicht_pruefbar`; Rot ohne Begründung → `nicht_pruefbar`.
 - Ohne Chrome-Modell: Grenzfälle → `gelb`/`nicht_automatisch`.
 
-- [ ] **Step 0:** Aktuelle Chrome-Doku zur Prompt API lesen (Verfügbarkeit auf normalen Webseiten ohne Origin Trial, Namen `LanguageModel.availability/create`, `responseConstraint`); Abweichungen im Protokoll und im Code übernehmen.
+- [ ] **Step 0:** Aktuelle Chrome-Doku zur Prompt API lesen (Namen `LanguageModel.availability/create`, `responseConstraint`); Abweichungen im Protokoll und im Code übernehmen. Stand der Prüfung durch Claude (2026-11-19): seit Chrome 148 (5.5.2026) auf normalen Webseiten ohne Origin Trial verfügbar, nur am Computer (Windows, macOS, Linux, Chromebook Plus); Modell Gemini Nano, Download rund 4 GB – der Knopftext nennt die Größe.
 - [ ] **Step 1: Tests (Attrappe für `LanguageModel`):** nicht vorhanden → kein Rot (Review Focus 1); `downloadable` → kein `create`-Aufruf ohne Klick, Status `ladbar`; erfundener Beleg → `nicht_pruefbar`; gültiges Rot mit Beleg bleibt Rot.
 - [ ] **Step 2–4:** FAIL → umsetzen → `npm test`, `npx tsc --noEmit` grün.
 - [ ] **Step 5: Commit** — „6b: Grenzfälle mit Chromes eingebautem Modell“ + `Agent: Codex`.
