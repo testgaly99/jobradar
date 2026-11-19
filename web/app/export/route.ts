@@ -24,11 +24,7 @@ export async function GET() {
       await alle("contacts", "application_id,name,rolle,email,telefon"),
       await alle("interviews", "application_id,datum,format,teilnehmer"),
       await alle("documents", "id,name"),
-      // Bis Migration 023 fehlt die Tabelle: Export ohne Anlagen statt ohne alles.
-      await alle("bewerbung_anlagen", "application_id,document_id", ["application_id", "document_id"]).catch((e) => {
-        if (["42P01", "PGRST205"].includes(e?.code)) return [];
-        throw e;
-      }),
+      await alle("bewerbung_anlagen", "application_id,document_id", ["application_id", "document_id"]),
     );
     return new Response(csv, {
       headers: {

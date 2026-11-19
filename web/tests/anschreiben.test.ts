@@ -32,6 +32,10 @@ test("Quelle: Portale mit Namen, sonst Karriereseite, leer bleibt leer", () => {
   assert.equal(quelleText("boards.greenhouse.io"), "Ihre Karriereseite");
   assert.equal(quelleText(null), "");
   assert.equal(quelleText("  "), "");
+  // Von Hand eingetragene Quelle (keine Adresse) bleibt wörtlich stehen
+  assert.equal(quelleText(" Empfehlung von Anna "), "Empfehlung von Anna");
+  assert.equal(quelleText("Karrieremesse"), "Karrieremesse");
+  assert.equal(quelleText("jobs.beispiel.de"), "Ihre Karriereseite");
 });
 
 test("Datum und Dateiname", () => {

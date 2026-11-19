@@ -84,7 +84,6 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   const interviews = (iv.data ?? []) as Interview[];
   const docs = (dok.data ?? []) as (Dok & { art: string | null; anlage_art?: string | null })[];
   const anschreiben = docs.find((d) => d.id === row.anschreiben_dokument_id) ?? null;
-  const ohne023 = ["42P01", "PGRST205"].includes(vl.error?.code ?? ""); // Tabellen fehlen bis Migration 023
   const vorlagen = (vl.data ?? []) as { id: string; name: string; betreff: string; text: string }[];
   const kopf = (bk.data ?? null) as Briefkopf | null;
   const ansprechpartner = personen.find((p) => p.art === "ansprechpartner") ?? null;
@@ -188,15 +187,11 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
               <form action={dokumentHerunterladen.bind(null, anschreiben.id)}><button className="knopf knopf-rand knopf-schmal" type="submit">Herunterladen</button></form>
             </div>
           )}
-          {ohne023 ? <p className="gedaempft klein">Anschreiben aus Vorlage: verfügbar nach Migration 023.</p> : (
-            <AnschreibenBlock applicationId={id} vorlagen={vorlagen} kopf={kopf} anzeige={anzeigeText(abschnitte, row.anforderungen as string | null, link)}
+          <AnschreibenBlock applicationId={id} vorlagen={vorlagen} kopf={kopf} anzeige={anzeigeText(abschnitte, row.anforderungen as string | null, link)}
               app={{ firma: row.firma as string | null, titel: row.titel as string | null, quelle: row.quelle as string | null }}
               kontakt={ansprechpartner ? { name: ansprechpartner.name, anrede: ansprechpartner.anrede ?? null } : null} />
-          )}
-          {!ohne023 && (
-            <AnlagenHaken applicationId={id} angehakt={(ba.data ?? []).map((x) => x.document_id as string)}
-              anlagen={docs.filter((d) => d.art === "anlage").map((d) => ({ id: d.id, name: d.name, art: (d.anlage_art && Object.hasOwn(ANLAGE_ARTEN, d.anlage_art) ? ANLAGE_ARTEN[d.anlage_art] : "") }))} />
-          )}
+          <AnlagenHaken applicationId={id} angehakt={(ba.data ?? []).map((x) => x.document_id as string)}
+            anlagen={docs.filter((d) => d.art === "anlage").map((d) => ({ id: d.id, name: d.name, art: (d.anlage_art && Object.hasOwn(ANLAGE_ARTEN, d.anlage_art) ? ANLAGE_ARTEN[d.anlage_art] : "") }))} />
         </details>
 
         <details className="karte kein-druck" open={hat("gehalt_spanne_anzeige", "gehalt_wunsch", "angebot_fix", "angebot_variabel", "angebot_urlaub", "angebot_benefits", "gehalt_aktuell_vergleich")}>

@@ -7,7 +7,6 @@ import { BriefkopfFormular } from "./briefkopf";
 import { Vorlagen } from "./vorlagen";
 
 type Dok = { id: string; art: string | null; name: string | null; version_datum: string | null; anlage_art?: string | null };
-const FEHLT = ["42P01", "PGRST205"]; // Tabelle fehlt: Migration 023 noch nicht eingespielt
 
 function Liste({ docs, leer }: { docs: Dok[]; leer: string }) {
   if (!docs.length) return <p className="gedaempft">{leer}</p>;
@@ -48,7 +47,6 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
     sb.from("briefkopf").select("name,strasse,plz_ort,telefon,email,linkedin").maybeSingle(),
     sb.from("anschreiben_vorlagen").select("id,name,betreff,text").order("name"),
   ]);
-  const ohneMigration = FEHLT.includes(kopf.error?.code ?? "") || FEHLT.includes(vorlagen.error?.code ?? "");
   const alle = (docs ?? []) as Dok[];
   const weitere = alle.filter((d) => d.art !== "cv" && d.art !== "anlage");
   return (
@@ -56,9 +54,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
       <h1>Unterlagen</h1>
       {fehler && <p className="meldung fehler" role="alert">Der Download hat nicht geklappt.</p>}
       <h2>Briefkopf</h2>
-      {ohneMigration ? <p className="gedaempft">Verfügbar nach Migration 023.</p> : <BriefkopfFormular kopf={kopf.data} />}
+      <BriefkopfFormular kopf={kopf.data} />
       <h2>Anschreiben-Vorlagen</h2>
-      {ohneMigration ? <p className="gedaempft">Verfügbar nach Migration 023.</p> : <Vorlagen vorlagen={vorlagen.data ?? []} />}
+      <Vorlagen vorlagen={vorlagen.data ?? []} />
       <h2>CV-Versionen</h2>
       <Liste docs={alle.filter((d) => d.art === "cv")} leer="Noch keine CV-Versionen." />
       <h2>Anlagen</h2>

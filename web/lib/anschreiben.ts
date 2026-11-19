@@ -29,9 +29,13 @@ export function anredeText(anrede: string | null, name: string | null): string {
 const PORTALE: [string, string][] = [["linkedin", "LinkedIn"], ["stepstone", "StepStone"], ["indeed", "Indeed"], ["xing", "XING"], ["glassdoor", "Glassdoor"]];
 
 export function quelleText(quelle: string | null): string {
-  const q = quelle?.trim().toLowerCase();
+  const roh = quelle?.trim() ?? "";
+  const q = roh.toLowerCase();
   if (!q) return "";
-  return PORTALE.find(([k]) => q.includes(k))?.[1] ?? "Ihre Karriereseite";
+  const portal = PORTALE.find(([k]) => q.includes(k))?.[1];
+  if (portal) return portal;
+  // Adresse (Firmenseite, Bewerbermanagement-System) → Karriereseite; von Hand Geschriebenes bleibt stehen.
+  return /^\S+\.\S+$/.test(roh) ? "Ihre Karriereseite" : roh;
 }
 
 export function datumText(d: Date): string {

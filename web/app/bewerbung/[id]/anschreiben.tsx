@@ -45,7 +45,10 @@ export function AnschreibenBlock({ applicationId, vorlagen, kopf, anzeige, app, 
     const { error } = await sb.storage.from("dokumente").upload(pfad, daten instanceof File ? daten : new Blob([daten as BlobPart], { type: typ }), { contentType: typ });
     if (error) { setMeldung({ text: "Speichern hat nicht geklappt.", fehler: true }); return false; }
     const r = await anschreibenSpeichern(applicationId, pfad, `Anschreiben ${(app.firma ?? "").slice(0, 90)} ${tt(heute)}`.replace(/\s+/g, " "));
-    if (r.fehler) { setMeldung({ text: r.fehler, fehler: true }); return false; }
+    if (r.fehler) {
+      await sb.storage.from("dokumente").remove([pfad]); // sonst bleibt eine Datei ohne Eintrag liegen
+      setMeldung({ text: r.fehler, fehler: true }); return false;
+    }
     router.refresh();
     return true;
   }
