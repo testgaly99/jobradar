@@ -303,8 +303,8 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q230 | ponytail-Review jetzt laufen lassen? (Nutzer: „Prüfe, ob das ponytail review in diesem Stadium sinnvoll ist für das Projekt“) | Nutzer: „Ja, Runde 1 prüfen (Empfohlen)“ | Review der Runde-1-Änderungen läuft; Funde nur nach OK beheben. | entschieden |
 | Q231 | Review-Korrekturen (Punkte 1–3) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen. | entschieden |
 | Q232 | Nächstes Paket: Nr. 0a jetzt von Claude oder morgen von Codex? (Nutzer: „Kannst du schon mit der nächsten Phase beginnen?“) | Nutzer: „Claude baut 0a jetzt (Empfohlen)“ | Claude baut Nr. 0a; Codex beginnt mit Nr. 1. | entschieden |
-| Q233 | Nr. 0a (Erweiterung verteilen) auf `entwurf-ui` hochladen? | offen | – | offen |
-| Q234 | Zwei Profile im Admin-Konto: wofür? (Nutzer: „Ich möchte innerhalb des Admin Accounts 2 verschiedene Profile haben, also selber Account, selbe Berechtigugen etc. selbe Person, 2 verschiedene Profile, die jeweils eigene Stellen speichern und eigene Dateien für Bewerbungen hochladen etc.“) | offen | – | offen |
+| Q233 | Nr. 0a (Erweiterung verteilen) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen. | entschieden |
+| Q234 | Zwei Profile im Admin-Konto: wofür? (Nutzer: „Ich möchte innerhalb des Admin Accounts 2 verschiedene Profile haben, also selber Account, selbe Berechtigugen etc. selbe Person, 2 verschiedene Profile, die jeweils eigene Stellen speichern und eigene Dateien für Bewerbungen hochladen etc.“) | Rückfrage des Nutzers: „Worin unterscheidet sich der Aufbau und die Funktionalitäten zwischen "Zwei Bewerbungs-Richtlinien" und "Test und echt trennen"“ | Claude erklärt den Unterschied, fragt erneut (Q235). | Präzisierung |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
