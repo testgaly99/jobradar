@@ -68,6 +68,18 @@ export async function personAnlegen(id: string, f: FormData) {
   zurueck(id);
 }
 
+// Nur Personen dieser Bewerbung: application_id im Filter, RLS prüft zusätzlich den Besitzer.
+export async function personSpeichern(id: string, personId: string, f: FormData) {
+  const sb = await start(id);
+  if (!istUuid(personId)) notFound();
+  const r = parseAbschnitt("person", f);
+  if ("fehler" in r) return zurueck(id, r.fehler);
+  const { error } = await sb.from("contacts").update(r.daten).eq("id", personId).eq("application_id", id);
+  if (error) zurueck(id, DB_FEHLER);
+  revalidatePath(`/bewerbung/${id}`);
+  zurueck(id);
+}
+
 export async function interviewAnlegen(id: string, f: FormData) {
   const sb = await start(id);
   const r = parseAbschnitt("interview", f);

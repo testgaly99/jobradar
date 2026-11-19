@@ -5,7 +5,7 @@ import {
   ERGEBNIS_LABEL, KONTAKT_ART_LABEL, STATUS, STATUS_LABEL, datumDe, istUuid, zeitDe, type Abschnitt, type Status,
 } from "@/lib/bewerbung";
 import {
-  abschnittSpeichern, bewerbungLoeschen, eintragLoeschen, interviewAnlegen, notizAnlegen, personAnlegen,
+  abschnittSpeichern, bewerbungLoeschen, eintragLoeschen, interviewAnlegen, notizAnlegen, personAnlegen, personSpeichern,
 } from "@/app/bewerbungen/detail-actions";
 import Abschnitte from "../../abschnitte";
 import { leseAbschnitte } from "@/lib/anzeige";
@@ -33,6 +33,32 @@ function Text({ a, name, label, type = "text", gross }: { a: Row; name: string; 
     <label>{label}
       {gross ? <textarea name={name} rows={4} defaultValue={v(a[name])} /> : <input name={name} type={type} defaultValue={v(a[name])} />}
     </label>
+  );
+}
+
+// Gleiche Felder für "Person hinzufügen" und "Bearbeiten"; p = vorhandene Person oder leer.
+function PersonFelder({ p }: { p?: Person }) {
+  return (
+    <>
+      <label>Name (Pflicht)<input name="name" required defaultValue={p?.name ?? ""} /></label>
+      <label>Art
+        <select name="art" defaultValue={p?.art ?? "ansprechpartner"}>
+          {Object.entries(KONTAKT_ART_LABEL).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
+        </select>
+      </label>
+      <label>Anrede
+        <select name="anrede" defaultValue={p?.anrede ?? "ohne"}>
+          <option value="frau">Frau</option>
+          <option value="herr">Herr</option>
+          <option value="ohne">ohne</option>
+        </select>
+      </label>
+      <label>Rolle<input name="rolle" defaultValue={p?.rolle ?? ""} /></label>
+      <label>Firma<input name="firma" defaultValue={p?.firma ?? ""} /></label>
+      <label>E-Mail<input name="email" type="email" defaultValue={p?.email ?? ""} /></label>
+      <label>Telefon<input name="telefon" type="tel" defaultValue={p?.telefon ?? ""} /></label>
+      <label>LinkedIn<input name="linkedin" defaultValue={p?.linkedin ?? ""} /></label>
+    </>
   );
 }
 
@@ -237,8 +263,15 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           {personen.map((p) => (
             <li key={p.id}>
               <div>
-                <strong>{p.name}</strong> {p.art && <span className="chip">{KONTAKT_ART_LABEL[p.art]}</span>}
+                <strong>{p.anrede === "frau" ? "Frau " : p.anrede === "herr" ? "Herr " : ""}{p.name}</strong> {p.art && <span className="chip">{KONTAKT_ART_LABEL[p.art]}</span>}
                 <p className="klein">{[p.rolle, p.firma, p.email, p.telefon, p.linkedin].filter(Boolean).join(", ")}</p>
+                <details className="hinzufuegen">
+                  <summary className="knopf knopf-rand knopf-schmal">Bearbeiten</summary>
+                  <form action={personSpeichern.bind(null, id, p.id)} className="formular">
+                    <PersonFelder p={p} />
+                    <SendeKnopf text="Änderungen speichern" />
+                  </form>
+                </details>
               </div>
               <LoeschForm action={eintragLoeschen.bind(null, id, "contacts", p.id)} frage="Person löschen?" />
             </li>
@@ -248,24 +281,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         <details className="hinzufuegen">
         <summary className="knopf knopf-rand knopf-schmal">+ Person hinzufügen</summary>
         <form action={personAnlegen.bind(null, id)} className="formular">
-          <label>Name (Pflicht)<input name="name" required /></label>
-          <label>Art
-            <select name="art" defaultValue="ansprechpartner">
-              {Object.entries(KONTAKT_ART_LABEL).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
-            </select>
-          </label>
-          <label>Anrede
-            <select name="anrede" defaultValue="ohne">
-              <option value="frau">Frau</option>
-              <option value="herr">Herr</option>
-              <option value="ohne">ohne</option>
-            </select>
-          </label>
-          <label>Rolle<input name="rolle" /></label>
-          <label>Firma<input name="firma" /></label>
-          <label>E-Mail<input name="email" type="email" /></label>
-          <label>Telefon<input name="telefon" type="tel" /></label>
-          <label>LinkedIn<input name="linkedin" /></label>
+          <PersonFelder />
           <SendeKnopf text="Person speichern" />
         </form>
         </details>
