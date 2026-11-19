@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { claudeAuftrag, dateiname, fuelleVorlage, platzhalterWerte } from "@/lib/anschreiben";
 import type { Briefkopf } from "@/lib/brief-datei";
-import { anschreibenSpeichern } from "./anschreiben-actions";
+import { anlageUmschalten, anschreibenSpeichern } from "./anschreiben-actions";
 
 type Vorlage = { id: string; name: string; betreff: string; text: string };
 type Props = {
@@ -126,5 +126,31 @@ export function AnschreibenBlock({ applicationId, vorlagen, kopf, anzeige, app, 
       {laeuft && <p className="gedaempft klein" role="status">Bitte warten …</p>}
       {meldung && <p className={`meldung${meldung.fehler ? " fehler" : ""}`} role={meldung.fehler ? "alert" : "status"}>{meldung.text}</p>}
     </div>
+  );
+}
+
+export function AnlagenHaken({ applicationId, anlagen, angehakt }: { applicationId: string; anlagen: { id: string; name: string | null; art: string }[]; angehakt: string[] }) {
+  const router = useRouter();
+  const [an, setAn] = useState(new Set(angehakt));
+  const [fehler, setFehler] = useState("");
+  async function umschalten(id: string, wert: boolean) {
+    setAn((s) => { const n = new Set(s); if (wert) n.add(id); else n.delete(id); return n; });
+    const r = await anlageUmschalten(applicationId, id, wert);
+    if (r.fehler) {
+      setFehler(r.fehler);
+      setAn((s) => { const n = new Set(s); if (wert) n.delete(id); else n.add(id); return n; });
+    } else { setFehler(""); router.refresh(); }
+  }
+  return (
+    <fieldset className="formular">
+      <legend><h3>Anlagen</h3></legend>
+      {anlagen.length === 0 ? <p className="gedaempft klein">Noch keine Anlagen. <a href="/unterlagen">Anlagen hochladen</a></p>
+        : anlagen.map((d) => (
+          <label key={d.id} className="klein">
+            <input type="checkbox" checked={an.has(d.id)} onChange={(e) => umschalten(d.id, e.target.checked)} /> {d.name || "Anlage"}{d.art ? ` (${d.art})` : ""}
+          </label>
+        ))}
+      {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+    </fieldset>
   );
 }

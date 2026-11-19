@@ -14,7 +14,7 @@ export const KONTAKT_ART_LABEL: Record<string, string> = {
 export const istStatus = (s: unknown): s is Status => typeof s === "string" && (STATUS as readonly string[]).includes(s);
 export const istUuid = (s: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
 
-type Typ = "text" | "url" | "datum" | "zeit" | "int15" | "tags" | "status" | "ergebnis" | "art" | "uuid";
+type Typ = "text" | "url" | "datum" | "zeit" | "int15" | "tags" | "status" | "ergebnis" | "art" | "anrede" | "uuid";
 export type Abschnitt = "neu" | "stelle" | "bewerbung" | "gehalt" | "rahmen" | "ergebnis" | "einschaetzung" | "ablauf" | "person" | "interview";
 const STELLE: Record<string, Typ> = { firma: "text", titel: "text", link: "url", quelle: "text", standort: "text", praesenzmodell: "text", anforderungen: "text" };
 
@@ -28,7 +28,7 @@ export const FELDER: Record<Abschnitt, Record<string, Typ>> = {
   ergebnis: { ergebnis: "ergebnis", absagegrund: "text", feedback: "text", rueckzug_grund: "text" },
   einschaetzung: { interesse: "int15", tags: "tags", notizen: "text" },
   ablauf: { status: "status", naechster_schritt: "text", naechster_schritt_faellig: "datum" },
-  person: { firma: "text", name: "text", rolle: "text", email: "text", telefon: "text", linkedin: "text", art: "art" },
+  person: { firma: "text", name: "text", rolle: "text", email: "text", telefon: "text", linkedin: "text", art: "art", anrede: "anrede" },
   interview: { datum: "zeit", format: "text", teilnehmer: "text", fragen_gestellt: "text", eigene_fragen: "text", eindruck: "text", aufgabe: "text", aufgabe_frist: "datum" },
 };
 const PFLICHT: Partial<Record<Abschnitt, string[]>> = { neu: ["firma", "titel"], stelle: ["firma", "titel"], ablauf: ["status"], person: ["name"] };
@@ -80,6 +80,7 @@ export function parseAbschnitt(abschnitt: Abschnitt, f: Eingabe): { daten: Recor
       case "status": if (!istStatus(s)) return { fehler: "Ungültiger Status." }; daten[k] = s; break;
       case "ergebnis": if (!Object.hasOwn(ERGEBNIS_LABEL, s)) return { fehler: "Ungültiges Ergebnis." }; daten[k] = s; break;
       case "art": if (!Object.hasOwn(KONTAKT_ART_LABEL, s)) return { fehler: "Ungültige Art." }; daten[k] = s; break;
+      case "anrede": if (!["frau", "herr", "ohne"].includes(s)) return { fehler: "Ungültige Anrede." }; daten[k] = s; break;
       case "uuid": if (!istUuid(s)) return { fehler: "Ungültiges Dokument." }; daten[k] = s; break;
     }
   }

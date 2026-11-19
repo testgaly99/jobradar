@@ -13,7 +13,8 @@ import { zurueckZuGemerkt } from "@/lib/zug";
 import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
 import { DruckKnopf, LoeschForm, SendeKnopf } from "@/app/bewerbungen/knoepfe";
 import Ungespeichert from "./ungespeichert";
-import { AnschreibenBlock } from "./anschreiben";
+import { AnlagenHaken, AnschreibenBlock } from "./anschreiben";
+import { ANLAGE_ARTEN } from "@/lib/dokumente";
 import { anzeigeText } from "@/lib/anschreiben";
 import type { Briefkopf } from "@/lib/brief-datei";
 import { dokumentHerunterladen } from "@/app/unterlagen/actions";
@@ -41,20 +42,21 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   const sb = await createClient();
   const { data: a } = await sb.from("applications").select("*").eq("id", id).maybeSingle();
   if (!a) notFound();
-  const [ev, pe, iv, dok, weitere, vl, bk] = await Promise.all([
+  const [ev, pe, iv, dok, weitere, vl, bk, ba] = await Promise.all([
     sb.from("application_events").select("id,datum,alter_status,neuer_status,notiz").eq("application_id", id).order("datum", { ascending: false }),
     sb.from("contacts").select("*").eq("application_id", id).order("name"),
     sb.from("interviews").select("*").eq("application_id", id).order("datum", { ascending: false }),
-    sb.from("documents").select("id,name,art,version_datum").order("version_datum", { ascending: false }),
+    sb.from("documents").select("*").order("version_datum", { ascending: false }),
     bewerbungenBei(sb, a.firma as string | null, id),
     sb.from("anschreiben_vorlagen").select("id,name,betreff,text").order("name"),
     sb.from("briefkopf").select("name,strasse,plz_ort,telefon,email,linkedin").maybeSingle(),
+    sb.from("bewerbung_anlagen").select("document_id").eq("application_id", id),
   ]);
   const row = a as Row;
   const events = (ev.data ?? []) as Ereignis[];
   const personen = (pe.data ?? []) as Person[];
   const interviews = (iv.data ?? []) as Interview[];
-  const docs = (dok.data ?? []) as (Dok & { art: string | null })[];
+  const docs = (dok.data ?? []) as (Dok & { art: string | null; anlage_art?: string | null })[];
   const anschreiben = docs.find((d) => d.id === row.anschreiben_dokument_id) ?? null;
   const ohne023 = ["42P01", "PGRST205"].includes(vl.error?.code ?? ""); // Tabellen fehlen bis Migration 023
   const vorlagen = (vl.data ?? []) as { id: string; name: string; betreff: string; text: string }[];
@@ -165,6 +167,10 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
               app={{ firma: row.firma as string | null, titel: row.titel as string | null, quelle: row.quelle as string | null }}
               kontakt={ansprechpartner ? { name: ansprechpartner.name, anrede: ansprechpartner.anrede ?? null } : null} />
           )}
+          {!ohne023 && (
+            <AnlagenHaken applicationId={id} angehakt={(ba.data ?? []).map((x) => x.document_id as string)}
+              anlagen={docs.filter((d) => d.art === "anlage").map((d) => ({ id: d.id, name: d.name, art: (d.anlage_art && Object.hasOwn(ANLAGE_ARTEN, d.anlage_art) ? ANLAGE_ARTEN[d.anlage_art] : "") }))} />
+          )}
         </details>
 
         <details className="karte kein-druck" open={hat("gehalt_spanne_anzeige", "gehalt_wunsch", "angebot_fix", "angebot_variabel", "angebot_urlaub", "angebot_benefits", "gehalt_aktuell_vergleich")}>
@@ -246,6 +252,13 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           <label>Art
             <select name="art" defaultValue="ansprechpartner">
               {Object.entries(KONTAKT_ART_LABEL).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
+            </select>
+          </label>
+          <label>Anrede
+            <select name="anrede" defaultValue="ohne">
+              <option value="frau">Frau</option>
+              <option value="herr">Herr</option>
+              <option value="ohne">ohne</option>
             </select>
           </label>
           <label>Rolle<input name="rolle" /></label>

@@ -104,3 +104,15 @@ test("dateiname bereinigen", () => {
   assert.equal(dateiname("a".repeat(300) + ".pdf").length, 100);
   assert.equal(dateiname(""), "datei");
 });
+
+test("Spalte Anlagen: Namen der angehakten Anlagen, mit Semikolon getrennt", () => {
+  const t = bewerbungenCsv(
+    [{ id: "a1", firma: "ACME", titel: "PM", status: "beworben" }], [], [],
+    [{ id: "d1", name: "Zeugnis A" }, { id: "d2", name: "Zertifikat B" }],
+    [{ application_id: "a1", document_id: "d1" }, { application_id: "a1", document_id: "d2" }, { application_id: "zz", document_id: "d1" }],
+  );
+  const [kopf, zeile] = t.split("\r\n");
+  const i = kopf.split(";").indexOf("Anlagen");
+  assert.ok(i > kopf.split(";").indexOf("Anschreiben"));
+  assert.ok(zeile.includes("Zeugnis A; Zertifikat B"));
+});

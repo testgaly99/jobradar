@@ -161,3 +161,9 @@ test("Dokument-Version und Tracker-Datum teilen Kalenderregeln, reine Daten werd
     if ("daten" in tracker) assert.equal(tracker.daten.starttermin, datum);
   }
 });
+
+test("Anrede am Kontakt: nur Frau, Herr, ohne", () => {
+  assert.ok("fehler" in parseAbschnitt("person", fd({ name: "Eva Muster", anrede: "divers" })));
+  const r = parseAbschnitt("person", fd({ name: "Eva Muster", anrede: "frau" }));
+  assert.ok("daten" in r && r.daten.anrede === "frau");
+});

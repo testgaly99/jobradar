@@ -28,3 +28,15 @@ export async function anschreibenSpeichern(applicationId: string, pfad: string, 
   revalidatePath("/bewerbungen");
   return {};
 }
+
+// Haken an/aus: RLS prüft zusätzlich, dass Bewerbung und Dokument dem Nutzer gehören.
+export async function anlageUmschalten(applicationId: string, documentId: string, an: boolean): Promise<{ fehler?: string }> {
+  if (!istUuid(applicationId) || !istUuid(documentId)) return { fehler: "Ungültige Angabe." };
+  const sb = await createClient();
+  const { error } = an
+    ? await sb.from("bewerbung_anlagen").upsert({ application_id: applicationId, document_id: documentId }, { ignoreDuplicates: true })
+    : await sb.from("bewerbung_anlagen").delete().eq("application_id", applicationId).eq("document_id", documentId);
+  if (error) return { fehler: "Die Anlage konnte nicht gespeichert werden." };
+  revalidatePath(`/bewerbung/${applicationId}`);
+  return {};
+}

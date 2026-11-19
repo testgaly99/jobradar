@@ -1,11 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { datumDe } from "@/lib/bewerbung";
-import { dokumentHerunterladen } from "./actions";
+import { ANLAGE_ARTEN } from "@/lib/dokumente";
+import { anlageArtAendern, dokumentHerunterladen } from "./actions";
 import { DokumentLoeschen, UploadFormular } from "./upload";
 import { BriefkopfFormular } from "./briefkopf";
 import { Vorlagen } from "./vorlagen";
 
-type Dok = { id: string; art: string | null; name: string | null; version_datum: string | null };
+type Dok = { id: string; art: string | null; name: string | null; version_datum: string | null; anlage_art?: string | null };
 const FEHLT = ["42P01", "PGRST205"]; // Tabelle fehlt: Migration 023 noch nicht eingespielt
 
 function Liste({ docs, leer }: { docs: Dok[]; leer: string }) {
@@ -17,6 +18,17 @@ function Liste({ docs, leer }: { docs: Dok[]; leer: string }) {
           <div>
             <strong>{d.name || "Dokument"}</strong>
             {d.version_datum && <p className="gedaempft klein">{datumDe(d.version_datum)}</p>}
+            {d.art === "anlage" && "anlage_art" in d && (
+              <form action={anlageArtAendern.bind(null, d.id)} className="aktionsreihe">
+                <label className="klein">Art
+                  <select name="anlage_art" defaultValue={d.anlage_art ?? ""} required>
+                    <option value="" disabled>Bitte wählen</option>
+                    {Object.entries(ANLAGE_ARTEN).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
+                  </select>
+                </label>
+                <button className="knopf knopf-leise knopf-schmal" type="submit">Ändern</button>
+              </form>
+            )}
           </div>
           <div>
             <form action={dokumentHerunterladen.bind(null, d.id)}><button className="knopf knopf-rand knopf-schmal" type="submit">Herunterladen</button></form>
@@ -32,7 +44,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
   const { fehler } = await searchParams;
   const sb = await createClient();
   const [{ data: docs }, kopf, vorlagen] = await Promise.all([
-    sb.from("documents").select("id,art,name,version_datum").order("version_datum", { ascending: false }),
+    sb.from("documents").select("*").order("version_datum", { ascending: false }),
     sb.from("briefkopf").select("name,strasse,plz_ort,telefon,email,linkedin").maybeSingle(),
     sb.from("anschreiben_vorlagen").select("id,name,betreff,text").order("name"),
   ]);

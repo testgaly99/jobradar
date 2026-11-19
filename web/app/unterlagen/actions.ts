@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { pruefeDokument } from "@/lib/dokumente";
+import { ANLAGE_ARTEN, loeschMeldung, pruefeDokument } from "@/lib/dokumente";
 import { pruefeBriefkopf, pruefeVorlage } from "@/lib/unterlagen";
 
 async function nutzer() {
@@ -12,10 +12,11 @@ async function nutzer() {
 }
 
 // Der Upload ging schon vom Browser in den Speicher; hier wird nur die Zeile angelegt.
-export async function dokumentAnlegen(art: string, name: string, versionDatum: string, pfad: string): Promise<{ fehler?: string }> {
+export async function dokumentAnlegen(art: string, name: string, versionDatum: string, pfad: string, anlageArt?: string): Promise<{ fehler?: string }> {
   const { sb, uid } = await nutzer();
   if (!uid) return { fehler: "Bitte melde dich an." };
-  const ergebnis = pruefeDokument(uid, art, name, versionDatum, pfad);
+  if (art === "anlage" && !anlageArt) return { fehler: "Bitte wähle die Art der Anlage." };
+  const ergebnis = pruefeDokument(uid, art, name, versionDatum, pfad, anlageArt);
   if ("fehler" in ergebnis) return ergebnis;
   const { error } = await sb.from("documents").insert(ergebnis.daten);
   if (error) return { fehler: "Dokument konnte nicht gespeichert werden." };
@@ -30,7 +31,7 @@ export async function dokumentLoeschen(id: string): Promise<{ fehler?: string }>
   if (!d) return { fehler: "Dokument nicht gefunden." };
   // Zeile zuerst: der FK (restrict) blockiert Dokumente, die eine Bewerbung nutzt.
   const { error } = await sb.from("documents").delete().eq("id", id);
-  if (error) return { fehler: error.code === "23503" ? "Dokument wird noch in einer Bewerbung verwendet." : "Dokument konnte nicht gelöscht werden." };
+  if (error) return { fehler: loeschMeldung(error.code) };
   if (d.storage_pfad) {
     const { error: e } = await sb.storage.from("dokumente").remove([d.storage_pfad]);
     if (e) console.error("Speicherobjekt nicht gelöscht:", d.storage_pfad, e.message); // Zeile ist schon weg: nicht scheitern
@@ -79,4 +80,13 @@ export async function vorlageLoeschen(id: string): Promise<{ fehler?: string }> 
   if (error) return { fehler: "Vorlage konnte nicht gelöscht werden." };
   revalidatePath("/unterlagen");
   return {};
+}
+
+export async function anlageArtAendern(id: string, f: FormData) {
+  const { sb, uid } = await nutzer();
+  if (!uid) redirect("/login");
+  const art = String(f.get("anlage_art") ?? "");
+  if (!Object.hasOwn(ANLAGE_ARTEN, art)) return;
+  await sb.from("documents").update({ anlage_art: art }).eq("id", id).eq("art", "anlage");
+  revalidatePath("/unterlagen");
 }
