@@ -301,6 +301,8 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q228 | Runde 1 (von Claude gebaut, 7 Commits) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`; danach Migration 023 (To-do 31). | entschieden |
 | Q229 | Runde-1-Abschluss und Knopf „Bearbeiten“ für Personen auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
 | Q230 | ponytail-Review jetzt laufen lassen? (Nutzer: „Prüfe, ob das ponytail review in diesem Stadium sinnvoll ist für das Projekt“) | Nutzer: „Ja, Runde 1 prüfen (Empfohlen)“ | Review der Runde-1-Änderungen läuft; Funde nur nach OK beheben. | entschieden |
+| Q231 | Review-Korrekturen (Punkte 1–3) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen. | entschieden |
+| Q232 | Nächstes Paket: Nr. 0a jetzt von Claude oder morgen von Codex? (Nutzer: „Kannst du schon mit der nächsten Phase beginnen?“) | Nutzer: „Claude baut 0a jetzt (Empfohlen)“ | Claude baut Nr. 0a; Codex beginnt mit Nr. 1. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -418,6 +420,8 @@ Fragetexte Q227 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch 
 Fragetexte Q228 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Erst Migration 023, dann hochladen / Noch nicht.
 Fragetexte Q229 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
 Fragetexte Q230 (Claude, 2026-11-19, Auswahl): Ja, Review der Runde-1-Änderungen (Empfohlen) / Ganzes Projekt prüfen (ponytail-audit) / Später.
+Fragetexte Q231 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q232 (Claude, 2026-11-19, Auswahl): Claude baut Nr. 0a jetzt (Empfohlen) / Codex macht 0a morgen, Claude pausiert / Claude baut gleich 0a und Nr. 1.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
