@@ -283,6 +283,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q210 | Stellen ohne bekannte Pendelzeit im Filter? | Nutzer: „Durchlassen, markiert (Empfohlen)“ | Sichtbar mit „Pendelzeit unbekannt“; Häkchen „nur mit bekannter Pendelzeit“. | entschieden |
 | Q211 | Design Pendelzeit freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Warteschlange Nr. 12a. | entschieden |
 | Q212 | Design und Plan Pendelzeit hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q213 | Was als Nächstes? | Nutzer: „Gibt es sonst noch Pläne oder Fragen die zu klären sind“ | Bestandsaufnahme offener Fragen, Pläne und Backlog. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -377,6 +378,8 @@ Fragetexte Q209–Q210 (Claude, 2026-11-19, Auswahl): Q209 Werktag, Ankunft bis 
 Fragetexte Q211 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden.
 
 Fragetexte Q212 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht / Erst ändern.
+
+Fragetexte Q213 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Runde Erinnerungen / Pause (Antwort frei).
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

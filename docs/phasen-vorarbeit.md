@@ -67,7 +67,7 @@ Bereits beschlossen (CLAUDE.md 4.7): Mail nur von Domains laufender Bewerbungen;
 | Berufserfahrung | `jobs.steckbrief.erfahrung_jahre` | Zahlenfilter; Mindestwert vs. Spanne vs. unbekannt klären. `jobs.ki.erfahrung` ist Freitext. |
 | Gehalt | `jobs.steckbrief.gehalt` (min/max/waehrung/zeitraum) | Jahresnormalisierung, Wechselkurse, Schätzung. Monat nicht mit Jahr vergleichen. |
 | Sprachen/Sicherheitsüberprüfung | `jobs.steckbrief`, `leseSteckbrief` | Nur Anzeige; `sicherheit=false` heißt auch „nichts erkannt“. |
-| Studium/Anspruch | `jobs.studium`, `jobs.taetigkeit` (Migration 009) | Groq-Halte-Punkt; Whitelist/Prestige offen. |
+| Studium/Anspruch | `jobs.studium`, `jobs.taetigkeit` (Migration 009) | Groq-Halte-Punkt; Whitelist entschieden (Q45–Q47, Phase 4a). |
 | Personalverantwortung, Präsenztage, Remote-Gebiet | Arbeitsmodell/Remote-Boolean | Keine Einzelfelder; aus „Hybrid“ keine Präsenztage ableiten. |
 | Benefits/Muss | Listen in `jobs.ki`, `leseKi` | Freitext, keine Urlaubstage oder Skill-IDs. |
 | Marktrolle/Eigentümer/Alter | Name, Portal, Größe, Kategorie, Hauptsitz | Felder und Quellen fehlen; nicht aus Werbetext ableiten. |
@@ -112,12 +112,12 @@ Vollständig künstlich, reduziert; kein API-/Datenbankschema, kein Import, wird
   "kalenderfaelle": [
     {"fall": "normal", "nutzer": "a", "event_id": "e1", "start": "2026-11-17T09:00:00Z", "zeitzone": "Europe/Berlin", "von_app_erstellt": false},
     {"fall": "app_termin", "nutzer": "a", "event_id": "e2", "start": "2026-11-18T09:00:00Z", "zeitzone": "Europe/Berlin", "von_app_erstellt": true},
-    {"fall": "nicht_existierende_wanduhrzeit", "lokale_zeit": "2026-03-29T02:30", "zeitzone": "Europe/Berlin", "fachliche_behandlung": "offen"},
-    {"fall": "doppelte_wanduhrzeit", "lokale_zeit": "2026-10-25T02:30", "zeitzone": "Europe/Berlin", "fachliche_behandlung": "offen"}
+    {"fall": "nicht_existierende_wanduhrzeit", "lokale_zeit": "2026-03-29T02:30", "zeitzone": "Europe/Berlin", "fachliche_behandlung": "um 1 Stunde nach vorn verschieben (03:30)"},
+    {"fall": "doppelte_wanduhrzeit", "lokale_zeit": "2026-10-25T02:30", "zeitzone": "Europe/Berlin", "fachliche_behandlung": "erstes Vorkommen (Sommerzeit, +02:00)"}
   ],
   "bestehende_invarianten": [
     "Nutzerdaten nicht über Nutzergrenzen zusammenführen.",
-    "Status aus E-Mails zunächst nur vorschlagen, nicht automatisch ändern.",
+    "Status aus E-Mails automatisch setzen mit Hinweis und „Rückgängig“ (Q142 ersetzt „nur vorschlagen“).",
     "Fremde Kalendertermine nicht verändern.",
     "Persönliche Texte nicht an Groq senden.",
     "Aus unbekannten Werten keine belegten negativen Tatsachen ableiten."
