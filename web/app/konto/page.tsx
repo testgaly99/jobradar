@@ -1,4 +1,8 @@
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { aktualisieren, anleitung, browserAus } from "@/lib/erweiterung-anleitung";
+import erweiterung from "@/lib/erweiterung-version.json";
+import { AdresseKopieren } from "./erweiterung";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { kiStand, ladeAlle, sichererLink } from "@/lib/ki-stand";
 import { aktuellerNutzer } from "@/lib/nutzer";
@@ -10,6 +14,10 @@ import { begriffHinzufuegen, felderSpeichern, begriffEntfernen, kontoLoeschen } 
 
 export default async function Seite({ searchParams }: { searchParams: Promise<{ fehler?: string }> }) {
   const { fehler } = await searchParams;
+  // Eigene Adresse aus der Anfrage: so steht keine Website-Adresse im Code (CLAUDE.md 4.6).
+  const h = await headers();
+  const adresse = `${h.get("x-forwarded-proto") ?? "http"}://${h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3002"}`;
+  const browser = browserAus(h.get("user-agent"));
   const n = await aktuellerNutzer();
   const verboten = selbstLoeschenErlaubt({ istAdmin: !!n?.admin, adminEnv: process.env.ADMIN_EMAIL });
   const sb = await createClient();
@@ -119,6 +127,22 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
           )}
         </section>
       )}
+      <section className="abschnitt">
+        <h2>Browser-Erweiterung</h2>
+        <p>Mit dem Knopf „Anzeige merken“ übernimmst du eine geöffnete Stellenanzeige mit einem Klick in deine Bewerbungen.</p>
+        {browser === "mobil" ? <p className="gedaempft">{anleitung("mobil")[0]}</p> : (
+          <>
+            <p><a className="knopf knopf-schmal" href="/downloads/jobradar-erweiterung.zip" download>Erweiterung herunterladen (Version {erweiterung.version})</a></p>
+            <ol>{anleitung(browser).map((s) => <li key={s}>{s}</li>)}</ol>
+            <AdresseKopieren adresse={adresse} />
+            <details>
+              <summary>Aktualisieren</summary>
+              <ol>{aktualisieren(browser).map((s) => <li key={s}>{s}</li>)}</ol>
+            </details>
+          </>
+        )}
+        <p className="gedaempft klein">Auf LinkedIn, StepStone und XING übernimmt die Erweiterung nichts.</p>
+      </section>
       <section className="abschnitt">
         <h2>Meine Daten exportieren</h2>
         <p>Wir empfehlen dir, deine Bewerbungen vorher zu exportieren. Nach dem Löschen sind sie nicht wiederherstellbar.</p>

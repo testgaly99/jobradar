@@ -1,5 +1,7 @@
 # Anzeige mit dem Chrome-Knopf merken
 
+**Für Nutzer:** Herunterladen und Schritt-Anleitung (Chrome und Edge) stehen auf der Jobradar-Seite **Konto** → Abschnitt „Browser-Erweiterung“. Die Anleitung unten ist für die Entwicklung aus diesem Ordner.
+
 Lokale erste Version für Chrome. Edge, Safari, Smartphone und Firefox folgen gemäß Nutzerpriorität später. Kein Browser wurde durch Codex eingerichtet, keine Erweiterung installiert und nichts veröffentlicht.
 
 Unsichtbar für Webseiten: keine Inhaltsskripte und keine freigegebenen Dateien; ein Test sichert das ab.
