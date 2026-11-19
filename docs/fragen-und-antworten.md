@@ -310,6 +310,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q237 | Telegram bei zwei Admin-Konten: ein Chat mit Kennzeichnung oder zwei getrennte Chats? | Nutzer: „Zwei getrennte Chats“ | `admins.telegram_chat_id` je Konto (4d), persönliche Nachrichten je Konto, Systemmeldungen an `TELEGRAM_CHAT_ID`; Pläne 4d/4e/4f/Erinnerungen/Phase 3/6a ergänzt. Zwischenfrage im Chat beantwortet: „Hat der Admin all die Filter und Anzeigen, die einfache Nutzer auch haben? Ich frage auch bezüglich den Sprachfiltern“ – ja; nur Voreinstellung der Sprachzeile aus. | entschieden |
 | Q238 | Zwei-Admin-Doku, Plan-Ergänzungen und Schutztest auf `entwurf-ui` hochladen? (Nutzer dazu: „Mir ist wichtig, dass durch diese zwei Admin Accounts Regelung nichts kaputt geht!“) | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
 | Q239 | Safari-Erweiterung: wird sie gebraucht? (Nutzer: „"einer Anleitung je Browser (Chrome, Edge) ": Was ist mit Safari?“) | Nutzer: „99 Dollar pro Jahr kommt nicht in Frage“ | Safari bleibt im Backlog; nur eine kostenlose Variante kommt infrage (unsigniert, braucht einen Mac mit Xcode). | entschieden |
+| Q240 | Link-Schnellstart (Nr. 1, von Claude gebaut) mit Doku und Safari-Entscheidung auf `entwurf-ui` hochladen? (Nutzer dazu: „Mach weiter mit der nächsten Phase“) | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -436,6 +437,7 @@ Fragetexte Q236 (Claude, 2026-11-19, Auswahl): Zwei Admin-Konten (Empfohlen) / P
 Fragetexte Q237 (Claude, 2026-11-19, Auswahl): Ein Chat, jede Nachricht mit Kontokürzel (Empfohlen) / Zwei getrennte Chats.
 Fragetexte Q238 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
 Fragetexte Q239 (Claude, 2026-11-19, Auswahl): Nein, kein Mac – Safari bleibt im Backlog (Empfohlen) / Ja, ich nutze einen Mac – Safari planen / Erst für Freunde mit Mac.
+Fragetexte Q240 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
