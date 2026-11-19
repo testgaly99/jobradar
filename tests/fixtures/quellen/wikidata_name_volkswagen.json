@@ -1,0 +1,50 @@
+{
+ "head": {
+  "vars": [
+   "firma",
+   "land",
+   "website",
+   "namen"
+  ]
+ },
+ "results": {
+  "bindings": [
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q156578"
+    },
+    "land": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q183"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.volkswagenag.com/"
+    },
+    "namen": {
+     "type": "literal",
+     "value": "VOLKSWAGENWERK AG|Volkswagenwerk|Volkswagen-Konzern|Volkswagen-Gruppe|VWAG|VW AG|VW|VW AG|VOLKSWAGEN AKTIENGESELLSCHAFT|Volkswagen Aktiengesellschaft|VOLKSWAGEN AG|Volkswagen|Volkswagen Group|Volkswagen AG|V.A.G|Volkswagen Poznań|Volkswagen Konzern|VOLKSWAGEN AKTIENGESELLSCHAFT|VAG-Konzern|V.A.G.|VW|Volkswagen|Gesellschaft zur Vorbereitung des Volkswagens|Volkswagenwerk GmbH"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q246"
+    },
+    "land": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q183"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.vw.com/en.html"
+    },
+    "namen": {
+     "type": "literal",
+     "value": "Volkswagen"
+    }
+   }
+  ]
+ }
+}

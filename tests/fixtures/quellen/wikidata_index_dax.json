@@ -1,0 +1,103 @@
+{
+ "head": {
+  "vars": [
+   "firma",
+   "name",
+   "website"
+  ]
+ },
+ "results": {
+  "bindings": [
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q3895"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Adidas"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.adidas.com/"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q3895"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Adidas"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://www.adidas.com/"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q2311"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Airbus SE"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://airbus.com"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q2311"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Airbus SE"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://airbus.com"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q2311"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Airbus SE"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://airbus.com"
+    }
+   },
+   {
+    "firma": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q2311"
+    },
+    "name": {
+     "xml:lang": "de",
+     "type": "literal",
+     "value": "Airbus SE"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://airbus.com"
+    }
+   }
+  ]
+ }
+}

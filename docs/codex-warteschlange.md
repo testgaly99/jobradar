@@ -10,8 +10,7 @@ Status: `offen` (wartet auf „okay“) · `in Arbeit` · `🛑 wartet auf Nutze
 | 2 | Phase 4a: Remote weltweit und Whitelist | `docs/superpowers/plans/2026-11-17-phase4a-remote-whitelist.md` | offen (erst nach Nr. 1 und neuem „okay“) | 🛑 Nutzer spielt Migration 011 ein; Claude prüft live |
 | 3 | Phase 4b: Portal-Erkennung aus Link | `docs/plans/2026-11-15-firmenportal-erkennung.md` (Schritte 2–5) | offen (erst nach Nr. 2 und neuem „okay“) | Claude prüft |
 | 4 | Sprachniveau: Deutsch-Erkennung, Filter „Mein Deutschniveau“, Anzeige | `docs/superpowers/plans/2026-11-18-sprachniveau.md` | offen (erst nach Nr. 3 und neuem „okay“) | 🛑 Nutzer spielt Migration 013 ein; Claude misst live an 20 Anzeigen |
-| 5 | Phase 4c: Firmen aus Ranglisten | `docs/superpowers/plans/2026-11-18-phase4c-firmen-aus-ranglisten.md` (ab Task 1) | wartet auf Claude (Task 0: Lizenzen, Beispieldaten) | 🛑 Nutzer spielt Migration 014 ein; erster echter Abruf mit Claude |
-
+| 5 | Phase 4c: Firmen aus Ranglisten | `docs/superpowers/plans/2026-11-18-phase4c-firmen-aus-ranglisten.md` (ab Task 1) | offen (erst nach Nr. 4 und neuem „okay“; Task 0 erledigt 2026-11-19) | 🛑 Nutzer spielt Migration 014 ein; erster echter Abruf mit Claude |
 | 6 | Phase 4d: Ranglisten-Sichtbarkeit, Listen von Hand einfügen, Linksammlung | `docs/superpowers/plans/2026-11-18-phase4d-ranglisten-anzeige.md` | offen (erst nach Nr. 5 und neuem „okay“) | 🛑 Nutzer spielt Migration 015 ein und trägt sich als Admin ein; Claude prüft Groq-Extraktion live |
 | 7 | Phase 4e: Zusatzfirmen je Nutzer | `docs/superpowers/plans/2026-11-18-phase4e-zusatzfirmen.md` | offen (erst nach Nr. 6 und neuem „okay“) | 🛑 Nutzer spielt Migration 016 ein; Claude prüft mit zwei Wegwerf-Konten |
 | 8 | Phase 4f: Gesundheitscheck, Telegram, Digest | `docs/superpowers/plans/2026-11-18-phase4f-ueberwachung-digest.md` | offen (erst nach Nr. 7 und neuem „okay“) | 🛑 Nutzer legt Telegram-Bot und Secrets an, spielt Migration 017 ein |

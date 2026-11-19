@@ -1,0 +1,10 @@
+# Firmen mit Sitz-Land Deutschland, mindestens 250 Mitarbeitenden und Branche (Wikidata, CC0).
+# Ohne Unternehmens-Prüfung per P279*: die läuft in eine Zeitüberschreitung (gemessen 2026-11-19).
+# Sitz-Bezeichnung (P159) macht die Abfrage zu teuer (502, 2026-11-19); Sitzort holt Task 5 bei Bedarf einzeln.
+# Grundlage für "Top 20 je Branche": Branche über data/branchen_zuordnung.csv auf jobradar-Kategorien abbilden.
+SELECT ?firma ?name ?mitarbeitende ?branche ?website WHERE {
+  ?firma wdt:P17 wd:Q183 ; wdt:P1128 ?mitarbeitende ; wdt:P452 ?branche .
+  FILTER(?mitarbeitende >= 250)
+  OPTIONAL { ?firma wdt:P856 ?website }
+  ?firma rdfs:label ?name FILTER(lang(?name) = "de")
+}

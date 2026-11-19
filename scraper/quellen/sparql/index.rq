@@ -1,0 +1,9 @@
+# Aktuelle Mitglieder eines Börsenindex (Wikidata, CC0). Platzhalter {INDEX}: wd:Q155718 DAX, wd:Q595622 MDAX,
+# wd:Q448445 SDAX, wd:Q378967 TecDAX. Nur Einträge ohne Enddatum und nur Unternehmen (filtert Unterindizes wie DivDAX).
+SELECT ?firma ?name ?website WHERE {
+  ?firma p:P361 ?st . ?st ps:P361 {INDEX} .
+  FILTER NOT EXISTS { ?st pq:P582 ?ende }
+  ?firma wdt:P31/wdt:P279* wd:Q4830453 .
+  OPTIONAL { ?firma wdt:P856 ?website }
+  ?firma rdfs:label ?name FILTER(lang(?name) = "de")
+}
