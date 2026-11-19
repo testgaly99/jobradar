@@ -261,6 +261,8 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q188 | Woher Gehaltswunsch, Kündigungsfrist, frühester Start? | Nutzer: „Standard im Profil, aber Kündigungsfrist und frühester Start sollen laufened aktualisiert werden. Also wenn ich heute 3 monate eingebe, dann aktualisert sich der früheste Start entsprechend mit“ | Standardwerte im Profil; frühester Start wird täglich aus Kündigungsfrist berechnet (Detail Q190). | entschieden |
 | Q189 | Kein CV-Ergebnis beim Klick auf „Bewerbung anlegen“? | Nutzer: „Abgleich sofort im Browser (Empfohlen)“ | Browser-Abgleich (6b) startet sofort; bei zwei Empfehlungen die erste, zweite als Alternative. | entschieden |
 | Q190 | Frühester Start aus der Kündigungsfrist: wie rechnen? | Nutzer: „Frist + Endtermin wählbar (Empfohlen)“ | Dauer + Endtermin (beliebig/Monatsende/Quartalsende/sofort), täglich neu; Start = Tag nach Fristende. | entschieden |
+| Q191 | Design Bewerben-Helfer freigeben? | Nutzer: „Das klingt sehr gut. Prüfe aber noch, wie bei jobradar gekennzeichnet wird, dass ich mich beworben habe“ | Geprüft: `aufBeworben`, Verlaufs-Trigger, „Beworben ✓“ in Liste/Stellenseite/Board; „Abgeschickt“ nutzt `aufBeworben`, Bewerbungsweg „Karriereseite“ wenn leer. Freigabe-Rückfrage Q192. | entschieden |
+| Q192 | Wie erfährt jobradar, dass eine vom Helfer ausgefüllte Bewerbung abgeschickt wurde? (Nutzer: „Ich meinte, wenn eine automatisierte Bewerbung gelaufen ist, wie erfährt Jobradar davon“) | Nutzer: „Alle vier kombiniert (Empfohlen)“ | Knopf, Danke-Seite erkennen (mit Rückgängig), Nachfrage nach 30 min, Eingangsbestätigung per Mail (Admin, Phase 3; Gmail liest dafür auch gemerkte mit Bewerben-Klick ≤ 14 Tage). | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -323,6 +325,10 @@ Fragetexte Q184 (Claude, 2026-11-19, Auswahl): Einverstanden (Empfohlen) / Helfe
 Fragetexte Q186–Q189 (Claude, 2026-11-19, Auswahl): Q186 Vorausfüllen + Konto-Merker (Empfohlen) / Backlog. Q187 Auf allen Portalen aus (Empfohlen) / Nur LinkedIn/StepStone/XING aus. Q188 Standard im Profil (Empfohlen) / Je Bewerbung (Antwort frei ergänzt). Q189 Abgleich sofort im Browser (Empfohlen) / Keinen vorauswählen. Vorab-Prüfung Recht und Phasen: `docs/phasen-vorarbeit.md` „Bewerben-Helfer: Vorab-Prüfung“.
 
 Fragetexte Q190 (Claude, 2026-11-19, Auswahl): Frist + Endtermin wählbar (Empfohlen) / Nur Dauer.
+
+Fragetexte Q191 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden (Antwort frei).
+
+Fragetexte Q192 (Claude, 2026-11-19, Auswahl): Alle vier kombiniert (Empfohlen) / Knopf + Danke-Seite + Nachfrage / Nur Knopf.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

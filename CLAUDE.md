@@ -264,7 +264,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - der Firmenname steht im Titel,
   - der Termin wurde aus der Bewerbung angelegt.
 - **Status aus Gmail:**
-  - Gelesen werden nur Mails von Domains mit laufender Bewerbung und von bekannten Bewerbungssystemen, wenn der Firmenname darin steht (Q143); Gmail sucht selbst, fremde Mails werden nicht geöffnet.
+  - Gelesen werden nur Mails von Domains mit laufender Bewerbung (dazu gemerkte, bei denen in den letzten 14 Tagen über den Bewerben-Helfer auf „Bewerben“ geklickt wurde, Q192) und von bekannten Bewerbungssystemen, wenn der Firmenname darin steht (Q143); Gmail sucht selbst, fremde Mails werden nicht geöffnet.
   - Erkannt werden Eingangsbestätigung, Einladung, Absage und Angebot.
   - Status, Interview und nächster Schritt werden **automatisch gesetzt**, mit Hinweis „Automatisch aus Mail vom …“ und „Rückgängig“; Einladung, Absage und Angebot zusätzlich per Telegram (Q142, ersetzt „nur vorschlagen“).
   - Der Mailverlauf wird an die Bewerbung gehängt.

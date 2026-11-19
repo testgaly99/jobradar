@@ -105,3 +105,7 @@ Nutzer wählte B (Q146), obwohl Claude A empfahl. Nach der Sicherheitsanalyse er
 ## Dem Bauenden überlassen
 
 Bibliothek für Google-Aufrufe (bevorzugt reines `fetch`/`urllib` ohne neues Paket), genaue Prompt-Texte (eigene Datei), Zeitfenster-Toleranzen, Aufteilung in Dateien, Darstellung der Hinweise im bestehenden Stil (`web/app/stil/utilitaer.css`).
+
+## Nachtrag 2026-11-19 (Q192, Bewerben-Helfer)
+
+Eingangsbestätigungen setzen eine noch gemerkte Bewerbung auf „Beworben“, wenn der Nutzer in den letzten 14 Tagen über den Bewerben-Helfer auf „Bewerben“ geklickt hat (`applications.helfer_geoeffnet_am`, Migration 024). Nur dafür werden auch solche gemerkten Bewerbungen beim Mail-Abgleich berücksichtigt; alle anderen gemerkten nicht. Mit „Rückgängig“ wie jede automatische Änderung.

@@ -43,6 +43,7 @@ Bewerben mit möglichst wenigen Klicks, ohne Abtippen. Wörtlich: „Ich klicke 
 ### 1. Daten (Migration 024, Nutzer spielt ein)
 
 - `briefkopf` (aus 023) bekommt: `gehalt_wunsch integer` (Jahresbrutto €), `kuendigung_menge integer`, `kuendigung_einheit text check in ('wochen','monate')`, `kuendigung_termin text check in ('beliebig','monatsende','quartalsende','sofort')`.
+- `applications` bekommt: `helfer_geoeffnet_am timestamptz` (gesetzt beim Klick auf „Bewerben“) und `abgeschickt_quelle text check in ('knopf','erkannt','nachfrage','hand','mail')` (wer „Beworben“ gesetzt hat; Grundlage für „Rückgängig“ und die Nachfrage, Q192).
 - `bewerberkonten(owner_id → auth.users on delete cascade, host text, email text, angelegt_am date, quelle text check in ('helfer','hand'), primary key (owner_id, host))`, RLS nur eigene Zeilen. Kein Passwortfeld.
 - Anlagen-Art kommt schon mit Runde 1 (`documents.anlage_art`, Q182).
 
@@ -69,7 +70,12 @@ Bewerben mit möglichst wenigen Klicks, ohne Abtippen. Wörtlich: „Ich klicke 
 - Daten holt die Erweiterung über einen neuen Weg `GET /api/bewerben/<id>` derselben Anmeldung wie der heutige Import: Profil, Eckdaten (frühester Start frisch berechnet), Dateien als kurzlebige signierte Links mit Art (`cv`, `anschreiben`, `zeugnis`, `zertifikat`, `sonstiges`).
 - **Ausfüllen:** Adapter nach Host (`*.greenhouse.io`, `*.personio.de`/`*.jobs.personio.de`, `*.myworkdayjobs.com`, `*.smartrecruiters.com`, `jobs.lever.co`), sonst allgemein. Werte so setzen, dass die Seite sie übernimmt (Eingabe-/Änderungs-Ereignisse). Unklare Felder bleiben leer. Bereits ausgefüllte Felder werden nicht überschrieben.
 - **Dateien nach Feld:** Lebenslauf/CV/Resume → CV; Anschreiben/Cover letter/Motivationsschreiben → Anschreiben; Zeugnis/Arbeitszeugnis/References → Zeugnisse; Zertifikat/Certificate → Zertifikate; „Weitere Dokumente/Anlagen/Additional/Other“ → alle übrigen angehakten Anlagen, wenn das Feld mehrere Dateien annimmt, sonst leer mit Hinweis.
-- **Markieren:** Jedes ausgefüllte Feld bekommt einen farbigen Rand; leere Pflichtfelder einen anderen. Kasten unten rechts: „Jobradar hat 9 Felder ausgefüllt · 2 Pflichtfelder leer · Bitte prüfen und selbst absenden“ und Knopf **„Abgeschickt → als beworben markieren“** (setzt Status „Beworben“, `beworben_am` = heute, `starttermin` = berechneter Start, schließt den Tab nicht).
+- **Markieren:** Jedes ausgefüllte Feld bekommt einen farbigen Rand; leere Pflichtfelder einen anderen. Kasten unten rechts: „Jobradar hat 9 Felder ausgefüllt · 2 Pflichtfelder leer · Bitte prüfen und selbst absenden“ und Knopf **„Abgeschickt → als beworben markieren“**: ruft dieselbe Funktion `aufBeworben` (`web/lib/bewerbung-schutz.ts`) wie „Ich habe mich beworben“ – Status „Beworben“ nur aus „Gemerkt“, `beworben_am` = heute nur wenn leer, Verlaufseintrag per bestehendem Datenbank-Trigger; zusätzlich, nur wenn leer: `bewerbungsweg` = „Karriereseite“, `starttermin` = berechneter Start. Danach zeigt jobradar überall „Beworben ✓“ (Stellenliste, Stellenseite, Board). Schließt den Tab nicht. Der Knopf „Ich habe mich beworben“ bleibt für Bewerbungen ohne Helfer (`abgeschickt_quelle 'hand'`).
+- **Wie jobradar vom Absenden erfährt (Q192, alle vier Wege):**
+  1. Knopf „Abgeschickt“ (`'knopf'`).
+  2. **Danke-Seite erkennen** (`'erkannt'`): Die Erweiterung merkt sich den Klick des Nutzers auf den Absenden-Knopf des Formulars (Adapter kennt ihn; allgemein: `type=submit` bzw. Beschriftung „Absenden/Bewerbung senden/Submit/Apply“). Zeigt der Tab danach innerhalb von 60 Sekunden eine Bestätigung (Adapter-Merkmal; allgemein Adresse mit `thank`, `danke`, `confirmation`, `success` oder Text „Vielen Dank für Ihre Bewerbung“, „Ihre Bewerbung ist eingegangen“, „Thank you for applying“, „application has been submitted“), setzt jobradar „Beworben“ über `aufBeworben`. Kasten: „Als beworben gespeichert (automatisch erkannt) · Rückgängig“. Rückgängig setzt Status „Gemerkt“ und leert `beworben_am`, `abgeschickt_quelle` – nur wenn beides von der Erkennung kam.
+  3. **Nachfrage** (`'nachfrage'`): Bewerbung im Status „Gemerkt“ mit `helfer_geoeffnet_am` älter als 30 Minuten → oben in der Bewerbung und im Fenster „Bewerbung vorbereiten“: „Hast du bei <Firma> abgeschickt?“ – „Ja“ (`aufBeworben`) / „Nein“ (leert `helfer_geoeffnet_am`).
+  4. **Eingangsbestätigung per Mail** (`'mail'`, nur Admin, kommt mit Phase 3): siehe Phase-3-Plan Task 6.
 - **Registrierung und Konto (Q186):**
   - Zeigt die Seite eine Anmeldemaske und es gibt einen Konto-Merker für den Host: Hinweis „Konto vorhanden (E-Mail …, seit …) – Chrome füllt dein Passwort“.
   - Anmeldemaske ohne Merker: Kasten „Hast du hier ein Konto?“ – „Ja, merken“ / „Nein, registrieren“ (klickt den Registrieren-Link der Seite nicht selbst, zeigt nur, wo er ist).
@@ -99,10 +105,11 @@ Bewerben mit möglichst wenigen Klicks, ohne Abtippen. Wörtlich: „Ich klicke 
 ## Entscheidungen von Claude (zum Gegenlesen)
 
 1. Profil-Standardwerte hängen am Briefkopf (eine Stelle in „Unterlagen“).
-2. Status bleibt „Gemerkt“, bis „Abgeschickt“ geklickt wird; dann auch `starttermin` = berechneter Start.
+2. Status bleibt „Gemerkt“, bis „Abgeschickt“ geklickt wird; dann über `aufBeworben`, dazu (nur wenn leer) Bewerbungsweg „Karriereseite“ und `starttermin` = berechneter Start.
 3. Helfer überschreibt keine Felder, die schon etwas enthalten.
 4. Ausfüllen nur im von jobradar geöffneten Tab, höchstens 2 Stunden, auch auf Folgeseiten derselben Website.
 5. „Nein, registrieren“ klickt nichts, zeigt nur den Weg.
 6. „Bewerben“ öffnet immer `applications.link` (nach 4g-1 die Originalseite).
 7. Test-Formulare werden nachgebaut, keine Kopien fremder Seiten im öffentlichen Repo.
-8. Vor dem Bau prüft Claude (Plan, Task 0) je System die verlinkten Bedingungen echter Karriereseiten, vor allem Workday-Seiten, ob sie auf die Workday-Bedingungen verweisen; Ergebnis entscheidet je Adapter.
+8. Danke-Seite: Erkennung nur nach Absenden-Klick des Nutzers und innerhalb von 60 Sekunden; Nachfrage nach 30 Minuten (Q192).
+9. Vor dem Bau prüft Claude (Plan, Task 0) je System die verlinkten Bedingungen echter Karriereseiten, vor allem Workday-Seiten, ob sie auf die Workday-Bedingungen verweisen; Ergebnis entscheidet je Adapter.
