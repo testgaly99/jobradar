@@ -124,3 +124,9 @@ Vollständig künstlich, reduziert; kein API-/Datenbankschema, kein Import, wird
   ]
 }
 ```
+
+## Gehaltsschätzung: Vorab-Prüfung (Claude, 2026-11-19)
+
+- **Entgeltatlas der Bundesagentur:** nur als Webseite, keine offizielle Schnittstelle. Die Statistik-API der Bundesagentur (seit Dezember 2025) liefert bisher nur „Aktuelle Eckwerte“; die bundesAPI-Projekte decken nur Jobbörse und Bewerberbörse ab. Automatisches Auslesen der Webseite wäre gegen Regel 3.5 → entfällt (Q134). Neu prüfen, falls die Statistik-API Entgeltdaten aufnimmt.
+- **EU-Entgelttransparenzrichtlinie (2023/970):** Umsetzungsfrist 7.6.2026 verpasst; laut Verfassungsblog (6.11.2026) noch kein Referentenentwurf; deutsches Gesetz frühestens 2027. Art. 5 verlangt Gehaltsinformation vor dem ersten Gespräch, nicht zwingend in der Anzeige. Folge: Gehaltsangaben in Anzeigen bleiben vorerst freiwillig, die Schätzung wird oft gebraucht.
+- Quellen: statistik.arbeitsagentur.de (API-Seiten), github.com/bundesAPI/jobsuche-api, verfassungsblog.de (6.11.2026), haufe.de (Stand Juni 2026).

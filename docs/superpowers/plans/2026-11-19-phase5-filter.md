@@ -23,7 +23,7 @@
 - Nutzerdaten (Sperrliste ≤ 200 Firmen, Synonymgruppen ≤ 50 mit je ≤ 10 Begriffen, gespeicherte Suchen ≤ 30) nur für den Eigentümer, in Export und Kontolöschung enthalten.
 - Migration nur als Datei `supabase/migrations/021_filter.sql`; AGENTS.md (keine `.env`, keine Live-DB, kein Push, `Agent: Codex`).
 
-- **Gehaltsschätzung (Q133):** nur ohne eigene Angabe; Stufen Firma (≥ 2 Stellen) → ähnliche Titel DE (≥ 3) → Entgeltatlas (nur nach Task 0); Median; Ähnlichkeit `aehnlichkeit` aus `scraper/titel_vergleich.py` ≥ 0,5 und gleiches `erfahrungslevel`; Text exakt „≈ <min>–<max> € (geschätzt aus <n> Anzeigen derselben Firma)“ bzw. „… ähnlicher Stellen“ bzw. „… dem Entgeltatlas der Bundesagentur für Arbeit“; im Filter nur mit `schaetzung=1`.
+- **Gehaltsschätzung (Q133):** nur ohne eigene Angabe; Stufen Firma (≥ 2 Stellen) → ähnliche Titel DE (≥ 3), sonst keine Schätzung (kein Entgeltatlas, Q134); Median; Ähnlichkeit `aehnlichkeit` aus `scraper/titel_vergleich.py` ≥ 0,5 und gleiches `erfahrungslevel`; Text exakt „≈ <min>–<max> € (geschätzt aus <n> Anzeigen derselben Firma)“ bzw. „… ähnlicher Stellen“; im Filter nur mit `schaetzung=1`.
 
 ## Review Focus
 
@@ -37,8 +37,8 @@
 
 ### Task 0 (Claude, nicht Codex): Vorab-Prüfung Gehaltsschätzung
 
-- [ ] Entgeltatlas der Bundesagentur: offizielle Nutzungsbedingungen, ob eine automatisierte Abfrage (Beruf + Region) erlaubt ist, Schnittstelle, Grenzen. Nur offizielle Quellen. Ergebnis in `docs/ENTSCHEIDUNGEN.md`; nicht erlaubt → Stufe 3 entfällt (Task 3b ohne Entgeltatlas), Nutzer wird informiert.
-- [ ] Stand der deutschen Umsetzung der EU-Entgelttransparenzrichtlinie (Pflicht zu Gehaltsangaben in Anzeigen?) – betrifft, wie oft geschätzt werden muss; Ergebnis in `docs/phasen-vorarbeit.md`.
+- [x] Entgeltatlas (erledigt 2026-11-19): keine offizielle Schnittstelle (nur Webseite; die Statistik-API der Bundesagentur liefert bisher nur „Aktuelle Eckwerte“) → Stufe 3 entfällt; Nutzer entschied „Keine Schätzung“ (Q134).
+- [x] Entgelttransparenzrichtlinie (erledigt 2026-11-19): Frist 7.6.2026 verpasst, Anfang November 2026 noch kein Referentenentwurf, Gesetz frühestens 2027 → Gehaltsangaben in Anzeigen bleiben vorerst freiwillig. Ergebnis in `docs/phasen-vorarbeit.md`.
 
 ### Task 1: Groq-Anleitung Version 2 und Nachholen
 
@@ -88,13 +88,12 @@
 ### Task 3b: Gehaltsschätzung
 
 **Files:**
-- Create: `scraper/gehalt_schaetzung.py`, `tests/test_gehalt_schaetzung.py`; nur falls Task 0 erlaubt: `scraper/quellen/entgeltatlas.py` mit Fixture
+- Create: `scraper/gehalt_schaetzung.py`, `tests/test_gehalt_schaetzung.py`
 
 **Interfaces:**
-- `schaetze(stelle: dict, offene: list[dict], atlas=None) -> dict | None`: `{"min": int, "max": int, "quelle": "firma"|"aehnlich"|"entgeltatlas", "anzahl": int}` nach den Regeln aus den Global Constraints; Stelle mit eigener Angabe (`f_gehalt_max` gesetzt) → `None`. `offene` = Stellen mit `f_gehalt_min/max`, `unternehmen`, `titel`, `erfahrungslevel`.
-- Entgeltatlas (nur nach Task 0): Abruf über `scraper/http.py`, Ergebnis je (Beruf, Bundesland) höchstens 1× je Monat zwischengespeichert in `data/entgeltatlas_cache.json`.
+- `schaetze(stelle: dict, offene: list[dict]) -> dict | None`: `{"min": int, "max": int, "quelle": "firma"|"aehnlich", "anzahl": int}` nach den Regeln aus den Global Constraints; Stelle mit eigener Angabe (`f_gehalt_max` gesetzt) → `None`. `offene` = Stellen mit `f_gehalt_min/max`, `unternehmen`, `titel`, `erfahrungslevel`.
 
-- [ ] **Step 1: Tests:** 2 Firmenstellen „Data Analyst“ (60–70 k, 70–80 k) → Firma, 65–75 k; nur 1 Firmenstelle, aber 3 ähnliche anderswo → `aehnlich`; anderes Erfahrungslevel zählt nicht; eigene Angabe → `None`; zu wenig Daten und kein Atlas → `None`.
+- [ ] **Step 1: Tests:** 2 Firmenstellen „Data Analyst“ (60–70 k, 70–80 k) → Firma, 65–75 k; nur 1 Firmenstelle, aber 3 ähnliche anderswo → `aehnlich`; anderes Erfahrungslevel zählt nicht; eigene Angabe → `None`; zu wenig Daten → `None`.
 - [ ] **Step 2–4:** FAIL → umsetzen → grün.
 - [ ] **Step 5: Commit** — „5: Gehaltsschätzung aus vorhandenen Anzeigen“ + `Agent: Codex`.
 
