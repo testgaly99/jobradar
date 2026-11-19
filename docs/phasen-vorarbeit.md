@@ -59,6 +59,8 @@ Bereits beschlossen (CLAUDE.md 4.7): Mail nur von Domains laufender Bewerbungen;
 
 ## Phase 5: Datenlage für zusätzliche Filter
 
+**Nutzerwünsche für Phase 5 (2026-11-19, Q79):** „Ich möchte auf der Website in den Filtern auch Firmen ausschließen können. Außerdem möchte ich frühere Suchen speichern können“ (= Sperrliste für Firmen und gespeicherte Suchprofile, CLAUDE.md 4.1).
+
 | Kriterium | Im Code/Schema | Fehlt noch |
 |---|---|---|
 | Mitarbeiterzahl als Spanne | `companies.mitarbeitende_ca`, Größenklasse | URL-/Abfrage-/Facettenanschluss; Datenqualität. Keine Klassenmitte als Zahl erfinden. |

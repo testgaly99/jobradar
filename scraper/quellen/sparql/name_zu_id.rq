@@ -1,0 +1,15 @@
+# Firmenname (z. B. aus Scoreboard oder EPA) -> Wikidata-Kennung. Platzhalter {NAME}.
+# Übernahme nur, wenn GENAU EIN Ergebnis passt: bereinigter Name (ohne Rechtsform wie AG, SE, GmbH, Inc., Ltd.,
+# ohne Satzzeichen, klein) gleich bereinigter Bezeichnung oder einem Alias UND Land gleich dem Land der Quelle.
+# Sonst: Liste "nicht gefunden" für die Morgen-Sitzung mit Claude (Spec 4c-2 Schritt 2).
+SELECT ?firma ?land (SAMPLE(?web) AS ?website) (GROUP_CONCAT(DISTINCT ?n; separator="|") AS ?namen) WHERE {
+  SERVICE wikibase:mwapi {
+    bd:serviceParam wikibase:api "EntitySearch" ; wikibase:endpoint "www.wikidata.org" ;
+                    mwapi:search "{NAME}" ; mwapi:language "en" .
+    ?firma wikibase:apiOutputItem mwapi:item .
+  }
+  ?firma wdt:P31/wdt:P279? ?typ . VALUES ?typ { wd:Q4830453 wd:Q891723 wd:Q6881511 wd:Q783794 }
+  OPTIONAL { ?firma wdt:P17 ?land }
+  OPTIONAL { ?firma wdt:P856 ?web }
+  { ?firma rdfs:label ?n } UNION { ?firma skos:altLabel ?n } FILTER(lang(?n) IN ("en", "de"))
+} GROUP BY ?firma ?land

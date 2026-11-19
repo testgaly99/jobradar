@@ -13,7 +13,10 @@
 ## Global Constraints
 
 - Jeder Netzabruf nur über `scraper/http.hole` (robots.txt, ≤ 1 Anfrage/s je Domain, eigener User-Agent). Quellen höchstens 1× je Quelle und Monat.
-- Im Repo, in Tests und Fixtures nur offen lizenzierte Quellen namentlich: EU Industrial R&D Investment Scoreboard (CC BY), Wikidata (CC0), EPA, CORDIS/EIC, Behörden-/Forschungsliste; Wikipedia nur, wenn Task 0 die Lizenzkette freigibt.
+- Im Repo, in Tests und Fixtures nur offen lizenzierte Quellen namentlich: EU Industrial R&D Investment Scoreboard (CC BY), Wikidata (CC0), EPA, CORDIS/EIC, Behörden-/Forschungsliste. **Keine Wikipedia-Liste** (Q77).
+- **Ergebnisse von Task 0 (2026-11-19, verbindlich):** Quellen-Formate stehen in der Spec unter „Quellen-Formate (Task 0)“; Abfragen in `scraper/quellen/sparql/`; Beispieldateien in `tests/fixtures/quellen/` (Herkunft in `LIZENZ.md`); Branchen-Zuordnung `data/branchen_zuordnung.csv` ist fertig (106 Wikidata-Branchen; Task 3 liest sie nur).
+- **EIC/CORDIS (Q78):** CORDIS verbietet Programmen per robots.txt den Ordner `/data/`. Kein automatischer Abruf; der Nutzer lädt die Datei 1× im Jahr selbst im Browser herunter. Der EIC-Parser ist **nicht** Teil dieses Plans (Format erst nach dem ersten Handdownload bekannt; eigener Nachtrag).
+- **Workday und SuccessFactors (Q76):** nur über die Sitemap, die die Firmen-Karriereseite in ihrer robots.txt anbietet, und die einzelnen Stellenseiten (JSON-LD `JobPosting`), also über den vorhandenen Adapter `sitemap`; **nie** die interne Workday-Schnittstelle (`/wday/cxs/…`). Hosts `career*.successfactors.*` verbieten Programme per robots.txt → `portal_nicht_unterstuetzt`.
 - Rohseiten nie speichern; gespeichert werden nur Firmenname, Rang, Listenname, Jahr, Quell-Link (CLAUDE.md 4.8). Ausgaben leben höchstens 13 Monate (`pruefe_ausgabe` erzwingt das).
 - Firmenschlüssel bleibt `companies.name`; neue Spalte `wikidata_id`. Nie automatisch zusammenlegen, wenn zwei Kandidaten gleiche Wikidata-ID/Domain, aber verschiedene Portale haben → Bericht.
 - Stammdaten gehören der Datei, Admin-Felder (`whitelist`, Wunscharbeitgeber, Hand-Listen) nur der Datenbank; `sync_companies` schreibt nie Admin-Felder. `data/firmen_korrekturen.csv` hat Vorrang vor allen automatischen Werten.
@@ -31,13 +34,13 @@
 
 ---
 
-### Task 0 (🛑 Claude, nicht Codex): Vorarbeit
+### Task 0 (Claude): Vorarbeit – erledigt 2026-11-19
 
-- [ ] Lizenzkette der Wikipedia-Liste prüfen → Ergebnis in `docs/ENTSCHEIDUNGEN.md` („Wikipedia-Liste: ja/nein, Grund“).
-- [ ] Aktualität der DAX/MDAX/SDAX/TecDAX-Mitgliedschaften in Wikidata gegen die offizielle Index-Zusammensetzung stichprobenartig prüfen; SPARQL-Abfragen festlegen und als Dateien `scraper/quellen/sparql/*.rq` ablegen.
-- [ ] Nutzungsbedingungen und robots.txt von Workday- und SuccessFactors-Karriereseiten prüfen (für Task 7 und 4g).
-- [ ] Kleine Beispieldateien je Quelle (nur offene Lizenz, wenige Zeilen, Lizenzhinweis in `tests/fixtures/quellen/LIZENZ.md`): `scoreboard.xlsx` (5 Zeilen), `wikidata_index.json`, `wikidata_branche.json`, `wikidata_stammdaten.json`, `epa.csv` bzw. Format laut Quelle, `cordis_eic.csv`; dazu drei gespeicherte Firmen-Startseiten (`karriere_*.html`) mit je einem Portal-Link, einem ohne Link, einem mit zwei Portalen.
-- [ ] Quell-Links und Abruf-Formate in `docs/superpowers/specs/2026-11-17-phase4-firmen-ranglisten-design.md` unter „Quellen-Formate (Task 0)“ notieren. Danach Warteschlange: Eintrag auf `offen`.
+- [x] Wikipedia-Liste geprüft: zwei von drei Teilen aus Quellen ohne offene Lizenz, dritter mit Zahlen von 2020 → weglassen (Q77).
+- [x] Börsenindizes in Wikidata geprüft: aktuell (letzte Änderungen Sept./Okt. 2026); DAX 40 Firmen + Unterindex DivDAX (wird durch Unternehmens-Filter entfernt), MDAX 50, SDAX 71 (vermutlich ein nicht ausgetragener Aufsteiger), TecDAX 30 → Abweichung von der Sollgröße (40/50/70/30) als Berichtszeile.
+- [x] Workday/SuccessFactors geprüft → nur Sitemap + Stellenseite (Q76, Global Constraints).
+- [x] Beispieldateien und Abfragen angelegt (Global Constraints); CORDIS nicht abgerufen (robots.txt, Q78).
+- [x] Quellen-Formate in der Spec notiert.
 
 ### Task 1: Firmendatei und Migration 014
 
@@ -62,23 +65,25 @@
 ### Task 2: Quellen-Parser
 
 **Files:**
-- Create: `scraper/quellen/__init__.py`, `scraper/quellen/xlsx.py`, `scraper/quellen/scoreboard.py`, `scraper/quellen/wikidata.py`, `scraper/quellen/epa.py`, `scraper/quellen/cordis.py`, `data/behoerden.csv` (Kopf `name,website,kategorie,hauptsitz`, Einträge laut Task 0)
+- Create: `scraper/quellen/__init__.py`, `scraper/quellen/xlsx.py`, `scraper/quellen/scoreboard.py`, `scraper/quellen/wikidata.py`, `scraper/quellen/epa.py`, `data/behoerden.csv` (Kopf `name,website,kategorie,hauptsitz`, Einträge laut Task 0)
 - Test: `tests/test_quellen.py`
 
 **Interfaces:**
 - `Kandidat = dict` mit Schlüsseln `name: str, wikidata_id: str|None, website: str|None, liste_id: str, rang: int|None, mitarbeitende: int|None, branche_wd: str|None, hauptsitz: str|None`.
 - `xlsx.zeilen(daten: bytes, blatt: int = 0) -> list[list[str]]` (sharedStrings + Blatt-XML, nur Standardbibliothek).
-- Je Quelle `lies(daten: bytes|dict) -> list[Kandidat]`; Listen-IDs (exakt): `scoreboard-world`, `scoreboard-eu`, `dax`, `mdax`, `sdax`, `tecdax`, `top20-branche`, `epa-patente`, `eic`, `behoerden`; `wikipedia-groesste` nur nach Freigabe aus Task 0.
-- `wikidata.top20_je_branche(stammdaten: list[Kandidat]) -> list[Kandidat]`: je `branche_wd` die 20 Firmen mit Sitz in Deutschland und meisten Mitarbeitenden, `rang` = Platz in der Branche.
+- Je Quelle `lies(daten: bytes|dict) -> list[Kandidat]`; Listen-IDs (exakt): `scoreboard-world`, `scoreboard-eu`, `dax`, `mdax`, `sdax`, `tecdax`, `top20-branche`, `epa-patente`, `behoerden` (`eic` folgt im Nachtrag, Q78).
+- `wikidata.lies(antwort: dict) -> list[Kandidat]` fasst Zeilen **je Firma** zusammen (eine Firma kann mehrere Websites/Branchen haben: DAX liefert 138 Zeilen für 40 Firmen); bei mehreren Mitarbeiterzahlen die größte.
+- `wikidata.top20_je_branche(stammdaten: list[Kandidat], zuordnung: dict[str, str]) -> list[Kandidat]`: Branche über `data/branchen_zuordnung.csv` auf die **jobradar-Kategorie** abbilden (Wikidata kennt 471 Branchen, zu fein); je Kategorie die 20 Firmen mit den meisten Mitarbeitenden, `rang` = Platz in der Kategorie; `Sonstige` und `Startup / Venture-finanziert` bekommen keine Top 20. Erwartung: höchstens 28 × 20 = 560 Firmen.
+- `wikidata.name_zu_id(name: str, land: str, suche=…) -> str | None` (Abfrage `sparql/name_zu_id.rq`): Stufe 1 vollständiger Name (Groß/klein egal) gleich Bezeichnung oder Alias; nur wenn Stufe 1 nichts findet, Stufe 2 ohne Rechtsform (AG, SE, GmbH, KGaA, Inc., Ltd., Corp., S.A., N.V., PLC) und Satzzeichen; jeweils nur Ergebnisse mit passendem Land; genau ein Treffer → Kennung, sonst `None` (→ Liste „nicht gefunden“). Für Scoreboard und EPA, die keine Kennung liefern.
 
-- [ ] **Step 1: Tests** gegen die Fixtures aus Task 0: Anzahl Kandidaten je Datei, erster Kandidat vollständig (Name, Rang 1, Liste), `eic` und `behoerden` ohne Rang, Top-20 mit 21 Firmen einer Branche → 20, Rang 1 = meiste Mitarbeitende.
+- [ ] **Step 1: Tests** gegen die Fixtures: `scoreboard_world2000.xlsx` → 5 Kandidaten, erster „AMAZON.COM, INC.“ Rang 1, Land „US“; `wikidata_index_dax.json` → je Firma ein Kandidat; `wikidata_stammdaten.json` → Kategorie „Medizintechnik & Gesundheit“ hat 22 Firmen, `top20_je_branche` liefert davon 20, Rang 1 = meiste Mitarbeitende; `epa_top_applicants.xlsx` (Titelzeile überspringen) → 3 Kandidaten; `name_zu_id("VOLKSWAGEN AG", "DE")` mit `wikidata_name_volkswagen.json` → `Q156578` (nicht die Marke `Q246`); `behoerden` ohne Rang.
 - [ ] **Step 2:** FAIL. **Step 3:** Umsetzen. **Step 4:** grün.
 - [ ] **Step 5: Commit** — „4c: Parser für offene Ranglisten“ + `Agent: Codex`.
 
 ### Task 3: Zusammenführen und Branchen
 
 **Files:**
-- Create: `scraper/kandidaten.py`, `data/branchen_zuordnung.csv` (Kopf `wikidata_branche,kategorie`; Kategorien nur aus `data/kategorien.md`)
+- Create: `scraper/kandidaten.py` (liest das fertige `data/branchen_zuordnung.csv`, Kopf `wikidata_branche,bezeichnung,kategorie`)
 - Test: `tests/test_kandidaten.py`
 
 **Interfaces:**
@@ -115,9 +120,10 @@
 - Consumes: `erkenne_portal(url)` aus 4b (`scraper/ats_erkennung.py`), `ADAPTER` aus `scraper/ats/__init__.py`, `ist_relevant` aus `scraper/filter.py`.
 - `PFADE = ["", "/karriere", "/careers", "/jobs", "/de/karriere", "/en/careers"]`.
 - `portal_links(html: str, basis: str) -> list[dict]`: alle `<a href>`, absolut gemacht, durch `erkenne_portal`, nur `erkannt`, ohne Doppelte.
-- `richte_ein(firma: dict, holen=http.hole, adapter=ADAPTER) -> dict`: Ablauf laut Spec 4c-2 Schritt 1; Ergebnis setzt `careers_url, ats_typ, ats_id, status, status_grund, aktiv`. Genau ein Portal + mindestens eine Stelle mit `ist_relevant(...)[0]` → `aktiv`; Portal, aber keine passende Stelle → `keine_stellen_de`; mehrere Portale → bleibt `offen`, Grund `mehrere Portale: …`; nichts gefunden → bleibt `offen`, Grund `Karriereseite nicht gefunden`; Portal-Host bekannt, aber kein Adapter (siehe Task 7) → `portal_nicht_unterstuetzt` mit Portalname.
+- `richte_ein(firma: dict, holen=http.hole, adapter=ADAPTER) -> dict`: Ablauf laut Spec 4c-2 Schritt 1; Ergebnis setzt `careers_url, ats_typ, ats_id, status, status_grund, aktiv`. Genau ein Portal + mindestens eine Stelle mit `ist_relevant(...)[0]` → `aktiv`; Portal, aber keine passende Stelle → `keine_stellen_de`; mehrere Portale → bleibt `offen`, Grund `mehrere Portale: …`; nichts gefunden → bleibt `offen`, Grund `Karriereseite nicht gefunden`; Portal-Host bekannt, aber kein Adapter (siehe Task 7) → `portal_nicht_unterstuetzt` mit Portalname. **Workday / SuccessFactors auf firmeneigener Adresse (Q76):** robots.txt des Karriere-Hosts lesen; erlaubt sie den Stellenpfad und nennt eine `Sitemap:`, dann `ats_typ = "sitemap"`, `ats_id = <Sitemap-URL>#/job/` (Workday) bzw. der Stellenpfad als Filter; sonst `portal_nicht_unterstuetzt`. Nie `/wday/cxs/`.
 - `lauf(datenordner="data", budget_s: int = 19800) -> dict`: bearbeitet alle Firmen mit `status == "offen"` und ohne Eintrag in `data/einrichtung_stand.json`, sortiert nach bestem Rang; speichert den Stand nach jeder Firma; stoppt vor Ablauf von `budget_s`. Schreibt `data/karriereseite_nicht_gefunden.md` (Name, Website, bester Rang, Grund; sortiert nach Rang) für die Morgen-Sitzung mit Claude.
 - Workflow: nur `workflow_dispatch`, `timeout-minutes: 350`, Ergebnis als Pull Request wie Task 4.
+- **Vorfilter im Sitemap-Adapter (`scraper/ats/sitemap.py`):** Workday-Sitemaps enthalten alle Stellen weltweit, der Ort steht in der Adresse (`…/job/Vietnam-Hanoi/…`). Neue Funktion `ort_aus_url(url: str) -> str | None` (Segment nach `/job/`, Bindestriche → Leerzeichen); Stellen-URLs, deren Ort weder Deutschland/Germany, eine deutsche Stadt (`deutsche_staedte`) noch „Remote“ enthält, werden vor dem Abruf als `vorgefiltert` gezählt. Ohne erkennbaren Ort: abrufen. Test: `…/job/Vietnam-Hanoi/…` vorgefiltert, `…/job/Germany-Munich/…` und `…/job/US-WA-Remote/…` abgerufen (Remote entscheidet danach wie heute `ist_relevant`).
 
 - [ ] **Step 1: Tests** (Review Focus 2 und 3): ein Portal + Stelle in München → `aktiv`; nur Stellen in den USA (nicht remote) → `keine_stellen_de`; zwei Portale → `offen` + Grund; kein Link → Eintrag in der Liste; `budget_s=0` → nichts bearbeitet, Stand unverändert; zweiter Lauf überspringt erledigte Firmen; robots.txt-Verbot (`http.hole` wirft) → Grund `robots.txt verbietet Abruf`.
 - [ ] **Step 2–4:** FAIL → Umsetzen → grün.

@@ -125,6 +125,17 @@ Baut auf 4b, 4c-2 und 4c-3 auf; der Schnellstart (JobPosting von beliebigen Firm
 7. **Claude-Recherche (Q62):** kein nächtlicher Workflow. Der Einrichtungslauf schreibt die Liste „Karriereseite nicht gefunden“ als Datei bzw. in den Bericht; Admin und Claude Code arbeiten sie am Morgen in einer Sitzung ab und ändern `data/companies.csv` (Nutzer gibt frei). Codex baut nur die Liste, nicht die Recherche.
 8. **Remote weltweit (4a):** zählt, wenn der Ortstext oder das Remote-Feld „worldwide“, „anywhere“, „global“, „weltweit“ oder „remote“ ohne Ländernamen enthält und kein anderes Land ausdrücklich verlangt wird.
 
+## Quellen-Formate (Task 0, geprüft 2026-11-19)
+
+| Quelle | Abruf | Format | Lizenz | Hinweise |
+|---|---|---|---|---|
+| EU R&D Scoreboard | `https://knowledge-for-policy.ec.europa.eu/sites/default/files/World2000%282004-2025%29.zip` bzw. `EU800%282004-2025%29.zip` (robots.txt erlaubt; ~11 MB; 1×/Jahr, Ausgabe im Dezember) | ZIP mit einer XLSX je Jahrgang (`SB2025_World2000.xlsx`), ein Blatt, Kopfzeile `Year, World rank, Company, Country, Region, ISO3 Code, ICB3 short, ICB3 long, …` | CC BY 4.0 (Rechtshinweis der Kommission), Quellenangabe nötig | keine Wikidata-ID, keine Website → `name_zu_id` |
+| Wikidata | `https://query.wikidata.org/sparql`, Abfragen in `scraper/quellen/sparql/` | SPARQL-JSON | CC0 | eigener User-Agent; Abfragen mit `P279*` über alle deutschen Firmen laufen in Zeitüberschreitung; Indizes: DAX `Q155718`, MDAX `Q595622`, SDAX `Q448445`, TecDAX `Q378967` (Mitgliedschaft `P361` ohne Enddatum `P582`) |
+| EPA Technology Dashboard | `https://link.epo.org/web/about-us/statistics/top-100-applicants-epo-technology-dashboard-2025.xlsx` (1×/Jahr, März/April) | XLSX, Blatt „Top 100“, Titelzeile, dann `Rank, Company, Filed, Country` | keine ausdrückliche Wiederverwendungserlaubnis gefunden → Ränge nur Admin (wie bisher) | Kurznamen („SIEMENS“) → `name_zu_id` |
+| CORDIS (EIC) | **kein automatischer Abruf**: robots.txt verbietet `/data/` (Q78) | Nutzer lädt `cordis-HORIZONprojects-csv.zip` 1×/Jahr im Browser | Wiederverwendungshinweis der Kommission (CC BY 4.0) | Parser als Nachtrag nach dem ersten Handdownload |
+| Wikipedia-Liste | entfällt (Q77) | – | – | – |
+| Workday / SuccessFactors | robots.txt der Karriere-Hosts erlauben den Stellenpfad und nennen eine Sitemap; Stellenseiten enthalten JSON-LD `JobPosting` | – | Workday-Bedingungen gelten für workday.com, Seiten mit Verweis darauf und die Workday-Schnittstellen → nur Sitemap + Stellenseite (Q76) | `career*.successfactors.*` verbietet Programme |
+
 ## Dem Bauenden überlassen
 
 Spaltennamen, Dateiaufteilung im Scraper, genaue Zuordnungstabelle Wikidata-Branche → Kategorie (als Datei im Repo, prüfbar), Paketgröße der Claude-Recherche (Start 50), Wortlaut der Fehlermeldungen. Bestehende Muster übernehmen (Adapter-Register `scraper/ats/__init__.py`, Prüfung `scraper/rankings.py`, RLS-Tests `tests/test_rls.py`).
