@@ -63,3 +63,12 @@ export function claudeAuftrag(o: { briefkopf: string; anschreiben: string; anzei
   const url = `https://claude.ai/new?q=${encodeURIComponent(text)}`;
   return url.length > MAX_URL ? { art: "zwischenablage", text, url: "https://claude.ai/new" } : { art: "link", url };
 }
+
+// Was Claude über die Stelle bekommt: Aufgaben/Anforderungen aus dem Snapshot, sonst der Auszug, dazu der Link.
+const RELEVANT = /aufgab|anforder|profil|mitbring|qualifi|erwart|bring|kenntnis|t[äa]tigkeit/i;
+export function anzeigeText(abschnitte: { titel: string; punkte: string[] }[] | null, anforderungen: string | null, link: string | null): string {
+  const teile = (abschnitte ?? []).filter((a) => RELEVANT.test(a.titel) && a.punkte.length)
+    .map((a) => `${a.titel}:\n${a.punkte.map((p) => `- ${p}`).join("\n")}`);
+  const inhalt = teile.length ? teile.join("\n\n") : anforderungen?.trim() ?? "";
+  return [link ? `Link: ${link}` : "", inhalt].filter(Boolean).join("\n\n");
+}

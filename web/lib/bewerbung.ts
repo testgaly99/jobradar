@@ -22,7 +22,7 @@ const STELLE: Record<string, Typ> = { firma: "text", titel: "text", link: "url",
 export const FELDER: Record<Abschnitt, Record<string, Typ>> = {
   neu: { ...STELLE, status: "status", snapshot_text: "text" },
   stelle: STELLE,
-  bewerbung: { beworben_am: "datum", bewerbungsweg: "text", referenznummer: "text", portal_hinweis: "text", cv_dokument_id: "uuid", anschreiben_dokument_id: "uuid" },
+  bewerbung: { beworben_am: "datum", bewerbungsweg: "text", referenznummer: "text", portal_hinweis: "text", cv_dokument_id: "uuid" }, // Anschreiben setzt nur anschreibenSetzen (räumt das alte auf)
   gehalt: { gehalt_spanne_anzeige: "text", gehalt_wunsch: "text", angebot_fix: "text", angebot_variabel: "text", angebot_urlaub: "text", angebot_benefits: "text", gehalt_aktuell_vergleich: "text" },
   rahmen: { starttermin: "datum", kuendigungsfrist: "text", referenzen: "text" },
   ergebnis: { ergebnis: "ergebnis", absagegrund: "text", feedback: "text", rueckzug_grund: "text" },

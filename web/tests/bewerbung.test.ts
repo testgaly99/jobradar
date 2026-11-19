@@ -55,6 +55,9 @@ test("Pflichtfelder, Link und Dokument-ID", () => {
   assert.ok("fehler" in parseAbschnitt("stelle", fd({ firma: "A", titel: "B", link: "javascript:alert(1)" })));
   assert.ok("daten" in parseAbschnitt("stelle", fd({ firma: "A", titel: "B", link: "https://x.de/a" })));
   assert.ok("fehler" in parseAbschnitt("bewerbung", fd({ cv_dokument_id: "nope" })));
+  // Speichern des Kastens "Bewerbung" darf das verknüpfte Anschreiben nicht leeren
+  const b = parseAbschnitt("bewerbung", fd({}));
+  assert.ok("daten" in b && !("anschreiben_dokument_id" in b.daten));
   assert.ok("fehler" in parseAbschnitt("neu", fd({ firma: "A" })));
 });
 

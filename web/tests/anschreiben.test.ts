@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { anredeText, claudeAuftrag, dateiname, datumText, fuelleVorlage, platzhalterWerte, quelleText } from "../lib/anschreiben.ts";
+import { anredeText, anzeigeText, claudeAuftrag, dateiname, datumText, fuelleVorlage, platzhalterWerte, quelleText } from "../lib/anschreiben.ts";
 
 const AUFTRAG = "Passe dieses Anschreiben an die folgende Stelle an. Bleib bei meinem Stil, erfinde nichts über mich. Erstelle das Ergebnis als Word-Datei und als PDF im deutschen Briefformat (DIN 5008).";
 const tag = new Date(2026, 10, 19);
@@ -58,4 +58,11 @@ test("Claude-Auftrag: kurz als Link, lang über die Zwischenablage", () => {
   assert.equal(lang.art, "zwischenablage");
   assert.equal(lang.url, "https://claude.ai/new");
   assert.ok(lang.art === "zwischenablage" && lang.text.startsWith(AUFTRAG));
+});
+
+test("Anzeige für Claude: Aufgaben und Anforderungen aus dem Snapshot, sonst Auszug, sonst nur Link", () => {
+  const teile = [{ titel: "Über uns", punkte: ["Werbung"] }, { titel: "Deine Aufgaben", punkte: ["A1", "A2"] }, { titel: "Dein Profil", punkte: ["P1"] }];
+  assert.equal(anzeigeText(teile, null, "https://jobs.example.invalid/1"), "Link: https://jobs.example.invalid/1\n\nDeine Aufgaben:\n- A1\n- A2\n\nDein Profil:\n- P1");
+  assert.equal(anzeigeText(null, "Auszug", null), "Auszug");
+  assert.equal(anzeigeText([], "", "https://jobs.example.invalid/1"), "Link: https://jobs.example.invalid/1");
 });

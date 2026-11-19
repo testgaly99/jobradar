@@ -13,11 +13,15 @@ import { zurueckZuGemerkt } from "@/lib/zug";
 import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
 import { DruckKnopf, LoeschForm, SendeKnopf } from "@/app/bewerbungen/knoepfe";
 import Ungespeichert from "./ungespeichert";
+import { AnschreibenBlock } from "./anschreiben";
+import { anzeigeText } from "@/lib/anschreiben";
+import type { Briefkopf } from "@/lib/brief-datei";
+import { dokumentHerunterladen } from "@/app/unterlagen/actions";
 
 type Row = Record<string, string | number | string[] | null>;
 type Dok = { id: string; name: string | null; version_datum: string | null };
 type Ereignis = { id: string; datum: string; alter_status: Status | null; neuer_status: Status | null; notiz: string | null };
-type Person = { id: string; firma: string | null; name: string | null; rolle: string | null; email: string | null; telefon: string | null; linkedin: string | null; art: string | null };
+type Person = { id: string; firma: string | null; name: string | null; rolle: string | null; email: string | null; telefon: string | null; linkedin: string | null; art: string | null; anrede?: string | null };
 type Interview = { id: string; datum: string | null; format: string | null; teilnehmer: string | null; fragen_gestellt: string | null; eigene_fragen: string | null; eindruck: string | null; aufgabe: string | null; aufgabe_frist: string | null };
 
 const v = (x: unknown) => (x === null || x === undefined ? "" : String(x));
@@ -37,18 +41,26 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   const sb = await createClient();
   const { data: a } = await sb.from("applications").select("*").eq("id", id).maybeSingle();
   if (!a) notFound();
-  const [ev, pe, iv, dok, weitere] = await Promise.all([
+  const [ev, pe, iv, dok, weitere, vl, bk] = await Promise.all([
     sb.from("application_events").select("id,datum,alter_status,neuer_status,notiz").eq("application_id", id).order("datum", { ascending: false }),
     sb.from("contacts").select("*").eq("application_id", id).order("name"),
     sb.from("interviews").select("*").eq("application_id", id).order("datum", { ascending: false }),
     sb.from("documents").select("id,name,art,version_datum").order("version_datum", { ascending: false }),
     bewerbungenBei(sb, a.firma as string | null, id),
+    sb.from("anschreiben_vorlagen").select("id,name,betreff,text").order("name"),
+    sb.from("briefkopf").select("name,strasse,plz_ort,telefon,email,linkedin").maybeSingle(),
   ]);
   const row = a as Row;
   const events = (ev.data ?? []) as Ereignis[];
   const personen = (pe.data ?? []) as Person[];
   const interviews = (iv.data ?? []) as Interview[];
   const docs = (dok.data ?? []) as (Dok & { art: string | null })[];
+  const anschreiben = docs.find((d) => d.id === row.anschreiben_dokument_id) ?? null;
+  const ohne023 = ["42P01", "PGRST205"].includes(vl.error?.code ?? ""); // Tabellen fehlen bis Migration 023
+  const vorlagen = (vl.data ?? []) as { id: string; name: string; betreff: string; text: string }[];
+  const kopf = (bk.data ?? null) as Briefkopf | null;
+  const ansprechpartner = personen.find((p) => p.art === "ansprechpartner") ?? null;
+  const abschnitte = leseAbschnitte((a as { snapshot_abschnitte?: unknown }).snapshot_abschnitte);
   // B1: Kästen mit Inhalt sind offen, leere zugeklappt (eine Zeile statt eines leeren Formulars)
   const hat = (...felder: string[]) => felder.some((f) => { const x = row[f]; return x !== null && x !== undefined && x !== "" && !(Array.isArray(x) && x.length === 0); });
   const interesse = typeof row.interesse === "number" ? row.interesse : null;
@@ -139,12 +151,20 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
             <select name="cv_dokument_id" defaultValue={v(row.cv_dokument_id)}>{dokOptionen("cv")}</select>
             <a href="/unterlagen" className="klein">Dokument hochladen</a>
           </label>
-          <label>Anschreiben
-            <select name="anschreiben_dokument_id" defaultValue={v(row.anschreiben_dokument_id)}>{dokOptionen("anschreiben")}</select>
-          </label>
           {docs.length === 0 && <p className="gedaempft klein">Noch keine Dokumente. <a href="/unterlagen">Jetzt hochladen</a>.</p>}
           <SendeKnopf text="Bewerbung speichern" />
         </form>
+          {anschreiben && (
+            <div className="aktionsreihe">
+              <p className="klein">Anschreiben: <strong>{anschreiben.name || "Dokument"}</strong></p>
+              <form action={dokumentHerunterladen.bind(null, anschreiben.id)}><button className="knopf knopf-rand knopf-schmal" type="submit">Herunterladen</button></form>
+            </div>
+          )}
+          {ohne023 ? <p className="gedaempft klein">Anschreiben aus Vorlage: verfügbar nach Migration 023.</p> : (
+            <AnschreibenBlock applicationId={id} vorlagen={vorlagen} kopf={kopf} anzeige={anzeigeText(abschnitte, row.anforderungen as string | null, link)}
+              app={{ firma: row.firma as string | null, titel: row.titel as string | null, quelle: row.quelle as string | null }}
+              kontakt={ansprechpartner ? { name: ansprechpartner.name, anrede: ansprechpartner.anrede ?? null } : null} />
+          )}
         </details>
 
         <details className="karte kein-druck" open={hat("gehalt_spanne_anzeige", "gehalt_wunsch", "angebot_fix", "angebot_variabel", "angebot_urlaub", "angebot_benefits", "gehalt_aktuell_vergleich")}>
