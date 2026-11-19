@@ -7,8 +7,11 @@ import { heuteLokal } from "@/lib/filter";
 import { holeStelle, sucheTitel, type Stelle } from "@/lib/ats-abruf";
 import { textZuLang } from "@/lib/uebernahme";
 import { erkenneFirmaTitel } from "@/lib/groq";
+import { istPortal } from "@/lib/stellen-import";
+import { darfAbrufen } from "@/lib/seiten-abruf";
+import { zielAusFirmenseite, type FirmenseitenZiel } from "@/lib/jobposting";
 
-type Ergebnis = { brauchtEingabe: true } | { fehler: string };
+type Ergebnis = { brauchtEingabe: true; grund?: "kein_jobposting" } | { fehler: string };
 type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; job?: JobZeile | null };
 
 // text: eingefügter Anzeigentext, nur wenn es keinen Text aus Stellenliste oder ATS gibt. Es wird nichts abgerufen, was GESPERRT ist.
@@ -39,6 +42,7 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   if (u.protocol !== "http:" && u.protocol !== "https:") return { fehler: "Nur http- und https-Links sind möglich." };
   const a = analysiereLink(u.toString());
   const link = a.link ?? u.toString();
+  const eigen = { firma: firma?.trim() || undefined, titel: titel?.trim() || undefined };
   firma = firma?.trim() || a.firma;
   titel = titel?.trim() || a.titel;
 
@@ -85,6 +89,14 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
     }
   }
 
+  // Schritt 1d: beliebige Firmen-Karriereseite einmal abrufen und das eingebettete JobPosting lesen (nie Jobportale).
+  // Firma und Titel daraus nutzen danach auch Schritt 2 und 3; erst Schritt 4 legt die Bewerbung aus der Seite an.
+  let seite: FirmenseitenZiel | null = null;
+  if (!ziel && !a.ats && !istPortal(u.hostname) && darfAbrufen(claims.claims.sub)) {
+    seite = await zielAusFirmenseite(link, eigen);
+    if (seite.titel) { firma = seite.firma || firma; titel = seite.titel; }
+  }
+
   // Schritt 2: Firma und Titel in jobs suchen.
   if (!ziel && firma && titel) {
     const erstes = normFirma(firma).split(" ")[0].replace(/[\\%_]/g, "");
@@ -107,10 +119,11 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
     }
   }
 
-  // Schritt 4: nur Link, Firma und Titel.
+  // Schritt 4: aus der Firmenseite, sonst nur Link, Firma und Titel.
+  const ausSeite = !ziel && !!seite?.titel;
   if (!ziel) {
-    if (!firma && !titel) return { brauchtEingabe: true };
-    ziel = { firma, titel, link, quelle: a.quelle };
+    if (!firma && !titel) return seite?.abgerufen ? { brauchtEingabe: true, grund: "kein_jobposting" } : { brauchtEingabe: true };
+    ziel = { firma, titel, link, quelle: a.quelle, ...(ausSeite ? { ort: seite!.ort, text: seite!.text } : {}) };
   }
 
   if (ziel.job) {
@@ -119,10 +132,15 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
     if (!(await aufBeworben(sb, r.id, heute))) return { fehler: "Der Status konnte nicht gespeichert werden." }; // war die Stelle schon gemerkt
     redirect(`/bewerbung/${r.id}`);
   }
-  const { data, error } = await sb.from("applications").insert({
+  const zeile: Record<string, unknown> = {
     firma: ziel.firma ?? null, titel: ziel.titel ?? null, link: ziel.link, quelle: ziel.quelle,
     standort: ziel.ort || null, snapshot_text: ziel.text || text || null, ...NEU,
-  }).select("id").single();
+  };
+  // nachruesten: der Nachtlauf ergänzt Gliederung, Steckbrief und Zusammenfassung. Ohne Migration 012 fehlt die Spalte: dann ohne Markierung.
+  let { data, error } = await sb.from("applications").insert(ausSeite ? { ...zeile, nachruesten: true } : zeile).select("id").single();
+  if (error && ausSeite && (error.code === "PGRST204" || error.message?.includes("nachruesten"))) {
+    ({ data, error } = await sb.from("applications").insert(zeile).select("id").single());
+  }
   if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
   redirect(`/bewerbung/${data.id}`);
 }
