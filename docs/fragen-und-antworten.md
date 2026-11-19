@@ -281,6 +281,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q208 | ÖPNV-Fahrzeit: eigene Rechnung (MVV) oder Transitous? | Nutzer: „MVV ist gut, aber just in case brauchen wir das auch für andere deutsche Großstädte. Meine Freunde wohnen nicht in München“ | Eigene Rechnung mit dem Deutschland-Fahrplan von DELFI (CC BY 4.0), je Nutzer-Region (80 km um die Start-Haltestelle). | entschieden |
 | Q209 | Für welche Ankunftszeit gilt die Pendelzeit? | Nutzer: „Werktag, Ankunft bis 9:00 (Empfohlen)“ | Dienstag, Ankunft bis 9:00; Anzeige „35 Min. · 1 Umstieg“. | entschieden |
 | Q210 | Stellen ohne bekannte Pendelzeit im Filter? | Nutzer: „Durchlassen, markiert (Empfohlen)“ | Sichtbar mit „Pendelzeit unbekannt“; Häkchen „nur mit bekannter Pendelzeit“. | entschieden |
+| Q211 | Design Pendelzeit freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Warteschlange Nr. 12a. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -371,6 +372,8 @@ Fragetexte Q206–Q207 (Claude, 2026-11-19, Auswahl): Q206 Büro, sonst „unbek
 Fragetexte Q208 (Claude, 2026-11-19, Auswahl): A: Eigene Rechnung, MVV (Empfohlen) / B: Transitous (Antwort frei).
 
 Fragetexte Q209–Q210 (Claude, 2026-11-19, Auswahl): Q209 Werktag, Ankunft bis 9:00 (Empfohlen) / Selbst einstellbar. Q210 Durchlassen, markiert (Empfohlen) / Ausblenden.
+
+Fragetexte Q211 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

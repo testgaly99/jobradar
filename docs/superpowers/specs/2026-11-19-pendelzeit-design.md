@@ -41,6 +41,7 @@ Passungs-Score, Skill-Lücken, Gehaltsbenchmark (Q204); Sofort-Alarm, monatliche
 
 - `firmen_standorte(id, firma text references companies(name) on delete cascade, stadt text, adresse text, lat double precision, lon double precision, quelle text check in ('anzeige','osm','impressum','wikidata','hand'), quelle_url text, gefunden_am date, unique (firma, stadt, adresse))`; lesbar für Angemeldete (Firmendaten sind gemeinsam, CLAUDE.md 4.6), schreiben nur Nachtlauf und Admin.
 - `firmen_standort_suche(firma, stadt, versucht_am date, ergebnis text check in ('gefunden','nicht_gefunden'), primary key (firma, stadt))` – damit nichts täglich neu gesucht wird (erneut nach 90 Tagen).
+- `pendel_haltestellen(id, name, ort, lat, lon)` aus dem Fahrplan, lesbar für Angemeldete (Haltestellensuche).
 - `pendel_start(owner_id pk → auth.users on delete cascade, haltestelle_id text, haltestelle_name text, lat, lon, fussweg_min integer check between 0 and 60)`; RLS nur eigene Zeile.
 - `pendelzeiten(owner_id → auth.users on delete cascade, job_id text → jobs on delete cascade, minuten integer, umstiege integer, standort_id → firmen_standorte, ungefaehr boolean, berechnet_am date, primary key (owner_id, job_id))`; RLS nur eigene Zeilen. `minuten null` = unbekannt.
 - Büroadressen von Hand (`quelle 'hand'`) trägt nur der Admin ein (Firmendaten sind gemeinsam, Claude-Entscheidung 3).
