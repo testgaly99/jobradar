@@ -39,7 +39,7 @@
 - [x] **Step 2:** Aktuelle Versionen und Lizenzen von `docx`, `pdfmake`, `mammoth` auf npm prüfen (gepflegt, MIT/BSD), Versionen hier eintragen: `docx@9.15.2` (MIT), `pdfmake@0.3.13` (MIT), `mammoth@1.13.0` (BSD-2-Clause). **Erledigt 2026-11-19 (Claude):** jeweils neueste Version, die mindestens 2 Wochen alt ist (docx 9.16.0 erschien am 19.11., pdfmake 0.3.14 am 08.11. – zu frisch); alle drei gepflegt.
 - [x] **Step 3:** Ergebnis vermerkt (dieser Plan, `docs/fragen-und-antworten.md` Q226). Task 0 erledigt.
 
-**Gebaut von Claude 2026-11-19** (statt Codex, auf Nutzerwunsch); Commits enden mit `Co-Authored-By: Claude`. Abweichungen: `anschreiben_dokument_id` nicht mehr im Formular „Bewerbung“ (sonst leert Speichern das Anschreiben); `anzeigeText` nimmt ohne passende Snapshot-Abschnitte den Auszug; Anrede nur beim Anlegen einer Person.
+**Gebaut von Claude 2026-11-19** (statt Codex, auf Nutzerwunsch); Commits enden mit `Co-Authored-By: Claude`. Abweichungen: `anschreiben_dokument_id` nicht mehr im Formular „Bewerbung“ (sonst leert Speichern das Anschreiben); `anzeigeText` nimmt ohne passende Snapshot-Abschnitte den Auszug; Personen bekommen einen Knopf „Bearbeiten“ (Nutzerwunsch 2026-11-19), damit auch vorhandene Kontakte eine Anrede erhalten.
 
 ### Task 1: Migration 023
 
@@ -163,4 +163,4 @@ claudeAuftrag({ briefkopf: "B", anschreiben: "x".repeat(7000), anzeige: "" }).ar
 - Modify: `web/app/datenschutz/page.tsx` (Satz: „Briefkopf und Anschreiben-Vorlagen liegen wie deine Bewerbungen in Supabase (Frankfurt). Der Knopf „Mit Claude bearbeiten“ öffnet dein eigenes Claude-Konto; der Text geht dann an Claude.“), `docs/STATUS.md`, `docs/agenten-protokoll.md`, `docs/codex-warteschlange.md` (Status 🛑)
 - [x] **Step 1:** `cd web && npm test` → alle grün; `npm run build` → ohne Fehler; `npm run pruefe:build` → ok.
 - [x] **Step 2:** Commit `Runde 1: Datenschutz und Doku`.
-- [ ] **Step 3: 🛑 Halt.** Nutzer spielt `supabase/migrations/023_unterlagen.sql` ein. Claude prüft danach live mit zwei Wegwerf-Konten `…@example.com` (B sieht nichts von A: Briefkopf, Vorlagen, Anlagen-Haken) und klickt mit webapp-testing durch: Vorlage per `.docx` anlegen → PDF herunterladen → Anschreiben gespeichert → Endfassung ersetzt es → alte Datei weg; danach Wegwerf-Konten löschen.
+- [x] **Step 3: 🛑 Halt.** **Erledigt 2026-11-19:** 023 live, RLS 14/14, Klicktest 15/15. Nutzer spielt `supabase/migrations/023_unterlagen.sql` ein. Claude prüft danach live mit zwei Wegwerf-Konten `…@example.com` (B sieht nichts von A: Briefkopf, Vorlagen, Anlagen-Haken) und klickt mit webapp-testing durch: Vorlage per `.docx` anlegen → PDF herunterladen → Anschreiben gespeichert → Endfassung ersetzt es → alte Datei weg; danach Wegwerf-Konten löschen.
