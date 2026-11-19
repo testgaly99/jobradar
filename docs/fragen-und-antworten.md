@@ -298,6 +298,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q225 | Link-Prüfung (privat) gleich erledigen? | Nutzer: „Ja, jetzt (Empfohlen)“ | Claude prüft per Websuche, Ergebnis privat. | entschieden |
 | Q226 | Runde 1 Task 0: Was steht nach Öffnen von `claude.ai/new?q=Hallo%20Test` im Eingabefeld? | Nutzer zuerst: „Ich kann den Link nicht kopieren“ (Claude öffnete ihn per `Start-Process`); dann Bildschirmfoto: „Hallo Test“ im Feld, darüber Warnhinweis „Sei vorsichtig, bevor du diesen Prompt ausführst…“ | Link-Weg funktioniert; Warnhinweis wird im Knopf-Hinweis erklärt. | entschieden |
 | Q227 | Task-0-Ergebnis hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q228 | Runde 1 (von Claude gebaut, 7 Commits) auf `entwurf-ui` hochladen? | offen | – | offen |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -412,6 +413,7 @@ Fragetexte Q224–Q225 (Claude, 2026-11-19, Auswahl): Q224 Ja, hochladen + Ja, p
 Fragetexte Q226 (Claude, 2026-11-19, Auswahl): „Hallo Test“ steht drin / Feld ist leer / Etwas anderes.
 
 Fragetexte Q227 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q228 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Erst Migration 023, dann hochladen / Noch nicht.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
