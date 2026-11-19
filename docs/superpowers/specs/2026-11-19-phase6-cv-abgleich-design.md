@@ -85,8 +85,8 @@ Der Nutzer will bei jeder interessanten Stelle auf einen Blick sehen, welche Anf
 5. Stufe 2 nur, wenn Chromes eingebautes Modell verfügbar ist; sonst bleiben Grenzfälle Gelb mit dem Grund „nicht automatisch prüfbar“. Muss Chrome das Modell erst herunterladen, zeigt die Seite einen Hinweis mit Größe und Knopf „Genauer prüfen: Chrome-KI einmalig laden“; nur dieser Klick startet den Download (Q105).
 6. Ergebnis wird gespeichert (gleiche Tabelle, Weg „browser“), damit es auf anderen Geräten sichtbar ist.
 7. Das CV verlässt das Gerät nur zur eigenen Datenbank; nie zu einem KI-Anbieter.
-9. **Wichtige Punkte nach Bedeutung (Q106):** Jeder Begriff der Konto-Seite wird mit den Stichpunkten der Anzeige verglichen (Stufe-1-Modell, eigene Schwelle); ein Treffer wird wie heute hervorgehoben, zusätzlich mit dem Hinweis „ähnlich: <Begriff>“. Wortanfang-Treffer bleiben unverändert.
 8. **Admin (Q103):** Dieselben Auslöser starten beim Admin nur Stufe 1 (kein Chrome-Modell). Das Ergebnis wird als vorläufig gespeichert (Weg „browser-vorlaeufig“); der Nachtlauf behandelt Stellen mit nur vorläufigem Ergebnis wie Stellen ohne Ergebnis und ersetzt es. Kein zusätzliches Abo-Kontingent. Damit kommen die Sofort-Farben für den Admin erst mit 6b.
+9. **Wichtige Punkte nach Bedeutung (Q106):** Jeder Begriff der Konto-Seite wird mit den Stichpunkten der Anzeige verglichen (Stufe-1-Modell, eigene Schwelle); ein Treffer wird wie heute hervorgehoben, zusätzlich mit dem Hinweis „ähnlich: <Begriff>“. Wortanfang-Treffer bleiben unverändert.
 
 **Halte-Punkte:** (a) Migration 019, falls nötig; (b) Test mit Wegwerf-Konto `…@example.com` und künstlichem CV in Chrome mit und ohne eingebautes Modell; Nutzer sieht sich das Ergebnis an.
 
