@@ -280,7 +280,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 - **Quellen (Entscheidung 2026-11-17, Q41–Q43, ersetzt 2026-11-10):**
   - **Grundlage sind offene Quellen:** EU R&D Scoreboard (CC BY), Wikidata (CC0, auch Börsenindex-Mitglieder), Technology Dashboard des Europäischen Patentamts, DPMA-Anmelderstatistik, EIC-Geförderte über CORDIS, offen lizenzierte Listen (z. B. Wikipedia CC BY-SA, MIT-Listen auf GitHub), US-Arbeitsministerium Visa-Gehaltsdaten (nur als Gehalts-Indikator). (Behörden und Forschungseinrichtungen entfallen seit Q82.) Eine Firma ist ein Eintrag je Karriereportal (Q43).
   - **Firmenauswahl (Q80–Q93, 2026-11-19, ersetzt „Top 20 je Branche“ und Q42):** Jede Firma muss aus einer „Top“-Liste kommen (Q56). Quellen und Regeln:
-    - **Aus jeder Liste höchstens die Top 200** (Nutzer 2026-11-19, Q94); Listen mit weniger Firmen ganz; Listen ohne Rang mit mehr als 200 Firmen (EIC): die 200 zuletzt aufgenommenen.
+    - **Aus jeder Liste höchstens die Top 200** (Nutzer 2026-11-19, Q94); Listen mit weniger Firmen ganz; Listen ohne Rang mit mehr als 200 Firmen (EIC): die 200 mit der höchsten EU-Förderung (Q97).
     - EU R&D Scoreboard: Top 200 weltweit nach Forschungsausgaben (keine EU-800).
     - Börsenindizes: alle Mitglieder von DAX, MDAX, SDAX, TecDAX.
     - EPA: Top 100 Patentanmelder; Rang nur für den Admin sichtbar.

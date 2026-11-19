@@ -127,7 +127,7 @@ Baut auf 4b, 4c-2 und 4c-3 auf; der Schnellstart (JobPosting von beliebigen Firm
 
 ## Änderungen nach Q94–Q96 (2026-11-19, gehen allem Folgenden vor)
 
-- Aus jeder Liste höchstens die Top 200; Listen mit weniger Firmen ganz; Listen ohne Rang mit mehr als 200 Firmen (EIC): die 200 zuletzt aufgenommenen. Damit: Scoreboard Top 200, „Top 200 Arbeitgeber“ (statt 300), Hand-Listen je höchstens Platz 1–200.
+- Aus jeder Liste höchstens die Top 200; Listen mit weniger Firmen ganz; Listen ohne Rang mit mehr als 200 Firmen (EIC): die 200 mit der höchsten EU-Förderung (Q97). Damit: Scoreboard Top 200, „Top 200 Arbeitgeber“ (statt 300), Hand-Listen je höchstens Platz 1–200.
 - Kategorien statt Einzellisten für Nutzer: Spalte `kategorie` an `ranking_listen` (sieben feste Werte, siehe CLAUDE.md 4.8); Filter „Kategorie“ für Angemeldete über eine Funktion, die nur (Firma, Kategorie) liefert – auch aus Listen, deren Ränge nur der Admin sieht; einzelne Listen, Ränge und Sortierung nach Rang nur nach Sichtbarkeit.
 - Schätzung Firmenzahl: roh ~3.100, ohne Doppelte ~1.500–2.000, aktiv (Stellen in DE/remote) ~900–1.300.
 
