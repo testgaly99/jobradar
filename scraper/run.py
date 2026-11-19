@@ -158,12 +158,15 @@ def _ki(heute):
     try:
         if not db.ki_spalten_da():
             return {"hinweis": "Migration 009 fehlt, KI übersprungen"}
-        schritte = [("ausblenden", lambda: erg.update(ausgeblendet=db.nein_ausblenden()))]  # zuerst: wieder sichtbar gesetzte "nein"-Stellen sofort weg
+        def ausblenden():
+            erg["ausgeblendet"] = erg.get("ausgeblendet", 0) + db.nein_ausblenden()
+        schritte = [("ausblenden", ausblenden)]  # zuerst: wieder sichtbar gesetzte "nein"-Stellen sofort weg
         if not os.environ.get("GROQ_API_KEY"):
             erg["hinweis"] = "GROQ_API_KEY fehlt, keine KI-Auswertung"
         else:
             schritte += [("auswerten", lambda: erg.update(ki.auswerten(heute, frist_s=3600))),
-                         ("nachfuellen", lambda: erg.update(nachgefuellt=ki.nachfuellen(frist_s=3600)))]
+                         ("nachfuellen", lambda: erg.update(nachgefuellt=ki.nachfuellen(frist_s=3600))),
+                         ("ausblenden", ausblenden)]  # frisch ausgewertete "nein"-Stellen; Whitelist-Firmen bleiben sichtbar
         for name, schritt in schritte:
             try:
                 schritt()

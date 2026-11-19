@@ -27,6 +27,8 @@ class FakeDB:
         self.ohne_logo_spalte = False
         self.ohne_ki_spalten = False
         self.ohne_nachruesten = False
+        self.ohne_whitelist = False
+        self.rpc_nein = 0
         self.nachgeruestet = 0
         self.pruefungen = 0
         self.t = {"companies": {}, "jobs": {}, "laeufe": [], "applications": []}
@@ -38,6 +40,14 @@ class FakeDB:
             if self.ohne_funktion:
                 raise RuntimeError("Supabase POST rpc/snapshot_nachruesten: 404 {\"code\":\"PGRST202\"}")
             return 3
+        elif method == "POST" and pfad == "rpc/nein_ausblenden":
+            self.rpc_nein += 1
+            if self.ohne_whitelist:
+                raise RuntimeError("Supabase POST Abfrage: 404 PGRST202")
+            treffer = [z for z in self.t["jobs"].values() if z.get("studium") == "nein" and z["status"] == "offen" and z["sichtbar"]]
+            for z in treffer:
+                z["sichtbar"] = False
+            return len(treffer)
         elif method == "POST" and pfad == "laeufe":
             self.t["laeufe"].append(json)
         elif method == "POST":

@@ -211,10 +211,12 @@ def test_speichere_ki_ja_bleibt_sichtbar(fake):
     assert (z["studium"], z["taetigkeit"], z["ki_modell"], z["ki_hash"], z["sichtbar"]) == ("ja", "einfach", "modell", "h", True)
 
 
-def test_speichere_ki_nein_blendet_aus(fake):
+def test_speichere_ki_blendet_nicht_selbst_aus(fake):
+    # Ausblenden macht nur nein_ausblenden (kennt die Whitelist), nie speichere_ki
     stelle(fake)
-    db.speichere_ki("acme:1", {**ERG, "studium": "nein"}, "modell", "h")
-    assert fake.t["jobs"]["acme:1"]["sichtbar"] is False
+    db.speichere_ki("acme:1", {**ERG, "studium": "nein", "taetigkeit": "einfach"}, "modell", "h")
+    z = fake.t["jobs"]["acme:1"]
+    assert (z["studium"], z["sichtbar"]) == ("nein", True)
 
 
 def test_speichere_ki_fehler_ohne_ergebnis(fake):
@@ -225,7 +227,22 @@ def test_speichere_ki_fehler_ohne_ergebnis(fake):
     assert "studium" not in z
 
 
+def test_nein_ausblenden_ruft_rpc(fake):
+    stelle(fake, "acme:1", studium="nein")
+    stelle(fake, "acme:2", studium="nein")
+    assert db.nein_ausblenden() == 2
+    assert fake.rpc_nein == 1 and not hasattr(fake, "letzte_params")  # kein PATCH auf jobs
+
+
+def test_nein_ausblenden_rueckfall_ohne_migration(fake, capsys):
+    fake.ohne_whitelist = True
+    stelle(fake, "acme:1", studium="nein")
+    assert db.nein_ausblenden() == 1
+    assert "Migration 011 offen" in capsys.readouterr().out
+
+
 def test_nein_ausblenden_nur_offene_sichtbare(fake):
+    fake.ohne_whitelist = True
     stelle(fake, "acme:1", studium="nein")
     stelle(fake, "acme:2", studium="nein", status="geschlossen")
     stelle(fake, "acme:3", studium="ja")
