@@ -16,13 +16,15 @@
 - „Rankings zum Stöbern“ pflegt Claude monatlich über einen Ablauf im privaten Repo (Q72), nicht Codex und nicht per Formular. Dieser Plan baut nur Tabelle und Anzeige; Linktitel und Adressen stehen nur in der Datenbank (Q51).
 - Hand-Listen und ihre Firmen stehen **nur in der Datenbank**, nie in `data/`, Tests, Fixtures, Commits oder `data/bericht.md` (Q61). Testdaten nur erfunden („Beispiel AG“).
 - Gespeichert werden nur Firmenname, Rang, Listenname, Jahr, Quell-Link, Lizenz (CLAUDE.md 4.8); der eingefügte Rohtext wird nie gespeichert.
+- **Höchstens Platz 1–200 je Liste** (Q94): Die Vorschau zeigt nur Einträge mit Rang ≤ 200 (Listen ohne Rang: die ersten 200 in der eingefügten Reihenfolge); Formular-Feld „Kategorie“ (Pflicht, sieben Werte, Q96).
+- **Anzeige (Q96):** Angemeldete filtern nach „Kategorie“ (über `ranking_kategorien`); wer eine Ausgabe sehen darf, sieht dazu Listenname, Rang und kann nach Rang sortieren (vorhandener Filter „Liste“ + Sortierung „rang“). In der Stellenliste und auf der Firmenseite steht für andere Nutzer nie ein Listenname einer Ausgabe mit Sichtbarkeit `admin`.
 - Groq nur `openai/gpt-oss-120b`, nur der eingefügte öffentliche Listentext, höchstens 12.000 Zeichen je Durchgang. Kein PDF-Upload (bräuchte ein neues Paket, CLAUDE.md 10): Text aus dem PDF kopieren und einfügen.
 - `herkunft`-Werte (exakt): `datei`, `admin`, `nutzer`. `sync_companies` setzt immer `herkunft = 'datei'` und fasst Zeilen mit anderer Herkunft sonst nicht an.
 - Migration nur als Datei: `supabase/migrations/015_ranglisten_sichtbarkeit.sql`.
 
 ## Review Focus
 
-1. Angemeldeter Nicht-Admin ruft `ranking_zuordnungen`/`ranking_stellen` mit einer Admin-Liste auf: bekommt nichts (RLS-Test Task 1).
+1. Angemeldeter Nicht-Admin ruft `ranking_zuordnungen`/`ranking_stellen` mit einer Admin-Liste auf: bekommt nichts; `ranking_kategorien` liefert ihm aber die Kategorie (ohne Listennamen und Rang) (RLS-Test Task 1).
 2. Eingefügte Liste mit Firmen, die es noch nicht gibt: Vorschau markiert sie „neu“, Speichern legt sie mit `herkunft='admin'`, `status='offen'` an, nichts davon landet in Dateien (Test Task 3).
 3. Zweiter Teil derselben Ausgabe (gleiche Liste + Jahr) wird ergänzt, nicht ersetzt; neue Ausgabe (anderes Jahr) ersetzt die ältere in der Anzeige (Test Task 3).
 4. Text mit 12.001 Zeichen ohne erkennbare Rang-Zeilen: Hinweis „Bitte in Teilen einfügen“, kein Groq-Aufruf (Test Task 2).
@@ -40,8 +42,9 @@
 - `public.admins (user_id uuid primary key references auth.users on delete cascade)`; RLS an, keine Rechte für `anon`/`authenticated`; `public.ist_admin() returns boolean` (`security definer`, leerer `search_path`, prüft `auth.uid()`), Ausführen für `authenticated`, `service_role`.
 - `ranking_ausgaben.sichtbarkeit text not null default 'angemeldet' check (sichtbarkeit in ('admin','angemeldet'))`. Keine Rechte für `anon` auf Ranglisten-Tabellen und -Funktionen (bleibt wie in 010).
 - `ranking_ausgabe_aktuell(p_id)` zusätzlich: `sichtbarkeit <> 'admin' or public.ist_admin()`. Die „neuere Ausgabe“-Prüfung zählt nur Ausgaben, die der Aufrufer sehen darf.
+- `ranking_listen.kategorie text check (kategorie in ('Top-Arbeitgeber','Beliebt bei Studierenden','Große Unternehmen','Börsennotiert','Innovation','Wachstum & Startups','Top-Gehalt Tech'))` (Q96). Funktion `public.ranking_kategorien(p_firmen text[]) returns table(unternehmen text, kategorie text)` (`security definer`, leerer `search_path`): Kategorien aller aktuellen, freigegebenen Ausgaben **unabhängig von deren Sichtbarkeit**, aber nie Listen-ID, Listenname oder Rang; Ausführen nur `authenticated`.
 - `companies.herkunft text not null default 'datei' check (herkunft in ('datei','admin','nutzer'))`.
-- `public.stoebern_links (id bigint generated always as identity primary key, titel text not null check (length(btrim(titel)) between 1 and 120), url text not null check (url ~ '^https://'), reihenfolge int not null default 0, geprueft_am date not null default current_date)`; lesen für `authenticated`, schreiben nur `service_role` (der monatliche Claude-Ablauf ersetzt den Inhalt).
+- `public.stoebern_links (id bigint generated always as identity primary key, titel text not null check (length(btrim(titel)) between 1 and 120), url text not null check (url ~ '^https://'), reihenfolge int not null default 0, geprueft_am date not null default current_date, art text not null default 'stoebern' check (art in ('stoebern','einfuegen')))`; `einfuegen` = Seiten, deren Liste der Admin von Hand ins Formular kopiert (Nutzer 2026-11-19: Claude findet sie, „ein Feld besteht, wo ich sie einfügen kann“), nur für den Admin sichtbar (Policy: `art = 'stoebern' or public.ist_admin()`); lesen für `authenticated`, schreiben nur `service_role` (der monatliche Claude-Ablauf ersetzt den Inhalt).
 
 - [ ] **Step 1:** Prüftest: Datei idempotent, `ist_admin` mit `security definer` und `set search_path = ''`, `revoke … from public, anon` vor jedem `grant`, keine E-Mail-Adresse in der Datei.
 - [ ] **Step 2–4:** FAIL → schreiben → `py -m pytest -q` grün.
@@ -75,6 +78,7 @@
 - Seite: ohne `nutzer.admin` → `notFound()` (wie `web/app/admin/nutzer/page.tsx`). Formular: Listenname, Herausgeber, Jahr, Quell-Link (https), Lizenz, Sichtbarkeit (Standard `admin`), Textfeld. Knopf „Vorschau“ → Tabelle Rang | Firma | Zuordnung (`vorhanden` / `neu`), Abgleich mit `companies.name` über `normFirma`. Knopf „Speichern“ schickt die Vorschau als verstecktes JSON zurück.
 - `baueAusgabe(eingabe, eintraege, vorhandeneFirmen: string[], heute: string)` → `{ liste, ausgabe, firmen, neueFirmen: string[] }`; IDs: Liste `hand-<slug>` (`slugAusFirma`), Ausgabe `<liste-id>-<jahr>`; `gueltig_bis` = heute + 12 Monate; `freigegeben: true`.
 - Action `listeSpeichern(formData)`: Admin prüfen, mit `createAdminClient()` schreiben: neue Firmen in `companies` (`herkunft 'admin'`, `status 'offen'`, `aktiv false`, `ats_typ ''`), dann Liste/Ausgabe upserten, dann `ranking_firmen` upserten (Ergänzen, nichts löschen). Rohtext nie speichern.
+- Über dem Formular „Liste von Hand einfügen“ stehen die Links mit `art='einfuegen'` (Titel als Link, „Stand: <geprueft_am>“), damit der Admin weiß, was er wo kopieren soll.
 - „Rankings zum Stöbern“ (kein Formular, Q72): Für Angemeldete erscheint die Linksammlung aus `stoebern_links` auf `/stellen` unter dem Filter (eingeklappt, Überschrift „Rankings zum Stöbern“, darunter klein „Stand: <geprueft_am>“), nur Titel als Link (`rel="noopener noreferrer"`, `target="_blank"`); Gäste sehen den Abschnitt nicht; fehlt die Tabelle oder ist sie leer, entfällt der Abschnitt.
 
 - [ ] **Step 1: Tests** für `baueAusgabe` (IDs, Gültigkeit, neue Firmen) und Review Focus 2/3 mit einer Supabase-Attrappe (Reihenfolge der Schreibaufrufe, kein Rohtext im Aufruf, gleiches Jahr → gleiche Ausgabe-ID).
