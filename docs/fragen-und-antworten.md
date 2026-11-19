@@ -293,6 +293,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q220 | Wie oft ans Nachfassen erinnern? | Nutzer: „Nach 30 Tagen einmal, dann gar nicht mehr. Das soll aber in den Einstellungen änderbar sein. Ich möchte das auch ausstellen können“ | Einmal nach 30 Tagen (Standard), Tage einstellbar, abschaltbar. | entschieden |
 | Q221 | Design Erinnerungen freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Warteschlange Nr. 11c. | entschieden |
 | Q222 | Doku-Bereinigung, Design und Plan Erinnerungen hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q223 | Was als Nächstes? | Nutzer: „Kleine Pakete planen“ | Erweiterung verteilen (Q63), Hand-Listen-Links, monatliche Linksammlung (Claude hatte Task 0 von Runde 1 empfohlen). | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -399,6 +400,8 @@ Fragetexte Q219–Q220 (Claude, 2026-11-19, Auswahl): Q219 Ja, automatisch (Empf
 Fragetexte Q221 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden.
 
 Fragetexte Q222 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht / Erst ändern.
+
+Fragetexte Q223 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Kleine Pakete planen / entwurf-ui in main übernehmen / Pause.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
