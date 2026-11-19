@@ -71,7 +71,7 @@ test("Browserfixture beantwortet nur markierten internen Redirect synthetisch, Ã
       a.equal((await fetch('http://localhost:3002/stellen/test', intern)).status, 204);
       await a.rejects(fetch('http://localhost:3002/stellen/test'), /gesperrt/);
       a.equal((await fetch('http://localhost:3002/konto?fehler=synthetisch', intern)).status, 204);
-      a.equal((await fetch('http://localhost:3002/dokumente', intern)).status, 204);
+      a.equal((await fetch('http://localhost:3002/unterlagen', intern)).status, 204);
       a.equal((await fetch('http://localhost:3002/login?geloescht=1', intern)).status, 204);
       await a.rejects(fetch('http://localhost:3002/export', intern), /gesperrt/);
       await a.rejects(fetch('https://example.invalid/stellen/test', intern), /gesperrt/);

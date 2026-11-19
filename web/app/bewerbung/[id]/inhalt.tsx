@@ -137,12 +137,12 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           <Text a={row} name="portal_hinweis" label="Hinweis zum Bewerberportal (kein Passwort!)" />
           <label>CV
             <select name="cv_dokument_id" defaultValue={v(row.cv_dokument_id)}>{dokOptionen("cv")}</select>
-            <a href="/dokumente" className="klein">Dokument hochladen</a>
+            <a href="/unterlagen" className="klein">Dokument hochladen</a>
           </label>
           <label>Anschreiben
             <select name="anschreiben_dokument_id" defaultValue={v(row.anschreiben_dokument_id)}>{dokOptionen("anschreiben")}</select>
           </label>
-          {docs.length === 0 && <p className="gedaempft klein">Noch keine Dokumente. <a href="/dokumente">Jetzt hochladen</a>.</p>}
+          {docs.length === 0 && <p className="gedaempft klein">Noch keine Dokumente. <a href="/unterlagen">Jetzt hochladen</a>.</p>}
           <SendeKnopf text="Bewerbung speichern" />
         </form>
         </details>

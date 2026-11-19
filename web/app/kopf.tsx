@@ -30,6 +30,7 @@ export default async function Kopf() {
       <nav aria-label="Hauptmenü" className="nav">
         <Link href="/stellen">Stellen</Link>
         <Link href="/bewerbungen">Bewerbungen</Link>
+        <Link href="/unterlagen">Unterlagen</Link>
         {nutzer.admin && <Link href="/admin/nutzer">Nutzer</Link>}
         <Link href="/konto">Konto</Link>
         <form action={abmelden}><button className="knopf knopf-leise" type="submit">Abmelden</button></form>
