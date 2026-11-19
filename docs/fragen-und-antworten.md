@@ -299,8 +299,8 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q226 | Runde 1 Task 0: Was steht nach Öffnen von `claude.ai/new?q=Hallo%20Test` im Eingabefeld? | Nutzer zuerst: „Ich kann den Link nicht kopieren“ (Claude öffnete ihn per `Start-Process`); dann Bildschirmfoto: „Hallo Test“ im Feld, darüber Warnhinweis „Sei vorsichtig, bevor du diesen Prompt ausführst…“ | Link-Weg funktioniert; Warnhinweis wird im Knopf-Hinweis erklärt. | entschieden |
 | Q227 | Task-0-Ergebnis hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
 | Q228 | Runde 1 (von Claude gebaut, 7 Commits) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`; danach Migration 023 (To-do 31). | entschieden |
-| Q229 | Runde-1-Abschluss und Knopf „Bearbeiten“ für Personen auf `entwurf-ui` hochladen? | offen | – | offen |
-| Q230 | ponytail-Review jetzt laufen lassen? (Nutzer: „Prüfe, ob das ponytail review in diesem Stadium sinnvoll ist für das Projekt“) | offen | – | offen |
+| Q229 | Runde-1-Abschluss und Knopf „Bearbeiten“ für Personen auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q230 | ponytail-Review jetzt laufen lassen? (Nutzer: „Prüfe, ob das ponytail review in diesem Stadium sinnvoll ist für das Projekt“) | Nutzer: „Ja, Runde 1 prüfen (Empfohlen)“ | Review der Runde-1-Änderungen läuft; Funde nur nach OK beheben. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
