@@ -291,6 +291,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q218 | Knopf „Nachfass-Mail mit Claude schreiben“? | Nutzer: „Ja (Empfohlen)“ | Öffnet eigenes claude.ai mit Firma, Stelle, Datum, Ansprechpartner; Mail schickt der Nutzer. | entschieden |
 | Q219 | Nach 14 Tagen ohne Antwort automatisch ans Nachfassen erinnern? | Nutzer: „Nein“ | Keine 14-Tage-Erinnerung (ersetzt CLAUDE.md 4.4 „Nachfassen nach 14 Tagen“). | entschieden |
 | Q220 | Wie oft ans Nachfassen erinnern? | Nutzer: „Nach 30 Tagen einmal, dann gar nicht mehr. Das soll aber in den Einstellungen änderbar sein. Ich möchte das auch ausstellen können“ | Einmal nach 30 Tagen (Standard), Tage einstellbar, abschaltbar. | entschieden |
+| Q221 | Design Erinnerungen freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Warteschlange Nr. 11c. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -393,6 +394,8 @@ Fragetexte Q214 (Claude, 2026-11-19, Auswahl): Runde Erinnerungen (Empfohlen) / 
 Fragetexte Q215–Q218 (Claude, 2026-11-19, Runde Erinnerungen, Auswahl): Q215 Automatischer nächster Schritt (Empfohlen) / Eigene Erinnerungsliste. Q216 Website + Telegram für dich (Empfohlen) / Nur Website. Q217 Feld + Erinnerung (Empfohlen) / Nur Feld. Q218 Ja (Empfohlen) / Nein.
 
 Fragetexte Q219–Q220 (Claude, 2026-11-19, Auswahl): Q219 Ja, automatisch (Empfohlen) / Nein. Q220 Einmal, dann Frage (Empfohlen) / Zweimal erinnern / Nur einmal (Antwort frei).
+
+Fragetexte Q221 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
