@@ -230,7 +230,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 - **Anmeldung:**
   - Freunde melden sich **nur mit Google** an (Supabase Auth).
   - Ich habe zusätzlich mein bestehendes Konto mit E-Mail und Passwort.
-  - Wer sich mit E-Mail anmeldet, bekommt keine Gmail- und Kalender-Anbindung.
+  - Wer sich mit E-Mail anmeldet, bekommt keine Gmail- und Kalender-Anbindung. Ausnahme: der Admin verbindet Google getrennt von der Anmeldung (Phase 3).
 - **Zugang:**
   - Ich teile den Link zur Website. Wer sich mit Google anmeldet, ist sofort drin. Es gibt keine Einladungsliste.
   - **Ohne Konto (Entscheidung 2026-11-11, Paket „Öffentlicher Zugang“):** Stellenliste und Stellenseiten sind ohne Anmeldung lesbar, aber nur Liste, Filter und Steckbrief; Anzeigentext, Logos, Ranglisten und alles Persönliche nur angemeldet. Die Datenbank erzwingt das (Migration 007). Nicht auffindbar (noindex), Impressum aus Umgebungsvariablen.
@@ -265,9 +265,9 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - der Firmenname steht im Titel,
   - der Termin wurde aus der Bewerbung angelegt.
 - **Status aus Gmail:**
-  - Gelesen werden nur Mails von Domains mit laufender Bewerbung.
+  - Gelesen werden nur Mails von Domains mit laufender Bewerbung und von bekannten Bewerbungssystemen, wenn der Firmenname darin steht (Q143); Gmail sucht selbst, fremde Mails werden nicht geöffnet.
   - Erkannt werden Eingangsbestätigung, Einladung, Absage und Angebot.
-  - Der neue Status wird nur **vorgeschlagen**. Ich bestätige ihn mit einem Klick.
+  - Status, Interview und nächster Schritt werden **automatisch gesetzt**, mit Hinweis „Automatisch aus Mail vom …“ und „Rückgängig“; Einladung, Absage und Angebot zusätzlich per Telegram (Q142, ersetzt „nur vorschlagen“).
   - Der Mailverlauf wird an die Bewerbung gehängt.
 
 ### 4.8 Ranking-Listen (Herzstück der Firmenauswahl, Entscheidung 2026-11-09)
@@ -381,7 +381,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
      - KI-Zusammenfassung per Groq (Groq-Paket, Design `docs/superpowers/specs/2026-11-12-groq-paket-design.md`): 3–5 Stichpunkte zu den nicht-trivialen Aufgaben plus „Das musst du mitbringen“ (3 Muss-Anforderungen ohne Sprachen); kein Bereich „Auffällig“. Erst nach einer Probe mit 20 Anzeigen.
    - **Wichtige Punkte:** Auf der Konto-Seite pflege ich Begriffe, die mir bei einer Stelle wichtig sind. Kommen sie in einem Stichpunkt der Anzeige vor, werden sie auf der Detailseite hervorgehoben. Reiner Textvergleich, ohne KI: Ein Begriff trifft ganze Wörter und Wortanfänge („Team“ trifft „Teamfähigkeit“). Übergangslösung; in Phase 6 kommt der Abgleich nach Bedeutung per KI dazu.
    - **Gegliederte Snapshots für alle:** Jede Bewerbung bekommt die gegliederte Anzeige, auch bestehende. Der tägliche Lauf rüstet fehlende Snapshots automatisch nach, solange die Stelle noch online ist.
-3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung, Erinnerungs-Mail an den Admin für die jährlichen Hand-Quellen der Rankings (4.8).
+3. **Kalender und Gmail** (Design `docs/superpowers/specs/2026-11-19-phase3-google-design.md`, Q138–Q156): vorerst nur für den Admin, Knopf „Google verbinden“ (Token nur von der Website verschließbar, öffnen nur im privaten Repo), stündlicher Lauf, Mails der Firmen setzen Status/Interview/nächsten Schritt mit „Rückgängig“, Mailverlauf je Bewerbung, eigener Kalender „Jobradar“, Interview-Briefing per Telegram etwa 24 h und 1,5–2,5 h vorher mit Briefing-Seite und Vorbereitungsfragen von Claude, Hinweis „Anzeige offline“, Telegram-Erinnerung für fällige Hand-Quellen der Rankings (4.8). **Backlog:** Nachfass-Erinnerung, Antwortfrist bei Angebot, E-Mail als Kanal, Gmail für Freunde.
    - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
 4. **Ranking-Listen und Scraper für alle Listen-Firmen:** Listen anhand realer Rankings festlegen (Recherche läuft seit 2026-11-09), Listen in der Datenbank, 4-Wochen-Check, Filter „Liste“, automatische Erkennung des Bewerbermanagement-Systems und Anbindung (rund 1000 Firmen), Zusatzfirmen pro Nutzer mit Admin-Freigabe (4.8), Firmendaten anreichern (Rolle im Markt, Eigentümer, Gründungsjahr: zusammen mit den Filtern in Phase 5, Q114), Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern. Offen: TK (Stellen nur per „Mehr laden“, bräuchte Playwright); Entscheidung nach der Portal-Messung in 4c (Q115).
    - **Prüfung Mistral als Alternative oder Ergänzung zu Groq (Wunsch 2026-11-13):** Nur für öffentliche Anzeigentexte, nie für CVs (Q15). Kriterien und Ablauf in `docs/phasen-vorarbeit.md` („Mistral prüfen“). Erst nach bestandener Prüfung und deiner Entscheidung wird die Groq-Regel in Abschnitt 3.2 geändert.
