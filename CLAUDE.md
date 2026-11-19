@@ -219,11 +219,10 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 
 ### 4.5 Dokumente und Vorlagen
 - **CV-Versionen** (PDF und Word) mit Name und Datum. Eine Version bleibt erhalten, solange eine Bewerbung auf sie verweist.
-- **Anschreiben-Vorlagen** mit den Platzhaltern `{{firma}}`, `{{stelle}}`, `{{ansprechpartner}}`, `{{anrede}}` und `{{quelle}}`.
-- **Textbausteine** und **Anlagen**: Anlagen werden einmal hochgeladen und pro Bewerbung angehakt.
-- Optional:
-  - ein Anschreiben-Entwurf per KI, über den Abo-Token
-  - Vorlagen für andere freigeben (Standard ist privat)
+- **Reiter „Unterlagen“** (Runde 1, Design `docs/superpowers/specs/2026-11-19-runde1-bewerbungsunterlagen-design.md`, Q157–Q169): Briefkopf, Anschreiben-Vorlagen, CV-Versionen, Anlagen.
+- **Anschreiben-Vorlagen** (mehrere, je Nutzer privat; Text einfügen oder Word-Datei hochladen, nur der Text wird übernommen) mit den Platzhaltern `{{firma}}`, `{{stelle}}`, `{{ansprechpartner}}`, `{{anrede}}`, `{{quelle}}` und `{{datum}}`. In der Bewerbung: „PDF herunterladen“ / „Word herunterladen“ (im Browser erzeugt, gleiches Brief-Layout; das PDF wird als Anschreiben der Bewerbung gespeichert), „Mit Claude bearbeiten“ (öffnet das eigene claude.ai mit Vorlage und Anzeige; Claude erstellt die Datei) und „Endfassung hochladen“ (ersetzt das gespeicherte Anschreiben).
+- **Anlagen** werden einmal hochgeladen und pro Bewerbung angehakt. Anrede Frau/Herr/ohne am Ansprechpartner.
+- **Backlog:** Textbausteine (Q162), Vorlagen zwischen Konten teilen (Q169), KI-Entwurf innerhalb von jobradar (ersetzt durch den Claude-Knopf, Q159).
 - Dateien liegen in einem Speicher pro Nutzer. Zugriff gibt es nur über kurzlebige signierte Links.
 
 ### 4.6 Konten für mich und Freunde
@@ -382,7 +381,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
    - **Wichtige Punkte:** Auf der Konto-Seite pflege ich Begriffe, die mir bei einer Stelle wichtig sind. Kommen sie in einem Stichpunkt der Anzeige vor, werden sie auf der Detailseite hervorgehoben. Reiner Textvergleich, ohne KI: Ein Begriff trifft ganze Wörter und Wortanfänge („Team“ trifft „Teamfähigkeit“). Übergangslösung; in Phase 6 kommt der Abgleich nach Bedeutung per KI dazu.
    - **Gegliederte Snapshots für alle:** Jede Bewerbung bekommt die gegliederte Anzeige, auch bestehende. Der tägliche Lauf rüstet fehlende Snapshots automatisch nach, solange die Stelle noch online ist.
 3. **Kalender und Gmail** (Design `docs/superpowers/specs/2026-11-19-phase3-google-design.md`, Q138–Q156): vorerst nur für den Admin, Knopf „Google verbinden“ (Token nur von der Website verschließbar, öffnen nur im privaten Repo), stündlicher Lauf, Mails der Firmen setzen Status/Interview/nächsten Schritt mit „Rückgängig“, Mailverlauf je Bewerbung, eigener Kalender „Jobradar“, Interview-Briefing per Telegram etwa 24 h und 1,5–2,5 h vorher mit Briefing-Seite und Vorbereitungsfragen von Claude, Hinweis „Anzeige offline“, Telegram-Erinnerung für fällige Hand-Quellen der Rankings (4.8). **Backlog:** Nachfass-Erinnerung, Antwortfrist bei Angebot, E-Mail als Kanal, Gmail für Freunde.
-   - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
+   - Anschreiben-Vorlagen und Anlagen: eigenes Paket „Runde 1“ (4.5), Codex-Warteschlange Nr. 0.
 4. **Ranking-Listen und Scraper für alle Listen-Firmen:** Listen anhand realer Rankings festlegen (Recherche läuft seit 2026-11-09), Listen in der Datenbank, 4-Wochen-Check, Filter „Liste“, automatische Erkennung des Bewerbermanagement-Systems und Anbindung (rund 1000 Firmen), Zusatzfirmen pro Nutzer mit Admin-Freigabe (4.8), Firmendaten anreichern (Rolle im Markt, Eigentümer, Gründungsjahr: zusammen mit den Filtern in Phase 5, Q114), Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern. Offen: TK (Stellen nur per „Mehr laden“, bräuchte Playwright); Entscheidung nach der Portal-Messung in 4c (Q115).
    - **Prüfung Mistral als Alternative oder Ergänzung zu Groq (Wunsch 2026-11-13):** Nur für öffentliche Anzeigentexte, nie für CVs (Q15). Kriterien und Ablauf in `docs/phasen-vorarbeit.md` („Mistral prüfen“). Erst nach bestandener Prüfung und deiner Entscheidung wird die Groq-Regel in Abschnitt 3.2 geändert.
 5. **KI-Auswertung und Filter:** Extraktion aus Anzeigen per Groq (Gratis-Tarif), Suchprofile, Facetten. **Umfang (Q116–Q131, 2026-11-19):** Firmen ausschließen (im Filter und dauerhafte Sperrliste), Suchen speichern (ohne Benachrichtigung), Mitarbeiterzahl als Spanne, Eigentümer, Rolle im Markt/Kundenbranche, Jahre Berufserfahrung, Personalverantwortung, Vertriebsanteil (kein/etwas/überwiegend), geforderter Abschluss („Mein Abschluss“, niedrigste Alternative zählt), Mindestgehalt (obere Grenze der Spanne zählt), Vertragsdetails, Präsenztage/Remote-Gebiet, Workation, Ghost-Job-Ampel (lange online, taucht wieder auf), Vermittler kennzeichnen, Synonymgruppen, Dubletten zusammenführen. Gehaltsschätzung aus vorhandenen Anzeigen (Q133). Stellen ohne Angabe bleiben mit Hinweis sichtbar; Bestand wird mit Rest-Kontingent nachgeholt; neue Filter nur für Angemeldete. **Backlog:** Unternehmensalter, eigene Firmenbewertung, Umkreis um München, Muss-/Soll-Kriterien, Ansprechpartner/Bewerbungsweg.
@@ -398,13 +397,14 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
   - Google-App veröffentlichen, damit „Link teilen, jeder kommt rein“ ohne Testnutzer klappt
   - dabei entscheiden: neue Nutzer sofort drin oder erst nach Freigabe?
   - spätestens nötig, wenn es Richtung 20 Nutzer geht
-- **Dokumente klären:** Wozu dienen hochgeladene Dokumente, wenn man sich nicht über die Website bewirbt? Bis dahin ist der Reiter ausgeblendet (Entscheidung 2026-11-08).
+- **Dokumente klären:** geklärt 2026-11-19 (Q164): Reiter kommt als „Unterlagen“ zurück; Unterlagen dienen Anschreiben, Anlagen je Bewerbung und dem Bewerben-Helfer.
+- **Bewerben-Helfer (Wunsch 2026-11-19, Q160, eigene Runde direkt nach Runde 1):** „Können wir zusätzlich einbauen, dass ich mich über meine Seite bewerben kann? Dass also alles, was möglich ist, bereits auf den Karriereseiten vorausgefüllt wird, sobald ich auf "Bewerben" klicke“. Nur über die Browser-Erweiterung (eine Website darf fremde Formulare nicht füllen), Absenden immer selbst, nie auf LinkedIn/StepStone/XING; vorher Nutzungsbedingungen der Bewerbermanagement-Systeme prüfen.
 - **Bewerbungsformular neu definieren:**
   - welche Felder es gibt,
   - was automatisch aus der Stelle übernommen wird,
   - welche Felder erst in späteren Bewerbungsphasen erscheinen,
   - kein manuelles Abtippen bekannter Stellen.
-  - Eigene Fragerunde in einer späteren Phase.
+  - Eigene Fragerunde nach dem Bewerben-Helfer (Q165).
 - **Login für Freunde:** E-Mail und Passwort zusätzlich zu Google (braucht das Mail-Paket).
 - **„In Jobradar speichern“ per Chrome-Erweiterung (Ein-Klick-Import; Wunsch 2026-11-12 aus der Wettbewerbsanalyse, statt Lesezeichen entschieden 2026-11-17, Q14):** Chrome-Erweiterung übernimmt die geöffnete Anzeige ins eigene Board (Abschnitt 4.4). Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox. Auf Jobportalen nur Adresse und Titel (Q16); deren aktuelle Nutzungsbedingungen noch prüfen.
 - **Umbau-Plan für eine kommerzielle Nutzung (Wunsch 2026-11-17):** vor jeder kommerziellen/öffentlichen Nutzung erstellen – Datenquellen nur lizenziert (siehe Rechte-Audit in `docs/ranking-recherche-v3.md`), Vercel-Plan, Groq-/KI-Bedingungen, Impressum/Datenschutz, Haftung, Rankings. **Dabei neu bewerten, wer was sehen darf** (Nutzer 2026-11-18, Q73: bis dahin sehen Gäste nie Ränge, nur Angemeldete).

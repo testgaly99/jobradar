@@ -6,6 +6,7 @@ Status: `offen` (wartet auf „okay“) · `in Arbeit` · `🛑 wartet auf Nutze
 
 | Nr | Auftrag | Plan | Status | Halt danach |
 |---|---|---|---|---|
+| 0 | Runde 1: Bewerbungsunterlagen (Reiter „Unterlagen“, Anschreiben aus Vorlage als PDF/Word, Claude-Knopf, Endfassung, Anlagen) | `docs/superpowers/plans/2026-11-19-runde1-bewerbungsunterlagen.md` (ab Task 1; Task 0 macht Claude) | offen (Q168: als Nächstes) | 🛑 nach Task 7: Nutzer spielt Migration 023 ein; Claude prüft mit zwei Wegwerf-Konten und klickt durch |
 | 1 | Link-Schnellstart: komplette Stelle aus Links von Firmen-Karriereseiten | `docs/superpowers/plans/2026-11-18-link-schnellstart.md` | offen | 🛑 Nutzer spielt Migration 012 ein; Claude testet 10 echte Links |
 | 2 | Phase 4a: Remote weltweit und Whitelist | `docs/superpowers/plans/2026-11-17-phase4a-remote-whitelist.md` | offen (erst nach Nr. 1 und neuem „okay“) | 🛑 Nutzer spielt Migration 011 ein; Claude prüft live |
 | 3 | Phase 4b: Portal-Erkennung aus Link | `docs/plans/2026-11-15-firmenportal-erkennung.md` (Schritte 2–5) | offen (erst nach Nr. 2 und neuem „okay“) | Claude prüft |
