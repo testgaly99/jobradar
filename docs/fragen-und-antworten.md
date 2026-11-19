@@ -303,6 +303,8 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q230 | ponytail-Review jetzt laufen lassen? (Nutzer: „Prüfe, ob das ponytail review in diesem Stadium sinnvoll ist für das Projekt“) | Nutzer: „Ja, Runde 1 prüfen (Empfohlen)“ | Review der Runde-1-Änderungen läuft; Funde nur nach OK beheben. | entschieden |
 | Q231 | Review-Korrekturen (Punkte 1–3) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen. | entschieden |
 | Q232 | Nächstes Paket: Nr. 0a jetzt von Claude oder morgen von Codex? (Nutzer: „Kannst du schon mit der nächsten Phase beginnen?“) | Nutzer: „Claude baut 0a jetzt (Empfohlen)“ | Claude baut Nr. 0a; Codex beginnt mit Nr. 1. | entschieden |
+| Q233 | Nr. 0a (Erweiterung verteilen) auf `entwurf-ui` hochladen? | offen | – | offen |
+| Q234 | Zwei Profile im Admin-Konto: wofür? (Nutzer: „Ich möchte innerhalb des Admin Accounts 2 verschiedene Profile haben, also selber Account, selbe Berechtigugen etc. selbe Person, 2 verschiedene Profile, die jeweils eigene Stellen speichern und eigene Dateien für Bewerbungen hochladen etc.“) | offen | – | offen |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -422,6 +424,8 @@ Fragetexte Q229 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch 
 Fragetexte Q230 (Claude, 2026-11-19, Auswahl): Ja, Review der Runde-1-Änderungen (Empfohlen) / Ganzes Projekt prüfen (ponytail-audit) / Später.
 Fragetexte Q231 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
 Fragetexte Q232 (Claude, 2026-11-19, Auswahl): Claude baut Nr. 0a jetzt (Empfohlen) / Codex macht 0a morgen, Claude pausiert / Claude baut gleich 0a und Nr. 1.
+Fragetexte Q233 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q234 (Claude, 2026-11-19, Auswahl): Zwei Bewerbungs-Richtungen / Für eine andere Person / Test und echt trennen / (frei).
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
