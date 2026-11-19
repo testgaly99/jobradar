@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Codex: Auftrag über `docs/codex-warteschlange.md` (Nr. 9), ab Task 1. Setzt Link-Schnellstart (Migration 012, `scraper/nachruesten.py`), 4b (`erkenne_portal`), 4c (`scraper/einrichtung.py`, `scraper/quellen/wikidata.py`) und 4e (Zusatzfirmen) voraus.
 
-**Goal:** Ein Link von LinkedIn, StepStone, Indeed oder XING (eingefügt oder per Chrome-Erweiterung) führt zur kompletten Stelle von der Karriereseite der Firma, ohne das Portal je aufzurufen: bekannte Firmen sofort, unbekannte im Nachtlauf; bei mehreren oder nur ähnlichen Titeln wählt der Nutzer.
+**Goal:** Ein Link von LinkedIn, StepStone, Indeed oder XING (eingefügt; per Chrome-Erweiterung nur noch Indeed, Q135/Q137) führt zur kompletten Stelle von der Karriereseite der Firma, ohne das Portal je aufzurufen: bekannte Firmen sofort, unbekannte im Nachtlauf; bei mehreren oder nur ähnlichen Titeln wählt der Nutzer.
 
 **Architecture:** Firma und Titel kommen aus der Adresse (`analysiereLink`) oder dem Tab-Titel der Erweiterung. Website: `web/lib/original-suche.ts` vergleicht Titel ohne KI und sucht sofort in `jobs`; ohne bekannte Firma wird die Bewerbung mit `original_suche = 'offen'` markiert. Nachtlauf: `scraper/original_suche.py` findet Website (Wikidata), Portal (4c-Einrichtung) und Stelle (Adapter), vergleicht mit denselben Regeln (gemeinsame Fixture) und füllt die Bewerbung über die Nachrüst-Funktion aus dem Link-Schnellstart. Gefundenes landet nur in der Bewerbung, nie in `jobs` oder `companies`.
 
@@ -36,7 +36,7 @@
 ### Task 0 (Claude, nicht Codex): Nutzungsbedingungen und Tab-Titel
 
 - [x] Nutzungsbedingungen (erledigt 2026-11-19, nur Rechtstexte gelesen): (b) Suche derselben Stelle auf der Firmenseite verbietet keines der Portale. (a) LinkedIn (User Agreement vom 3.11.2025, 8.2) verbietet Browser-Erweiterungen, die Inhalte kopieren → Erweiterung übernimmt auf LinkedIn nichts mehr (Q135, umgesetzt); LinkedIn-Links fügt der Nutzer selbst ein, Firma/Titel dann über `linkedin.com/jobs/view/<nummer>` nicht erkennbar → Felder Firma/Titel. StepStone (Stand 10.2025, 4.3.4/4.3.5) verbietet Scraping zur Weiterverwendung und Bots für Aktionen; Indeed (29.6.2026, A 3.5) Automatisierung des Bewerbens – ein einzelner Klick auf Adresse und Titel fällt nicht darunter. XING-AGB nicht abrufbar (Abruf gesperrt) → wie StepStone behandelt, vor öffentlichem Start nachlesen.
-- [ ] Nutzer kopiert aus dem eigenen Browser je Portal (StepStone, Indeed, XING; **ohne LinkedIn**, Q135) 2–3 Tab-Titel geöffneter Anzeigen (Nutzer-To-do); Claude legt sie anonymisiert (fiktive Firmen/Titel, gleiche Form) als `tests/fixtures/tab-titel.json` an: `[{host, tab_titel, firma, titel}]`.
+- [ ] Nutzer kopiert aus dem eigenen Browser nur für Indeed (LinkedIn, StepStone und XING übernimmt die Erweiterung nicht, Q135/Q137) 2–3 Tab-Titel geöffneter Anzeigen (Nutzer-To-do); Claude legt sie anonymisiert (fiktive Firmen/Titel, gleiche Form) als `tests/fixtures/tab-titel.json` an: `[{host, tab_titel, firma, titel}]`.
 
 ### Task 1: Titelvergleich und Tab-Titel (TS und Python)
 

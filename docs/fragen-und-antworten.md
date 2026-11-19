@@ -207,6 +207,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q134 | Gehaltsschätzung Stufe 3: Entgeltatlas ohne offizielle Schnittstelle – was tun, wenn weder Angabe noch genug ähnliche Anzeigen? (Anlass, Nutzer: „Warum ist das nicht geprüft?“) | Nutzer: „Keine Schätzung (Empfohlen)“ | Stufe 3 entfällt; Stelle zeigt „Gehalt: nicht angegeben“. | entschieden |
 | Q135 | LinkedIn verbietet Browser-Erweiterungen, die Inhalte kopieren – was soll die Erweiterung auf LinkedIn tun? | Nutzer: „LinkedIn ganz raus“ | Erweiterung übernimmt auf LinkedIn nichts; Link fügt der Nutzer selbst ein. | entschieden |
 | Q136 | e5-small ist 118 MB statt ≤ 50 MB – wie für die Website lösen? | Nutzer: „Modell verkleinern (Empfohlen)“ | Codex kürzt den Wortschatz auf Deutsch/Englisch (6a Task 0b), Prüfung Ähnlichkeit ≥ 0,99. | entschieden |
+| Q137 | Nachtrag des Nutzers zu Q135 | Nutzer: „XING uns Stepstone darfst du nicht auslesen“ / „Ich möchte mein LinkedIn Konto auf gar keinem Fall riskieren!“ | Erweiterung übernimmt auf LinkedIn, StepStone und XING nichts; keine Anleitung mehr, LinkedIn-Texte zu kopieren (Klicktest A10 geändert). | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
