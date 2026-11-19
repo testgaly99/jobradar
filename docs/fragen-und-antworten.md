@@ -202,6 +202,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q129 | Mindestgehalt bei Spanne 60–75 k und Filter 70 k? | Nutzer: „Ja, obere Grenze zählt (Empfohlen)“ | Stelle erscheint; Spanne wird daneben angezeigt. | entschieden |
 | Q130 | Neue Filter auch für Gäste? | Nutzer: „Nur für Angemeldete (Empfohlen)“ | Gäste behalten die bisherigen Filter; neue Spalten bleiben für Gäste gesperrt (Migration 007). | entschieden |
 | Q131 | Kontrollfrage Phase 5: weitere Punkte aus CLAUDE.md 4.1? (Mehrfachauswahl) | Nutzer: „Dubletten zusammenführen, Workation, Rolle im Markt / Kundenbranche“ | Alle drei in Phase 5; Ansprechpartner/Bewerbungsweg in den Backlog. | entschieden |
+| Q132 | Was ist mit „Rolle im Markt“ gemeint? (Geschäftsmodell / Marktposition / Beides) | Nutzer: „Geschäftsmodell (Empfohlen)“ | Hersteller, Zulieferer, Dienstleister, Beratung, Handel, Software/Plattform, Finanzdienstleister; Groq aus dem Firmenteil der Anzeigen. Marktposition entfällt (keine verlässliche Quelle). | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
