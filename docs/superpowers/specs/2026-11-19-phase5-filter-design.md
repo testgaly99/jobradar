@@ -20,6 +20,7 @@ Der Nutzer will die Stellenliste so eng schneiden können, wie es Jobportale nic
 | | Vertriebsanteil: kein / etwas / überwiegend (Q128) | Groq |
 | | Mein Abschluss: Stellen, deren **niedrigste akzeptierte Alternative** höchstens meinem Abschluss entspricht; „Master oder Promotion“ = Master (Q120, Q125) | Regel auf dem Groq-Feld `abschluss` (keine neuen Tokens) |
 | Gehalt, Vertrag, Ort | Mindestgehalt (Jahresbrutto): Stelle erscheint, wenn die **obere** Grenze der Spanne den Wert erreicht; Spanne daneben (Q129) | Steckbrief, Umrechnung wie `proJahr` (Monat × 12, Stunde × 2.080); nur EUR |
+| | Gehaltsschätzung für Stellen ohne Angabe, deutlich markiert „≈ … (geschätzt aus …)“; Häkchen „Schätzung beim Filtern mitzählen“, Standard aus (Q133) | Regeln aus gespeicherten Daten, ohne KI: (1) andere Anzeigen derselben Firma mit ähnlichem Titel, (2) ähnliche Titel gleicher Stufe in Deutschland, (3) Entgeltatlas der Bundesagentur, falls zulässig (Task 0) |
 | | Vertragsdetails: befristet/unbefristet, Urlaubstage ab X, variable Vergütung (Q118) | Befristung und Urlaubstage per Regel; variabel per Groq |
 | | Bürotage „höchstens X pro Woche“, Remote-Gebiet Deutschland / EU / weltweit (Q118) | Groq |
 | | Workation möglich (Q131) | Groq |
@@ -33,7 +34,7 @@ Der Nutzer will die Stellenliste so eng schneiden können, wie es Jobportale nic
 
 ## Nicht-Ziele
 
-Unternehmensalter, eigene Firmenbewertung, Umkreis um München, Muss-/Soll-Kriterien, Ansprechpartner/Bewerbungsweg (Backlog, Q116–Q119, Q131). Marktposition („Marktführer“) – keine verlässliche Quelle (Q132). Benachrichtigung zu gespeicherten Suchen (Q124). Gehaltsschätzung (Backlog). Andere Währungen als EUR im Gehaltsfilter (zählen als „nicht angegeben“, bis AT/CH kommen).
+Unternehmensalter, eigene Firmenbewertung, Umkreis um München, Muss-/Soll-Kriterien, Ansprechpartner/Bewerbungsweg (Backlog, Q116–Q119, Q131). Marktposition („Marktführer“) – keine verlässliche Quelle (Q132). Benachrichtigung zu gespeicherten Suchen (Q124). Andere Währungen als EUR im Gehaltsfilter (zählen als „nicht angegeben“, bis AT/CH kommen).
 
 ## Anti-Ziele
 
@@ -58,6 +59,8 @@ Unternehmensalter, eigene Firmenbewertung, Umkreis um München, Muss-/Soll-Krite
 
 **Firmenangaben.** Eigentümer aus Wikidata für Firmen mit `wikidata_id` (aus 4c), dazu „Familienunternehmen“, sobald eine Anzeige der Firma es sagt. Geschäftsmodell = häufigster Groq-Wert über die Anzeigen der Firma (mindestens 2 Anzeigen, sonst „nicht angegeben“). `data/firmen_korrekturen.csv` geht immer vor (dort und über den Knopf aus Q112 korrigierbar).
 
+**Gehaltsschätzung (Q133, CLAUDE.md Backlog „Geschätztes Gehalt“).** Nur für Stellen ohne eigene Angabe. Stufe 1: mindestens 2 offene Stellen derselben Firma mit Gehalt, ähnlichem Titel (Ähnlichkeit aus 4g-1 ≥ 0,5) und gleichem Erfahrungslevel → Median der Unter- und Obergrenzen. Stufe 2: sonst mindestens 3 solcher Stellen anderer Firmen in Deutschland. Stufe 3: sonst Entgeltatlas (Beruf + Bundesland), nur wenn Task 0 die Nutzung erlaubt. Sonst keine Schätzung. Anzeige getrennt von echten Angaben: „≈ 65.000–80.000 € (geschätzt aus 4 Anzeigen derselben Firma)“; nie als Angabe der Firma. Der Filter Mindestgehalt nutzt die Schätzung nur mit Häkchen; sonst gilt die Stelle als „Gehalt: nicht angegeben“ (Q121). kununu, Glassdoor, levels.fyi nur als Link, nie ausgelesen. Vorab-Prüfung (Claude): Bedingungen des Entgeltatlas; Stand der deutschen Umsetzung der EU-Entgelttransparenzrichtlinie (Gehaltsspannen in Anzeigen).
+
 **Dubletten.** Gleiche Firma + gleicher Titel nach der Normalisierung aus 4g-1 (Geschlechtszusätze, Groß/klein, Satzzeichen) + beide offen = eine Gruppe. Die Liste zeigt die zuerst gesehene Stelle mit „+N weitere Orte“; Orte und Remote der Gruppe werden für den Stadt-Filter zusammengelegt, damit kein Treffer verloren geht. Die Detailseite listet die übrigen Einträge mit Link.
 
 **Ghost-Ampel.** Gelbe Markierung mit Grund („seit 74 Tagen online“, „schon einmal ausgeschrieben, wieder neu“); Wiederauftauchen = gleiche Firma + gleicher normalisierter Titel war in den letzten 180 Tagen geschlossen (Mini-Notiz). Filter „verdächtige ausblenden“.
@@ -81,3 +84,4 @@ Spaltennamen; genaue Regex; Aufteilung in Dateien; Wikidata-Eigenschaften für E
 5. Ghost „taucht wieder auf“: Fenster 180 Tage.
 6. Trefferzahlen nur bei Auswahlfiltern, nicht bei Zahlenfeldern.
 7. Gehalt in anderer Währung als EUR zählt im Filter als „nicht angegeben“.
+8. Gehaltsschätzung: Mindestmengen 2 (Firma) bzw. 3 (ähnliche Titel), Median, Häkchen standardmäßig aus.

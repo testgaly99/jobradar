@@ -23,6 +23,8 @@
 - Nutzerdaten (Sperrliste ≤ 200 Firmen, Synonymgruppen ≤ 50 mit je ≤ 10 Begriffen, gespeicherte Suchen ≤ 30) nur für den Eigentümer, in Export und Kontolöschung enthalten.
 - Migration nur als Datei `supabase/migrations/021_filter.sql`; AGENTS.md (keine `.env`, keine Live-DB, kein Push, `Agent: Codex`).
 
+- **Gehaltsschätzung (Q133):** nur ohne eigene Angabe; Stufen Firma (≥ 2 Stellen) → ähnliche Titel DE (≥ 3) → Entgeltatlas (nur nach Task 0); Median; Ähnlichkeit `aehnlichkeit` aus `scraper/titel_vergleich.py` ≥ 0,5 und gleiches `erfahrungslevel`; Text exakt „≈ <min>–<max> € (geschätzt aus <n> Anzeigen derselben Firma)“ bzw. „… ähnlicher Stellen“ bzw. „… dem Entgeltatlas der Bundesagentur für Arbeit“; im Filter nur mit `schaetzung=1`.
+
 ## Review Focus
 
 1. Stelle mit Gehalt „60.000–75.000 € “ und Filter 70.000 → sichtbar; „5.000 €/Monat“ → 60.000/Jahr; „80.000 CHF“ → „nicht angegeben“ (Test Task 2).
@@ -32,6 +34,11 @@
 5. Gesperrte Firma taucht weder in der Liste noch in den Facetten-Zahlen auf; „Wieder zeigen“ macht sie sofort sichtbar (Test Task 7).
 
 ---
+
+### Task 0 (Claude, nicht Codex): Vorab-Prüfung Gehaltsschätzung
+
+- [ ] Entgeltatlas der Bundesagentur: offizielle Nutzungsbedingungen, ob eine automatisierte Abfrage (Beruf + Region) erlaubt ist, Schnittstelle, Grenzen. Nur offizielle Quellen. Ergebnis in `docs/ENTSCHEIDUNGEN.md`; nicht erlaubt → Stufe 3 entfällt (Task 3b ohne Entgeltatlas), Nutzer wird informiert.
+- [ ] Stand der deutschen Umsetzung der EU-Entgelttransparenzrichtlinie (Pflicht zu Gehaltsangaben in Anzeigen?) – betrifft, wie oft geschätzt werden muss; Ergebnis in `docs/phasen-vorarbeit.md`.
 
 ### Task 1: Groq-Anleitung Version 2 und Nachholen
 
@@ -78,6 +85,19 @@
 - [ ] **Step 2–4:** FAIL → umsetzen → grün.
 - [ ] **Step 5: Commit** — „5: Dubletten und Firmenangaben“ + `Agent: Codex`.
 
+### Task 3b: Gehaltsschätzung
+
+**Files:**
+- Create: `scraper/gehalt_schaetzung.py`, `tests/test_gehalt_schaetzung.py`; nur falls Task 0 erlaubt: `scraper/quellen/entgeltatlas.py` mit Fixture
+
+**Interfaces:**
+- `schaetze(stelle: dict, offene: list[dict], atlas=None) -> dict | None`: `{"min": int, "max": int, "quelle": "firma"|"aehnlich"|"entgeltatlas", "anzahl": int}` nach den Regeln aus den Global Constraints; Stelle mit eigener Angabe (`f_gehalt_max` gesetzt) → `None`. `offene` = Stellen mit `f_gehalt_min/max`, `unternehmen`, `titel`, `erfahrungslevel`.
+- Entgeltatlas (nur nach Task 0): Abruf über `scraper/http.py`, Ergebnis je (Beruf, Bundesland) höchstens 1× je Monat zwischengespeichert in `data/entgeltatlas_cache.json`.
+
+- [ ] **Step 1: Tests:** 2 Firmenstellen „Data Analyst“ (60–70 k, 70–80 k) → Firma, 65–75 k; nur 1 Firmenstelle, aber 3 ähnliche anderswo → `aehnlich`; anderes Erfahrungslevel zählt nicht; eigene Angabe → `None`; zu wenig Daten und kein Atlas → `None`.
+- [ ] **Step 2–4:** FAIL → umsetzen → grün.
+- [ ] **Step 5: Commit** — „5: Gehaltsschätzung aus vorhandenen Anzeigen“ + `Agent: Codex`.
+
 ### Task 4: Migration 021 und Schreiben im Nachtlauf
 
 **Files:**
@@ -86,7 +106,7 @@
 - Test: `tests/test_run.py`
 
 **Interfaces:**
-- `jobs`: Spalten aus Task 2 (`f_gehalt_min int, f_gehalt_max int, f_erfahrung smallint, f_abschluss smallint, f_fuehrung boolean, f_vertrieb text, f_buerotage smallint, f_remote_gebiet text, f_workation boolean, f_befristet boolean, f_urlaubstage smallint, f_variabel boolean, f_vermittler boolean, f_kundenbranche text[], f_ghost text[]`), `dublette_von text references jobs(id) on delete set null`, `gruppe_staedte text[]`, `gruppe_remote boolean`, `ki_version smallint`. `companies`: `eigentuemer text[]`, `geschaeftsmodell text`. Keine Rechte für `anon`.
+- `jobs`: Spalten aus Task 2 (`f_gehalt_min int, f_gehalt_max int, f_erfahrung smallint, f_abschluss smallint, f_fuehrung boolean, f_vertrieb text, f_buerotage smallint, f_remote_gebiet text, f_workation boolean, f_befristet boolean, f_urlaubstage smallint, f_variabel boolean, f_vermittler boolean, f_kundenbranche text[], f_ghost text[]`), `f_schaetz_min int, f_schaetz_max int, f_schaetz_quelle text, f_schaetz_anzahl smallint` (Task 3b), `dublette_von text references jobs(id) on delete set null`, `gruppe_staedte text[]`, `gruppe_remote boolean`, `ki_version smallint`. `companies`: `eigentuemer text[]`, `geschaeftsmodell text`. Keine Rechte für `anon`.
 - `ranking_stellen` neu (gleiche Signatur und Prüfungen) mit allen neuen Spalten und `mitarbeitende_ca`, `eigentuemer`, `geschaeftsmodell`.
 - `facetten()` neu: zusätzliche Gruppen `vertrieb`, `fuehrung`, `abschluss`, `eigentuemer`, `geschaeftsmodell`, `kundenbranche`, `remote_gebiet`; nur Haupteinträge (`dublette_von is null`) zählen; für `anon` unverändert alte Gruppen.
 - Tabellen mit RLS „nur eigene Zeilen“: `sperrliste (owner_id, unternehmen text references companies(name) on update cascade on delete cascade, primary key(owner_id, unternehmen))`, `synonymgruppen (id identity, owner_id, begriffe text[] not null check (cardinality between 2 and 10))`, `suchen (id identity, owner_id, name text check (length between 1 and 60), adresse text not null check (adresse like '/stellen%'), erstellt timestamptz default now())`, `such_einstellung (owner_id primary key, abschluss smallint check (abschluss between 1 and 4))`; Grenzen per Trigger wie `wichtige_punkte`.
@@ -103,7 +123,7 @@
 - Test: `web/tests/filter.test.ts`, `web/tests/stellen.test.ts`
 
 **Interfaces:**
-- URL-Parameter (exakt): `ma_von`, `ma_bis` (Zahl), `eigentuemer` (mehrfach), `geschaeft` (mehrfach), `kunde` (mehrfach), `erf_max` (Zahl), `fuehrung` (`mit`|`ohne`), `vertrieb` (mehrfach), `abschluss` (1–4; ohne Parameter gilt `such_einstellung.abschluss`, `abschluss=alle` schaltet aus), `gehalt_min` (Zahl), `befristet` (`ja`|`nein`), `urlaub_min` (Zahl), `variabel` (`1`), `buero_max` (0–5), `remote_gebiet` (mehrfach), `workation` (`1`), `ohne_ghost` (`1`), `ohne_vermittler` (`1`), `ohne_firma` (mehrfach), `nur_angabe` (`1`). Ungültige Werte werden ignoriert.
+- URL-Parameter (exakt): `ma_von`, `ma_bis` (Zahl), `eigentuemer` (mehrfach), `geschaeft` (mehrfach), `kunde` (mehrfach), `erf_max` (Zahl), `fuehrung` (`mit`|`ohne`), `vertrieb` (mehrfach), `abschluss` (1–4; ohne Parameter gilt `such_einstellung.abschluss`, `abschluss=alle` schaltet aus), `gehalt_min` (Zahl), `befristet` (`ja`|`nein`), `urlaub_min` (Zahl), `variabel` (`1`), `buero_max` (0–5), `remote_gebiet` (mehrfach), `workation` (`1`), `ohne_ghost` (`1`), `ohne_vermittler` (`1`), `ohne_firma` (mehrfach), `nur_angabe` (`1`), `schaetzung` (`1`: Mindestgehalt prüft `coalesce(f_gehalt_max, f_schaetz_max)`). Ungültige Werte werden ignoriert.
 - `stellenAbfrage(sb, f, opt: { angemeldet: boolean; sperrliste: string[]; synonyme: string[][] })`: neue Bedingungen nur bei `angemeldet`; immer `dublette_von is null`; Stadt-Filter prüft `staedte` **oder** `gruppe_staedte`; Sperrliste und `ohne_firma` als `not.in`; Synonyme erweitern jeden Suchbegriff um seine Gruppe (ODER), auch in `ranking_stellen`-Pfad. `SPALTEN_ANGEMELDET` = `SPALTEN` + neue Spalten, im `companies`-Embed zusätzlich `mitarbeitende_ca, eigentuemer, geschaeftsmodell` (Firmenfilter im Tabellenpfad über `companies.<spalte>`, im Ranglistenpfad über die Rückgabespalten); Gäste behalten `SPALTEN`.
 
 - [ ] **Step 1: Tests:** jede Bedingung mit und ohne `nur_angabe`; Review Focus 2, 3, 4; Synonymgruppe „Data Analyst, BI Analyst“ → Suche „BI Analyst“ trifft beide; ungültige Parameter ignoriert; `filterZuUrl(leseFilter(x))` stabil.
@@ -117,7 +137,7 @@
 
 **Interfaces:**
 - Vier einklappbare Gruppen unter den bisherigen Filtern: „Unternehmen“ (Mitarbeitende von/bis, Eigentümer, Geschäftsmodell, Kundenbranche, Firmen ausschließen), „Rolle“ (höchstens X Jahre Erfahrung, Personalverantwortung, Vertriebsanteil, Mein Abschluss), „Gehalt & Vertrag“ (Mindestgehalt, Befristung, Urlaubstage ab, variable Vergütung, Bürotage höchstens, Remote-Gebiet, Workation), „Qualität“ (verdächtige ausblenden, Vermittler ausblenden); darüber das Häkchen „nur Stellen mit Angabe“. Zähler „Filter (n aktiv)“ zählt alle mit. Nur für Angemeldete.
-- Liste: Markierungen „Vermittler“, Ghost-Ampel mit Grund („seit 74 Tagen online“, „schon einmal ausgeschrieben“), „+N weitere Orte“, bei aktivem Filter „<Feld>: nicht angegeben“; Gehaltsspanne neben dem Treffer, wenn Mindestgehalt aktiv.
+- Liste: Markierungen „Vermittler“, Ghost-Ampel mit Grund („seit 74 Tagen online“, „schon einmal ausgeschrieben“), „+N weitere Orte“, bei aktivem Filter „<Feld>: nicht angegeben“; Gehaltsspanne neben dem Treffer, wenn Mindestgehalt aktiv; geschätzte Spanne immer im Text aus den Global Constraints, optisch von echten Angaben getrennt (Klasse `geschaetzt`). In „Gehalt & Vertrag“ das Häkchen „Schätzung beim Filtern mitzählen“.
 - Detailseite: Abschnitt „Weitere Einträge dieser Stelle“ mit Links, wenn Dubletten existieren; Kurzbeschreibung (Konto-Felder) kann die neuen Angaben zeigen (neue Feldnamen in `waehleFelder`).
 
 - [ ] **Step 1: Tests** (`web/tests/stellendaten.test.ts`): Ghost-Text je Grund; „nicht angegeben“-Text je Feld; Zähler aktiver Filter.
