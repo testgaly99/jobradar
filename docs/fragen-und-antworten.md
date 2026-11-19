@@ -240,6 +240,8 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q167 | Platzhalter {{anrede}}: woher? | Nutzer: „Feld am Kontakt (Empfohlen)“ | Feld Frau/Herr/ohne am Ansprechpartner; sonst „Sehr geehrte Damen und Herren,“. | entschieden |
 | Q168 | Wann baut Codex Runde 1? | Nutzer: „Als Nächstes (Empfohlen)“ | Direkt nach dem laufenden Paket in der Codex-Warteschlange. | entschieden |
 | Q169 | Vorlagen für andere freigeben? | Nutzer: „Vorerst privat, aber Freunde sollen auch Vorlagen einfügen können“ | Jeder Nutzer hat eigene private Vorlagen; Teilen zwischen Konten in den Backlog. | entschieden |
+| Q170 | Design Runde 1 freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Codex-Warteschlange Nr. 0. | entschieden |
+| Q171 | Plan Runde 1 hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -282,6 +284,8 @@ Fragetexte Q162–Q165 (Claude, 2026-11-19, Auswahl): Q162 Weglassen (Empfohlen)
 Fragetexte Q166 (Claude, 2026-11-19, Auswahl): A: Im Browser (Empfohlen) / B: Auf dem Server / C: Druckfunktion. Zuvor als Textfrage gestellt; Nutzer daraufhin: „Alle Fragen sollen immer klickbar sein. Speicher diese Regel ab“ (gespeichert im Claude-Gedächtnis).
 
 Fragetexte Q167–Q169 (Claude, 2026-11-19, Auswahl): Q167 Feld am Kontakt (Empfohlen) / Immer neutral / Selbst eintippen. Q168 Als Nächstes (Empfohlen) / Hinten anstellen. Q169 Backlog (Empfohlen) / Jetzt mitbauen (Antwort frei formuliert).
+
+Fragetexte Q170–Q171 (Claude, 2026-11-19, Auswahl): Q170 Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden. Q171 Ja, hochladen (Empfohlen) / Passt, noch nicht hochladen / Erst ändern.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
