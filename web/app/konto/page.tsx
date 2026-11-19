@@ -10,7 +10,7 @@ import { SendeKnopf } from "../bewerbungen/knoepfe";
 import { selbstLoeschenErlaubt, nutzerZeilen } from "@/lib/nutzerliste";
 import { STATUS, STATUS_LABEL } from "@/lib/bewerbung";
 import { FELDER, FELD_TITEL, waehleFelder } from "@/lib/steckbrief";
-import { begriffHinzufuegen, felderSpeichern, begriffEntfernen, kontoLoeschen } from "./actions";
+import { begriffHinzufuegen, felderSpeichern, begriffEntfernen, kontoLoeschen, whitelistSetzen } from "./actions";
 
 export default async function Seite({ searchParams }: { searchParams: Promise<{ fehler?: string }> }) {
   const { fehler } = await searchParams;
@@ -42,11 +42,20 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
           if (r.error) throw r.error;
           return r.data;
         }),
-        a.from("jobs").select("id,unternehmen,titel,url").eq("status", "offen").eq("studium", "nein").order("unternehmen").limit(500),
-        a.from("jobs").select("id", { count: "exact", head: true }).eq("status", "offen").eq("studium", "nein"),
+        // nur wirklich ausgeblendete: bei Whitelist-Firmen bleiben "nein"-Stellen sichtbar
+        a.from("jobs").select("id,unternehmen,titel,url").eq("status", "offen").eq("studium", "nein").eq("sichtbar", false).order("unternehmen").limit(500),
+        a.from("jobs").select("id", { count: "exact", head: true }).eq("status", "offen").eq("studium", "nein").eq("sichtbar", false),
       ]);
       ki = weg.error || anzahl.error ? "fehler" : { stand: kiStand(offen), weg: weg.data ?? [], wegAnzahl: anzahl.count ?? 0 };
     } catch { ki = "fehler"; }
+  }
+  // Whitelist (Migration 011): Fehler beim Lesen heißt meist, dass die Spalte noch fehlt.
+  let whitelist: { name: string; whitelist: boolean | null }[] | "fehlt" | null = null;
+  if (n?.admin) {
+    try {
+      const r = await createAdminClient().from("companies").select("name, whitelist").order("name");
+      whitelist = r.error ? "fehlt" : (r.data ?? []);
+    } catch { whitelist = "fehlt"; }
   }
   return (
     <div className="karte">
@@ -124,6 +133,28 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
                 ) : <p className="gedaempft">Keine.</p>}
               </details>
             </>
+          )}
+        </section>
+      )}
+      {whitelist && (
+        <section className="abschnitt" id="whitelist">
+          <h2>Stellen ohne Studium trotzdem zeigen</h2>
+          <p>Bei angehakten Firmen blendet jobradar keine Stelle wegen „Studium: nein“ aus. Das wirkt sofort für alle.</p>
+          {whitelist === "fehlt" ? <p className="gedaempft">Migration 011 fehlt: bitte im Supabase SQL Editor einspielen.</p> : (
+            <ul className="whitelist">
+              {whitelist.map((f) => (
+                <li key={f.name}>
+                  <form action={whitelistSetzen}>
+                    <input type="hidden" name="firma" value={f.name} />
+                    <input type="hidden" name="wert" value={f.whitelist ? "aus" : "an"} />
+                    <button className="knopf knopf-leise" type="submit" aria-pressed={!!f.whitelist}
+                      aria-label={`${f.name}: ${f.whitelist ? "von der Whitelist nehmen" : "auf die Whitelist setzen"}`}>
+                      <span aria-hidden="true">{f.whitelist ? "☑" : "☐"}</span> {f.name}
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
           )}
         </section>
       )}

@@ -133,4 +133,6 @@
 }
 
 .ausgeblendet { padding-left: 1.25em; overflow-wrap: anywhere; }
+.whitelist { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 0.25rem; }
+.whitelist .knopf { width: 100%; justify-content: flex-start; text-align: left; overflow-wrap: anywhere; }
 .ranglisten { margin-block: var(--space-xs); padding-left: 1.25em; overflow-wrap: anywhere; }

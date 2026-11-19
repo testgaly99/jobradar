@@ -1,5 +1,7 @@
 "use server";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { whitelistEingabe } from "@/lib/whitelist";
 import { revalidatePath } from "next/cache";
 import { istUuid } from "@/lib/bewerbung";
 import { createClient } from "@/lib/supabase/server";
@@ -68,4 +70,20 @@ export async function felderSpeichern(formData: FormData) {
   if (error) zurueck(["42P01", "PGRST205"].includes(error.code ?? "") ? "Die Kurzbeschreibung ist erst nach Migration 005 einstellbar." : "Speichern fehlgeschlagen. Bitte später erneut versuchen.");
   revalidatePath("/stellen");
   revalidatePath("/konto");
+}
+
+// Nur Admin: Firma auf die Whitelist setzen oder entfernen; wirkt sofort auf die "nein"-Stellen der Firma (Migration 011).
+export async function whitelistSetzen(formData: FormData) {
+  const n = await aktuellerNutzer();
+  if (!n?.admin) notFound();
+  const e = whitelistEingabe(formData.get("firma"), formData.get("wert"));
+  if (!e) zurueck("Ungültige Eingabe.");
+  const { error } = await createAdminClient().rpc("whitelist_setzen", { p_firma: e.firma, p_wert: e.wert });
+  if (error?.code === "PGRST202") zurueck("Migration 011 fehlt: bitte im Supabase SQL Editor einspielen.");
+  if (error) {
+    console.error("whitelistSetzen:", error.code);
+    zurueck("Speichern fehlgeschlagen.");
+  }
+  revalidatePath("/konto");
+  redirect("/konto#whitelist");
 }
