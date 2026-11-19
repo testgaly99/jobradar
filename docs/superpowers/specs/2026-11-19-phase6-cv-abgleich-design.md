@@ -13,7 +13,7 @@ Der Nutzer will bei jeder interessanten Stelle auf einen Blick sehen, welche Anf
 - Admin: automatisch nachts 03:00 deutscher Zeit über das Claude-Abo (Q29, Q32, Q37); dazu sofort vorläufige Farben aus Stufe 1 im Browser, die der Nachtlauf ersetzt (Q103).
 - Alle anderen Angemeldeten: kostenlos im eigenen Browser, ausgelöst beim Merken, beim CV-Upload und beim Öffnen einer Stelle (Q34, Q37).
 - „Wichtige Punkte“ (Konto-Seite) treffen auch nach Bedeutung, nicht nur nach Wortanfang – kostenlos im Browser mit demselben Bedeutungsmodell, für alle Angemeldeten (CLAUDE.md 6, Q106; kommt mit 6b).
-- Umfang: eigene gemerkte Stellen, dazu offene Stellen mit einem Stichwort aus „Automatisch abgleichen bei“ im Titel; gemerkte zuerst (A9, Q35, Q36).
+- Umfang: eigene gemerkte Stellen (auch Bewerbungen ohne Stelle in jobradar, deren gespeicherte Anzeige gegliedert ist – Anforderungen dann aus der Bewerbung, Q111), dazu offene Stellen mit einem Stichwort aus „Automatisch abgleichen bei“ im Titel; gemerkte zuerst (A9, Q35, Q36).
 
 ## Nicht-Ziele
 
@@ -62,7 +62,7 @@ Der Nutzer will bei jeder interessanten Stelle auf einen Blick sehen, welche Anf
 
 **Anzeige.** Auf der Stellenseite markiert die Anzeige jede Anforderung farbig; Farbe immer zusammen mit Text („belegt“, „teilweise“, „noch nicht belegt“, „nicht erfüllt“), damit sie ohne Farbsehen lesbar ist. Klick oder Tastatur öffnet Beleg/Begründung und nennt die CV-Version. Oben: „Am besten passt: CV X“ bzw. „Gleich gut: CV A und CV B“ mit Umschalter, zuerst der Standard-CV (neue Markierung „Standard“ auf der Seite „Dokumente“, ohne Standard der erste der Liste). Ohne Ergebnis: „Noch nicht abgeglichen“. Vorläufiges Ergebnis des Admins (Q103): Grenzfälle grau mit „wird heute Nacht genauer geprüft“, oben der Hinweis „vorläufig“.
 
-**Daten (Migration 018).** Neue Tabellen mit Zeilen nur für den Eigentümer (RLS), Gäste ohne Zugriff: CV-Text, CV-Profil, Ergebnisse, Einwilligung. `documents` bekommt die Markierung „Standard“; `jobs` die Anforderungsliste. Export und Kontolöschung umfassen alles; das Backup im privaten Repo schließt die CV-Tabellen aus.
+**Daten (Migration 018).** Neue Tabellen mit Zeilen nur für den Eigentümer (RLS), Gäste ohne Zugriff: CV-Text, CV-Profil, Ergebnisse, Einwilligung. `documents` bekommt die Markierung „Standard“; `jobs` und `applications` (aus `snapshot_abschnitte`, Q111) die Anforderungsliste. Export und Kontolöschung umfassen alles; das Backup im privaten Repo schließt die CV-Tabellen aus.
 
 ### 6a: Nachtlauf für den Admin
 

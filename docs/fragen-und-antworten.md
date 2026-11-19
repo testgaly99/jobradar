@@ -177,6 +177,11 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q104 | Welchen Bereich als Nächstes klären und planen? | Nutzer: „Phase 4g Stelle aus Link“ | Nächster Plan: 4g (Stelle aus Portal-Link auf der Originalquelle finden); Codex baut es erst nach 4b/4c. | entschieden |
 | Q105 | Freunde: Chromes eingebautes Modell muss erst heruntergeladen werden (mehrere GB, Klick nötig). Wie umgehen? (Anlass, Nutzer: „Hast du für Phase 6 keine Fragen an mich? Ist alles endgültig geklärt?“) | Nutzer: „Knopf anbieten (Empfohlen)“ | Hinweis mit Größe und Knopf „Genauer prüfen: Chrome-KI einmalig laden“; ohne Klick bleibt es bei Grün/Gelb. Ersetzt „kein Download auslösen“ im Plan 6b. | entschieden |
 | Q106 | „Wichtige Punkte“ nach Bedeutung (CLAUDE.md 6) fehlte im Konzept. Was damit tun? | Nutzer: „In 6b mitnehmen (Empfohlen)“ | Neuer Task 5 in Plan 6b: gleicher Bedeutungsvergleich im Browser, für alle, kein Claude-Kontingent. | entschieden |
+| Q107 | 4g: Wann die Originalstelle zu einem Portal-Link suchen? | Nutzer: „Sofort + neue Firmen nachts (Empfohlen)“ | Bekannte Firma sofort in den jobradar-Stellen; unbekannte Firma (Website, Portal, Stelle) im Nachtlauf. | entschieden |
+| Q108 | 4g: Was passiert mit einer unbekannten Firma, deren Stelle gefunden wurde? | Nutzer: „Nur Stelle + Knopf (Empfohlen)“ | Nur diese Stelle wird übernommen; Knopf „Firma dauerhaft beobachten“ macht sie zur Zusatzfirma (4e, zählt zur Grenze 50). | entschieden |
+| Q109 | 4g: Kein Treffer mit gleichem Titel auf der Firmenseite? | Nutzer: „Ähnliche zur Auswahl (Empfohlen)“ | Bis zu 5 ähnliche Stellen (ohne KI, gemeinsame Wörter) zur Auswahl; „Keine davon“ behält Firma/Titel mit Hinweis. | entschieden |
+| Q110 | 4g: Firma ohne Website in Wikidata? | Nutzer: „Nur Hinweis“ | Hinweis „Original nicht gefunden“, kein Website-Feld. | entschieden |
+| Q111 | Phase 6: Bewerbungen ohne Stelle in jobradar auch abgleichen? (Fund der Kontrollfrage beim 4g-Plan) | Nutzer: „Ja, auch abgleichen (Empfohlen)“ | Anforderungen aus der gespeicherten Anzeige der Bewerbung; 6a/6b und Migration 018 ergänzt. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -193,6 +198,8 @@ Fragetexte Q97–Q100 (Claude, 2026-11-19, Auswahl): Q97 200 zuletzt geförderte
 Fragetexte Q101–Q102 (Claude, 2026-11-19, Auswahl): Q101 bis 10 / 10–30 / 30–70 / weiß ich noch nicht. Q102 1–2 / 3–4 / 5 oder mehr.
 
 Fragetexte Q104–Q106 (Claude, 2026-11-19, Auswahl): Q104 Phase 5 Filter (Empfohlen) / Phase 4g Stelle aus Link / Phase 3 Kalender/Gmail / Chrome-Erweiterung verteilen. Q105 Knopf anbieten (Empfohlen) / Nie laden / Stufe 2 bei Freunden weglassen. Q106 In 6b mitnehmen (Empfohlen) / Eigenes kleines Paket danach / Streichen.
+
+Fragetexte Q107–Q111 (Claude, 2026-11-19, Auswahl): Q107 Sofort + neue Firmen nachts (Empfohlen) / Alles sofort / Alles nachts. Q108 Nur Stelle + Knopf (Empfohlen) / Automatisch Zusatzfirma / Nur die Stelle. Q109 Ähnliche zur Auswahl (Empfohlen) / Nur exakter Treffer. Q110 Nach Website fragen (Empfohlen) / Nur Hinweis. Q111 Ja, auch abgleichen (Empfohlen) / Nein, nur Stellenliste.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

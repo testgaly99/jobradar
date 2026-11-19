@@ -1,6 +1,6 @@
 # Phase 6b: CV-Abgleich im Browser – Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Codex: Auftrag über `docs/codex-warteschlange.md` (Nr. 10). Setzt 6a vollständig voraus (Migration 018, `web/lib/cv-regeln.json`, Modelldatei, `web/lib/cv-ergebnis.ts`).
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Codex: Auftrag über `docs/codex-warteschlange.md` (Nr. 11). Setzt 6a vollständig voraus (Migration 018, `web/lib/cv-regeln.json`, Modelldatei, `web/lib/cv-ergebnis.ts`).
 
 **Goal:** Alle angemeldeten Nutzer außer dem Admin bekommen den CV-Abgleich kostenlos im eigenen Browser (Chrome-KI auf Knopfdruck, Q105); der Admin bekommt beim Merken sofort vorläufige Farben aus Stufe 1, die der Nachtlauf ersetzt (Q103); „Wichtige Punkte“ treffen für alle auch nach Bedeutung (Q106).
 
@@ -87,8 +87,8 @@
 
 **Interfaces:**
 - `sollRechnen({istAdmin, vorhanden, gueltig}) -> "browser"|"browser-vorlaeufig"|null`: gültiges Ergebnis → `null`; Admin mit vorhandenem `weg 'claude'` (gültig) → `null`; Admin sonst → `"browser-vorlaeufig"`; andere → `"browser"`.
-- Auslöser: Öffnen einer Stellenseite ohne gültiges Ergebnis, Merken (danach), Upload/Korrektur eines CV (rechnet die gemerkten Stellen des Nutzers nach, höchstens 20 pro Seitenbesuch, gemerkte zuerst).
-- Speichern: Upsert in `cv_ergebnisse` auf `(owner_id, job_id)` mit Prüfsummen aus 6a; vor dem Schreiben erneut lesen und nicht schreiben, wenn inzwischen ein gültiges `claude`-Ergebnis da ist (Review Focus 3, 5).
+- Auslöser: Öffnen einer Stellenseite oder einer Bewerbung ohne `job_id` (Q111) ohne gültiges Ergebnis, Merken (danach), Upload/Korrektur eines CV (rechnet die gemerkten Stellen des Nutzers nach, höchstens 20 pro Seitenbesuch, gemerkte zuerst).
+- Speichern: Upsert in `cv_ergebnisse` auf `(owner_id, job_id)` bzw. `(owner_id, application_id)` mit Prüfsummen aus 6a; vor dem Schreiben erneut lesen und nicht schreiben, wenn inzwischen ein gültiges `claude`-Ergebnis da ist (Review Focus 3, 5).
 - Anzeige: während der Rechnung „Wird abgeglichen …“; vorläufig (Admin): Hinweis „vorläufig“, Grenzfälle grau mit „wird heute Nacht genauer geprüft“ (Farbe-Token `--cv-vorlaeufig`).
 
 - [ ] **Step 1: Tests:** `sollRechnen` für alle vier Fälle; Upsert-Attrappe: zwei gleichzeitige Aufrufe → eine Zeile.
