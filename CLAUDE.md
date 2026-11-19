@@ -184,7 +184,6 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Auszug aus Anforderungen und Aufgaben
 - **Bewerbung:**
   - Datum, Weg, Referenznummer
-  - Hinweis zum Bewerberportal, ohne Passwort
   - CV-Version, Anschreiben, Anlagen
 - **Gehalt:**
   - Spanne laut Anzeige
@@ -404,7 +403,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
   - was automatisch aus der Stelle übernommen wird,
   - welche Felder erst in späteren Bewerbungsphasen erscheinen,
   - kein manuelles Abtippen bekannter Stellen.
-  - Eigene Fragerunde nach dem Bewerben-Helfer (Q165).
+  - Geplant 2026-11-19 (Q196–Q201, Design `docs/superpowers/specs/2026-11-19-bewerbungsformular-design.md`, Warteschlange Nr. 11b): Kästen nach Status, Stellendaten als Text mit ✎, „Portal-Hinweis“ und „Vergleich aktuelles Gehalt“ entfallen (Inhalte in Notizen).
 - **Login für Freunde:** E-Mail und Passwort zusätzlich zu Google (braucht das Mail-Paket).
 - **„In Jobradar speichern“ per Chrome-Erweiterung (Ein-Klick-Import; Wunsch 2026-11-12 aus der Wettbewerbsanalyse, statt Lesezeichen entschieden 2026-11-17, Q14):** Chrome-Erweiterung übernimmt die geöffnete Anzeige ins eigene Board (Abschnitt 4.4). Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox. Auf Jobportalen nur Adresse und Titel (Q16); deren aktuelle Nutzungsbedingungen noch prüfen.
 - **Umbau-Plan für eine kommerzielle Nutzung (Wunsch 2026-11-17):** vor jeder kommerziellen/öffentlichen Nutzung erstellen – Datenquellen nur lizenziert (siehe Rechte-Audit in `docs/ranking-recherche-v3.md`), Vercel-Plan, Groq-/KI-Bedingungen, Impressum/Datenschutz, Haftung, Rankings. **Dabei neu bewerten, wer was sehen darf** (Nutzer 2026-11-18, Q73: bis dahin sehen Gäste nie Ränge, nur Angemeldete).

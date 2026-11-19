@@ -265,6 +265,13 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q192 | Wie erfährt jobradar, dass eine vom Helfer ausgefüllte Bewerbung abgeschickt wurde? (Nutzer: „Ich meinte, wenn eine automatisierte Bewerbung gelaufen ist, wie erfährt Jobradar davon“) | Nutzer: „Alle vier kombiniert (Empfohlen)“ | Knopf, Danke-Seite erkennen (mit Rückgängig), Nachfrage nach 30 min, Eingangsbestätigung per Mail (Admin, Phase 3; Gmail liest dafür auch gemerkte mit Bewerben-Klick ≤ 14 Tage). | entschieden |
 | Q193 | Design Bewerben-Helfer (mit vier Abschick-Wegen) freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Warteschlange Nr. 11a. | entschieden |
 | Q194 | Design/Plan Bewerben-Helfer, Anlagen-Art Runde 1, Phase-3-Ergänzung hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q195 | Was als Nächstes? | Nutzer: „Runde Bewerbungsformular“ | Planungsrunde Bewerbungsformular beginnt (Claude hatte Task 0 von Runde 1 empfohlen). | entschieden |
+| Q196 | Bewerbungsformular: Felder je nach Status einblenden? | Nutzer: „Ich verstehe die Frage nicht“ | Neu gestellt als Q199 mit Beispiel. | ersetzt durch Q199 |
+| Q197 | Felder aus bekannter Stelle fest mit ✎ oder frei änderbar? | Nutzer: „Verstehe die Frage nicht“ | Neu gestellt als Q200 mit Beispiel. | ersetzt durch Q200 |
+| Q198 | Welche Felder gar nicht gebraucht? | Nutzer: „Portal-Hinweis, Vergleich aktuelles Gehalt“ | Beide Felder entfallen (Portal-Hinweis ersetzt durch Konto-Merker des Bewerben-Helfers). | entschieden |
+| Q199 | Bewerbung zeigt nur, was jetzt zählt; weitere Kästen erst mit dem Status? | Nutzer: „Ja, Schritt für Schritt (Empfohlen)“ | Kästen nach Status; Gefülltes bleibt sichtbar; „Alle Felder zeigen“. | entschieden |
+| Q200 | Stellendaten als Text mit ✎ statt Eingabefeldern? | Nutzer: „Als Text, ✎ zum Ändern (Empfohlen)“ | Bei bekannter Stelle Text mit ✎; bei Hand-Bewerbungen Eingabefelder. | entschieden |
+| Q201 | Design Bewerbungsformular freigeben (inkl. Löschen der zwei Spalten nach Kopie in Notizen)? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan als Warteschlange Nr. 11b, Migration 025. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -335,6 +342,14 @@ Fragetexte Q192 (Claude, 2026-11-19, Auswahl): Alle vier kombiniert (Empfohlen) 
 Fragetexte Q193 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden.
 
 Fragetexte Q194 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht / Erst ändern.
+
+Fragetexte Q195 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Runde Bewerbungsformular / Pause.
+
+Fragetexte Q196–Q198 (Claude, 2026-11-19, Runde Bewerbungsformular, Auswahl): Q196 Nach Status einblenden (Empfohlen) / Wie heute. Q197 Fest, mit ✎ (Empfohlen) / Frei änderbar. Q198 (Mehrfachauswahl) Vergleich aktuelles Gehalt / Referenzen / Portal-Hinweis / Tags.
+
+Fragetexte Q199–Q200 (Claude, 2026-11-19, Auswahl, mit Beispiel neu gestellt): Q199 Ja, Schritt für Schritt (Empfohlen) / Nein, alles wie heute. Q200 Als Text, ✎ zum Ändern (Empfohlen) / Eingabefelder wie heute.
+
+Fragetexte Q201 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Felder nicht löschen / Erst ändern.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
