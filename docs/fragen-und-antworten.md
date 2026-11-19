@@ -296,6 +296,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q223 | Was als Nächstes? | Nutzer: „Kleine Pakete planen“ | Erweiterung verteilen (Q63), Hand-Listen-Links, monatliche Linksammlung (Claude hatte Task 0 von Runde 1 empfohlen). | entschieden |
 | Q224 | Pläne der kleinen Pakete hochladen (öffentlich und privat)? | Nutzer: „Ja, hochladen + Ja, privat hochladen (Empfohlen)“ | Beide hochgeladen. | entschieden |
 | Q225 | Link-Prüfung (privat) gleich erledigen? | Nutzer: „Ja, jetzt (Empfohlen)“ | Claude prüft per Websuche, Ergebnis privat. | entschieden |
+| Q226 | Runde 1 Task 0: Was steht nach Öffnen von `claude.ai/new?q=Hallo%20Test` im Eingabefeld? | Nutzer zuerst: „Ich kann den Link nicht kopieren“ (Claude öffnete ihn per `Start-Process`); dann Bildschirmfoto: „Hallo Test“ im Feld, darüber Warnhinweis „Sei vorsichtig, bevor du diesen Prompt ausführst…“ | Link-Weg funktioniert; Warnhinweis wird im Knopf-Hinweis erklärt. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -406,6 +407,8 @@ Fragetexte Q222 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch 
 Fragetexte Q223 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Kleine Pakete planen / entwurf-ui in main übernehmen / Pause.
 
 Fragetexte Q224–Q225 (Claude, 2026-11-19, Auswahl): Q224 Ja, hochladen + Ja, privat hochladen (Empfohlen) / Nur öffentlich hochladen / Noch nicht. Q225 Ja, jetzt (Empfohlen) / Später.
+
+Fragetexte Q226 (Claude, 2026-11-19, Auswahl): „Hallo Test“ steht drin / Feld ist leer / Etwas anderes.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

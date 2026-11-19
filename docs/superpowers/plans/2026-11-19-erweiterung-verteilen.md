@@ -6,7 +6,7 @@
 
 **Architecture:** Ein Build-Skript packt `browser-erweiterung/chrome` (ohne Tests) beim `prebuild` nach `web/public/downloads/jobradar-erweiterung.zip` und schreibt die Version aus `manifest.json` nach `web/lib/erweiterung-version.json`. Die Konto-Seite zeigt Download, Version und Anleitung.
 
-**Tech Stack:** Next.js 16, Node-Skript, neue devDependency `fflate` (MIT, ZIP schreiben, nur im Build), `node --test`.
+**Tech Stack:** Next.js 16, Node-Skript, neue devDependency `fflate@0.8.3` (MIT, Mai 2026, ZIP schreiben, nur im Build), `node --test`.
 
 **Spec:** Entscheidung Q63 (`docs/fragen-und-antworten.md`): „jetzt Download von der Konto-Seite (ZIP, „Entpackte Erweiterung laden“, Anleitung mit eigener Adresse zum Kopieren); Chrome Web Store „nicht gelistet“ erst bei mehr Freunden oder öffentlichem Start“. Kein eigenes Design-Dokument (kleines Paket).
 

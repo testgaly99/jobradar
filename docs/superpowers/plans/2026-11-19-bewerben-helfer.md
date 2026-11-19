@@ -6,7 +6,7 @@
 
 **Architecture:** Migration 024 (Profilwerte, Konto-Merker, `helfer_geoeffnet_am`, `abgeschickt_quelle`). Die jobradar-Seite holt das Paket über `GET /api/bewerben/<id>` und reicht es per `window.postMessage` an das Inhalts-Skript der Erweiterung auf der jobradar-Origin; der Hintergrund öffnet den Tab, merkt sich Tab → Bewerbung, lädt die Dateien (signierte Links) und gibt Paket + Dateien an das Inhalts-Skript im Ziel-Tab. Dort füllen Adapter (5 Systeme) oder die allgemeine Erkennung; Rückmeldungen gehen über einen jobradar-Tab wie beim heutigen Import (`uebertrageImAppTab`).
 
-**Tech Stack:** Next.js 16, Supabase, Chrome-Erweiterung MV3 (`browser-erweiterung/chrome/`), `node --test`, neu als Test-Abhängigkeit `jsdom` (nur `web/` devDependencies).
+**Tech Stack:** Next.js 16, Supabase, Chrome-Erweiterung MV3 (`browser-erweiterung/chrome/`), `node --test`, neu als Test-Abhängigkeit `jsdom@30.1.3` (MIT, Oktober 2026; nur `web/` devDependencies).
 
 **Spec:** `docs/superpowers/specs/2026-11-19-bewerben-helfer-design.md` (dazu `docs/phasen-vorarbeit.md` „Bewerben-Helfer: Vorab-Prüfung“)
 

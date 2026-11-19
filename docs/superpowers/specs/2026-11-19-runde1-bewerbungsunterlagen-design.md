@@ -125,7 +125,7 @@ Pakete (neu in `web/package.json`, Versionen fest, per `import()` erst beim Klic
 - Öffnet `https://claude.ai/new?q=<Auftrag>` in einem neuen Tab.
 - **Auftrag (Text fest):** „Passe dieses Anschreiben an die folgende Stelle an. Bleib bei meinem Stil, erfinde nichts über mich. Erstelle das Ergebnis als Word-Datei und als PDF im deutschen Briefformat (DIN 5008).“ Danach folgen Briefkopf, ausgefüllte Vorlage und der Anzeigentext der Bewerbung (Aufgaben/Anforderungen aus dem Snapshot). Gibt es keinen Snapshot, steht dort nur der Link.
 - **Länge:** Ist die Adresse länger als 6 000 Zeichen, kopiert jobradar den Auftrag in die Zwischenablage, öffnet `https://claude.ai/new` und zeigt „Auftrag kopiert – in Claude mit Strg+V einfügen“.
-- **Hinweis unter dem Knopf:** „Öffnet dein eigenes Claude-Konto; dein Text geht an Claude.“
+- **Hinweis unter dem Knopf:** „Öffnet dein eigenes Claude-Konto; dein Text geht an Claude. claude.ai zeigt dabei einen Warnhinweis, weil der Text über einen Link kommt – prüfe ihn kurz und sende ihn dann ab.“ (Test 2026-11-19: `?q=` füllt das Feld vor, Warnhinweis erscheint.)
 - Die Endfassung kommt über „Endfassung hochladen“ zurück.
 
 ### 7. Datenschutz

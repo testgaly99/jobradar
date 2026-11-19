@@ -6,7 +6,7 @@ Status: `offen` (wartet auf „okay“) · `in Arbeit` · `🛑 wartet auf Nutze
 
 | Nr | Auftrag | Plan | Status | Halt danach |
 |---|---|---|---|---|
-| 0 | Runde 1: Bewerbungsunterlagen (Reiter „Unterlagen“, Anschreiben aus Vorlage als PDF/Word, Claude-Knopf, Endfassung, Anlagen) | `docs/superpowers/plans/2026-11-19-runde1-bewerbungsunterlagen.md` (ab Task 1; Task 0 macht Claude) | offen (Q168: als Nächstes) | 🛑 nach Task 7: Nutzer spielt Migration 023 ein; Claude prüft mit zwei Wegwerf-Konten und klickt durch |
+| 0 | Runde 1: Bewerbungsunterlagen (Reiter „Unterlagen“, Anschreiben aus Vorlage als PDF/Word, Claude-Knopf, Endfassung, Anlagen) | `docs/superpowers/plans/2026-11-19-runde1-bewerbungsunterlagen.md` (ab Task 1; Task 0 erledigt 2026-11-19) | offen (Q168: als Nächstes) | 🛑 nach Task 7: Nutzer spielt Migration 023 ein; Claude prüft mit zwei Wegwerf-Konten und klickt durch |
 | 0a | Erweiterung verteilen: ZIP-Download und Anleitung auf der Konto-Seite (Q63) | `docs/superpowers/plans/2026-11-19-erweiterung-verteilen.md` | offen (erst nach Nr. 0 und neuem „okay“) | 🛑 nach Task 3: Claude prüft Download nach dem Vercel-Build |
 | 1 | Link-Schnellstart: komplette Stelle aus Links von Firmen-Karriereseiten | `docs/superpowers/plans/2026-11-18-link-schnellstart.md` | offen | 🛑 Nutzer spielt Migration 012 ein; Claude testet 10 echte Links |
 | 2 | Phase 4a: Remote weltweit und Whitelist | `docs/superpowers/plans/2026-11-17-phase4a-remote-whitelist.md` | offen (erst nach Nr. 1 und neuem „okay“) | 🛑 Nutzer spielt Migration 011 ein; Claude prüft live |

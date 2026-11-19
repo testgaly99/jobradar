@@ -17,7 +17,7 @@
 - Neue Pakete genau drei, Version fest (ohne `^`): `docx`, `pdfmake`, `mammoth`; nur per `await import(...)` in Klick-Handlern geladen, nie im Seiten-Import.
 - Platzhalter: `{{firma}}`, `{{stelle}}`, `{{ansprechpartner}}`, `{{anrede}}`, `{{quelle}}`, `{{datum}}`; Groß/Klein egal, Leerzeichen innen erlaubt (`{{ Firma }}`).
 - Anrede: „Sehr geehrte Frau <Nachname>“ / „Sehr geehrter Herr <Nachname>“ / „Sehr geehrte Damen und Herren“, ohne Komma.
-- Claude-Auftrag-Text wörtlich: „Passe dieses Anschreiben an die folgende Stelle an. Bleib bei meinem Stil, erfinde nichts über mich. Erstelle das Ergebnis als Word-Datei und als PDF im deutschen Briefformat (DIN 5008).“; Link `https://claude.ai/new?q=`; über 6 000 Zeichen URL-Länge → Zwischenablage + `https://claude.ai/new` + Hinweis „Auftrag kopiert – in Claude mit Strg+V einfügen“; Hinweis unter dem Knopf „Öffnet dein eigenes Claude-Konto; dein Text geht an Claude.“
+- Claude-Auftrag-Text wörtlich: „Passe dieses Anschreiben an die folgende Stelle an. Bleib bei meinem Stil, erfinde nichts über mich. Erstelle das Ergebnis als Word-Datei und als PDF im deutschen Briefformat (DIN 5008).“; Link `https://claude.ai/new?q=`; über 6 000 Zeichen URL-Länge → Zwischenablage + `https://claude.ai/new` + Hinweis „Auftrag kopiert – in Claude mit Strg+V einfügen“; Hinweis unter dem Knopf „Öffnet dein eigenes Claude-Konto; dein Text geht an Claude. claude.ai zeigt dabei einen Warnhinweis, weil der Text über einen Link kommt – prüfe ihn kurz und sende ihn dann ab.“
 - Grenzen: Vorlagentext ≤ 20 000 Zeichen, `.docx`-Import ≤ 5 MB (nur `.docx`; bei `.doc`: „Bitte in Word als .docx speichern“), Endfassung PDF/Word ≤ 10 MB.
 - Layout: A4, Rand links 25 mm, rechts 20 mm, 11 pt; Absenderzeile, Empfänger „Firma“ + „z. Hd. <Ansprechpartner>“, rechtsbündig „<Ort>, <Datum>“, Betreff fett, Absätze; Dateiname `Anschreiben_<Firma>_<JJJJ-MM-TT>.pdf|.docx`.
 - Aussehen nur über `web/app/stil/utilitaer.css`; Kanban-Animationen nicht anfassen.
@@ -35,9 +35,9 @@
 
 ### Task 0 (Claude, vor Codex): Vorab-Prüfungen
 
-- [ ] **Step 1:** Im eigenen Browser `https://claude.ai/new?q=Hallo%20Test` öffnen. Expected: Eingabefeld enthält „Hallo Test“. Klappt es nicht, Ruling im Plan: immer Zwischenablage-Weg.
-- [ ] **Step 2:** Aktuelle Versionen und Lizenzen von `docx`, `pdfmake`, `mammoth` auf npm prüfen (gepflegt, MIT/BSD), Versionen hier eintragen: `docx@____`, `pdfmake@____`, `mammoth@____`.
-- [ ] **Step 3:** Ergebnis in `docs/agenten-protokoll.md` vermerken, Task 0 abhaken.
+- [x] **Step 1:** Im eigenen Browser `https://claude.ai/new?q=Hallo%20Test` öffnen. Expected: Eingabefeld enthält „Hallo Test“. **Erledigt 2026-11-19 (Nutzer, Bildschirmfoto): Text steht im Feld; claude.ai zeigt darüber den Warnhinweis „Sei vorsichtig, bevor du diesen Prompt ausführst…“** → Link-Weg gilt; Hinweis unter dem Knopf erweitert (Global Constraints).
+- [x] **Step 2:** Aktuelle Versionen und Lizenzen von `docx`, `pdfmake`, `mammoth` auf npm prüfen (gepflegt, MIT/BSD), Versionen hier eintragen: `docx@9.15.2` (MIT), `pdfmake@0.3.13` (MIT), `mammoth@1.13.0` (BSD-2-Clause). **Erledigt 2026-11-19 (Claude):** jeweils neueste Version, die mindestens 2 Wochen alt ist (docx 9.16.0 erschien am 19.11., pdfmake 0.3.14 am 08.11. – zu frisch); alle drei gepflegt.
+- [x] **Step 3:** Ergebnis vermerkt (dieser Plan, `docs/fragen-und-antworten.md` Q226). Task 0 erledigt.
 
 ### Task 1: Migration 023
 
