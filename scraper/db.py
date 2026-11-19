@@ -235,6 +235,21 @@ def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):
     return sum(1 for i in gesehen if i not in alt), len(fehlend)
 
 
+def bewerbungen_zum_nachruesten(limit=50):
+    """Bewerbungen aus Firmenseiten (Link-Schnellstart). Ohne Migration 012 antwortet PostgREST mit 400: dann nichts."""
+    try:
+        return _req("GET", "applications", params={"select": "id,link", "nachruesten": "eq.true", "limit": limit})
+    except RuntimeError as e:
+        if ": 400 " not in str(e):
+            raise
+        print("Hinweis: Migration 012 offen, Nachrüsten übersprungen.")
+        return []
+
+
+def setze_nachgeruestet(app_id, patch):
+    _req("PATCH", "applications", params={"id": f"eq.{app_id}"}, json={**patch, "nachruesten": False})
+
+
 def speichere_lauf(bericht):
     _req("POST", "laeufe", json={"datum": bericht["stand"], "bericht": bericht})
 

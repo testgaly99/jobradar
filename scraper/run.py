@@ -7,7 +7,7 @@ from datetime import date
 from pathlib import Path
 
 from scraper.ats import ADAPTER
-from scraper import db, ki
+from scraper import db, ki, nachruesten
 from scraper.companies import lade_unternehmen
 from scraper.logo import hole_logo
 from scraper.steckbrief import steckbrief
@@ -133,6 +133,8 @@ def _markdown(bericht):
                      + ", ".join(f"{g}: {n}" for g, n in f["uebersprungen"].items()) + "), nichts geschlossen")
     if bericht.get("ki"):
         z.append("- KI: " + ", ".join(f"{k}: {v}" for k, v in bericht["ki"].items()))
+    if bericht.get("nachruesten"):
+        z.append("- Bewerbungen nachgerüstet: " + ", ".join(f"{k}: {v}" for k, v in bericht["nachruesten"].items()))
     return "\n".join(z) + "\n"
 
 
@@ -172,6 +174,15 @@ def _ki(heute):
     return erg
 
 
+def _nachruesten():
+    """Bewerbungen aus Firmenseiten nachrüsten (Link-Schnellstart); darf den Lauf nie kippen."""
+    try:
+        return nachruesten.lauf()
+    except Exception as e:
+        print(f"Hinweis: Nachrüsten fehlgeschlagen: {kurzfehler(e)}")
+        return {}
+
+
 def lauf(heute, datenordner="data"):
     datenordner = Path(datenordner)
     firmen = lade_unternehmen(datenordner / "companies.csv")
@@ -181,6 +192,7 @@ def lauf(heute, datenordner="data"):
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in firmen if f["aktiv"] == "ja"]}
     db.snapshot_nachruesten()  # nach allen Firmen
     bericht["ki"] = _ki(heute)
+    bericht["nachruesten"] = _nachruesten()
     _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
     db.speichere_lauf(bericht)
     return bericht

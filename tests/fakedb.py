@@ -26,6 +26,7 @@ class FakeDB:
         self.ohne_funktion = False
         self.ohne_logo_spalte = False
         self.ohne_ki_spalten = False
+        self.ohne_nachruesten = False
         self.nachgeruestet = 0
         self.pruefungen = 0
         self.t = {"companies": {}, "jobs": {}, "laeufe": [], "applications": []}
@@ -73,6 +74,15 @@ class FakeDB:
             assert params["firma"] == params["titel"] == "is.null"
             return [{"id": a["id"], "snapshot_text": a["snapshot_text"]} for a in self.t["applications"]
                     if a["firma"] is None and a["titel"] is None]
+        elif method == "GET" and pfad == "applications" and params.get("select") == "id,link":
+            if self.ohne_nachruesten:
+                raise RuntimeError("Supabase GET applications: 400 42703")
+            assert params["nachruesten"] == "eq.true"
+            return [{"id": a["id"], "link": a["link"]} for a in self.t["applications"] if a.get("nachruesten")][:params["limit"]]
+        elif method == "PATCH" and pfad == "applications" and "firma" not in params:
+            for a in self.t["applications"]:
+                if a["id"] == params["id"][3:]:
+                    a.update(json)
         elif method == "PATCH" and pfad == "applications":
             assert params["firma"] == params["titel"] == "is.null"
             for a in self.t["applications"]:
