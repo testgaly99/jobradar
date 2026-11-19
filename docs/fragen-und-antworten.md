@@ -311,6 +311,10 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q238 | Zwei-Admin-Doku, Plan-Ergänzungen und Schutztest auf `entwurf-ui` hochladen? (Nutzer dazu: „Mir ist wichtig, dass durch diese zwei Admin Accounts Regelung nichts kaputt geht!“) | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
 | Q239 | Safari-Erweiterung: wird sie gebraucht? (Nutzer: „"einer Anleitung je Browser (Chrome, Edge) ": Was ist mit Safari?“) | Nutzer: „99 Dollar pro Jahr kommt nicht in Frage“ | Safari bleibt im Backlog; nur eine kostenlose Variante kommt infrage (unsigniert, braucht einen Mac mit Xcode). | entschieden |
 | Q240 | Link-Schnellstart (Nr. 1, von Claude gebaut) mit Doku und Safari-Entscheidung auf `entwurf-ui` hochladen? (Nutzer dazu: „Mach weiter mit der nächsten Phase“) | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q241 | Kosten (/usage): Welche Modellregel für Helfer (Subagenten)? | Nutzer: „Für jede Aufgabe individuell entscheiden, ob viel Denkaufwand nötig ist, oder ob ein simpleres Modell ähnlich gut sein wird“ | Regel vorgeschlagen (Q244). | entschieden |
+| Q242 | Kosten: superpowers global aus und nur in diesem Projekt an? | Nutzer: „Überall an lassen“ | Keine Änderung. | entschieden |
+| Q243 | Kosten: writing-plans günstiger machen (Übergabe ohne Helfer, ggf. Sonnet)? | Nutzer: „Nichts ändern“ | Keine Änderung. | entschieden |
+| Q244 | Modellregel für Helfer in die globale CLAUDE.md eintragen? | Nutzer: „Ja, so einfügen (Empfohlen)“ | Abschnitt „Helfer (Subagenten): Modell je Aufgabe wählen“ in `~/.claude/CLAUDE.md` (haiku Suchen/Lesen, sonnet Umsetzen/normale Reviews, opus Design/Fehler/Sicherheit/große Reviews; Modell immer angeben). | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -438,6 +442,10 @@ Fragetexte Q237 (Claude, 2026-11-19, Auswahl): Ein Chat, jede Nachricht mit Kont
 Fragetexte Q238 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
 Fragetexte Q239 (Claude, 2026-11-19, Auswahl): Nein, kein Mac – Safari bleibt im Backlog (Empfohlen) / Ja, ich nutze einen Mac – Safari planen / Erst für Freunde mit Mac.
 Fragetexte Q240 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q241 (Claude, 2026-11-19, Auswahl): Sonnet Standard (Empfohlen) / Nur CLAUDE.md-Regel / Nichts ändern.
+Fragetexte Q242 (Claude, 2026-11-19, Auswahl): Global aus, hier an (Empfohlen) / Überall an lassen.
+Fragetexte Q243 (Claude, 2026-11-19, Auswahl): Übergabe ohne Helfer (Empfohlen) / Übergabe + Sonnet / Nichts ändern.
+Fragetexte Q244 (Claude, 2026-11-19, Auswahl): Ja, so einfügen (Empfohlen) / Nicht eintragen.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
