@@ -363,6 +363,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q257 | Wer behebt die vier Prüfbefunde in Codex' Phase 4c (EPA-Ränge öffentlich, Zeitlimit Einrichtung, Absturz bei unvollständiger Firmenzeile, robots.txt je Stellenlink)? | Nutzer: „Claude behebt sofort (Empfohlen)“ | Von Claude behoben (3504a91), dazu Jobportal-Sperre und README. | entschieden |
 | Q258 | Soll der Nachtlauf Firmen mit abgelaufener Ranglisten-Datei abschalten (Codex' Abweichung) oder nur der Monatslauf (Plan)? | Nutzer: „Nur im Monatslauf“ | Abschalten aus dem Nachtlauf entfernt; der Monatslauf schaltet über seinen Änderungsvorschlag ab. | entschieden |
 | Q259 | Phase 4c (Codex, geprüft und nachgebessert) hochladen und in main zusammenführen? | Nutzer: „Hochladen und in main (Empfohlen)“ | Nach Tests und Build auf main zusammengeführt und hochgeladen; erster echter Ranglisten-Lauf nach Aufgabe 32 gemeinsam. | entschieden |
+| Q260 | Wikidata-Umstellung auf QLever und Statusnachträge hochladen und in main zusammenführen? | Nutzer: „Hochladen und in main (Empfohlen)“ (vorher: „Löse das Problem“) | Nach Tests und Build auf main zusammengeführt und hochgeladen. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -509,6 +510,7 @@ Fragetexte Q256 (Claude, 2026-11-20, Auswahl): Ja, zusammenführen (Empfohlen) /
 Fragetexte Q257 (Claude, 2026-11-20, Auswahl): Claude behebt sofort (Empfohlen) / Zurück an Codex.
 Fragetexte Q258 (Claude, 2026-11-20, Auswahl): So lassen (Empfohlen) / Nur im Monatslauf.
 Fragetexte Q259 (Claude, 2026-11-20, Auswahl): Hochladen und in main (Empfohlen) / Nur auf entwurf-ui hochladen / Noch nicht.
+Fragetexte Q260 (Claude, 2026-11-20, Auswahl): Hochladen und in main (Empfohlen) / Nur auf entwurf-ui / Noch nicht.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
