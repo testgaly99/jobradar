@@ -11,6 +11,24 @@ Nutzer im Wortlaut:
 
 Ableitung: Nr. 5 Phase 4c ist der oberste offene Eintrag; die Startanweisung gilt bis zum bestehenden Haltepunkt. Keine neue Frage gestellt, keine Zustimmung zu Live-Zugriff, Migration oder Veröffentlichung abgeleitet. Ergebnis und tatsächliche Prüfgrenzen siehe STATUS und Agentenprotokoll.
 
+## Q-Codex-Zeit01 – Aufwandsschätzung 2026-11-20
+
+Nutzer im Wortlaut:
+> Führe eine Schätzung durch: Wie lange dauert es, bis alle Arbeitspakete abgearbeitet sind, vorausgesetzt ich arbeite weiter mit GPT 6.1 Sol Medium?
+
+Antwort/Schätzung: 12 noch nicht gebaute Pakete in der bestehenden Warteschlange, zusätzlich offene Live-Abnahmen bereits gebauter Pakete. Für GPT 6.1 Sol Medium werden **40–70 Stunden Agentenarbeit einschließlich Tests, Fehlersuche, Prüfung und Dokumentation** sowie **6–12 Stunden aktive Mitwirkung des Nutzers** angesetzt. Das ist eine Planungsspanne aus dem Umfang der vorliegenden Pläne, kein gemessener Modellvergleich und keine Zusage.
+
+| Restumfang | Agentenarbeit vor zusätzlichem Gesamtpuffer |
+|---|---|
+| 4d–4g: Ranglisten-Anzeige, Zusatzfirmen, Überwachung, Originalsuche | 6–10 h |
+| 6a/6b: CV-Abgleich im Nachtlauf und Browser | 8–14 h |
+| Bewerben-Helfer, Formular, Erinnerungen | 6–10 h |
+| Phase 5: Filter | 4–7 h |
+| Pendelzeit | 5–9 h |
+| Gmail und Google Kalender | 5–9 h |
+
+Summe 34–59 h; mit etwa 20 % Reserve gerundet 40–70 h. Kalenderannahme: regelmäßige Arbeit, zeitnahe Freigaben, keine längeren Nutzungslimits und keine wesentlichen neuen Anforderungen. Bei etwa 2 h täglich: 5–8 Wochen; bei 4 h täglich: 3–5 Wochen; intensive Arbeit: etwa 2–3 Wochen. Arbeitsfreie Tage und Verzögerungen können die Spanne verlängern. Größte Unsicherheiten: Modellverkleinerung für den CV-Abgleich, unterschiedliche Bewerbungsformulare, Fahrplandaten und Google-Anbindung. Einige Live-/Datenschutz-Abnahmen sind laut geltenden Regeln dem Nutzer/Claude vorbehalten; diese Freigaben werden nicht durch die Schätzung ersetzt. Ungeplante Portaladapter und der allgemeine Backlog sind nicht enthalten. Status: beantwortet; keine neue Umsetzung, Reihenfolge oder Freigabe beschlossen.
+
 ## Allgemeiner Nutzerauftrag
 
 Erste ausdrückliche Anweisung im bisherigen Gespräch:

@@ -16,6 +16,13 @@ Vorlage für einen Eintrag:
 
 Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT: ok` bzw. die gefundenen Punkte.
 
+## 2026-11-20 (Uhrzeit nicht separat erhoben) – Codex – Restaufwand schätzen
+- Auftrag: Dauer bis zur Abarbeitung aller Pakete unter Annahme GPT 6.1 Sol Medium schätzen.
+- Grundlage: aktuelle Warteschlange und Aufgaben/Haltepunkte der zwölf verbleibenden Baupläne. Ergebnis: 40–70 h Agentenarbeit mit Reserve, 6–12 h aktive Nutzermitwirkung; Kalenderdauer abhängig von täglichem Einsatz und Abnahmen. Kein gemessener Modellvergleich; ungeplanter Backlog ausgeschlossen.
+- Dateien: `docs/fragen-und-antworten.md` (Q-Codex-Zeit01) und dieses Protokoll. Lokaler Dokumentationscommit „Restaufwand der geplanten Arbeitspakete schätzen“, Schlusszeile `Agent: Codex`.
+- Prüfung: Zählung/Addition der Paketgruppen und Dokumentationsdiff; keine erneuten Anwendungstests, ausschließlich Schätzung dokumentiert. Codeprüfstand bleibt der Eintrag darunter.
+- Grenzen: keine neuen Anbieter-/Modellaussagen recherchiert, keine Live-Daten oder Geheimnisse gelesen; keine zusätzliche Bau-/Migrations-/Uploadfreigabe. Keine Abweichung von Projektumfang oder Arbeitsweise.
+
 ## 2026-11-20 10:10 (Europe/Berlin) – Codex – Phase 4c Firmen aus Ranglisten
 - Auftrag: alle Dokumentationen/Projektdateien prüfen, nächstes offenes Arbeitspaket starten. Nr. 5 gewählt, direkte Startanweisung als Freigabe bis zum bestehenden Haltepunkt behandelt.
 - Commits: `d062973` „4c: Firmen aus offenen Ranglisten einrichten“; anschließender Dokumentationscommit „4c: Übergabe mit lokalem Commitstand abschließen“ trägt diesen Hash nach und gleicht die ältere Kurzfassung des Projektstands ab. Beide mit Schlusszeile `Agent: Codex`. Kein Push, kein Merge.
