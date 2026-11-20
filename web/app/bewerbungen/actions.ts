@@ -136,9 +136,11 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
     firma: ziel.firma ?? null, titel: ziel.titel ?? null, link: ziel.link, quelle: ziel.quelle,
     standort: ziel.ort || null, snapshot_text: ziel.text || text || null, ...NEU,
   };
-  // nachruesten: der Nachtlauf ergänzt Gliederung, Steckbrief und Zusammenfassung. Ohne Migration 012 fehlt die Spalte: dann ohne Markierung.
-  let { data, error } = await sb.from("applications").insert(ausSeite ? { ...zeile, nachruesten: true } : zeile).select("id").single();
-  if (error && ausSeite && (error.code === "PGRST204" || error.message?.includes("nachruesten"))) {
+  // nachruesten: der Nachtlauf ergänzt Gliederung, Steckbrief und Zusammenfassung (nur mit Anzeigentext aus dem JobPosting,
+  // nicht beim Titel-Rückfall). Ohne Migration 012 fehlt die Spalte: dann ohne Markierung.
+  const nachSeite = ausSeite && !!seite!.text;
+  let { data, error } = await sb.from("applications").insert(nachSeite ? { ...zeile, nachruesten: true } : zeile).select("id").single();
+  if (error && nachSeite && (error.code === "PGRST204" || error.message?.includes("nachruesten"))) {
     ({ data, error } = await sb.from("applications").insert(zeile).select("id").single());
   }
   if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };

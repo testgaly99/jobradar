@@ -61,3 +61,13 @@ test("Nachgerüstete Snapshots im Format des Nachtlaufs werden gelesen", async (
     ["erfahrung", "gehalt", "sprachen", "sicherheit"]);
   assert.deepEqual(e.map((x) => x.text), ["ab 3 Jahren Erfahrung", "Deutsch C1"]);
 });
+
+test("Ohne JobPosting: Titel aus og:title als Rückfall, ohne Text und ohne Nachrüsten", async () => {
+  const seite = `<head><meta property="og:title" content="Manufacture Digitalization Intern &#35;2"><title>X | Careers - Siemens</title></head>`;
+  assert.deepEqual(await zielAusFirmenseite(URL_, {}, { holen: async () => seite }), { titel: "Manufacture Digitalization Intern #2", abgerufen: true });
+  const umgedreht = `<meta content="Controller (m/w/d)" property="og:title">`;
+  assert.equal((await zielAusFirmenseite(URL_, {}, { holen: async () => umgedreht })).titel, "Controller (m/w/d)");
+  assert.equal((await zielAusFirmenseite(URL_, { titel: "Mein Titel" }, { holen: async () => seite })).titel, "Mein Titel");
+  const a = readFileSync(new URL("../app/bewerbungen/actions.ts", import.meta.url), "utf8");
+  assert.match(a, /const nachSeite = ausSeite && !!seite!\.text;/);
+});

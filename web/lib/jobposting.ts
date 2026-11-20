@@ -50,6 +50,12 @@ export async function zielAusFirmenseite(url: string, eingabe: { firma?: string;
   let html: string;
   try { html = await (dep.holen ?? holeFirmenseite)(url); } catch { return { ...eingabe, abgerufen: false }; }
   const jp = leseJobPosting(html);
-  if (!jp) return { ...eingabe, abgerufen: true };
+  if (!jp) {
+    // Rückfall: Seiten, die die Anzeige per JavaScript nachladen, nennen oft wenigstens den Titel (og:title).
+    const og = html.match(/<meta[^>]+property=["']og:title["'][^>]*content=["']([^"']+)["']/i)
+      ?? html.match(/<meta[^>]+content=["']([^"']+)["'][^>]*property=["']og:title["']/i);
+    const titel = og ? htmlZuText(og[1].replace(/&#35;/g, "#")).slice(0, 300) : "";
+    return { ...eingabe, ...(eingabe.titel || titel ? { titel: eingabe.titel || titel } : {}), abgerufen: true };
+  }
   return { firma: eingabe.firma || jp.firma || undefined, titel: eingabe.titel || jp.titel, ort: jp.ort ?? undefined, text: jp.text, abgerufen: true };
 }
