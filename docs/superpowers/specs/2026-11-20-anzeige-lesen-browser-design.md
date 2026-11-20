@@ -6,6 +6,8 @@ Stand 2026-11-20 (Q247–Q250). Ergänzt `2026-11-18-link-schnellstart-design.md
 
 **Messung 2026-11-20 (7 Konzerne des Nutzers):** einfacher Abruf 0/7. Echter Browser mit ehrlichem User-Agent: Bosch vollständig (JobPosting), VW Titel und Text; Siemens (Cookie-Banner), BMW (lange Ladezeit), Audi/Rheinmetall (nur Übersicht getestet) offen; SAP verbietet Programme in robots.txt → bleibt manuell.
 
+**Ergänzung (Nutzer, 2026-11-20):** „Wenn ich einen Link einfüge, möchte ich nicht auf der Seite warten müssen … erstens ein Pop-up-Fenster, dass ich nicht warten muss, und zweitens die Seite verlassen können, ohne dass das Anlegen unterbrochen wird.“ Umsetzung: Die Bewerbung wird sofort mit Link und Eingaben angelegt (≈ 1 s), ein Fenster bestätigt das; alles Langsame (Stellenliste, Bewerbungssysteme, Firmenseite, Anstoß des Browser-Laufs) läuft mit `after()` auf dem Server weiter und füllt nur leere Felder. Nur bei Jobportal-Links ohne Firma und Titel wird sofort nachgefragt. Findet der Hintergrund die Stelle in der eigenen Stellenliste und gibt es dazu schon eine Bewerbung (z. B. gemerkt), wird diese beworben und die neue entfällt.
+
 **Ziele**
 1. Sofort beim Anlegen wie bisher: JobPosting aus dem einfachen Abruf, sonst Titel aus `og:title`.
 2. Fehlt der Anzeigentext: Bewerbung wird markiert (`nachruesten = true`, Spalte aus Migration 012) und die Website stößt sofort den GitHub-Workflow „Anzeigen lesen“ an.
