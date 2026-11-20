@@ -5,6 +5,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 import re
 import time
+import contextlib
+import io
 from urllib.parse import urljoin, urlsplit
 from urllib.robotparser import RobotFileParser
 
@@ -200,7 +202,7 @@ def portal_statistik(firmen, raenge):
     return result
 
 
-def lauf(datenordner='data', budget_s=17100):  # 285 min, vor dem 300-min-Limit des Workflow-Schritts
+def lauf(datenordner='data', budget_s=17100, mit_db=True):  # 285 min, vor dem 300-min-Limit des Workflow-Schritts
     start, d = time.monotonic(), Path(datenordner)
     firmen = lade_unternehmen(d / 'companies.csv')
     stand = lies_json(d / 'einrichtung_stand.json', {})
@@ -230,6 +232,22 @@ def lauf(datenordner='data', budget_s=17100):  # 285 min, vor dem 300-min-Limit 
     for art, z in sorted(statistik.items()):
         zeilen.append(f"| {art} | {z['anzahl']} | {z['bester_rang'] or ''} | {text(', '.join(z['beispiele']))} |")
     _schreibe_text(d / 'karriereseite_nicht_gefunden.md', '\n'.join(zeilen) + '\n')
+    if mit_db:
+        from scraper import db
+        privat=[]
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            for f in db.db_firmen('offen'):
+                if time.monotonic()-start >= max(0,budget_s-60):
+                    break
+                if not f.get('website') and not f.get('careers_url'):
+                    ergebnis=dict(f,status='offen',aktiv='nein',status_grund='keine Website bekannt')
+                else:
+                    ergebnis=richte_ein(f)
+                db.setze_einrichtung(f['name'],ergebnis)
+                if ergebnis.get('status') != 'aktiv':
+                    privat.append((f['name'],ergebnis.get('status_grund','')))
+        # Nur lokal; niemals in öffentliche Commits, Logs oder Artefakte hochladen.
+        _schreibe_text(d/'einrichtung_privat.md','# Private Einrichtung\n\n'+'\n'.join(text(n)+': '+text(g) for n,g in privat)+'\n')
     return dict(bearbeitet=bearbeitet, portale=statistik)
 
 

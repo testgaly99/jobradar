@@ -4,6 +4,12 @@ Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn
 
 ## Startauftrag 2026-11-20 (Codex)
 
+### Folgeauftrag Phase 4d (2026-11-20)
+
+Nutzer im Wortlaut: „Das hat Claude schon übernommen. Kümmere dich um die nächste Aufgabe. Alle Aufgaben, die mit Ranglisten zu tun haben, müssen unbedingt zu 100% korrekt sein. Das ist sehr wichtig.“
+
+Ableitung: Start von Nr. 6 Phase 4d autorisiert. Bestehende Live-Halte bleiben bestehen. Firmenzuordnung und Rangbelege werden vorsichtig geprüft: keine automatische Gleichsetzung unterschiedlicher Rechtsformen, keine unbelegten KI-Ränge; widersprüchliche Teile derselben Ausgabe werden atomar abgelehnt. Eine absolute Fehlerfreiheitsgarantie wird nicht behauptet; die echte SQL-/RLS-Abnahme bleibt Voraussetzung der Freigabe. Laut lokalen Git-Commits wurde 4c inzwischen hochgeladen und auf QLever umgestellt; der erste echte Quellenlauf ist weiterhin als Nutzer-To-do dokumentiert.
+
 Nutzer im Wortlaut:
 > Prüfe alle Dokumentationen und alle files im Projekt, damit du genau weißt, was der aktuelle Stand ist.
 >

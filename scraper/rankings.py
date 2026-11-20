@@ -110,6 +110,14 @@ def pruefe_ausgabe(daten, bekannte_firmen):
     listen_zeile = {"id": liste_id, "name": _text(liste.get("name"), "name", 200),
                     "herausgeber": _text(liste.get("herausgeber"), "herausgeber", 200),
                     "aktiv": _flag(liste.get("aktiv", False), "aktiv")}
+    kategorien={'Top-Arbeitgeber','Beliebt bei Studierenden','Große Unternehmen','Börsennotiert','Innovation','Wachstum & Startups','Top-Gehalt Tech'}
+    if 'kategorie' in liste:
+        if liste['kategorie'] not in kategorien:
+            raise ValueError('Unbekannte Ranglisten-Kategorie')
+        listen_zeile['kategorie']=liste['kategorie']
+    sichtbarkeit=ausgabe.get('sichtbarkeit','angemeldet')
+    if sichtbarkeit not in {'admin','angemeldet'}:
+        raise ValueError('Unbekannte Sichtbarkeit')
     ausgabe_zeile = {
         "id": ausgabe_id, "liste_id": liste_id, "jahr": jahr,
         "veroeffentlicht_am": veroeffentlicht.isoformat(), "geprueft_am": geprueft.isoformat(),
@@ -117,6 +125,7 @@ def pruefe_ausgabe(daten, bekannte_firmen):
         "lizenz": _text(ausgabe.get("lizenz"), "lizenz", 1000),
         "gueltig_bis": gueltig_bis.isoformat(),
         "freigegeben": _flag(ausgabe.get("freigegeben", False), "freigegeben"),
+        "sichtbarkeit": sichtbarkeit,
     }
     gesehen, zuordnungen = set(), []
     for firma in firmen:

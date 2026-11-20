@@ -4,6 +4,8 @@ import sys
 import tempfile
 import json
 import time
+import contextlib
+import io
 from collections import Counter
 from datetime import date
 from pathlib import Path
@@ -230,6 +232,7 @@ def lauf(heute, datenordner="data"):
             hinweise.append(f'Ranglisten-Import {pfad.name}: {kurzfehler(e)}')
     db._spalten = db._deutsch = None  # Spalten-Pruefungen (Migration 005, 013) einmal pro Lauf neu
     db._firmen_quellen = None
+    db._herkunft = None
     db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
     if not db.firmen_quellen_da():
         hinweise.append('Migration 014 offen; Ranglisten-Import übersprungen.')
@@ -246,12 +249,19 @@ def lauf(heute, datenordner="data"):
     aktive = [f for f in firmen if f['aktiv'] == 'ja' and f.get('status', 'aktiv') == 'aktiv']
     _logos(aktive)
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in aktive], 'ranglisten_hinweise': hinweise}
+    oeffentliche_firmen=list(bericht['firmen'])
+    # Adapter können URLs ausgeben: DB-Firmen auch vor öffentlichen Workflow-Logs schützen.
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        private_firmen=db.db_firmen()
+        for f in private_firmen:
+            if f.get('status')=='aktiv' and f.get('aktiv')=='ja':
+                bericht['firmen'].append(_firma(f,heute))
     db.snapshot_nachruesten()  # nach allen Firmen
     bericht["deutsch"] = _deutsch_nachruesten()  # vor den KI-Schritten (Plan Sprachniveau, Task 3)
     bericht["ki"] = _ki(heute)
     bericht["nachruesten"] = _nachruesten()
     bericht['laufzeit_min'] = round((time.monotonic() - start) / 60, 1)
-    _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
+    _schreibe_text(datenordner / "bericht.md", _markdown({**bericht,'firmen':oeffentliche_firmen}))
     db.speichere_lauf(bericht)
     return bericht
 
@@ -261,6 +271,5 @@ if __name__ == "__main__":
     fehler = [f for f in b["firmen"] if f["fehler"]]
     print(f"{len(b['firmen'])} Unternehmen, {len(fehler)} Fehler, "
           f"{sum(f['neu'] for f in b['firmen'])} neu, {sum(f['geschlossen'] for f in b['firmen'])} geschlossen")
-    for f in fehler:
-        print(f"  Fehler {f['name']}: {f['fehler']}")
+    # Firmennamen aus DB-Listen dürfen nicht im öffentlichen Workflow-Protokoll stehen.
     sys.exit(1 if b["firmen"] and len(fehler) == len(b["firmen"]) else 0)

@@ -9,7 +9,13 @@ def test_workflows_nur_vorschlagszweige_und_einrichtung_manuell():
         assert 'python -m scraper.' + modul in text
         assert 'gh pr create' in text and 'git push' in text
         assert 'git add data/' in text and 'git add -A' not in text
-        assert 'SUPABASE' not in text and 'GROQ' not in text
+        assert 'GROQ' not in text
+        if name == 'ranglisten':
+            assert 'SUPABASE' not in text
+        else:
+            assert 'secrets.SUPABASE_SERVICE_KEY' in text
+            assert 'einrichtung_privat.md' not in text
+            assert 'upload-artifact' not in text  # Artefakte öffentlicher Repos sind nicht privat.
         assert 'git push origin main' not in text
     assert '0 3 1 * *' in (root / 'ranglisten.yml').read_text()
     assert 'schedule:' not in (root / 'einrichtung.yml').read_text()

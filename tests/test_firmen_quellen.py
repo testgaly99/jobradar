@@ -31,6 +31,7 @@ def test_korrekturen_mit_vorrang_und_feldschutz(tmp_path):
 def test_sync_neue_felder_nur_mit_migration(monkeypatch, vorhanden):
     calls = []
     monkeypatch.setattr(db, 'firmen_quellen_da', lambda: vorhanden, raising=False)
+    monkeypatch.setattr(db, 'herkunft_da', lambda: False)
     monkeypatch.setattr(db, '_upsert', lambda *a: calls.append(a))
     f = dict(name='A', careers_url='', ats_typ='', ats_id='', mitarbeitende_ca='',
              groesse_klasse='<50', kategorie=['Tech'], hauptsitz='', aktiv='ja',

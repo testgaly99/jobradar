@@ -232,6 +232,45 @@ def firmen_quellen_da():
     return _firmen_quellen
 
 
+_herkunft = None
+
+
+def herkunft_da():
+    global _herkunft
+    if _herkunft is None:
+        try:
+            _req('GET','companies',params={'select':'herkunft','limit':0})
+            _herkunft = True
+        except RuntimeError as e:
+            if ': 400 ' not in str(e):
+                raise
+            _herkunft = False
+    return _herkunft
+
+
+def db_firmen(status=None):
+    if not herkunft_da():
+        return []
+    result=[]
+    while True:
+        params={'select':'name,careers_url,ats_typ,ats_id,mitarbeitende_ca,groesse_klasse,kategorie,hauptsitz,aktiv,website,wikidata_id,quellen,status,status_grund,herkunft',
+                'herkunft':'neq.datei','order':'name','offset':len(result),'limit':SEITE}
+        if status is not None:
+            params['status']='eq.'+status
+        teil=_objektliste(_req('GET','companies',params=params),'DB-Firmenantwort')
+        result.extend(dict(f,aktiv='ja' if f.get('aktiv') is True else 'nein') for f in teil)
+        if len(teil)<SEITE:
+            return result
+
+
+def setze_einrichtung(name, felder):
+    erlaubt={'careers_url','ats_typ','ats_id','status','status_grund','aktiv'}
+    patch={k:v for k,v in felder.items() if k in erlaubt}
+    if 'aktiv' in patch:
+        patch['aktiv']=patch['aktiv'] in ('ja',True)
+    _req('PATCH','companies',params={'name':'eq.'+name,'herkunft':'neq.datei'},json=patch)
+
+
 def sync_companies(firmen):
     def zahl(x):
         try:
@@ -239,18 +278,33 @@ def sync_companies(firmen):
         except ValueError:
             return None
     erweitert = firmen_quellen_da()
-    _upsert("companies", [{
+    mit_herkunft = herkunft_da()
+    if mit_herkunft:
+        privat={f['name'] for f in db_firmen()}
+        if any(f['name'] in privat for f in firmen):
+            raise ValueError('Herkunft-Konflikt; keine Stammdaten überschrieben')
+    zeilen = [{
         "name": f["name"], "careers_url": f["careers_url"], "ats_typ": f["ats_typ"], "ats_id": f["ats_id"],
         "mitarbeitende_ca": zahl(f["mitarbeitende_ca"]), "groesse_klasse": f["groesse_klasse"],
         "kategorie": f["kategorie"], "hauptsitz": f["hauptsitz"],
         "aktiv": f["aktiv"] == "ja" and f.get('status', 'aktiv') == 'aktiv',
+        **({'herkunft':'datei'} if mit_herkunft else {}),
         **({k: f.get(k) or (list() if k == 'quellen' else 'aktiv' if k == 'status' else None)
             for k in ('website', 'wikidata_id', 'quellen', 'status', 'status_grund')} if erweitert else {}),
-    } for f in firmen], "name")
+    } for f in firmen]
+    if mit_herkunft:
+        _req('POST','rpc/sync_dateifirmen',json={'p_firmen':zeilen})
+    else:
+        _upsert('companies',zeilen,'name')
 
 
 def importiere_ausgabe(daten):
     from scraper.rankings import pruefe_ausgabe
+    if isinstance(daten,dict) and isinstance(daten.get('liste'),dict) and daten['liste'].get('id')=='epa-patente':
+        if 'sichtbarkeit' not in daten.get('ausgabe',{}):
+            daten={**daten,'ausgabe':{**daten['ausgabe'],'sichtbarkeit':'admin','freigegeben':True}}
+        elif daten['ausgabe']['sichtbarkeit']!='admin':
+            raise ValueError('Eingeschränkte Quelle darf nur für Admins importiert werden')
     bekannte, offset = set(), 0
     while True:
         teil = _objektliste(_req('GET', 'companies', params={'select': 'name', 'order': 'name',
@@ -260,6 +314,13 @@ def importiere_ausgabe(daten):
         if len(teil) < SEITE:
             break
     zeilen = pruefe_ausgabe(daten, bekannte)
+    if not herkunft_da():
+        # Migration 014 kennt keine Sichtbarkeit: eingeschränkte Ausgaben nie freigeben.
+        for a in zeilen['ranking_ausgaben']:
+            if a.pop('sichtbarkeit','angemeldet') == 'admin':
+                a['freigegeben'] = False
+        for l in zeilen['ranking_listen']:
+            l.pop('kategorie',None)
     # Ein REST-Aufruf, eine Datenbanktransaktion: nie halbe Ausgaben sichtbar.
     _req('POST', 'rpc/importiere_ranking_ausgabe', json={'p_daten': zeilen})
 

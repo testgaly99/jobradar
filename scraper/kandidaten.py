@@ -126,7 +126,8 @@ def ausgaben(kandidaten, heute):
         result.append({'liste': dict(id=liste, name=name, herausgeber=herausgeber, aktiv=True, kategorie=kategorie),
                        'ausgabe': dict(id=f'{liste}-{heute}', jahr=jahr, veroeffentlicht_am=heute,
                                        geprueft_am=heute, quelle_url=quelle, lizenz=lizenz,
-                                       gueltig_bis=ende.isoformat(), freigegeben=liste != 'epa-patente'),
+                                       gueltig_bis=ende.isoformat(), freigegeben=True,
+                                       sichtbarkeit='admin' if liste=='epa-patente' else 'angemeldet'),
                        # Ränge ohne Wiederverwendungserlaubnis nie in Dateien: data/ranglisten/ ist öffentlich (Design: EPA nur Admin)
                        'firmen': [dict(unternehmen=n, rang=None if liste in OHNE_OEFFENTLICHEN_RANG else r)
                                   for n, r in firmen.items()]})

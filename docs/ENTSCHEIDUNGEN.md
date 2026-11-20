@@ -2,6 +2,10 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-20 | Phase 4d startet auf direkten Nutzerauftrag; Rangkorrektheit und sichere Identitätszuordnung haben Vorrang. | Neue Fehlerfälle mit künstlichen Daten prüfen; unklare Firmenzuordnungen und unbelegte Ränge nicht automatisch übernehmen. |
+| 2026-11-20 | 4d: Teilimporte derselben Ausgabe werden atomar ergänzt, Metadaten-/Rangkonflikte abgewiesen, Erstfristen bleiben erhalten. Listen-ID enthält zusätzlich einen Hash aus Name/Herausgeber. | Kein Teilstand, keine versehentliche Überschreibung bei ähnlichen Listennamen und keine Verlängerung der Speicherfrist durch Teilimporte. |
+| 2026-11-20 | 4d: Privater Einrichtungsbericht bleibt lokal und ignoriert; kein Artefakt im öffentlichen Repo. | Workflow-Artefakte öffentlicher Repos wären kein vertraulicher Ablageort; Status/Grund stehen außerdem in der Datenbank. Privater Ablauf wird mit Claude eingerichtet. |
+| 2026-11-20 | 4d: Admins zusätzlich in der Datenbank, Gastrechte unverändert, Kategorien ohne Herkunft/Rang; Textimport ohne PDF-Paket. | Sichtbarkeit wird durch RLS durchgesetzt; keine neue Abhängigkeit, kein Rohtext dauerhaft speichern. |
 | 2026-11-20 | Direkter Nutzerauftrag startet Nr. 5 Phase 4c bis zum bestehenden Haltepunkt. | Erneutes „okay“ würde die erteilte Startanweisung wiederholen; Migration und Veröffentlichung bleiben separat. |
 | 2026-11-20 | 4c: XLSX mit Standardbibliothek; Bestandsfirmen über `bestand`, bewusst inaktive Firmen erhalten; Austritt über Firmendatei und Ablaufprüfung, keine Bewerbungen löschen. | Keine neue Abhängigkeit; Portale und persönliche Bewerbungen erhalten. |
 | 2026-11-20 | 4c: Service-RPC für atomaren Ausgabenwechsel und tägliche Ablaufbereinigung in Migration 014. | Drei getrennte REST-Schreibvorgänge könnten halbe Ausgaben hinterlassen; Fristen müssen durchgesetzt werden. |
