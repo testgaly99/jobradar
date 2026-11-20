@@ -326,3 +326,25 @@ def test_deutsch_nachruesten_ohne_migration(aufbau):
     db._req.ohne_deutsch = True
     t["jobs"] = {"A:1": {"id": "A:1", "unternehmen": "A", "status": "offen", "text": "Deutsch", "abschnitte": [], "steckbrief": None}}
     assert run._deutsch_nachruesten() == 0 and t["jobs"]["A:1"]["steckbrief"] is None
+
+
+def test_vor_migration_013_geschrieben_wird_spaeter_nachgeruestet(aufbau):
+    # Prüfer-Fund: ohne Spalte darf steckbrief.deutsch nicht gespeichert werden, sonst übersieht das Nachrüsten die Stelle
+    s = stelle("1") | {"text": "Verhandlungssichere Deutschkenntnisse (mind. C1)"}
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [s]})
+    db._req.ohne_deutsch = True
+    run.lauf("2026-11-20", d)
+    assert "deutsch" not in t["jobs"]["A:1"]["steckbrief"]
+    db._req.ohne_deutsch = False
+    db._deutsch = None
+    assert run._deutsch_nachruesten() == 1 and t["jobs"]["A:1"]["deutsch_stufe"] == 5
+
+
+def test_eine_kaputte_stelle_stoppt_das_nachruesten_nicht(aufbau, monkeypatch):
+    d, t = aufbau([], {})
+    t["jobs"] = {i: {"id": i, "unternehmen": "A", "status": "offen", "text": "Deutsch C1", "abschnitte": [], "steckbrief": None}
+                 for i in ("A:1", "A:2", "A:3")}
+    echt = run.deutsch_nachtragen
+    monkeypatch.setattr(run, "deutsch_nachtragen", lambda alt, ab, text: (_ for _ in ()).throw(ValueError("x")) if text == "kaputt" else echt(alt, ab, text))
+    t["jobs"]["A:1"]["text"] = "kaputt"
+    assert run._deutsch_nachruesten() == 2 and t["jobs"]["A:3"]["deutsch_stufe"] == 5

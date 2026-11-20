@@ -236,6 +236,10 @@ def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):
     mit_deutsch = neue_spalten and deutsch_spalte_da()
     for n in neue:
         id_ = f"{firma}:{n['ext_id']}"
+        sbr = n.get("steckbrief")
+        if not mit_deutsch and isinstance(sbr, dict):
+            # Ohne Spalte (Migration 013) kein steckbrief.deutsch speichern: sonst übersieht das Nachrüsten die Stelle später
+            sbr = {k: v for k, v in sbr.items() if k != "deutsch"}
         zeilen.append({
             "id": id_, "unternehmen": firma,
             **{k: n[k] for k in ("titel", "ort", "staedte", "remote", "arbeitsmodell", "vertragsart", "abteilung",
@@ -244,8 +248,8 @@ def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):
             "erstmals_gesehen": alt[id_]["erstmals_gesehen"] if id_ in alt else heute,
             "zuletzt_gesehen": heute, "status": "offen", "sichtbar": True,
             **({"abschnitte": n.get("abschnitte"), "land": n.get("land", ""),
-                                                  "steckbrief": n.get("steckbrief")} if neue_spalten else {}),
-            **({"deutsch_stufe": rang((n.get("steckbrief") or {}).get("deutsch"))} if mit_deutsch else {}),
+                                                  "steckbrief": sbr} if neue_spalten else {}),
+            **({"deutsch_stufe": rang((sbr or {}).get("deutsch"))} if mit_deutsch else {}),
         })
     gesehen = {z["id"] for z in zeilen}
     unv = [i for i in (f"{firma}:{e}" for e in unveraendert) if i in alt]

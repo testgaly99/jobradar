@@ -187,7 +187,11 @@ def _deutsch_nachruesten():
         if not db.deutsch_spalte_da():
             return 0
         for s in db.stellen_ohne_deutsch():
-            sb = deutsch_nachtragen(s.get("steckbrief"), s.get("abschnitte"), s.get("text"))
+            try:
+                sb = deutsch_nachtragen(s.get("steckbrief"), s.get("abschnitte"), s.get("text"))
+            except Exception as e:  # eine kaputte Anzeige darf die übrigen nicht aufhalten
+                print(f"Hinweis: Deutschniveau einer Stelle übersprungen: {kurzfehler(e)}")
+                continue
             db.setze_deutsch(s["id"], sb, rang(sb["deutsch"]))
             n += 1
     except Exception as e:
