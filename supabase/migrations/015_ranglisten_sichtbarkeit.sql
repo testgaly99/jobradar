@@ -1,5 +1,11 @@
 -- Phase 4d. Nur als Datei vorbereitet; mehrfach ausführbar, setzt 010–014 voraus.
 begin;
+-- Nach 016 nicht erneut ausführen: 015 würde dessen Privatschutz in zwei Funktionen überschreiben.
+do $$ begin
+  if to_regclass('public.firmen_sichtbar') is not null then
+    raise exception '015 ist bereits durch 016 erweitert. Bitte nicht erneut ausführen; es wurde nichts geändert.';
+  end if;
+end $$;
 create table if not exists public.admins (
   user_id uuid primary key references auth.users on delete cascade,
   telegram_chat_id text

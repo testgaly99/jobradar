@@ -45,6 +45,14 @@ def test_015_atomare_importe_benannte_spalten_und_teilimportschutz():
     assert "check (herkunft in ('datei','admin','nutzer'))" in s
 
 
+def test_015_bricht_nach_016_ab_bevor_es_etwas_aendert():
+    # Erneutes 015 nach 016 ersetzte ranking_kategorien/sync_dateifirmen durch Fassungen ohne Privatschutz
+    # (in der Wegwerf-Datenbank nachgewiesen, 2026-11-20). Die Sperre muss vor der ersten Änderung stehen.
+    s = sql()
+    sperre = s.index("to_regclass('public.firmen_sichtbar') is not null")
+    assert s.index('begin;') < sperre < s.index('create table if not exists public.admins')
+
+
 def test_015_sql_abnahme_rolle_und_rollback_vorbereitet():
     p = Path(__file__).parent / 'sql/ranglisten_sichtbarkeit.sql'
     s = p.read_text(encoding='utf-8').lower()
