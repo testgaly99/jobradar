@@ -2,6 +2,8 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-20 | Prüfung 4d/4e: Namensgleichheit einer Dateifirma mit einer DB-Firma ohne passendes Portal überspringt nur diese Zeile (Bericht nennt die Anzahl), statt den Nachtlauf abzubrechen (Q261). | Ein einzelner Datenkonflikt darf nicht jede Nacht alle Stellen stoppen; die Namen bleiben aus dem öffentlichen Bericht. |
+| 2026-11-20 | Migrationen vor dem Einspielen in einer Wegwerf-PostgreSQL (pgserver im Scratchpad, nicht im Projekt) mit Supabase-Grundgerüst prüfen; 015 bricht ab, wenn 016 schon da ist (Q262). | Erste echte Ausführung der SQL-Proben ohne Risiko für Live-Daten; erneutes 015 hätte den Privatschutz von 016 überschrieben. |
 | 2026-11-20 | Direkter Folgeauftrag startet 4e auf lokalem 4d; dessen Live-Abnahme bleibt offen. | Nutzer fordert ausdrücklich das nächste Paket und bestätigt Fortsetzung; keine Veröffentlichung oder Migration daraus ableiten. |
 | 2026-11-20 | 4e: Privatfirmen über Portalidentität, Eigentümerlimit und atomare Service-RPCs; Freigabe mit zweitem Klick, Herkunft bleibt beim Admin-Knopf erhalten. | Keine Namenszusammenlegung, keine Kontodaten in der Admin-Meldeliste, keine Quota-Rennen. |
 | 2026-11-20 | 4e: Recruitee-ID als vollständiger Host, im Web lokal Subdomain normalisieren. | Bestehender Python-Adapter erwartet einen Host; neue Direktanzeigen passen über URL-Slug statt numerischer Offers-ID. |
