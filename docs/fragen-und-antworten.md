@@ -316,6 +316,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q243 | Kosten: writing-plans günstiger machen (Übergabe ohne Helfer, ggf. Sonnet)? | Nutzer: „Nichts ändern“ | Keine Änderung. | entschieden |
 | Q244 | Modellregel für Helfer in die globale CLAUDE.md eintragen? | Nutzer: „Ja, so einfügen (Empfohlen)“ | Abschnitt „Helfer (Subagenten): Modell je Aufgabe wählen“ in `~/.claude/CLAUDE.md` (haiku Suchen/Lesen, sonnet Umsetzen/normale Reviews, opus Design/Fehler/Sicherheit/große Reviews; Modell immer angeben). | entschieden |
 | Q245 | Phase 4a (Nr. 2, von Claude gebaut) und Fragenprotokoll Q241–Q244 auf `entwurf-ui` hochladen? (Nutzer dazu: „Arbeite weiter an der nächsten Aufgabe“) | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q246 | Link-Schnellstart: Websuche lieferte nur abgelaufene Links (Siemens, BSH) oder 403 (SAP). Wie weiter? | Nutzer: „Ich schicke dir Links (Empfohlen)“ | Nutzer schickt 5–10 aktuelle Links von Firmen-Karriereseiten; Claude zählt die Trefferquote. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -448,6 +449,7 @@ Fragetexte Q242 (Claude, 2026-11-19, Auswahl): Global aus, hier an (Empfohlen) /
 Fragetexte Q243 (Claude, 2026-11-19, Auswahl): Übergabe ohne Helfer (Empfohlen) / Übergabe + Sonnet / Nichts ändern.
 Fragetexte Q244 (Claude, 2026-11-19, Auswahl): Ja, so einfügen (Empfohlen) / Nicht eintragen.
 Fragetexte Q245 (Claude, 2026-11-20, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q246 (Claude, 2026-11-20, Auswahl): Ich schicke dir Links (Empfohlen) / Claude sucht weiter / Später im Alltag.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
