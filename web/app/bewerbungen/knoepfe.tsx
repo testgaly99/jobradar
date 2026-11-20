@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { bewerbungAusLink, firmaTitelVorschlag } from "./actions";
 import { MAX_TEXT } from "@/lib/uebernahme";
@@ -23,13 +23,37 @@ export function LoeschForm({ action, frage, text = "Löschen" }: { action: () =>
   );
 }
 
-type Zustand = { brauchtEingabe: true; fuer: string } | { fehler: string } | null;
+type Zustand = { brauchtEingabe: true; fuer: string } | { fehler: string } | { angelegt: string; vorhanden?: boolean } | null;
+
+// Fenster nach "Anlegen": erscheint sofort; die Bewerbung steht nach unter einer Sekunde, der Rest läuft auf dem Server weiter.
+function AngelegtFenster({ offen, laeuft, zustand, weiter }: { offen: boolean; laeuft: boolean; zustand: Zustand; weiter: () => void }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const d = ref.current;
+    if (offen && d && !d.open) d.showModal();
+    if (!offen && d?.open) d.close();
+  }, [offen]);
+  const angelegt = zustand && "angelegt" in zustand ? zustand : null;
+  return (
+    <dialog ref={ref} className="archiv-dialog angelegt-fenster" aria-labelledby="angelegt-titel" onClose={weiter}>
+      <h2 id="angelegt-titel">{laeuft || !angelegt ? "Bewerbung wird angelegt …" : angelegt.vorhanden ? "Schon vorhanden" : "Bewerbung angelegt"}</h2>
+      {angelegt?.vorhanden
+        ? <p>Diese Stelle hattest du schon. Sie steht jetzt auf „beworben“.</p>
+        : <p>Du musst nicht warten. Firma, Titel und Anzeigentext ergänzt jobradar im Hintergrund, meist in 2–5 Minuten. Du kannst diese Seite verlassen.</p>}
+      <div className="knopfreihe">
+        {angelegt && <a className="knopf knopf-schmal" href={`/bewerbung/${angelegt.angelegt}`}>Zur Bewerbung</a>}
+        <button type="button" className="knopf knopf-rand knopf-schmal" onClick={weiter}>Nächsten Link einfügen</button>
+      </div>
+    </dialog>
+  );
+}
 
 export function LinkFormular() {
   const [url, setUrl] = useState("");
   const [firma, setFirma] = useState("");
   const [titel, setTitel] = useState("");
   const [text, setText] = useState("");
+  const [fenster, setFenster] = useState(false);
   const [laeuft, starte] = useTransition();
   const [vorschlagFehler, setVorschlagFehler] = useState("");
   const erkennen = () => starte(async () => {
@@ -37,17 +61,20 @@ export function LinkFormular() {
     if ("fehler" in r) return setVorschlagFehler(r.fehler);
     setVorschlagFehler(""); setFirma((f) => f || r.firma); setTitel((t) => t || r.titel); // Eingetipptes bleibt
   });
-  const [zustand, aktion] = useActionState<Zustand, FormData>(
+  const [zustand, aktion, anlegenLaeuft] = useActionState<Zustand, FormData>(
     async () => {
       const r = await bewerbungAusLink(url, firma, titel, text);
-      return r && "brauchtEingabe" in r ? { brauchtEingabe: true as const, fuer: url } : r;
+      if (!("angelegt" in r)) setFenster(false); // Fehler oder Rückfrage stehen im Formular
+      return "brauchtEingabe" in r ? { brauchtEingabe: true as const, fuer: url } : r;
     },
     null,
   );
+  const weiter = () => { setFenster(false); setUrl(""); setFirma(""); setTitel(""); setText(""); };
   // Die Meldung gilt nur für den Link, für den gefragt wurde.
   const brauchtEingabe = zustand !== null && "brauchtEingabe" in zustand && zustand.fuer === url;
   return (
-    <form action={aktion} className="formular linkform">
+    <form action={aktion} className="formular linkform" onSubmit={() => setFenster(true)}>
+      <AngelegtFenster offen={fenster} laeuft={anlegenLaeuft} zustand={zustand} weiter={weiter} />
       <label>Link zur Anzeige
         <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
       </label>

@@ -38,13 +38,18 @@ test("Migration 012 fügt die drei Spalten idempotent hinzu", () => {
   }
 });
 
-test("Schritt 1d: nur ohne Treffer, ohne ATS, nicht für Portale, mit Abrufgrenze und Rückfall ohne Spalte", () => {
+test("Schritt 1d: nur ohne Treffer, ohne ATS, nicht für Portale, mit Abrufgrenze; sofort anlegen, Rest im Hintergrund", () => {
   const a = readFileSync(new URL("../app/bewerbungen/actions.ts", import.meta.url), "utf8");
   assert.match(a, /!ziel && !a\.ats && !istPortal\(u\.hostname\) && darfAbrufen\(/);
   assert.match(a, /nachruesten: true/);
-  assert.match(a, /PGRST204/);
-  // Seite erreicht, aber nichts erkennbar: trotzdem anlegen (Browser-Lauf liest nach), nur ohne Abruf nachfragen
-  assert.match(a, /if \(!firma && !titel && !seite\?\.abgerufen\) return \{ brauchtEingabe: true \};/);
+  // sofort anlegen und antworten, alles Langsame danach auf dem Server (after), auch wenn der Nutzer die Seite verlässt
+  assert.match(a, /after\(\(\) => vervollstaendigen\(/);
+  assert.ok(a.lastIndexOf("return { angelegt: id };") > a.indexOf("after(() => vervollstaendigen("));
+  assert.ok(!/redirect\(`\/bewerbung\//.test(a.slice(a.indexOf("export async function bewerbungAusLink"), a.indexOf("async function fuelleLeere"))), "kein Warten auf Weiterleitung");
+  // nur bei Jobportalen ohne Firma und Titel nachfragen (ohne Netz, also sofort)
+  assert.match(a, /if \(istPortal\(u\.hostname\) && !f0 && !t0\) return \{ brauchtEingabe: true \};/);
+  const k = readFileSync(new URL("../app/bewerbungen/knoepfe.tsx", import.meta.url), "utf8");
+  assert.ok(k.includes("Du musst nicht warten.") && k.includes("Du kannst diese Seite verlassen."));
 });
 
 test("Nachgerüstete Snapshots im Format des Nachtlaufs werden gelesen", async () => {

@@ -31,8 +31,8 @@ test("Fehler von GitHub oder Netz werden geschluckt (Nachtlauf als Rückfall)", 
 
 test("Link-Import markiert Firmenseiten ohne Anzeigentext und stößt danach an", () => {
   const a = readFileSync(new URL("../app/bewerbungen/actions.ts", import.meta.url), "utf8");
-  assert.match(a, /const nachSeite = !!seite && !ziel\.job && \(ausSeite \|\| !ziel\.text\);/);
-  assert.match(a, /if \(nachSeite\) after\(\(\) => anzeigeLesenAnstossen\(\)\);/);
+  assert.match(a, /const nachSeite = !istPortal\(u\.hostname\) && \(ausSeite \|\| !z\.text\);/);
+  assert.match(a, /if \(nachSeite && !\(await sb\.from\("applications"\)\.update\(\{ nachruesten: true \}\)\.eq\("id", id\)\)\.error\) await anzeigeLesenAnstossen\(\);/);
   const w = readFileSync(new URL("../../.github/workflows/anzeige-lesen.yml", import.meta.url), "utf8");
   assert.match(w, /workflow_dispatch:\s*\n(?!\s+inputs)/, "keine Eingaben: Adressen gehören nicht in öffentliche Protokolle");
   assert.match(w, /python -m scraper\.nachruesten/);
