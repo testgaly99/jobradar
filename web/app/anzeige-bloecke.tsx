@@ -2,8 +2,10 @@
 import { FELD_TITEL, istUmgerechnet, UMGERECHNET_HINWEIS, type Eintrag } from "@/lib/steckbrief";
 import { voraussetzungen, type Ki } from "@/lib/zusammenfassung";
 
-export function Ueberblick({ ki, ohne }: { ki: Ki | null; ohne: string }) {
+// sprachen: Zeilen aus dem Steckbrief ("Deutsch ≈ C1"), nur wenn der Nutzer sie sehen will (Konto, Q66).
+export function Ueberblick({ ki, ohne, sprachen = [] }: { ki: Ki | null; ohne: string; sprachen?: string[] }) {
   const mitbringen = ki ? voraussetzungen(ki) : [];
+  const sprachListe = sprachen.map((s, i) => <li key={`sp-${i}-${s}`} lang="de">{s}</li>);
   return (
     <details className="karte ueberblick" open>
       <summary>
@@ -24,16 +26,24 @@ export function Ueberblick({ ki, ohne }: { ki: Ki | null; ohne: string }) {
               <h3 id="ki-aufgaben" lang="de">Das machst du</h3>
               <ul>{ki.aufgaben.map((a, i) => <li key={`${i}-${a}`}>{a}</li>)}</ul>
             </section>
-            {mitbringen.length > 0 && (
+            {mitbringen.length + sprachen.length > 0 && (
               <section aria-labelledby="ki-mitbringen">
                 <h3 id="ki-mitbringen" lang="de">Das bringst du mit</h3>
-                <ul className="haken">{mitbringen.map((m, i) => <li key={`${i}-${m}`}>{m}</li>)}</ul>
+                <ul className="haken">{mitbringen.map((m, i) => <li key={`${i}-${m}`}>{m}</li>)}{sprachListe}</ul>
               </section>
             )}
           </div>
         </div>
       ) : (
-        <p className="gedaempft">{ohne}</p>
+        <>
+          <p className="gedaempft">{ohne}</p>
+          {sprachen.length > 0 && (
+            <section aria-labelledby="ki-mitbringen">
+              <h3 id="ki-mitbringen">Das bringst du mit</h3>
+              <ul className="haken">{sprachListe}</ul>
+            </section>
+          )}
+        </>
       )}
     </details>
   );

@@ -9,6 +9,7 @@ import { aktuellerNutzer } from "@/lib/nutzer";
 import { bestaetigt } from "@/lib/bestaetigung";
 import { selbstLoeschenErlaubt, begriffPruefen } from "@/lib/nutzerliste";
 import { FELDER } from "@/lib/steckbrief";
+import { spracheEingabe } from "@/lib/sprachniveau";
 import { loescheNutzer } from "@/lib/nutzer-loeschen";
 
 function zurueck(m: string): never {
@@ -68,6 +69,18 @@ export async function felderSpeichern(formData: FormData) {
   const felder = FELDER.filter((f) => gewaehlt.includes(f));
   const { error } = await (await createClient()).from("listen_felder").upsert({ owner_id: n.id, felder }, { onConflict: "owner_id" });
   if (error) zurueck(["42P01", "PGRST205"].includes(error.code ?? "") ? "Die Kurzbeschreibung ist erst nach Migration 005 einstellbar." : "Speichern fehlgeschlagen. Bitte später erneut versuchen.");
+  revalidatePath("/stellen");
+  revalidatePath("/konto");
+}
+
+// Spracheinstellung: Sprachzeile in "Das bringst du mit" und gespeichertes Deutschniveau für den Stellenfilter (Migration 013).
+export async function spracheSpeichern(formData: FormData) {
+  const n = await aktuellerNutzer();
+  if (!n) redirect("/login");
+  const e = spracheEingabe(formData.get("zeigen"), formData.get("niveau"));
+  if (!e) zurueck("Ungültiges Deutschniveau.");
+  const { error } = await (await createClient()).from("sprach_einstellung").upsert({ owner_id: n.id, ...e }, { onConflict: "owner_id" });
+  if (error) zurueck(["42P01", "PGRST205"].includes(error.code ?? "") ? "Die Spracheinstellung geht erst nach Migration 013." : "Speichern fehlgeschlagen. Bitte später erneut versuchen.");
   revalidatePath("/stellen");
   revalidatePath("/konto");
 }

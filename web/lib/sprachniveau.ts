@@ -36,3 +36,26 @@ export function deutschWirksam(ausAdresse: string, gespeichert: string | null | 
   const w = ausAdresse || gespeichert || "";
   return stufenRang(w) === null ? "" : w;
 }
+
+// "Sprachkenntnisse in ‚Das bringst du mit‘ zeigen": ohne gespeicherte Wahl aus für den Admin, an für alle anderen (Q66).
+export const sprachenZeigen = (gespeichert: boolean | null | undefined, admin: boolean): boolean =>
+  typeof gespeichert === "boolean" ? gespeichert : !admin;
+
+// Deutsch aus dem Deutschniveau (nie aus der alten Sprachliste), danach übrige Sprachen als "Englisch fließend".
+export function sprachzeilen(steckbrief: unknown): string[] {
+  if (!steckbrief || typeof steckbrief !== "object") return [];
+  const s = steckbrief as { deutsch?: unknown; sprachen?: unknown };
+  const de = leseDeutsch(s.deutsch);
+  const deZeile = de ? deutschText(de) : null;
+  const rest = (Array.isArray(s.sprachen) ? s.sprachen : [])
+    .filter((x): x is { sprache: string; niveau: string } => !!x && typeof x === "object" && typeof x.sprache === "string" && typeof x.niveau === "string" && x.sprache !== "Deutsch")
+    .map((x) => `${x.sprache} ${x.niveau}`);
+  return [...(deZeile ? [deZeile] : []), ...rest];
+}
+
+// Konto-Formular: Häkchen ja/nein, Niveau nur aus STUFEN (leer oder "alle" = kein Filter); sonst null = abweisen.
+export function spracheEingabe(zeigen: unknown, niveau: unknown): { zeigen: boolean; niveau: string | null } | null {
+  const n = typeof niveau === "string" ? niveau : "";
+  if (n !== "" && n !== "alle" && stufenRang(n) === null) return null;
+  return { zeigen: zeigen === "1" || zeigen === "on", niveau: stufenRang(n) === null ? null : n };
+}

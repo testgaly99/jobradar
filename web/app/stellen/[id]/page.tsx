@@ -11,6 +11,7 @@ import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
 import { leseKi } from "@/lib/zusammenfassung";
 import { SteckbriefKarte, Ueberblick } from "../../anzeige-bloecke";
+import { sprachenZeigen, sprachzeilen } from "@/lib/sprachniveau";
 import { merken, beworben, entmerken } from "../actions";
 import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
@@ -37,7 +38,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   const firma = j.unternehmen ?? "";
   const ranglisten = await ladeRankingZuordnungen(sb, !!nutzer, [firma]);
   const leer = { data: null, error: null };
-  const [tx, ab, sbr, wp, app, lf, schonBeworben, kr] = await Promise.all([
+  const [tx, ab, sbr, wp, app, lf, schonBeworben, kr, se] = await Promise.all([
     nutzer ? sb.from("jobs").select("text").eq("id", id).maybeSingle() : leer,
     nutzer ? sb.from("jobs").select("abschnitte").eq("id", id).maybeSingle() : leer,
     sb.from("jobs").select("steckbrief").eq("id", id).maybeSingle(),
@@ -47,6 +48,8 @@ export default async function Seite({ params, searchParams }: { params: Promise<
     nutzer ? bewerbungenBei(sb, firma) : 0,
     // Gäste haben kein Leserecht auf ki (Migration 009); die Abfrage würde scheitern.
     nutzer ? sb.from("jobs").select("ki,ki_modell").eq("id", id).maybeSingle() : leer,
+    // Fehlt die Tabelle (Migration 013), gilt der Standard: Admin aus, alle anderen an.
+    nutzer ? sb.from("sprach_einstellung").select("zeigen").maybeSingle() : leer,
   ]);
   const text: string | null = tx.data?.text ?? null;
   const heute = heuteLokal();
@@ -65,6 +68,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   }, [...FELDER]);
   const link = sicher(j.url);
   const ki = leseKi(kr.data?.ki);
+  const sprachen = nutzer && sprachenZeigen(se.error ? null : se.data?.zeigen, nutzer.admin) ? sprachzeilen(sbr.error ? null : sbr.data?.steckbrief) : [];
 
   return (
     <>
@@ -74,7 +78,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       <Ranglisten zuordnungen={ranglisten.zuordnungen} />
       {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
       {nutzer && (
-        <Ueberblick ki={ki} ohne={kr.data?.ki_modell === "fehler" ? "Für diese Anzeige gibt es keine Zusammenfassung." : "Zusammenfassung folgt."} />
+        <Ueberblick ki={ki} ohne={kr.data?.ki_modell === "fehler" ? "Für diese Anzeige gibt es keine Zusammenfassung." : "Zusammenfassung folgt."} sprachen={sprachen} />
       )}
       <SteckbriefKarte eintraege={eintraege} />
       {nutzer && firma && (

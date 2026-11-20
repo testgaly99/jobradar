@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createClient } from "@supabase/supabase-js";
-import { STUFEN, deutschText, deutschWirksam, leseDeutsch, stufenRang } from "../lib/sprachniveau.ts";
+import { STUFEN, deutschText, deutschWirksam, leseDeutsch, spracheEingabe, sprachenZeigen, sprachzeilen, stufenRang } from "../lib/sprachniveau.ts";
 import { filterZuUrl, leseFilter } from "../lib/filter.ts";
 import { stellenAbfrage } from "../lib/stellen.ts";
 
@@ -65,3 +65,27 @@ for (const mitListe of [false, true]) {
     assert.equal(aufrufe.at(-1)!.searchParams.get("or"), null);
   });
 }
+
+test("Sprachzeile standardmäßig: Admin aus, alle anderen an; gespeicherte Wahl gewinnt", () => {
+  assert.equal(sprachenZeigen(null, true), false);
+  assert.equal(sprachenZeigen(undefined, false), true);
+  assert.equal(sprachenZeigen(true, true), true);
+  assert.equal(sprachenZeigen(false, false), false);
+});
+
+test("Sprachzeilen: Deutsch zuerst, dann übrige Sprachen ohne Deutsch", () => {
+  assert.deepEqual(sprachzeilen({ deutsch: { status: "vorteil", stufe: null, geschaetzt: false }, sprachen: [{ sprache: "Englisch", niveau: "fließend" }] }),
+    ["Deutsch von Vorteil", "Englisch fließend"]);
+  assert.deepEqual(sprachzeilen({ deutsch: { status: "pflicht", stufe: "C1", geschaetzt: true },
+    sprachen: [{ sprache: "Deutsch", niveau: "≈ C1" }, { sprache: "Französisch", niveau: "B2" }] }), ["Deutsch ≈ C1", "Französisch B2"]);
+  assert.deepEqual(sprachzeilen({ deutsch: { status: "keins", stufe: null, geschaetzt: false }, sprachen: [] }), []);
+  assert.deepEqual(sprachzeilen(null), []);
+  assert.deepEqual(sprachzeilen({ sprachen: [{ sprache: "Deutsch", niveau: "C1" }, null] }), []); // ohne Nachrüstung keine alte Deutsch-Zeile
+});
+
+test("Konto-Eingabe: nur erlaubte Stufen, Häkchen als ja/nein", () => {
+  assert.deepEqual(spracheEingabe("1", "B2"), { zeigen: true, niveau: "B2" });
+  assert.deepEqual(spracheEingabe(null, ""), { zeigen: false, niveau: null });
+  assert.deepEqual(spracheEingabe("1", "alle"), { zeigen: true, niveau: null });
+  assert.equal(spracheEingabe("1", "X9"), null);
+});
