@@ -90,13 +90,31 @@ def _gehalt(t):
     return None
 
 
+def _deutsch(abschnitte, text):
+    # Zeilenweise, damit jeder Stichpunkt ein eigener Satz bleibt
+    zeilen = "\n".join([text or ""] + [z for a in abschnitte or [] for z in (a["titel"], *a["punkte"])])
+    return deutsch(zeilen, englisch(zeilen))
+
+
+def _mit_deutsch(sprachen, de):
+    """Deutsch steht in "sprachen" nur bei Pflicht mit Stufe, damit Kurzzeile und Detail nicht widersprechen."""
+    rest = [s for s in sprachen if s.get("sprache") != "Deutsch"]
+    if de["status"] != "pflicht":
+        return rest
+    return [{"sprache": "Deutsch", "niveau": ("≈ " if de["geschaetzt"] else "") + de["stufe"]}] + rest
+
+
 def steckbrief(abschnitte, text):
     t = " ".join([text or ""] + [" ".join([a["titel"], *a["punkte"]]) for a in abschnitte or []])
-    # Für Deutsch zeilenweise, damit jeder Stichpunkt ein eigener Satz bleibt
-    zeilen = "\n".join([text or ""] + [z for a in abschnitte or [] for z in (a["titel"], *a["punkte"])])
-    de = deutsch(zeilen, englisch(zeilen))
-    sprachen = _sprachen(t)
-    if de["status"] == "pflicht":
-        sprachen.insert(0, {"sprache": "Deutsch", "niveau": ("≈ " if de["geschaetzt"] else "") + de["stufe"]})
-    return {"erfahrung_jahre": _erfahrung(t), "sprachen": sprachen, "gehalt": _gehalt(t),
+    de = _deutsch(abschnitte, text)
+    return {"erfahrung_jahre": _erfahrung(t), "sprachen": _mit_deutsch(_sprachen(t), de), "gehalt": _gehalt(t),
             "sicherheitsueberpruefung": bool(_SICHER.search(t)), "deutsch": de}
+
+
+def deutsch_nachtragen(alt, abschnitte, text):
+    """Bestehender Steckbrief plus Deutschniveau; übrige Felder bleiben, wie sie sind."""
+    if not isinstance(alt, dict):
+        return steckbrief(abschnitte, text)
+    de = _deutsch(abschnitte, text)
+    sprachen = [s for s in alt.get("sprachen") or [] if isinstance(s, dict)]
+    return {**alt, "sprachen": _mit_deutsch(sprachen, de), "deutsch": de}

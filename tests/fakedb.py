@@ -28,6 +28,7 @@ class FakeDB:
         self.ohne_ki_spalten = False
         self.ohne_nachruesten = False
         self.ohne_whitelist = False
+        self.ohne_deutsch = False
         self.rpc_nein = 0
         self.nachgeruestet = 0
         self.pruefungen = 0
@@ -56,7 +57,19 @@ class FakeDB:
             for z in json:
                 if self.ohne_spalten:
                     assert not {"abschnitte", "land", "steckbrief"} & set(z)
+                if self.ohne_deutsch:
+                    assert "deutsch_stufe" not in z
                 self.t[pfad].setdefault(z[key], {}).update(z)  # merge wie PostgREST
+        elif method == "GET" and pfad == "jobs" and params.get("select") == "deutsch_stufe":
+            if self.ohne_deutsch:
+                raise RuntimeError("Supabase GET jobs: 400 column jobs.deutsch_stufe does not exist")
+            return []
+        elif method == "GET" and pfad == "jobs" and params.get("select") == "id,text,abschnitte,steckbrief":
+            assert params["status"] == "eq.offen" and params["text"] == "neq." and params["steckbrief->deutsch"] == "is.null"
+            rows = sorted((z for z in self.t["jobs"].values() if z["status"] == "offen" and z.get("text")
+                           and not (z.get("steckbrief") or {}).get("deutsch")), key=lambda z: z["id"])
+            rows = rows[params["offset"]:params["offset"] + params["limit"]]
+            return [{k: z.get(k) for k in ("id", "text", "abschnitte", "steckbrief")} for z in rows]
         elif method == "GET" and pfad == "jobs" and params.get("select") == "ki":
             if self.ohne_ki_spalten:
                 raise RuntimeError("Supabase GET jobs: 400 column jobs.ki does not exist")

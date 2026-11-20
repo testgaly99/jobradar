@@ -5,6 +5,7 @@ from pathlib import Path
 
 import requests
 from scraper.fehler import DatenbankFehler, kurzfehler
+from scraper.sprachniveau import rang
 
 BATCH = 500
 SEITE = 1000
@@ -66,6 +67,41 @@ def _spalten_da():
             _spalten = False
             print("Hinweis: Spalten abschnitte/land/steckbrief fehlen (Migration 005 offen), werden nicht geschrieben.")
     return _spalten
+
+
+_deutsch = None  # None = noch nicht geprueft (run.lauf setzt es pro Lauf zurueck)
+
+
+def deutsch_spalte_da():
+    """Einmal pro Lauf: gibt es jobs.deutsch_stufe schon (Migration 013)? PostgREST antwortet sonst mit 400."""
+    global _deutsch
+    if _deutsch is None:
+        try:
+            _req("GET", "jobs", params={"select": "deutsch_stufe", "limit": 0})
+            _deutsch = True
+        except RuntimeError as e:
+            if ": 400 " not in str(e):
+                raise
+            _deutsch = False
+            print("Hinweis: Spalte jobs.deutsch_stufe fehlt (Migration 013 offen), Deutschniveau nicht gespeichert.")
+    return _deutsch
+
+
+def stellen_ohne_deutsch(limit=2000):
+    """Offene Stellen mit Text, deren Steckbrief noch kein Deutschniveau hat (alle wurden vor dem Lesen geholt, dann geschrieben)."""
+    zeilen = []
+    while len(zeilen) < limit:
+        teil = _req("GET", "jobs", params={"select": "id,text,abschnitte,steckbrief", "status": "eq.offen", "text": "neq.",
+                                           "steckbrief->deutsch": "is.null", "order": "id",
+                                           "limit": min(SEITE, limit - len(zeilen)), "offset": len(zeilen)})
+        zeilen += teil
+        if len(teil) < SEITE:
+            break
+    return zeilen
+
+
+def setze_deutsch(job_id, steckbrief, stufe):
+    _req("PATCH", "jobs", params={"id": f"eq.{job_id}"}, json={"steckbrief": steckbrief, "deutsch_stufe": stufe})
 
 
 def ki_spalten_da():
@@ -197,6 +233,7 @@ def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):
     `schliessen=False`: nicht gesehene Stellen bleiben offen (Lauf hat Einzelstellen übersprungen)."""
     alt = _bestand(firma)
     zeilen, neue_spalten = [], _spalten_da()
+    mit_deutsch = neue_spalten and deutsch_spalte_da()
     for n in neue:
         id_ = f"{firma}:{n['ext_id']}"
         zeilen.append({
@@ -208,6 +245,7 @@ def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):
             "zuletzt_gesehen": heute, "status": "offen", "sichtbar": True,
             **({"abschnitte": n.get("abschnitte"), "land": n.get("land", ""),
                                                   "steckbrief": n.get("steckbrief")} if neue_spalten else {}),
+            **({"deutsch_stufe": rang((n.get("steckbrief") or {}).get("deutsch"))} if mit_deutsch else {}),
         })
     gesehen = {z["id"] for z in zeilen}
     unv = [i for i in (f"{firma}:{e}" for e in unveraendert) if i in alt]

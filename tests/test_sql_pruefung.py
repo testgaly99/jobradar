@@ -178,6 +178,8 @@ def test_migration_010_definiert_groesse_rang_vor_ranking_stellen_und_nur_dort()
     assert sql.index("add column if not exists groesse_rang") < sql.index("create or replace function public.ranking_stellen")
     assert sql.count("create or replace function public.ranking_stellen") == 1
     assert "'groesse_rang', c.groesse_rang" in sql
+    # 013 legt ranking_stellen mit zusätzlicher Spalte deutsch_stufe neu an (Plan Sprachniveau, Task 2)
+    assert "'groesse_rang', c.groesse_rang" in (ordner / "013_sprachniveau.sql").read_text(encoding="utf-8")
     for datei in ordner.glob("*.sql"):
-        if datei.name != "010_rankings.sql":
+        if datei.name not in ("010_rankings.sql", "013_sprachniveau.sql"):
             assert "function public.ranking_stellen" not in datei.read_text(encoding="utf-8"), datei.name

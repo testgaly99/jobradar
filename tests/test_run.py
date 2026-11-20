@@ -20,6 +20,7 @@ def stelle(i, titel="Engineer", ort="Berlin"):
 def aufbau(tmp_path, monkeypatch):
     fake = FakeDB()
     monkeypatch.setattr(db, "_req", fake)
+    monkeypatch.setattr(db, "_deutsch", None)  # Spaltenprüfung nicht aus einem anderen Test übernehmen
     monkeypatch.delenv("GROQ_API_KEY", raising=False)  # Tests rufen Groq nie wirklich
 
     def setze(firmen, adapter):
@@ -97,6 +98,7 @@ def test_steckbrief_fehler_kippt_firma_nicht(aufbau, monkeypatch):
     def kaputt(*a):
         raise ValueError("x")
     monkeypatch.setattr(run, "steckbrief", kaputt)
+    monkeypatch.setattr(run, "deutsch_nachtragen", kaputt)  # auch das Nachrüsten scheitert, ohne den Lauf zu kippen
     d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1")]})
     assert run.lauf("2026-11-07", d)["firmen"][0]["fehler"] == ""
     assert t["jobs"]["A:1"]["steckbrief"] is None
@@ -284,3 +286,43 @@ def test_echte_leere_liste_bleibt_erfolgreich_mit_bisheriger_schliesslogik(aufba
     bericht = run.lauf("2026-11-07", d)["firmen"][0]
     assert bericht["fehler"] == "" and bericht["gefunden"] == 0 and bericht["geschlossen"] == 1
     assert t["jobs"]["A:1"]["status"] == "geschlossen"
+
+
+def test_neue_stelle_bekommt_deutsch_stufe(aufbau):
+    s = stelle("1") | {"text": "Sehr gute Deutschkenntnisse und gute Englischkenntnisse"}
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [s]})
+    run.lauf("2026-11-20", d)
+    assert t["jobs"]["A:1"]["deutsch_stufe"] == 5
+    assert t["jobs"]["A:1"]["steckbrief"]["deutsch"] == {"status": "pflicht", "stufe": "C1", "geschaetzt": True}
+
+
+def test_ohne_migration_013_keine_deutsch_stufe(aufbau, monkeypatch):
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1")]})
+    db._req.ohne_deutsch = True  # FakeDB prüft beim Upsert, dass deutsch_stufe fehlt
+    bericht = run.lauf("2026-11-20", d)
+    assert "deutsch_stufe" not in t["jobs"]["A:1"] and bericht["deutsch"] == 0
+
+
+def test_deutsch_nachruesten_behaelt_uebrigen_steckbrief(aufbau):
+    d, t = aufbau([], {})
+    alt = {"erfahrung_jahre": 3, "sprachen": [{"sprache": "Deutsch", "niveau": "fließend"}, {"sprache": "Englisch", "niveau": "C1"}],
+           "gehalt": None, "sicherheitsueberpruefung": True}
+    t["jobs"] = {
+        "A:1": {"id": "A:1", "unternehmen": "A", "status": "offen", "text": "German is a plus.", "abschnitte": [], "steckbrief": copy.deepcopy(alt)},
+        "A:2": {"id": "A:2", "unternehmen": "A", "status": "offen", "text": "Verhandlungssichere Deutschkenntnisse (mind. C1)", "abschnitte": None, "steckbrief": None},
+        "A:3": {"id": "A:3", "unternehmen": "A", "status": "offen", "text": "x", "abschnitte": [], "steckbrief": {"deutsch": {"status": "keins"}}},
+    }
+    assert run._deutsch_nachruesten() == 2
+    s1 = t["jobs"]["A:1"]
+    assert s1["steckbrief"]["deutsch"]["status"] == "vorteil" and s1["deutsch_stufe"] is None
+    assert s1["steckbrief"]["erfahrung_jahre"] == 3 and s1["steckbrief"]["sicherheitsueberpruefung"] is True
+    assert s1["steckbrief"]["sprachen"] == [{"sprache": "Englisch", "niveau": "C1"}]  # alte Deutsch-Zeile passt nicht mehr
+    assert t["jobs"]["A:2"]["deutsch_stufe"] == 5 and t["jobs"]["A:2"]["steckbrief"]["sprachen"][0] == {"sprache": "Deutsch", "niveau": "C1"}
+    assert "deutsch_stufe" not in t["jobs"]["A:3"]
+
+
+def test_deutsch_nachruesten_ohne_migration(aufbau):
+    d, t = aufbau([], {})
+    db._req.ohne_deutsch = True
+    t["jobs"] = {"A:1": {"id": "A:1", "unternehmen": "A", "status": "offen", "text": "Deutsch", "abschnitte": [], "steckbrief": None}}
+    assert run._deutsch_nachruesten() == 0 and t["jobs"]["A:1"]["steckbrief"] is None

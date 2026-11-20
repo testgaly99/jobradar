@@ -10,7 +10,8 @@ from scraper.ats import ADAPTER
 from scraper import db, ki, nachruesten
 from scraper.companies import lade_unternehmen
 from scraper.logo import hole_logo
-from scraper.steckbrief import steckbrief
+from scraper.steckbrief import deutsch_nachtragen, steckbrief
+from scraper.sprachniveau import rang
 from scraper.filter import deutsche_staedte, erfahrungslevel, ist_relevant, land
 from scraper.fehler import kurzfehler
 
@@ -131,6 +132,8 @@ def _markdown(bericht):
         if f.get("uebersprungen"):
             z.append(f"- {f['name']}: {sum(f['uebersprungen'].values())} Stellen übersprungen ("
                      + ", ".join(f"{g}: {n}" for g, n in f["uebersprungen"].items()) + "), nichts geschlossen")
+    if bericht.get("deutsch"):
+        z.append(f"- Deutschniveau nachgerüstet: {bericht['deutsch']}")
     if bericht.get("ki"):
         z.append("- KI: " + ", ".join(f"{k}: {v}" for k, v in bericht["ki"].items()))
     if bericht.get("nachruesten"):
@@ -177,6 +180,21 @@ def _ki(heute):
     return erg
 
 
+def _deutsch_nachruesten():
+    """Deutschniveau für Stellen von vor Migration 013 nachtragen; darf den Lauf nie kippen."""
+    n = 0
+    try:
+        if not db.deutsch_spalte_da():
+            return 0
+        for s in db.stellen_ohne_deutsch():
+            sb = deutsch_nachtragen(s.get("steckbrief"), s.get("abschnitte"), s.get("text"))
+            db.setze_deutsch(s["id"], sb, rang(sb["deutsch"]))
+            n += 1
+    except Exception as e:
+        print(f"Hinweis: Deutschniveau nachrüsten fehlgeschlagen: {kurzfehler(e)}")
+    return n
+
+
 def _nachruesten():
     """Bewerbungen aus Firmenseiten nachrüsten (Link-Schnellstart); darf den Lauf nie kippen."""
     try:
@@ -189,11 +207,12 @@ def _nachruesten():
 def lauf(heute, datenordner="data"):
     datenordner = Path(datenordner)
     firmen = lade_unternehmen(datenordner / "companies.csv")
-    db._spalten = None  # Spalten-Pruefung (Migration 005) einmal pro Lauf neu
+    db._spalten = db._deutsch = None  # Spalten-Pruefungen (Migration 005, 013) einmal pro Lauf neu
     db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
     _logos(firmen)
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in firmen if f["aktiv"] == "ja"]}
     db.snapshot_nachruesten()  # nach allen Firmen
+    bericht["deutsch"] = _deutsch_nachruesten()  # vor den KI-Schritten (Plan Sprachniveau, Task 3)
     bericht["ki"] = _ki(heute)
     bericht["nachruesten"] = _nachruesten()
     _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
