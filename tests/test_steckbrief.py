@@ -26,9 +26,25 @@ def test_gehalt():
 def test_sprachen():
     assert sb("German (C1)")["sprachen"] == [{"sprache": "Deutsch", "niveau": "C1"}]
     assert sb("fließend Englisch")["sprachen"] == [{"sprache": "Englisch", "niveau": "fließend"}]
+    # Deutsch kommt seit dem Sprachniveau-Paket aus scraper.sprachniveau ("fluent" = geschätzt C1)
     assert sb("fluent German and native French")["sprachen"] == [
-        {"sprache": "Deutsch", "niveau": "fließend"}, {"sprache": "Französisch", "niveau": "Muttersprache"}]
+        {"sprache": "Deutsch", "niveau": "≈ C1"}, {"sprache": "Französisch", "niveau": "Muttersprache"}]
     assert sb("offices in Germany and English-speaking markets")["sprachen"] == []
+
+
+def test_steckbrief_enthaelt_deutsch():
+    s = sb("Sehr gute Deutschkenntnisse und gute Englischkenntnisse")
+    assert s["deutsch"] == {"status": "pflicht", "stufe": "C1", "geschaetzt": True}
+    assert {"sprache": "Deutsch", "niveau": "≈ C1"} in s["sprachen"]
+
+
+def test_deutsch_auch_aus_stichpunkten_satzweise():
+    abschnitte = [{"titel": "Profil", "punkte": ["Excellent English", "German is a plus"]}]
+    assert steckbrief(abschnitte, "")["deutsch"]["status"] == "vorteil"
+
+
+def test_deutsch_vorteil_steht_nicht_in_sprachen():
+    assert sb("Fluent English, German a plus.")["sprachen"] == [{"sprache": "Englisch", "niveau": "fließend"}]
 
 
 def test_sicherheit():

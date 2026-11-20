@@ -1,12 +1,15 @@
 """Steckbrief einer Anzeige per Regeln (keine KI): Erfahrung, Sprachen, Gehalt, Sicherheitsüberprüfung."""
 import re
 
+from scraper.sprachniveau import deutsch, englisch
+
 _JAHRE = re.compile(r"(?<![\d.,])(\d{1,2})\s*(?:[-–]\s*\d{1,2})?\s*\+?\s*(?:years?|jahre?n?)\b(?!\s*(?:ago|old|vor))", re.I)
 _BEZUG = re.compile(r"experience|erfahrung", re.I)
 
 _NIVEAU = [(r"\b([ABC][12])\b", None), (r"flie(?:ß|ss)end|fluent(?:ly)?", "fließend"),
            (r"verhandlungssicher", "verhandlungssicher"), (r"muttersprach\w*|native", "Muttersprache")]
-_SPRACHEN = {"Deutsch": r"german|deutsch", "Englisch": r"english|englisch", "Französisch": r"french|franz(?:ö|oe)sisch"}
+# Deutsch erkennt scraper.sprachniveau (genauer, mit "von Vorteil"); hier nur die übrigen Sprachen.
+_SPRACHEN = {"Englisch": r"english|englisch", "Französisch": r"french|franz(?:ö|oe)sisch"}
 _FENSTER = 25  # Zeichen links und rechts vom Sprachnamen, in denen das Niveau stehen muss
 
 _W = r"(?:€|EUR|CHF)"
@@ -89,5 +92,11 @@ def _gehalt(t):
 
 def steckbrief(abschnitte, text):
     t = " ".join([text or ""] + [" ".join([a["titel"], *a["punkte"]]) for a in abschnitte or []])
-    return {"erfahrung_jahre": _erfahrung(t), "sprachen": _sprachen(t), "gehalt": _gehalt(t),
-            "sicherheitsueberpruefung": bool(_SICHER.search(t))}
+    # Für Deutsch zeilenweise, damit jeder Stichpunkt ein eigener Satz bleibt
+    zeilen = "\n".join([text or ""] + [z for a in abschnitte or [] for z in (a["titel"], *a["punkte"])])
+    de = deutsch(zeilen, englisch(zeilen))
+    sprachen = _sprachen(t)
+    if de["status"] == "pflicht":
+        sprachen.insert(0, {"sprache": "Deutsch", "niveau": ("≈ " if de["geschaetzt"] else "") + de["stufe"]})
+    return {"erfahrung_jahre": _erfahrung(t), "sprachen": sprachen, "gehalt": _gehalt(t),
+            "sicherheitsueberpruefung": bool(_SICHER.search(t)), "deutsch": de}
