@@ -7,10 +7,12 @@ export async function GET() {
   if (!c?.claims) return new Response("Nicht angemeldet", { status: 401 });
 
   // PostgREST kappt bei 1000 Zeilen: seitenweise holen, stabil nach id sortiert.
-  const alle = async (tabelle: string, spalten: string) => {
+  const alle = async (tabelle: string, spalten: string, ordnung = ["id"]) => {
     const zeilen: Record<string, unknown>[] = [];
     for (let von = 0; ; von += 1000) {
-      const { data, error } = await sb.from(tabelle).select(spalten).order("id").range(von, von + 999);
+      let q = sb.from(tabelle).select(spalten);
+      for (const o of ordnung) q = q.order(o);
+      const { data, error } = await q.range(von, von + 999);
       if (error) throw error;
       zeilen.push(...(data as unknown as Record<string, unknown>[]));
       if (data.length < 1000) return zeilen;
@@ -22,6 +24,7 @@ export async function GET() {
       await alle("contacts", "application_id,name,rolle,email,telefon"),
       await alle("interviews", "application_id,datum,format,teilnehmer"),
       await alle("documents", "id,name"),
+      await alle("bewerbung_anlagen", "application_id,document_id", ["application_id", "document_id"]),
     );
     return new Response(csv, {
       headers: {

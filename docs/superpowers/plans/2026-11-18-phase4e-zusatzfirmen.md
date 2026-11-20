@@ -12,6 +12,8 @@
 
 ## Global Constraints
 
+- **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** Task 4b legt für **jede** Zeile in `admins` eine Zeile in `firmen_sichtbar` an (beide Admin-Konten sehen die 13 heutigen Firmen); „kein Limit“ gilt für jedes Admin-Konto.
+
 - Private Firmen und ihre Stellen erscheinen für niemanden außer den eingetragenen Nutzern: nicht in Stellenliste, Facetten (`facetten`), Ranglisten-Funktionen, `laeufe`, `data/bericht.md`, GitHub-Issues (4f) oder Telegram-Digest anderer.
 - Unterstützte Portale nur, wenn der Python-Nachtlauf sie abrufen kann: `greenhouse`, `ashby`, `personio`, `recruitee` (Q75; + später neue Adapter aus 4c-3). Sonst Meldung (exakt): „Diese Seite kann jobradar nicht lesen.“
 - Höchstens 50 Zusatzfirmen je Nutzer (Q75); **für den Admin gilt kein Limit** (Nutzer 2026-11-19); Formular-Abrufe höchstens 10 je Minute je Nutzer (`darfAbrufen` aus dem Link-Schnellstart).

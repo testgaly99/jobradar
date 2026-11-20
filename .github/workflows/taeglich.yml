@@ -28,6 +28,8 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python -m pytest -q
+      # Browser für Bewerbungen aus Karriereseiten, die per JavaScript laden (Rückfall, falls der Sofort-Lauf nicht lief)
+      - run: python -m playwright install --with-deps chromium
       # Exit 1 = alle Firmen fehlgeschlagen: Job schlägt fehl, GitHub schickt eine Mail.
       - run: python -m scraper.run
         env:

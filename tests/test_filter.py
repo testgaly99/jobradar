@@ -122,3 +122,14 @@ def test_unter_35_stunden_raus(titel):
 ])
 def test_ab_35_stunden_oder_vollzeit_bleibt(titel):
     assert ist_relevant(titel, "Berlin", False) == (True, "")
+
+
+@pytest.mark.parametrize("ort", ["Remote - Worldwide", "Anywhere", "Remote (Global)", "Weltweit", "Remote", "Remote - Remote", "remote, "])
+def test_remote_weltweit_bleibt(ort):
+    assert ist_relevant("Engineer", ort, True) == (True, "")
+
+
+@pytest.mark.parametrize("ort,remote", [("Remote - USA", True), ("Remote - Worldwide", False), ("Remote", False),
+                                        ("Remote - Canada", True), ("Global Ventures, New York", True)])
+def test_remote_mit_land_oder_ohne_kennzeichen_raus(ort, remote):
+    assert ist_relevant("Engineer", ort, remote) == (False, "Ausland")

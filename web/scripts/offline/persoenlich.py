@@ -34,7 +34,7 @@ def pruefe_persoenlich(browser, width, context, session, base, log):
     # Der Gast kommt an keine privaten Seiten oder Exportdaten.
     guest = context(browser, width)
     p = guest.new_page()
-    for pfad in ["/bewerbungen", "/dokumente", "/konto", "/export"]:
+    for pfad in ["/bewerbungen", "/unterlagen", "/konto", "/export"]:
         p.goto(base + pfad)
         expect(p).to_have_url(base + "/login")
     guest.close()
@@ -77,7 +77,7 @@ def pruefe_persoenlich(browser, width, context, session, base, log):
     print(f"OK {width}px: Gastschutz, Tracker-Detail, Tastaturzug/Undo, Gemerkt-Schutz, Kommentar, Lade-/Schreibfehler")
 
     # Upload, signierter Download, abgebrochene Löschung und Referenzschutz.
-    ctx, p = starten("dokument-normal", "/dokumente")
+    ctx, p = starten("dokument-normal", "/unterlagen")
     expect(dokument(p, "CV Offline verwendet")).to_be_visible()
     hochladen(p)
     neu = dokument(p, "CV Offline neu")
@@ -102,12 +102,12 @@ def pruefe_persoenlich(browser, width, context, session, base, log):
 
     for fall, meldung in [("dokument-uploadfehler", "Hochladen hat nicht geklappt"),
                           ("dokument-metadatenfehler", "Dokument konnte nicht gespeichert werden")]:
-        ctx, p = starten(fall, "/dokumente")
+        ctx, p = starten(fall, "/unterlagen")
         hochladen(p)
         expect(warnung(p)).to_contain_text(meldung)
         expect(dokument(p, "CV Offline neu")).to_have_count(0)
         ctx.close()
-    ctx, p = starten("dokument-downloadfehler", "/dokumente")
+    ctx, p = starten("dokument-downloadfehler", "/unterlagen")
     dokument(p, "CV Offline verwendet").get_by_role("button", name="Herunterladen", exact=True).click()
     expect(warnung(p)).to_contain_text("Download hat nicht geklappt")
     ctx.close()

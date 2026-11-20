@@ -19,6 +19,7 @@ Heute hat jobradar 13 Firmen aus `data/companies.csv`. Ziel sind rund 1.000 Firm
 - Kein automatischer Abruf von Ranglisten-Seiten, deren Lizenz das nicht erlaubt; solche Listen nur über das Admin-Formular (Q41).
 - Kein Browser (Playwright) im Nachtlauf (Q49); Firmen, deren Stellen nur per JavaScript erscheinen, bleiben vorerst draußen.
 - Keine „Ähnlichen Stellen“, keine Gehaltsschätzung, keine Suchprofile (Phase 5).
+- Wöchentlicher Kurzbericht aus CLAUDE.md 4.3 entfällt (Q113). Firmendaten anreichern (Rolle im Markt, Eigentümer, Gründungsjahr) kommt mit Phase 5 (Q114). TK/Playwright: Entscheidung nach der Portal-Messung 4c-3 (Q115).
 - Mistral-Prüfung (Q50) gehört nicht in die Codex-Pläne; sie braucht ein Nutzerkonto und Live-Proben und läuft mit Claude.
 
 ## Anti-Ziele (wäre ein Fehlschlag, auch wenn es technisch läuft)
@@ -102,7 +103,8 @@ Baut auf 4b, 4c-2 und 4c-3 auf; der Schnellstart (JobPosting von beliebigen Firm
 - **Firmen-Karriereseiten mit Workday/SuccessFactors:** Link erkennen und die Stelle über die Bausteine aus 4c-3 holen.
 - **Jobportal-Links (LinkedIn, StepStone, Indeed, XING):** Das Portal wird **nie** aufgerufen (Q16; Nutzer: „ohne linkedin aufzurufen“). Firma und Titel kommen aus der Adresse (StepStone/Indeed enthalten sie oft) oder aus dem Tab-Titel, den die Chrome-Erweiterung mitschickt. Dann Suche auf der Originalquelle: Firma in jobradar → deren Stellen nach Titel durchsuchen; Firma neu → Website über Wikidata, Portal erkennen (4b/4c-2), dort nach Titel suchen. Ein eindeutiger Treffer → komplette Stelle aus der Originalquelle, Bewerbung verweist zusätzlich auf den Portal-Link; mehrere → Auswahl für den Nutzer; keiner → Bewerbung mit Firma/Titel, Hinweis „Original nicht gefunden“.
 - **Grenze:** Ein von Hand eingefügter LinkedIn-Link enthält nur eine Nummer; ohne Erweiterung fragt das Formular nach Firma und Titel.
-- **Titelvergleich:** ohne KI (Normalisierung von Geschlechtszusätzen wie „(m/w/d)“, Groß/klein, Satzzeichen); „eindeutig“ nur bei genau einem Treffer mit gleichem Titel und passendem Ort.
+- **Titelvergleich:** ohne KI (Normalisierung von Geschlechtszusätzen wie „(m/w/d)“, Groß/klein, Satzzeichen); „eindeutig“ nur bei genau einem Treffer mit gleichem Titel und passendem Ort (Ort nur, wenn beide bekannt).
+- **Ergänzung 2026-11-19 (Q107–Q110):** Bekannte Firma: sofort in den jobradar-Stellen suchen; unbekannte Firma: Suche im Nachtlauf (Q107). Eine gefundene Stelle einer unbekannten Firma wird nur in die Bewerbung übernommen, nie in die gemeinsame Stellenliste; daneben Knopf „Firma dauerhaft beobachten“ (wird Zusatzfirma nach 4e, Q108). Kein gleicher Titel: bis zu 5 ähnliche Stellen der Firma zur Auswahl, „Keine davon“ behält Firma/Titel (Q109). Firma ohne eindeutigen Wikidata-Eintrag mit Website: nur Hinweis „Original nicht gefunden“ (Q110). Indeed-/XING-Adressen enthalten meist keine Firma: ohne Erweiterung fragt das Formular. **Aufteilung (Claude):** Plan 4g-1 deckt Portal-Links ab; Workday-/SuccessFactors-Links kommen in den Adapterplan nach der Portal-Messung (4c-3).
 
 ## Halte-Punkte für Codex (in jedem Teilplan an der passenden Stelle)
 
@@ -127,7 +129,7 @@ Baut auf 4b, 4c-2 und 4c-3 auf; der Schnellstart (JobPosting von beliebigen Firm
 
 ## Änderungen nach Q94–Q96 (2026-11-19, gehen allem Folgenden vor)
 
-- Aus jeder Liste höchstens die Top 200; Listen mit weniger Firmen ganz; Listen ohne Rang mit mehr als 200 Firmen (EIC): die 200 zuletzt aufgenommenen. Damit: Scoreboard Top 200, „Top 200 Arbeitgeber“ (statt 300), Hand-Listen je höchstens Platz 1–200.
+- Aus jeder Liste höchstens die Top 200; Listen mit weniger Firmen ganz; Listen ohne Rang mit mehr als 200 Firmen (EIC): die 200 mit der höchsten EU-Förderung (Q97). Damit: Scoreboard Top 200, „Top 200 Arbeitgeber“ (statt 300), Hand-Listen je höchstens Platz 1–200.
 - Kategorien statt Einzellisten für Nutzer: Spalte `kategorie` an `ranking_listen` (sieben feste Werte, siehe CLAUDE.md 4.8); Filter „Kategorie“ für Angemeldete über eine Funktion, die nur (Firma, Kategorie) liefert – auch aus Listen, deren Ränge nur der Admin sieht; einzelne Listen, Ränge und Sortierung nach Rang nur nach Sichtbarkeit.
 - Schätzung Firmenzahl: roh ~3.100, ohne Doppelte ~1.500–2.000, aktiv (Stellen in DE/remote) ~900–1.300.
 

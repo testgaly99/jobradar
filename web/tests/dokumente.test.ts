@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { pruefeDokument } from "../lib/dokumente.ts";
+import { loeschMeldung, pruefeDokument } from "../lib/dokumente.ts";
 
 const uid = "00000000-0000-4000-8000-000000000001";
 const pfad = `${uid}/test-dokument.pdf`;
@@ -61,4 +61,17 @@ test("Bei mehreren Fehlern bleibt die bisherige Reihenfolge Art, Pfad, Name, Dat
   assert.deepEqual(pruefe("falsch", "", "falsch", "fremd"), { fehler: "Ungültige Art." });
   assert.deepEqual(pruefe("cv", "", "falsch", "fremd"), { fehler: "Ungültiger Speicherpfad." });
   assert.deepEqual(pruefe("cv", "", "falsch"), { fehler: "Der Versionsname muss 1 bis 120 Zeichen lang sein." });
+});
+
+test("Art der Anlage: nur bei Anlagen und nur Zeugnis, Zertifikat, Sonstiges", () => {
+  const anlage = pruefeDokument(uid, "anlage", "Zeugnis A", "2026-11-16", pfad, "zeugnis");
+  assert.ok("daten" in anlage && anlage.daten.anlage_art === "zeugnis");
+  assert.deepEqual(pruefeDokument(uid, "anlage", "Foto", "2026-11-16", pfad, "foto"), { fehler: "Ungültige Art der Anlage." });
+  assert.deepEqual(pruefeDokument(uid, "cv", "CV", "2026-11-16", pfad, "zeugnis"), { fehler: "Ungültige Art der Anlage." });
+  assert.ok(!("anlage_art" in (pruefe("cv") as { daten: object }).daten));
+});
+
+test("Löschen einer noch verwendeten Datei meldet den Grund statt eines Fehlers", () => {
+  assert.equal(loeschMeldung("23503"), "Dokument wird noch in einer Bewerbung verwendet.");
+  assert.equal(loeschMeldung("XX000"), "Dokument konnte nicht gelöscht werden.");
 });

@@ -67,7 +67,7 @@ Bereits beschlossen (CLAUDE.md 4.7): Mail nur von Domains laufender Bewerbungen;
 | Berufserfahrung | `jobs.steckbrief.erfahrung_jahre` | Zahlenfilter; Mindestwert vs. Spanne vs. unbekannt klären. `jobs.ki.erfahrung` ist Freitext. |
 | Gehalt | `jobs.steckbrief.gehalt` (min/max/waehrung/zeitraum) | Jahresnormalisierung, Wechselkurse, Schätzung. Monat nicht mit Jahr vergleichen. |
 | Sprachen/Sicherheitsüberprüfung | `jobs.steckbrief`, `leseSteckbrief` | Nur Anzeige; `sicherheit=false` heißt auch „nichts erkannt“. |
-| Studium/Anspruch | `jobs.studium`, `jobs.taetigkeit` (Migration 009) | Groq-Halte-Punkt; Whitelist/Prestige offen. |
+| Studium/Anspruch | `jobs.studium`, `jobs.taetigkeit` (Migration 009) | Groq-Halte-Punkt; Whitelist entschieden (Q45–Q47, Phase 4a). |
 | Personalverantwortung, Präsenztage, Remote-Gebiet | Arbeitsmodell/Remote-Boolean | Keine Einzelfelder; aus „Hybrid“ keine Präsenztage ableiten. |
 | Benefits/Muss | Listen in `jobs.ki`, `leseKi` | Freitext, keine Urlaubstage oder Skill-IDs. |
 | Marktrolle/Eigentümer/Alter | Name, Portal, Größe, Kategorie, Hauptsitz | Felder und Quellen fehlen; nicht aus Werbetext ableiten. |
@@ -112,15 +112,42 @@ Vollständig künstlich, reduziert; kein API-/Datenbankschema, kein Import, wird
   "kalenderfaelle": [
     {"fall": "normal", "nutzer": "a", "event_id": "e1", "start": "2026-11-17T09:00:00Z", "zeitzone": "Europe/Berlin", "von_app_erstellt": false},
     {"fall": "app_termin", "nutzer": "a", "event_id": "e2", "start": "2026-11-18T09:00:00Z", "zeitzone": "Europe/Berlin", "von_app_erstellt": true},
-    {"fall": "nicht_existierende_wanduhrzeit", "lokale_zeit": "2026-03-29T02:30", "zeitzone": "Europe/Berlin", "fachliche_behandlung": "offen"},
-    {"fall": "doppelte_wanduhrzeit", "lokale_zeit": "2026-10-25T02:30", "zeitzone": "Europe/Berlin", "fachliche_behandlung": "offen"}
+    {"fall": "nicht_existierende_wanduhrzeit", "lokale_zeit": "2026-03-29T02:30", "zeitzone": "Europe/Berlin", "fachliche_behandlung": "um 1 Stunde nach vorn verschieben (03:30)"},
+    {"fall": "doppelte_wanduhrzeit", "lokale_zeit": "2026-10-25T02:30", "zeitzone": "Europe/Berlin", "fachliche_behandlung": "erstes Vorkommen (Sommerzeit, +02:00)"}
   ],
   "bestehende_invarianten": [
     "Nutzerdaten nicht über Nutzergrenzen zusammenführen.",
-    "Status aus E-Mails zunächst nur vorschlagen, nicht automatisch ändern.",
+    "Status aus E-Mails automatisch setzen mit Hinweis und „Rückgängig“ (Q142 ersetzt „nur vorschlagen“).",
     "Fremde Kalendertermine nicht verändern.",
     "Persönliche Texte nicht an Groq senden.",
     "Aus unbekannten Werten keine belegten negativen Tatsachen ableiten."
   ]
 }
 ```
+
+## Gehaltsschätzung: Vorab-Prüfung (Claude, 2026-11-19)
+
+- **Entgeltatlas der Bundesagentur:** nur als Webseite, keine offizielle Schnittstelle. Die Statistik-API der Bundesagentur (seit Dezember 2025) liefert bisher nur „Aktuelle Eckwerte“; die bundesAPI-Projekte decken nur Jobbörse und Bewerberbörse ab. Automatisches Auslesen der Webseite wäre gegen Regel 3.5 → entfällt (Q134). Neu prüfen, falls die Statistik-API Entgeltdaten aufnimmt.
+- **EU-Entgelttransparenzrichtlinie (2023/970):** Umsetzungsfrist 7.6.2026 verpasst; laut Verfassungsblog (6.11.2026) noch kein Referentenentwurf; deutsches Gesetz frühestens 2027. Art. 5 verlangt Gehaltsinformation vor dem ersten Gespräch, nicht zwingend in der Anzeige. Folge: Gehaltsangaben in Anzeigen bleiben vorerst freiwillig, die Schätzung wird oft gebraucht.
+- Quellen: statistik.arbeitsagentur.de (API-Seiten), github.com/bundesAPI/jobsuche-api, verfassungsblog.de (6.11.2026), haufe.de (Stand Juni 2026).
+
+## Bewerben-Helfer: Vorab-Prüfung (2026-11-19, Q173–Q185)
+
+**Rechtliches (Stand 2026-11-19, keine Rechtsberatung):**
+- SmartRecruiters, Candidate Terms of Use („Last modified on 14th May 2019“): verbietet „Use automatic means to access content or data from other users“, also fremde Daten; Ausfüllen der eigenen Daten nicht erfasst.
+- Greenhouse: keine Bewerber-Nutzungsbedingungen; der Hauptvertrag (MSA, „Last Updated: February 1, 2026“) bindet nur die Firma als Kunden.
+- Workday, Website-Bedingungen („Last Updated: 13/08/2026“): „Develop or use any applications that interact with our Sites without our prior written consent“. Gilt für workday.com und Seiten, die ausdrücklich darauf verweisen; ob eine Karriereseite `*.myworkdayjobs.com` darauf verweist, wird je Seite geprüft. Graubereich, Risiko gering (Kontosperre, keine Strafbarkeit).
+- Personio, Lever: keine Bewerber-Nutzungsbedingungen gefunden; es gelten die Hinweise der jeweiligen Firma.
+- Deutsches Recht: kein Überwinden von Zugangssicherungen (§ 202a StGB nicht berührt), private Nutzung (kein UWG), eigene Daten des Nutzers (DSGVO-Haushaltsausnahme für den Admin; für Freunde ist jobradar wie bisher Verantwortlicher). Absenden und Einwilligungen gibt der Mensch selbst.
+- Grenzen: keine Tarnung (Q184), kein Absenden, keine Captchas, keine Massen-Registrierung, kein Speichern von Passwörtern (CLAUDE.md 3.6).
+- Chrome Web Store (erst bei Veröffentlichung, Q63): Berechtigung „alle Websites“ verlängert die Prüfung und braucht Begründung und Datenschutzerklärung.
+
+**Folgen für andere Pakete:**
+- Runde 1 (Nr. 0): Art je Anlage (Q182); Anschreiben-Block wiederverwendbar für „Bewerbung anlegen“.
+- Phase 6a/6b (Nr. 10/11): `cv_ergebnisse.empfohlen` kann zwei CVs enthalten; für Nicht-Admins rechnet 6b nur auf Knopfdruck, bei Link-Bewerbungen ohne Stelle erst der Nachtlauf.
+- Erweiterung (`kern.mjs`, `manifest.json`): neue Seitenberechtigung, Inhalts-Skript, Sperrlisten; Neu-Laden durch die Nutzer.
+- Phase 4b/Link-Schnellstart: ATS-Erkennung aus dem Link wählt den Adapter. Phase 4g-1: findet zu Portal-Anzeigen den Original-Link, auf dem der Helfer arbeiten kann.
+- Phase 3 (Nr. 13): Mails „Konto bestätigen“ können den Konto-Merker setzen; „Abgeschickt“ und Eingangsbestätigung widersprechen sich nicht.
+- Bewerbungsformular-Runde: Knopf „Bewerbung anlegen“ unter „Merken“; Standardwerte für Gehaltswunsch, Kündigungsfrist, frühesten Start.
+- Datenschutzseite: Erweiterung läuft auf allen Seiten, füllt nur in Tabs, die jobradar geöffnet hat.
+- CLAUDE.md Backlog „Automatisch bewerben“: beantwortet als Ausfüllhilfe ohne Absenden.

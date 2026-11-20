@@ -20,6 +20,7 @@ export default function Seite() {
       <h2>Wo</h2>
       <ul>
         <li>Supabase (Server in Frankfurt, EU) für Datenbank und Dateien</li>
+        <li>Briefkopf und Anschreiben-Vorlagen liegen wie deine Bewerbungen in Supabase (Frankfurt). Der Knopf „Mit Claude bearbeiten“ öffnet dein eigenes Claude-Konto; der Text geht dann an Claude.</li>
         <li>Vercel für die Website</li>
         <li>Ein tägliches Backup der Datenbank in einem privaten GitHub-Repo. Es enthält auch die Liste der Konten mit Name und E-Mail. Dateien sind darin nicht enthalten.</li>
       </ul>

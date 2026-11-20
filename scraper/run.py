@@ -7,7 +7,7 @@ from datetime import date
 from pathlib import Path
 
 from scraper.ats import ADAPTER
-from scraper import db, ki
+from scraper import db, ki, nachruesten
 from scraper.companies import lade_unternehmen
 from scraper.logo import hole_logo
 from scraper.steckbrief import steckbrief
@@ -133,6 +133,8 @@ def _markdown(bericht):
                      + ", ".join(f"{g}: {n}" for g, n in f["uebersprungen"].items()) + "), nichts geschlossen")
     if bericht.get("ki"):
         z.append("- KI: " + ", ".join(f"{k}: {v}" for k, v in bericht["ki"].items()))
+    if bericht.get("nachruesten"):
+        z.append("- Bewerbungen nachgerüstet: " + ", ".join(f"{k}: {v}" for k, v in bericht["nachruesten"].items()))
     return "\n".join(z) + "\n"
 
 
@@ -156,12 +158,15 @@ def _ki(heute):
     try:
         if not db.ki_spalten_da():
             return {"hinweis": "Migration 009 fehlt, KI übersprungen"}
-        schritte = [("ausblenden", lambda: erg.update(ausgeblendet=db.nein_ausblenden()))]  # zuerst: wieder sichtbar gesetzte "nein"-Stellen sofort weg
+        def ausblenden():
+            erg["ausgeblendet"] = erg.get("ausgeblendet", 0) + db.nein_ausblenden()
+        schritte = [("ausblenden", ausblenden)]  # zuerst: wieder sichtbar gesetzte "nein"-Stellen sofort weg
         if not os.environ.get("GROQ_API_KEY"):
             erg["hinweis"] = "GROQ_API_KEY fehlt, keine KI-Auswertung"
         else:
             schritte += [("auswerten", lambda: erg.update(ki.auswerten(heute, frist_s=3600))),
-                         ("nachfuellen", lambda: erg.update(nachgefuellt=ki.nachfuellen(frist_s=3600)))]
+                         ("nachfuellen", lambda: erg.update(nachgefuellt=ki.nachfuellen(frist_s=3600))),
+                         ("ausblenden", ausblenden)]  # frisch ausgewertete "nein"-Stellen; Whitelist-Firmen bleiben sichtbar
         for name, schritt in schritte:
             try:
                 schritt()
@@ -170,6 +175,15 @@ def _ki(heute):
     except Exception as e:
         print(f"Hinweis: KI-Schritt fehlgeschlagen: {kurzfehler(e)}")
     return erg
+
+
+def _nachruesten():
+    """Bewerbungen aus Firmenseiten nachrüsten (Link-Schnellstart); darf den Lauf nie kippen."""
+    try:
+        return nachruesten.lauf()
+    except Exception as e:
+        print(f"Hinweis: Nachrüsten fehlgeschlagen: {kurzfehler(e)}")
+        return {}
 
 
 def lauf(heute, datenordner="data"):
@@ -181,6 +195,7 @@ def lauf(heute, datenordner="data"):
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in firmen if f["aktiv"] == "ja"]}
     db.snapshot_nachruesten()  # nach allen Firmen
     bericht["ki"] = _ki(heute)
+    bericht["nachruesten"] = _nachruesten()
     _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
     db.speichere_lauf(bericht)
     return bericht

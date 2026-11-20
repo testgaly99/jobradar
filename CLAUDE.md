@@ -101,7 +101,7 @@ Wichtigste Filter, in dieser Reihenfolge:
   - Später: fachliche Tags
 - **Ort und Arbeitsmodell**
   - Umkreis um München
-  - Pendelzeit mit ÖPNV, über eine kostenlose Routing-Lösung, z. B. offene MVV-Daten
+  - Pendelzeit mit ÖPNV ab eigener Haltestelle (Phase 6 Teil 2, DELFI-Fahrplan, Q208)
   - Präsenztage
   - Remote-Gebiet
   - Workation
@@ -162,9 +162,9 @@ Wichtigste Filter, in dieser Reihenfolge:
   - Das Label `scraper-defekt` startet die Claude Code Action mit dem Abo-Token. Claude passt den Adapter an, testet gegen die echte Seite und öffnet einen Pull Request mit der Trefferzahl vorher und nachher.
   - **Ich merge selbst.** Kein Auto-Merge.
 - **Firmendaten:**
-  - Das Label `firmendaten-pruefen` startet eine Recherche durch Claude. Das Ergebnis ist ein Wert mit Quelle (Impressum, Geschäftsbericht oder Handelsregister).
+  - Das Label `firmendaten-pruefen` startet eine Recherche durch Claude. Der Admin setzt es per Knopf „Firmendaten prüfen lassen“ auf der Stellenseite (Q112, kommt mit 4f; nur Firmen aus der öffentlichen Firmenliste). Das Ergebnis ist ein Wert mit Quelle (Impressum, Geschäftsbericht oder Handelsregister).
   - Der Vorschlag kommt als Pull Request auf `firmen_korrekturen.csv`. Diese Datei hat **immer Vorrang** vor automatischen Werten. Ich kann dort auch selbst Werte eintragen.
-- **Protokoll:** Es gibt ein Laufprotokoll pro Lauf und Firma und einen wöchentlichen Kurzbericht (Firmen mit 0 Stellen, offene Issues, neue Stellen).
+- **Protokoll:** Es gibt ein Laufprotokoll pro Lauf und Firma. (Wöchentlicher Kurzbericht gestrichen, Q113, 2026-11-19.)
 
 ### 4.4 Bewerbungs-Tracker
 Eine Bewerbung entsteht auf einem dieser Wege:
@@ -175,7 +175,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Ist nichts erkennbar, gibt es zwei Felder für Firma und Titel.
   - LinkedIn-Links aus Sammlung oder Suche (`currentJobId`) werden zu `linkedin.com/jobs/view/<nummer>/` vereinheitlicht, damit die Dublettenprüfung greift.
   - Optional lässt sich der Anzeigentext einfügen (z. B. am Handy); er landet in `snapshot_text`, falls es keinen Text aus Stellenliste oder ATS gibt.
-- **Ein Klick per Browser-Erweiterung** (Ein-Klick-Import, Entscheidungen 2026-11-16/17, Q6/Q7/Q14/Q16): übernimmt die gerade geöffnete Anzeige als „Gemerkt“ ohne Bewerbungsdatum. Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox. **Jobradar öffnet Jobportale (LinkedIn, StepStone, Indeed, XING …) nie selbst; die Erweiterung übernimmt dort nur Adresse und Titel.** Plan `docs/plans/2026-11-16-ein-klick-import.md`.
+- **Ein Klick per Browser-Erweiterung** (Ein-Klick-Import, Entscheidungen 2026-11-16/17, Q6/Q7/Q14/Q16): übernimmt die gerade geöffnete Anzeige als „Gemerkt“ ohne Bewerbungsdatum. Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox. **Jobradar öffnet Jobportale (LinkedIn, StepStone, Indeed, XING …) nie selbst; die Erweiterung übernimmt dort nur Adresse und Titel, auf LinkedIn, StepStone und XING gar nichts (Q135/Q137). Nutzer 2026-11-19: „XING und Stepstone darfst du nicht auslesen“ und „Ich möchte mein LinkedIn Konto auf gar keinem Fall riskieren!“ – deshalb auch keine Anleitung, LinkedIn-Anzeigentexte zu kopieren.** Plan `docs/plans/2026-11-16-ein-klick-import.md`.
 - **Manuell**, z. B. bei Empfehlung, Headhunter oder nachgetragenen Bewerbungen.
 - **Stelle:**
   - Firma, verknüpft mit den Firmendaten
@@ -184,7 +184,6 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Auszug aus Anforderungen und Aufgaben
 - **Bewerbung:**
   - Datum, Weg, Referenznummer
-  - Hinweis zum Bewerberportal, ohne Passwort
   - CV-Version, Anschreiben, Anlagen
 - **Gehalt:**
   - Spanne laut Anzeige
@@ -208,8 +207,9 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 - **Einschätzung:** Interesse 1–5, Tags, Notizen
 - **Status:** Gemerkt → Beworben → Im Gespräch → Angebot → Abgeschlossen (Zusage, Absage, zurückgezogen)
 - **Erinnerungen:**
-  - Nachfassen nach 14 Tagen ohne Antwort
-  - Antwortfrist bei einem Angebot
+  - Nachfassen: einmal nach 30 Tagen ohne Antwort (einstellbar 7–90, abschaltbar; Q219/Q220), mit Knopf „Mail mit Claude“ (Q218)
+  - Antwortfrist bei einem Angebot: Feld „Antwort bis“, Erinnerung 2 Tage vorher, Telegram am Fristtag an den Admin (Q217)
+  - Plan: `docs/superpowers/plans/2026-11-19-erinnerungen.md` (Warteschlange Nr. 11c)
   - Markierung „Anzeige offline“, wenn die Stelle einer laufenden Bewerbung verschwindet
 - **Ansichten:**
   - Kanban nach Status
@@ -219,18 +219,17 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 
 ### 4.5 Dokumente und Vorlagen
 - **CV-Versionen** (PDF und Word) mit Name und Datum. Eine Version bleibt erhalten, solange eine Bewerbung auf sie verweist.
-- **Anschreiben-Vorlagen** mit den Platzhaltern `{{firma}}`, `{{stelle}}`, `{{ansprechpartner}}`, `{{anrede}}` und `{{quelle}}`.
-- **Textbausteine** und **Anlagen**: Anlagen werden einmal hochgeladen und pro Bewerbung angehakt.
-- Optional:
-  - ein Anschreiben-Entwurf per KI, über den Abo-Token
-  - Vorlagen für andere freigeben (Standard ist privat)
+- **Reiter „Unterlagen“** (Runde 1, Design `docs/superpowers/specs/2026-11-19-runde1-bewerbungsunterlagen-design.md`, Q157–Q169): Briefkopf, Anschreiben-Vorlagen, CV-Versionen, Anlagen.
+- **Anschreiben-Vorlagen** (mehrere, je Nutzer privat; Text einfügen oder Word-Datei hochladen, nur der Text wird übernommen) mit den Platzhaltern `{{firma}}`, `{{stelle}}`, `{{ansprechpartner}}`, `{{anrede}}`, `{{quelle}}` und `{{datum}}`. In der Bewerbung: „PDF herunterladen“ / „Word herunterladen“ (im Browser erzeugt, gleiches Brief-Layout; das PDF wird als Anschreiben der Bewerbung gespeichert), „Mit Claude bearbeiten“ (öffnet das eigene claude.ai mit Vorlage und Anzeige; Claude erstellt die Datei) und „Endfassung hochladen“ (ersetzt das gespeicherte Anschreiben).
+- **Anlagen** werden einmal hochgeladen und pro Bewerbung angehakt. Anrede Frau/Herr/ohne am Ansprechpartner.
+- **Backlog:** Textbausteine (Q162), Vorlagen zwischen Konten teilen (Q169), KI-Entwurf innerhalb von jobradar (ersetzt durch den Claude-Knopf, Q159).
 - Dateien liegen in einem Speicher pro Nutzer. Zugriff gibt es nur über kurzlebige signierte Links.
 
 ### 4.6 Konten für mich und Freunde
 - **Anmeldung:**
   - Freunde melden sich **nur mit Google** an (Supabase Auth).
   - Ich habe zusätzlich mein bestehendes Konto mit E-Mail und Passwort.
-  - Wer sich mit E-Mail anmeldet, bekommt keine Gmail- und Kalender-Anbindung.
+  - Wer sich mit E-Mail anmeldet, bekommt keine Gmail- und Kalender-Anbindung. Ausnahme: der Admin verbindet Google getrennt von der Anmeldung (Phase 3).
 - **Zugang:**
   - Ich teile den Link zur Website. Wer sich mit Google anmeldet, ist sofort drin. Es gibt keine Einladungsliste.
   - **Ohne Konto (Entscheidung 2026-11-11, Paket „Öffentlicher Zugang“):** Stellenliste und Stellenseiten sind ohne Anmeldung lesbar, aber nur Liste, Filter und Steckbrief; Anzeigentext, Logos, Ranglisten und alles Persönliche nur angemeldet. Die Datenbank erzwingt das (Migration 007). Nicht auffindbar (noindex), Impressum aus Umgebungsvariablen.
@@ -240,7 +239,8 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 - **Datentrennung** auf Datenbankebene (Row Level Security). Getestet wird, dass Person A die Daten von Person B nicht sieht. Das gilt auch für mich als Admin.
 - **Gemeinsam genutzt** werden Firmendaten und gescrapte Stellen. Freunde sehen die Stellenliste und ihren eigenen Tracker.
 - **Rollen:**
-  - Ich bin Admin. Auf der Seite „Nutzer“ sehe ich alle angemeldeten Nutzer mit Name, E-Mail und „dabei seit“.
+  - Ich bin Admin, mit **zwei Admin-Konten** für zwei trennscharfe Bewerbungs-Identitäten (je eigene E-Mail, eigenes Gmail, eigener Telegram-Chat; Q234–Q237, 2026-11-19). `ADMIN_EMAIL` enthält beide Adressen, mit Komma getrennt. Hintergrundläufe arbeiten je Admin-Konto (`db.admin_ids()`), nie gemischt.
+  - Auf der Seite „Nutzer“ sehe ich alle angemeldeten Nutzer mit Name, E-Mail und „dabei seit“.
   - „Entfernen“ löscht nach Bestätigung Konto und Daten. Vorher erscheint der Hinweis, die Person solle zuerst exportieren.
   - Später verwalte ich als Admin auch Scraper-Quellen und Firmendaten. Alle anderen sind normale Nutzer.
 - **Export und Löschen:**
@@ -265,9 +265,9 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - der Firmenname steht im Titel,
   - der Termin wurde aus der Bewerbung angelegt.
 - **Status aus Gmail:**
-  - Gelesen werden nur Mails von Domains mit laufender Bewerbung.
+  - Gelesen werden nur Mails von Domains mit laufender Bewerbung (dazu gemerkte, bei denen in den letzten 14 Tagen über den Bewerben-Helfer auf „Bewerben“ geklickt wurde, Q192) und von bekannten Bewerbungssystemen, wenn der Firmenname darin steht (Q143); Gmail sucht selbst, fremde Mails werden nicht geöffnet.
   - Erkannt werden Eingangsbestätigung, Einladung, Absage und Angebot.
-  - Der neue Status wird nur **vorgeschlagen**. Ich bestätige ihn mit einem Klick.
+  - Status, Interview und nächster Schritt werden **automatisch gesetzt**, mit Hinweis „Automatisch aus Mail vom …“ und „Rückgängig“; Einladung, Absage und Angebot zusätzlich per Telegram (Q142, ersetzt „nur vorschlagen“).
   - Der Mailverlauf wird an die Bewerbung gehängt.
 
 ### 4.8 Ranking-Listen (Herzstück der Firmenauswahl, Entscheidung 2026-11-09)
@@ -280,7 +280,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
 - **Quellen (Entscheidung 2026-11-17, Q41–Q43, ersetzt 2026-11-10):**
   - **Grundlage sind offene Quellen:** EU R&D Scoreboard (CC BY), Wikidata (CC0, auch Börsenindex-Mitglieder), Technology Dashboard des Europäischen Patentamts, DPMA-Anmelderstatistik, EIC-Geförderte über CORDIS, offen lizenzierte Listen (z. B. Wikipedia CC BY-SA, MIT-Listen auf GitHub), US-Arbeitsministerium Visa-Gehaltsdaten (nur als Gehalts-Indikator). (Behörden und Forschungseinrichtungen entfallen seit Q82.) Eine Firma ist ein Eintrag je Karriereportal (Q43).
   - **Firmenauswahl (Q80–Q93, 2026-11-19, ersetzt „Top 20 je Branche“ und Q42):** Jede Firma muss aus einer „Top“-Liste kommen (Q56). Quellen und Regeln:
-    - **Aus jeder Liste höchstens die Top 200** (Nutzer 2026-11-19, Q94); Listen mit weniger Firmen ganz; Listen ohne Rang mit mehr als 200 Firmen (EIC): die 200 zuletzt aufgenommenen.
+    - **Aus jeder Liste höchstens die Top 200** (Nutzer 2026-11-19, Q94); Listen mit weniger Firmen ganz; Listen ohne Rang mit mehr als 200 Firmen (EIC): die 200 mit der höchsten EU-Förderung (Q97).
     - EU R&D Scoreboard: Top 200 weltweit nach Forschungsausgaben (keine EU-800).
     - Börsenindizes: alle Mitglieder von DAX, MDAX, SDAX, TecDAX.
     - EPA: Top 100 Patentanmelder; Rang nur für den Admin sichtbar.
@@ -381,12 +381,12 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
      - KI-Zusammenfassung per Groq (Groq-Paket, Design `docs/superpowers/specs/2026-11-12-groq-paket-design.md`): 3–5 Stichpunkte zu den nicht-trivialen Aufgaben plus „Das musst du mitbringen“ (3 Muss-Anforderungen ohne Sprachen); kein Bereich „Auffällig“. Erst nach einer Probe mit 20 Anzeigen.
    - **Wichtige Punkte:** Auf der Konto-Seite pflege ich Begriffe, die mir bei einer Stelle wichtig sind. Kommen sie in einem Stichpunkt der Anzeige vor, werden sie auf der Detailseite hervorgehoben. Reiner Textvergleich, ohne KI: Ein Begriff trifft ganze Wörter und Wortanfänge („Team“ trifft „Teamfähigkeit“). Übergangslösung; in Phase 6 kommt der Abgleich nach Bedeutung per KI dazu.
    - **Gegliederte Snapshots für alle:** Jede Bewerbung bekommt die gegliederte Anzeige, auch bestehende. Der tägliche Lauf rüstet fehlende Snapshots automatisch nach, solange die Stelle noch online ist.
-3. **Kalender und Gmail:** Google-Anbindung, Interview-Briefing, Statusvorschläge, Nachfass-Erinnerung, Erinnerungs-Mail an den Admin für die jährlichen Hand-Quellen der Rankings (4.8).
-   - **Eigenes Paket, später zu klären:** Anschreiben-Vorlagen, Textbausteine und Anlagen pro Bewerbung (4.5).
-4. **Ranking-Listen und Scraper für alle Listen-Firmen:** Listen anhand realer Rankings festlegen (Recherche läuft seit 2026-11-09), Listen in der Datenbank, 4-Wochen-Check, Filter „Liste“, automatische Erkennung des Bewerbermanagement-Systems und Anbindung (rund 1000 Firmen), Zusatzfirmen pro Nutzer mit Admin-Freigabe (4.8), Firmendaten anreichern, Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern. Offen: TK (Stellen nur per „Mehr laden“, bräuchte Playwright).
+3. **Kalender und Gmail** (Design `docs/superpowers/specs/2026-11-19-phase3-google-design.md`, Q138–Q156): vorerst nur für den Admin, Knopf „Google verbinden“ (Token nur von der Website verschließbar, öffnen nur im privaten Repo), stündlicher Lauf, Mails der Firmen setzen Status/Interview/nächsten Schritt mit „Rückgängig“, Mailverlauf je Bewerbung, eigener Kalender „Jobradar“, Interview-Briefing per Telegram etwa 24 h und 1,5–2,5 h vorher mit Briefing-Seite und Vorbereitungsfragen von Claude, Hinweis „Anzeige offline“, Telegram-Erinnerung für fällige Hand-Quellen der Rankings (4.8). **Backlog:** E-Mail als Kanal, Gmail für Freunde (Nachfass-Erinnerung und Antwortfrist: eigenes Paket Nr. 11c).
+   - Anschreiben-Vorlagen und Anlagen: eigenes Paket „Runde 1“ (4.5), Codex-Warteschlange Nr. 0.
+4. **Ranking-Listen und Scraper für alle Listen-Firmen:** Listen anhand realer Rankings festlegen (Recherche läuft seit 2026-11-09), Listen in der Datenbank, 4-Wochen-Check, Filter „Liste“, automatische Erkennung des Bewerbermanagement-Systems und Anbindung (rund 1000 Firmen), Zusatzfirmen pro Nutzer mit Admin-Freigabe (4.8), Firmendaten anreichern (Rolle im Markt, Eigentümer, Gründungsjahr: zusammen mit den Filtern in Phase 5, Q114), Gesundheitscheck mit Issue, Telegram und Selbstreparatur, Digest, Beobachtung von Wunscharbeitgebern. Offen: TK (Stellen nur per „Mehr laden“, bräuchte Playwright); Entscheidung nach der Portal-Messung in 4c (Q115).
    - **Prüfung Mistral als Alternative oder Ergänzung zu Groq (Wunsch 2026-11-13):** Nur für öffentliche Anzeigentexte, nie für CVs (Q15). Kriterien und Ablauf in `docs/phasen-vorarbeit.md` („Mistral prüfen“). Erst nach bestandener Prüfung und deiner Entscheidung wird die Groq-Regel in Abschnitt 3.2 geändert.
-5. **KI-Auswertung und Filter:** Extraktion aus Anzeigen per Groq (Gratis-Tarif), alle Filter aus 4.1, Suchprofile, Facetten, Muss- und Soll-Kriterien.
-6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (jede Anforderung farbig: Grün = belegt, Gelb = teilweise oder noch nicht belegt, Rot = nachweislich nicht erfüllt, jeweils mit Beleg oder Begründung (Q3); Entscheidung 2026-11-17, Details und offene Klärung zur Bedeutung von Rot gegenüber Q3 in `docs/plans/2026-11-16-cv-abgleich.md`) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token; dazu „Wichtige Punkte“ nach Bedeutung statt nach Wortanfang, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Dafür das günstigste Modell (Haiku), um das Abo-Kontingent zu schonen; ein größeres Modell nur, wenn Stichproben zeigen, dass Haiku zu oft danebenliegt. Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit, Sofort-Alarm, monatliche Übersichten.
+5. **KI-Auswertung und Filter:** Extraktion aus Anzeigen per Groq (Gratis-Tarif), Suchprofile, Facetten. **Umfang (Q116–Q131, 2026-11-19):** Firmen ausschließen (im Filter und dauerhafte Sperrliste), Suchen speichern (ohne Benachrichtigung), Mitarbeiterzahl als Spanne, Eigentümer, Rolle im Markt/Kundenbranche, Jahre Berufserfahrung, Personalverantwortung, Vertriebsanteil (kein/etwas/überwiegend), geforderter Abschluss („Mein Abschluss“, niedrigste Alternative zählt), Mindestgehalt (obere Grenze der Spanne zählt), Vertragsdetails, Präsenztage/Remote-Gebiet, Workation, Ghost-Job-Ampel (lange online, taucht wieder auf), Vermittler kennzeichnen, Synonymgruppen, Dubletten zusammenführen. Gehaltsschätzung aus vorhandenen Anzeigen (Q133). Stellen ohne Angabe bleiben mit Hinweis sichtbar; Bestand wird mit Rest-Kontingent nachgeholt; neue Filter nur für Angemeldete. **Backlog:** Unternehmensalter, eigene Firmenbewertung, Umkreis um München, Muss-/Soll-Kriterien, Ansprechpartner/Bewerbungsweg.
+6. **Passung und Analyse:** CV-Abgleich auf der Detailseite (jede Anforderung farbig: Grün = belegt, Gelb = teilweise oder noch nicht belegt, Rot = nachweislich nicht erfüllt, jeweils mit Beleg oder Begründung (Q3); Entscheidung 2026-11-17; ähnliche statt geforderter Fähigkeit = Gelb mit Begründung, Q28; Details in `docs/plans/2026-11-16-cv-abgleich.md`) und Empfehlung eines meiner CVs pro Stelle, beides per KI über den Abo-Token; dazu „Wichtige Punkte“ nach Bedeutung statt nach Wortanfang, nach Bedeutung statt Wortgleichheit (Wunsch 2026-11-08). Dafür das günstigste Modell (Haiku), um das Abo-Kontingent zu schonen; ein größeres Modell nur, wenn Stichproben zeigen, dass Haiku zu oft danebenliegt. **Teil 2 (Q203–Q211, 2026-11-19): nur Pendelzeit** (Design `docs/superpowers/specs/2026-11-19-pendelzeit-design.md`, Warteschlange Nr. 12a): ab eigener Haltestelle (nie Wohnadresse), Büroadresse je Firma und Stadt (Anzeige → OpenStreetMap → Impressum → Wikidata → Admin), eigene Rechnung mit dem DELFI-Nahverkehrsfahrplan für ganz Deutschland, Dienstag Ankunft 9:00, Filter mit „unbekannt“ sichtbar. **Backlog:** Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Sofort-Alarm, monatliche Übersichten.
 
 **Backlog (noch keiner Phase zugeordnet):**
 - **Live gehen (Freunde oder öffentlich), Entscheidung 2026-11-10:** Vorerst nutze nur ich Jobradar. Vor dem Einladen von Freunden oder einer Veröffentlichung:
@@ -398,20 +398,21 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
   - Google-App veröffentlichen, damit „Link teilen, jeder kommt rein“ ohne Testnutzer klappt
   - dabei entscheiden: neue Nutzer sofort drin oder erst nach Freigabe?
   - spätestens nötig, wenn es Richtung 20 Nutzer geht
-- **Dokumente klären:** Wozu dienen hochgeladene Dokumente, wenn man sich nicht über die Website bewirbt? Bis dahin ist der Reiter ausgeblendet (Entscheidung 2026-11-08).
+- **Dokumente klären:** geklärt 2026-11-19 (Q164): Reiter kommt als „Unterlagen“ zurück; Unterlagen dienen Anschreiben, Anlagen je Bewerbung und dem Bewerben-Helfer.
+- **Bewerben-Helfer (Wunsch 2026-11-19, Q160; geplant Q173–Q192, Design `docs/superpowers/specs/2026-11-19-bewerben-helfer-design.md`, Codex-Warteschlange Nr. 11a nach Phase 6):** „Können wir zusätzlich einbauen, dass ich mich über meine Seite bewerben kann? Dass also alles, was möglich ist, bereits auf den Karriereseiten vorausgefüllt wird, sobald ich auf "Bewerben" klicke“. Nur über die Browser-Erweiterung (eine Website darf fremde Formulare nicht füllen), Absenden immer selbst, nie auf LinkedIn/StepStone/XING; vorher Nutzungsbedingungen der Bewerbermanagement-Systeme prüfen.
 - **Bewerbungsformular neu definieren:**
   - welche Felder es gibt,
   - was automatisch aus der Stelle übernommen wird,
   - welche Felder erst in späteren Bewerbungsphasen erscheinen,
   - kein manuelles Abtippen bekannter Stellen.
-  - Eigene Fragerunde in einer späteren Phase.
+  - Geplant 2026-11-19 (Q196–Q201, Design `docs/superpowers/specs/2026-11-19-bewerbungsformular-design.md`, Warteschlange Nr. 11b): Kästen nach Status, Stellendaten als Text mit ✎, „Portal-Hinweis“ und „Vergleich aktuelles Gehalt“ entfallen (Inhalte in Notizen).
 - **Login für Freunde:** E-Mail und Passwort zusätzlich zu Google (braucht das Mail-Paket).
-- **„In Jobradar speichern“ per Chrome-Erweiterung (Ein-Klick-Import; Wunsch 2026-11-12 aus der Wettbewerbsanalyse, statt Lesezeichen entschieden 2026-11-17, Q14):** Chrome-Erweiterung übernimmt die geöffnete Anzeige ins eigene Board (Abschnitt 4.4). Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox. Auf Jobportalen nur Adresse und Titel (Q16); deren aktuelle Nutzungsbedingungen noch prüfen.
+- **„In Jobradar speichern“ per Chrome-Erweiterung (Ein-Klick-Import; Wunsch 2026-11-12 aus der Wettbewerbsanalyse, statt Lesezeichen entschieden 2026-11-17, Q14):** Chrome-Erweiterung übernimmt die geöffnete Anzeige ins eigene Board (Abschnitt 4.4). Reihenfolge Chrome → Edge → Safari → Smartphone → Firefox; Safari nur kostenlos, nie mit Apples Entwicklergebühr (Q239). Auf Jobportalen nur Adresse und Titel (Q16); deren aktuelle Nutzungsbedingungen noch prüfen.
 - **Umbau-Plan für eine kommerzielle Nutzung (Wunsch 2026-11-17):** vor jeder kommerziellen/öffentlichen Nutzung erstellen – Datenquellen nur lizenziert (siehe Rechte-Audit in `docs/ranking-recherche-v3.md`), Vercel-Plan, Groq-/KI-Bedingungen, Impressum/Datenschutz, Haftung, Rankings. **Dabei neu bewerten, wer was sehen darf** (Nutzer 2026-11-18, Q73: bis dahin sehen Gäste nie Ränge, nur Angemeldete).
-- **Geschätztes Gehalt für jede Stelle (Wunsch 2026-11-12, Phase 4 bei „Passung und Analyse“):** Spanne je Stelle, möglichst stellen-, firmen- und landesspezifisch, mit Quellenangabe („geschätzt aus …“) und klar getrennt von Gehältern aus der Anzeige. Reihenfolge der Quellen: (1) Anzeige selbst, (2) andere Anzeigen derselben Firma, (3) Anzeigen mit ähnlichem Titel im selben Land, (4) Entgeltatlas der Bundesagentur für Arbeit nach Beruf und Region. kununu, Glassdoor und levels.fyi nur als Link (Nutzungsbedingungen verbieten automatisches Auslesen). Vor dem Bau prüfen: Stand der deutschen Umsetzung der EU-Entgelttransparenzrichtlinie (Gehaltsspannen in Anzeigen).
+- **Geschätztes Gehalt für jede Stelle (Wunsch 2026-11-12; kommt mit Phase 5, Q133, Plan `docs/superpowers/plans/2026-11-19-phase5-filter.md` Task 0/3b):** Spanne je Stelle, möglichst stellen-, firmen- und landesspezifisch, mit Quellenangabe („geschätzt aus …“) und klar getrennt von Gehältern aus der Anzeige. Reihenfolge der Quellen: (1) Anzeige selbst, (2) andere Anzeigen derselben Firma, (3) Anzeigen mit ähnlichem Titel im selben Land; sonst keine Schätzung (Entgeltatlas ohne offizielle Schnittstelle, Q134). kununu, Glassdoor und levels.fyi nur als Link (Nutzungsbedingungen verbieten automatisches Auslesen). Entgelttransparenzrichtlinie: in Deutschland noch nicht umgesetzt (Stand 2026-11-19, frühestens 2027).
 - **Stellen in Österreich und der Schweiz (Wunsch 2026-11-19):** „Schreibe in den Backlog außerdem, dass wir Positionen in Schweiz oder Österreich auch aufnehmen. Für Stellen in der Schweiz, die man auch Remote aus Deutschland belegen kann brauchen wir auch später mal eine Lösung“. Heute filtert der Scraper Orte außerhalb Deutschlands als „Ausland“ heraus (`scraper/filter.py`); der Filter „Land“ (Deutschland, Österreich, Schweiz, Remote) ist schon vorgesehen (Phase 2b). Zu klären: Vorfilter für AT/CH öffnen (Nachtlaufzeit, Groq-Kontingent), und wie „Schweiz, remote aus Deutschland möglich“ erkannt wird (Anzeigentext, Arbeitsvertrag/Sozialversicherung, Grenzgänger).
 - **Nachweis der Eigenbemühungen (nur bei Bedarf):** Export aller Bewerbungen für die Arbeitsagentur (Datum, Firma, Stelle, Weg, Ergebnis) als PDF/CSV. Die Daten liegen im Tracker vor; aktuell kein Thema für mich.
-- **Automatisch bewerben (Wunsch 2026-11-12, später bewerten):** Bots wie LazyApply schicken Bewerbungen selbst ab. Vor einer Entscheidung prüfen: Nutzungsbedingungen der ATS und Jobbörsen (Kontosperren), Qualität, Datenschutz, Regel 5 „legal und fair“.
+- **Automatisch bewerben (Wunsch 2026-11-12; beantwortet 2026-11-19 durch den Bewerben-Helfer: Ausfüllhilfe, Absenden immer selbst, keine Tarnung, Q184):** Bots wie LazyApply schicken Bewerbungen selbst ab. Vor einer Entscheidung prüfen: Nutzungsbedingungen der ATS und Jobbörsen (Kontosperren), Qualität, Datenschutz, Regel 5 „legal und fair“.
 - **E-Mail-Registrierung absichern:** Der Knopf „Registrieren“ (E-Mail und Passwort) ist bis zum Mail-Paket bewusst offen (Entscheidung 2026-11-08). Dann: sperren (Hook, der neue E-Mail-Registrierungen ablehnt) oder mit Bestätigungsmail absichern.
 
 ---
@@ -441,6 +442,8 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
 4. **Umsetzen:** mit Helfern; jeder Schritt wird gebaut, geprüft, getestet und committet.
 5. **Prüfen:** Tests, bei Website-Änderungen durchklicken, `/ponytail-review`. Beim Testen: **Screenshots nur bei fehlgeschlagenen Prüfungen.**
 6. **Abschluss:** `docs/STATUS.md` aktualisieren, bei Bedarf auch diese Datei. Mir in wenigen Sätzen sagen, was jetzt geht und was ich tun muss.
+
+**Kontrollfrage „Ist alles geklärt?“ (Nutzeranweisung 2026-11-19):** „Bevor jede Phase abgeschlossen ist, musst du vor dem Hochladen dir diese Frage selbst stellen und alle Fragen ableiten, die zusätzlich geklärt werden sollten.“ Das gilt für Design und Plan jeder Phase sowie vor dem Hochladen ihrer Ergebnisse. Prüfe dafür nicht nur gegen das Besprochene, sondern gegen alle Quellen: diese Datei (vor allem Abschnitte 3, 4 und 6), das Design, `docs/fragen-und-antworten.md` und `docs/ENTSCHEIDUNGEN.md`. Jede Anforderung muss im Plan umgesetzt oder ausdrücklich als Nicht-Ziel genannt sein. Stille eigene Entscheidungen, die ändern, was ich sehe oder bekomme, werden zu Fragen an mich. Diese Fragen stellst du, bevor hochgeladen wird; rein technische Entscheidungen nennst du als Liste. Anlass: In Phase 6 fehlte „Wichtige Punkte nach Bedeutung“ aus Abschnitt 6, und der Download von Chromes Modell war ungefragt festgelegt (Q105, Q106).
 
 **Arbeit anderer KI-Agenten prüfen (Entscheidung 2026-11-14):** Andere Agenten (z. B. Codex) folgen `AGENTS.md` und tragen jede Sitzung in `docs/agenten-protokoll.md` ein; ihre Commits enden mit `Agent: <Name>`. Zu Beginn **jeder** Sitzung prüfst du: neue Einträge im Protokoll und `git log --grep "Agent:"` seit dem letzten Prüfvermerk. Gibt es Neues, liest du die Diffs, lässt die Tests laufen, prüfst die Regeln (Verbote, Dokumentation, Plan) und schreibst einen Prüfvermerk unter den Eintrag; Probleme meldest du mir, bevor weitergearbeitet wird.
 

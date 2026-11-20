@@ -2,10 +2,42 @@
 
 Stand: 2026-11-17. **Laufende Anforderungsklärung, kein freigegebener Bauplan.** Zusammengeführt am 2026-11-17 aus `2026-11-16-cv-abgleich-fragen.md` (Fragenprotokoll), `2026-11-16-cv-abgleich-klaerung.md` (Anforderungen/Entwurf), dem CV-Teil von `2026-11-16-browser-cv-abnahme.md` (Paket 22) und dem Phase-6-Teil von `docs/vorarbeit-spaetere-phasen.md`; alte Fassungen in Git. Ursprüngliche Bestandsbasis `c2a0592`. Reihenfolge laut Q20: erst Groq-Paket und Hochladen abschließen, **dann die offenen CV-Fragen klären** (Abschnitt „Offene Zweige“). Es wurde noch kein CV-Abgleich implementiert oder freigegeben; keine CVs gelesen oder versendet.
 
+## Kontingent und Abo-Bedingungen (geprüft 2026-11-19, erledigt den offenen Auftrag aus Q15)
+
+### Bedingungen (nur offizielle Quellen, Prüftag 2026-11-19)
+
+- **Verbraucher-AGB** ([Consumer Terms](https://www.anthropic.com/legal/consumer-terms), gültig seit 8. Okt. 2025, Abschnitt 3 Nr. 7): verboten ist Zugriff „through automated or non-human means, whether through a bot, script, or otherwise“, **außer** mit API-Key „or where we otherwise explicitly permit it“.
+- **Ausdrücklich erlaubt** ist der Abo-Token für Skripte: `claude setup-token` erzeugt einen ein Jahr gültigen Token für CI und Skripte, der über das eigene Abo abrechnet ([Authentication](https://code.claude.com/docs/en/authentication), [GitHub Actions](https://code.claude.com/docs/en/github-actions)).
+- **Grenzen** ([Legal and compliance](https://code.claude.com/docs/en/legal-and-compliance)): Abo-Anmeldung ist für „ordinary use of Claude Code and other native Anthropic applications“ gedacht; Produkte mit dem **Agent SDK** sollen einen API-Key nutzen; verboten ist, Anfragen „through Free, Pro, Max, or Ultra plan credentials on behalf of their users“ zu leiten. Erlaubt bleibt, dass sich ein Nutzer im **unveränderten Claude-Code-Programm** mit dem eigenen Abo anmeldet. Die beworbenen Grenzen gehen von „ordinary, individual usage“ aus.
+- **Kontodaten** (Consumer Terms, Abschnitt 2): Zugangsdaten nicht weitergeben, Konto niemandem sonst verfügbar machen.
+- **Training und Aufbewahrung** ([Ankündigung](https://www.anthropic.com/news/updates-to-our-consumer-terms), [Aufbewahrung](https://privacy.claude.com/en/articles/10023548-how-long-do-you-store-my-data)): Pro-Daten (auch Claude Code) dienen nur zum Training, wenn die Einstellung „Modell verbessern“ an ist; dann bis 5 Jahre Aufbewahrung, sonst 30 Tage.
+- **Grenzen des Abos** ([Nutzungsgrenzen](https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work), [Claude Code mit Pro](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan)): 5-Stunden-Fenster ab der ersten Anfrage plus Wochengrenze über alle Modelle; Claude Code, claude.ai und Desktop teilen dasselbe Kontingent. Mit eingeschalteten **Usage Credits** wird nach Erreichen der Grenze kostenpflichtig weitergerechnet. Grenzen in Tokens veröffentlicht Anthropic nicht; Stand unter Settings → Usage.
+
+### Folgen für den Bau (Claudes Ableitung, keine Rechtsberatung)
+
+1. Der Nachtlauf ruft das **unveränderte Claude-Code-Programm** (`claude -p`, Modell Haiku) oder die offizielle `claude-code-action` auf – **nicht** das Agent SDK und keine eigenen API-Aufrufe mit dem Abo-Token.
+2. Nur für den Admin und nur mit seinen eigenen Daten (wie Q32–Q38). Andere Nutzer nie über den Abo-Token (bleibt: kostenloser Abgleich im Browser).
+3. Der Workflow läuft im **privaten Repo** `jobradar-privat`: Logs öffentlicher Repos sind öffentlich; CV-Text, Anzeigentext und Ergebnisse werden nie ins Log geschrieben.
+4. Am Abo-Limit (Fehlermeldung von Claude Code) bricht der Lauf geordnet ab; der Rest wartet auf die nächste Nacht.
+5. Nutzer-To-dos vor dem ersten Lauf: in claude.ai **Settings → Privacy** „Modell verbessern“ aus; **Settings → Usage** prüfen, dass Usage Credits aus sind (sonst würde am Limit bezahlt).
+
+### Mengenschätzung (Q101/Q102, Nutzer 2026-11-19: 10–30 gemerkte Stellen pro Woche, 5 oder mehr CV-Versionen)
+
+Annahmen (Claude, grob): Anzeige ≈ 2.500 Tokens, CV-Version ≈ 1.500 Tokens Text (Scans werden einmal beim Hochladen ausgelesen und als korrigierbarer Text gespeichert, A12), Anleitung ≈ 1.000, Antwort je Stelle ≈ 1.500 (je Anforderung Farbe, Beleg und beste Version – nicht je Version getrennt). **Fester Aufschlag je Claude-Code-Aufruf** (Systemanweisung, Werkzeuge) geschätzt 15.000–20.000 Tokens, teils aus dem Zwischenspeicher.
+
+| Fall | Stellen | Tokens etwa |
+|---|---|---|
+| Ein Aufruf je Stelle | 1 | 20.000 + 9.000 (6 CVs) + 4.000 ≈ **33.000** |
+| Fünf Stellen je Aufruf (CVs einmal) | 5 | 20.000 + 9.000 + 5 × 4.000 ≈ 49.000 → **≈ 10.000 je Stelle** |
+| Normale Woche (≈ 20 gemerkte + Stichwort-Treffer, ≈ 40) | 40 | **≈ 0,4 Mio.** |
+| Schlimmster Fall (50 pro Nacht, 7 Nächte) | 350 | **≈ 3,5 Mio.** |
+
+Dank A11 werden nur neue oder geänderte Stellen gerechnet. **Entscheidung für den Plan:** mehrere Stellen pro Aufruf bündeln (Aufschlag und CVs nur einmal). Wie viel Prozent der Wochengrenze das ist, lässt sich ohne veröffentlichte Zahlen nicht berechnen: **Halte-Punkt im Plan** – mit künstlichem CV 5 Abgleiche laufen lassen und die Anzeige unter Settings → Usage vorher/nachher ablesen; danach Grenze pro Nacht (heute 50, Q30) bestätigen oder senken.
+
 ## Neu am 2026-11-17 (vorrangig vor älteren Abschnitten)
 
 - **Q15 (Nutzerantwort „a). Analysiere aber, inwieweit das mein Kontingent aufbrauchen wird.“):** CV-Daten laufen **nur über Claude**; Mistral wird **nicht** für CVs genutzt. Damit sind A1 (Mistral-Option), A8/Q5 und der Mistral-Zweig unten überholt; die Mistral-Anbieterfakten bleiben nur als Material für die Phase-4-Prüfung (öffentliche Anzeigentexte, `docs/phasen-vorarbeit.md`). Wortlaut-Zeile in `docs/fragen-und-antworten.md`.
-- **Offener Auftrag aus Q15:** Analysieren, wie stark der nächtliche CV-Abgleich das Claude-Pro-Kontingent verbraucht (Zahl gemerkter Stellen × CV-Versionen, Wiederverwendung nach A11, Haiku laut CLAUDE.md 6). Noch nicht erledigt.
+- **Offener Auftrag aus Q15 (erledigt 2026-11-19, siehe oben):** Analysieren, wie stark der nächtliche CV-Abgleich das Claude-Pro-Kontingent verbraucht (Zahl gemerkter Stellen × CV-Versionen, Wiederverwendung nach A11, Haiku laut CLAUDE.md 6). Noch nicht erledigt.
 - **Farben in CLAUDE.md 6 (Entscheidung 2026-11-17, an Q3 angeglichen):** Grün = belegt, Gelb = teilweise oder noch nicht belegt, Rot = nachweislich nicht erfüllt; jeweils mit Beleg oder Begründung. Die zunächst abweichende Kurzfassung „Rot = nicht belegt“ wurde am 2026-11-17 korrigiert.
 
 - **Q24–Q27 (2026-11-17, Wortlaut in `docs/fragen-und-antworten.md`):** Scans liest Claude (Q24); Teilbeleg = Gelb, ähnliche statt geforderter Fähigkeit = Rot (Q25, Rückfrage Q28 wegen Q3 offen); ungekennzeichnete Anforderungen zählen als Muss (Q26); Gleichstand mit Umschalter, zuerst Standard-CV aus „Dokumente“ (Q27). Damit erledigt: Offene Zweige 1 (Ausleseweg nur noch technisch), 2, 3.

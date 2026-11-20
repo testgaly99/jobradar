@@ -164,7 +164,7 @@ def test_ausblenden_vor_der_ki(aufbau, monkeypatch):
     monkeypatch.setattr(run.ki, "auswerten", lambda *a, **k: reihe.append("auswerten") or {})
     monkeypatch.setattr(run.ki, "nachfuellen", lambda **kw: reihe.append("nachfuellen") or 0)
     run.lauf("2026-11-07", d)
-    assert reihe == ["aus", "auswerten", "nachfuellen"]
+    assert reihe == ["aus", "auswerten", "nachfuellen", "aus"]  # danach: frische "nein" ausblenden, Whitelist bleibt sichtbar
 
 
 def test_lauf_mit_key_wertet_aus(aufbau, monkeypatch):
@@ -200,7 +200,7 @@ def test_ki_fehler_kippt_lauf_nicht(aufbau, monkeypatch, capsys):
     bericht = run.lauf("2026-11-07", d)
     assert bericht["firmen"][0]["fehler"] == "" and "A:1" in t["jobs"] and t["laeufe"]
     ausgabe = capsys.readouterr().out
-    assert ausgabe.count("RuntimeError") == 3 and "boom" not in ausgabe
+    assert ausgabe.count("RuntimeError") == 4 and "boom" not in ausgabe
     for schritt in ("ausblenden", "auswerten", "nachfuellen"):
         assert f"KI {schritt} fehlgeschlagen: RuntimeError" in ausgabe
 

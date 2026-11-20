@@ -6,15 +6,20 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 // Jobportale: Nur Adresse und Titel aus dem Tab-Objekt, kein Skript in der Seite (Nutzungsbedingungen verbieten das Auslesen per Erweiterung).
 // "name.*" steht für beliebige Endungen. Die Liste steht je einmal in der Erweiterung (kern.mjs) und in der Website (web/lib/stellen-import.ts); ein Test prüft Gleichheit.
 export const PORTALE = ["linkedin.com", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com"];
-export function istPortal(host) {
+export const istPortal = (host) => passt(host, PORTALE);
+function passt(host, liste) {
   const l = String(host).toLowerCase().split(".");
   if (l.at(-1) === "") l.pop();
-  return PORTALE.some((p) => {
+  return liste.some((p) => {
     if (!p.endsWith(".*")) return l.length >= 2 && l.slice(-p.split(".").length).join(".") === p;
     const n = p.slice(0, -2), tld = l.at(-1) ?? "";
     return tld.length >= 2 && (l.at(-2) === n || (tld.length === 2 && ["co", "com"].includes(l.at(-2) ?? "") && l.at(-3) === n));
   });
 }
+
+// Hier übernimmt die Erweiterung gar nichts, auch nicht Adresse oder Titel (Nutzer 2026-11-19, Q135/Q137): LinkedIn verbietet solche Erweiterungen, StepStone und XING werden nie ausgelesen.
+export const GESPERRT = ["linkedin.com", "stepstone.*", "xing.com"];
+export const istGesperrt = (host) => passt(host, GESPERRT);
 
 export function appOrigin(wert) {
   let url;
@@ -148,6 +153,7 @@ export function erstelleImporteur(chrome, { jetzt = Date.now, uuid = () => crypt
       const origin = appOrigin(config.appOrigin);
       if (!(await chrome.permissions.contains({ origins: [`${origin}/*`] }))) { await chrome.runtime.openOptionsPage(); return; }
       if (!Number.isInteger(tab?.id) || !tab.url || new URL(tab.url).origin === origin) throw Error("Bitte den Knopf auf einer fremden Stellenanzeige benutzen.");
+      if (istGesperrt(new URL(tab.url).hostname)) throw Error("Auf LinkedIn, StepStone und XING übernimmt Jobradar nichts. Bitte den Link aus der Adresszeile selbst kopieren und in Jobradar einfügen.");
       for (const [altKey, p] of await eintraege()) if (abgelaufen(p)) await entferne(altKey);
       const schon = (await eintraege()).find(([, p]) => p?.sourceTabId === tab.id && p.origin === origin);
       if (schon) {

@@ -1,5 +1,7 @@
 # Anzeige mit dem Chrome-Knopf merken
 
+**Für Nutzer:** Herunterladen und Schritt-Anleitung (Chrome und Edge) stehen auf der Jobradar-Seite **Konto** → Abschnitt „Browser-Erweiterung“. Die Anleitung unten ist für die Entwicklung aus diesem Ordner.
+
 Lokale erste Version für Chrome. Edge, Safari, Smartphone und Firefox folgen gemäß Nutzerpriorität später. Kein Browser wurde durch Codex eingerichtet, keine Erweiterung installiert und nichts veröffentlicht.
 
 Unsichtbar für Webseiten: keine Inhaltsskripte und keine freigegebenen Dateien; ein Test sichert das ab.
@@ -28,7 +30,9 @@ Unsichtbar für Webseiten: keine Inhaltsskripte und keine freigegebenen Dateien;
 
 **Warum:** Die Erweiterung übernimmt die aktuelle Adresse und eine passende Überschrift. Firma und Beschreibung kommen nur aus einem eindeutig erkannten `JobPosting`-Datensatz der Seite; eine bewusste Textauswahl hat Vorrang. Auswahl in Eingabefeldern oder bearbeitbaren Bereichen wird vor dem Auslesen ausgeschlossen. Sie liest weder die gesamte Seite noch Formularwerte oder Cookies. Ohne eindeutige Firmendaten bleibt die Firma unbekannt.
 
-**Jobportale (LinkedIn, StepStone, Indeed, XING, Glassdoor, Monster, kununu):** Dort wird kein Skript in die Seite eingeschleust; übernommen werden nur Adresse und Titel aus den Tab-Angaben des Browsers, nie Anzeigentext, Firma oder markierter Text. Warum: Die Nutzungsbedingungen der Portale verbieten das Kopieren von Inhalten per Erweiterung. Den Anzeigentext fügst du bei Bedarf selbst in Jobradar ein. Die Website verwirft Text und Firma für diese Adressen zusätzlich selbst. Erkannt wird die Domain samt Subdomains (z. B. `de.linkedin.com`), nicht ähnlich klingende Adressen. Die Liste steht in `kern.mjs` (`PORTALE`) und in `web/lib/stellen-import.ts`; ein Test prüft, dass beide gleich sind.
+**LinkedIn, StepStone, XING:** Dort übernimmt die Erweiterung nichts, auch nicht Adresse oder Titel (Q135/Q137): LinkedIn verbietet Browser-Erweiterungen, die Inhalte kopieren, und StepStone und XING werden nie ausgelesen. Den Link kopierst du selbst aus der Adresszeile und fügst ihn in Jobradar ein. Liste `GESPERRT` in `kern.mjs`.
+
+**Übrige Jobportale (Indeed, Glassdoor, Monster, kununu):** Dort wird kein Skript in die Seite eingeschleust; übernommen werden nur Adresse und Titel aus den Tab-Angaben des Browsers, nie Anzeigentext, Firma oder markierter Text. Warum: Die Nutzungsbedingungen der Portale verbieten das Kopieren von Inhalten per Erweiterung. Den Anzeigentext fügst du bei Bedarf selbst in Jobradar ein. Die Website verwirft Text und Firma für diese Adressen zusätzlich selbst. Erkannt wird die Domain samt Subdomains (z. B. `de.linkedin.com`), nicht ähnlich klingende Adressen. Die Liste steht in `kern.mjs` (`PORTALE`) und in `web/lib/stellen-import.ts`; ein Test prüft, dass beide gleich sind.
 
 **Erfolg:** Der Knopf zeigt ein Häkchen und das Board wählt die Karte aus. Ein Häkchen erscheint erst nach bestätigter Speicherung. Ist die Anmeldung abgelaufen, zuerst im geöffneten Jobradar-Tab anmelden; der begrenzte Entwurf wartet höchstens zehn Minuten und setzt danach auf der Importseite fort.
 

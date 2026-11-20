@@ -5,7 +5,7 @@ import {
   ERGEBNIS_LABEL, KONTAKT_ART_LABEL, STATUS, STATUS_LABEL, datumDe, istUuid, zeitDe, type Abschnitt, type Status,
 } from "@/lib/bewerbung";
 import {
-  abschnittSpeichern, bewerbungLoeschen, eintragLoeschen, interviewAnlegen, notizAnlegen, personAnlegen,
+  abschnittSpeichern, bewerbungLoeschen, eintragLoeschen, interviewAnlegen, notizAnlegen, personAnlegen, personSpeichern,
 } from "@/app/bewerbungen/detail-actions";
 import Abschnitte from "../../abschnitte";
 import { leseAbschnitte } from "@/lib/anzeige";
@@ -13,11 +13,19 @@ import { zurueckZuGemerkt } from "@/lib/zug";
 import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
 import { DruckKnopf, LoeschForm, SendeKnopf } from "@/app/bewerbungen/knoepfe";
 import Ungespeichert from "./ungespeichert";
+import { AnlagenHaken, AnschreibenBlock } from "./anschreiben";
+import { ANLAGE_ARTEN } from "@/lib/dokumente";
+import { anzeigeText } from "@/lib/anschreiben";
+import type { Briefkopf } from "@/lib/brief-datei";
+import { dokumentHerunterladen } from "@/app/unterlagen/actions";
+import { SteckbriefKarte, Ueberblick } from "../../anzeige-bloecke";
+import { kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
+import { leseKi } from "@/lib/zusammenfassung";
 
 type Row = Record<string, string | number | string[] | null>;
 type Dok = { id: string; name: string | null; version_datum: string | null };
 type Ereignis = { id: string; datum: string; alter_status: Status | null; neuer_status: Status | null; notiz: string | null };
-type Person = { id: string; firma: string | null; name: string | null; rolle: string | null; email: string | null; telefon: string | null; linkedin: string | null; art: string | null };
+type Person = { id: string; firma: string | null; name: string | null; rolle: string | null; email: string | null; telefon: string | null; linkedin: string | null; art: string | null; anrede?: string | null };
 type Interview = { id: string; datum: string | null; format: string | null; teilnehmer: string | null; fragen_gestellt: string | null; eigene_fragen: string | null; eindruck: string | null; aufgabe: string | null; aufgabe_frist: string | null };
 
 const v = (x: unknown) => (x === null || x === undefined ? "" : String(x));
@@ -31,24 +39,65 @@ function Text({ a, name, label, type = "text", gross }: { a: Row; name: string; 
   );
 }
 
+// Gleiche Felder für "Person hinzufügen" und "Bearbeiten"; p = vorhandene Person oder leer.
+function PersonFelder({ p }: { p?: Person }) {
+  return (
+    <>
+      <label>Name (Pflicht)<input name="name" required defaultValue={p?.name ?? ""} /></label>
+      <label>Art
+        <select name="art" defaultValue={p?.art ?? "ansprechpartner"}>
+          {Object.entries(KONTAKT_ART_LABEL).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
+        </select>
+      </label>
+      <label>Anrede
+        <select name="anrede" defaultValue={p?.anrede ?? "ohne"}>
+          <option value="frau">Frau</option>
+          <option value="herr">Herr</option>
+          <option value="ohne">ohne</option>
+        </select>
+      </label>
+      <label>Rolle<input name="rolle" defaultValue={p?.rolle ?? ""} /></label>
+      <label>Firma<input name="firma" defaultValue={p?.firma ?? ""} /></label>
+      <label>E-Mail<input name="email" type="email" defaultValue={p?.email ?? ""} /></label>
+      <label>Telefon<input name="telefon" type="tel" defaultValue={p?.telefon ?? ""} /></label>
+      <label>LinkedIn<input name="linkedin" defaultValue={p?.linkedin ?? ""} /></label>
+    </>
+  );
+}
+
 // Gemeinsamer Inhalt der ganzen Seite ([id]/page.tsx) und des Seitenfensters (@fenster/(.)[id]).
 export default async function BewerbungInhalt({ id, fehler }: { id: string; fehler?: string }) {
   if (!istUuid(id)) notFound();
   const sb = await createClient();
   const { data: a } = await sb.from("applications").select("*").eq("id", id).maybeSingle();
   if (!a) notFound();
-  const [ev, pe, iv, dok, weitere] = await Promise.all([
+  const [ev, pe, iv, dok, weitere, vl, bk, ba] = await Promise.all([
     sb.from("application_events").select("id,datum,alter_status,neuer_status,notiz").eq("application_id", id).order("datum", { ascending: false }),
     sb.from("contacts").select("*").eq("application_id", id).order("name"),
     sb.from("interviews").select("*").eq("application_id", id).order("datum", { ascending: false }),
-    sb.from("documents").select("id,name,art,version_datum").order("version_datum", { ascending: false }),
+    sb.from("documents").select("*").order("version_datum", { ascending: false }),
     bewerbungenBei(sb, a.firma as string | null, id),
+    sb.from("anschreiben_vorlagen").select("id,name,betreff,text").order("name"),
+    sb.from("briefkopf").select("name,strasse,plz_ort,telefon,email,linkedin").maybeSingle(),
+    sb.from("bewerbung_anlagen").select("document_id").eq("application_id", id),
   ]);
   const row = a as Row;
   const events = (ev.data ?? []) as Ereignis[];
   const personen = (pe.data ?? []) as Person[];
   const interviews = (iv.data ?? []) as Interview[];
-  const docs = (dok.data ?? []) as (Dok & { art: string | null })[];
+  const docs = (dok.data ?? []) as (Dok & { art: string | null; anlage_art?: string | null })[];
+  const anschreiben = docs.find((d) => d.id === row.anschreiben_dokument_id) ?? null;
+  const vorlagen = (vl.data ?? []) as { id: string; name: string; betreff: string; text: string }[];
+  const kopf = (bk.data ?? null) as Briefkopf | null;
+  const ansprechpartner = personen.find((p) => p.art === "ansprechpartner") ?? null;
+  const abschnitte = leseAbschnitte((a as { snapshot_abschnitte?: unknown }).snapshot_abschnitte);
+  // Link-Schnellstart (Migration 012): vom Nachtlauf nachgerüstete Zusammenfassung und Steckbrief der Firmenseite.
+  const nach = a as { nachruesten?: boolean; snapshot_ki?: unknown; snapshot_steckbrief?: unknown };
+  const kiSnap = leseKi(nach.snapshot_ki);
+  const steckSnap = nach.snapshot_steckbrief ? kurzzeile({
+    groesse: null, level: null, modell: null, vertrag: null, ort: null, erstmalsGesehen: null, branchen: [],
+    steckbrief: leseSteckbrief(nach.snapshot_steckbrief),
+  }, ["erfahrung", "gehalt", "sprachen", "sicherheit"]) : [];
   // B1: Kästen mit Inhalt sind offen, leere zugeklappt (eine Zeile statt eines leeren Formulars)
   const hat = (...felder: string[]) => felder.some((f) => { const x = row[f]; return x !== null && x !== undefined && x !== "" && !(Array.isArray(x) && x.length === 0); });
   const interesse = typeof row.interesse === "number" ? row.interesse : null;
@@ -137,14 +186,22 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           <Text a={row} name="portal_hinweis" label="Hinweis zum Bewerberportal (kein Passwort!)" />
           <label>CV
             <select name="cv_dokument_id" defaultValue={v(row.cv_dokument_id)}>{dokOptionen("cv")}</select>
-            <a href="/dokumente" className="klein">Dokument hochladen</a>
+            <a href="/unterlagen" className="klein">Dokument hochladen</a>
           </label>
-          <label>Anschreiben
-            <select name="anschreiben_dokument_id" defaultValue={v(row.anschreiben_dokument_id)}>{dokOptionen("anschreiben")}</select>
-          </label>
-          {docs.length === 0 && <p className="gedaempft klein">Noch keine Dokumente. <a href="/dokumente">Jetzt hochladen</a>.</p>}
+          {docs.length === 0 && <p className="gedaempft klein">Noch keine Dokumente. <a href="/unterlagen">Jetzt hochladen</a>.</p>}
           <SendeKnopf text="Bewerbung speichern" />
         </form>
+          {anschreiben && (
+            <div className="aktionsreihe">
+              <p className="klein">Anschreiben: <strong>{anschreiben.name || "Dokument"}</strong></p>
+              <form action={dokumentHerunterladen.bind(null, anschreiben.id)}><button className="knopf knopf-rand knopf-schmal" type="submit">Herunterladen</button></form>
+            </div>
+          )}
+          <AnschreibenBlock applicationId={id} vorlagen={vorlagen} kopf={kopf} anzeige={anzeigeText(abschnitte, row.anforderungen as string | null, link)}
+              app={{ firma: row.firma as string | null, titel: row.titel as string | null, quelle: row.quelle as string | null }}
+              kontakt={ansprechpartner ? { name: ansprechpartner.name, anrede: ansprechpartner.anrede ?? null } : null} />
+          <AnlagenHaken applicationId={id} angehakt={(ba.data ?? []).map((x) => x.document_id as string)}
+            anlagen={docs.filter((d) => d.art === "anlage").map((d) => ({ id: d.id, name: d.name, art: (d.anlage_art && Object.hasOwn(ANLAGE_ARTEN, d.anlage_art) ? ANLAGE_ARTEN[d.anlage_art] : "") }))} />
         </details>
 
         <details className="karte kein-druck" open={hat("gehalt_spanne_anzeige", "gehalt_wunsch", "angebot_fix", "angebot_variabel", "angebot_urlaub", "angebot_benefits", "gehalt_aktuell_vergleich")}>
@@ -211,8 +268,15 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           {personen.map((p) => (
             <li key={p.id}>
               <div>
-                <strong>{p.name}</strong> {p.art && <span className="chip">{KONTAKT_ART_LABEL[p.art]}</span>}
+                <strong>{p.anrede === "frau" ? "Frau " : p.anrede === "herr" ? "Herr " : ""}{p.name}</strong> {p.art && <span className="chip">{KONTAKT_ART_LABEL[p.art]}</span>}
                 <p className="klein">{[p.rolle, p.firma, p.email, p.telefon, p.linkedin].filter(Boolean).join(", ")}</p>
+                <details className="hinzufuegen">
+                  <summary className="knopf knopf-rand knopf-schmal">Bearbeiten</summary>
+                  <form action={personSpeichern.bind(null, id, p.id)} className="formular">
+                    <PersonFelder p={p} />
+                    <SendeKnopf text="Änderungen speichern" />
+                  </form>
+                </details>
               </div>
               <LoeschForm action={eintragLoeschen.bind(null, id, "contacts", p.id)} frage="Person löschen?" />
             </li>
@@ -222,17 +286,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         <details className="hinzufuegen">
         <summary className="knopf knopf-rand knopf-schmal">+ Person hinzufügen</summary>
         <form action={personAnlegen.bind(null, id)} className="formular">
-          <label>Name (Pflicht)<input name="name" required /></label>
-          <label>Art
-            <select name="art" defaultValue="ansprechpartner">
-              {Object.entries(KONTAKT_ART_LABEL).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
-            </select>
-          </label>
-          <label>Rolle<input name="rolle" /></label>
-          <label>Firma<input name="firma" /></label>
-          <label>E-Mail<input name="email" type="email" /></label>
-          <label>Telefon<input name="telefon" type="tel" /></label>
-          <label>LinkedIn<input name="linkedin" /></label>
+          <PersonFelder />
           <SendeKnopf text="Person speichern" />
         </form>
         </details>
@@ -292,6 +346,9 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         </form>
       </details>
 
+      {nach.nachruesten && <p className="meldung hinweis">Die Anzeige wird gerade gelesen. Das dauert meist 2–5 Minuten, spätestens bis zum nächsten Morgen. Danach die Seite neu laden.</p>}
+      {kiSnap && <Ueberblick ki={kiSnap} ohne="" />}
+      <SteckbriefKarte eintraege={steckSnap} />
       <details className="karte block">
         <summary><h2>Snapshot der Anzeige</h2></summary>
         <div className="kopfzeile"><DruckKnopf /></div>

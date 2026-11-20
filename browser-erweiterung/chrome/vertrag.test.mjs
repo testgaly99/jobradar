@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
-import { appOrigin, erfasseAnzeige, uebertrageImAppTab, erstelleImporteur, istPortal, PORTALE, MAX_ALTER } from "./kern.mjs";
+import { appOrigin, erfasseAnzeige, uebertrageImAppTab, erstelleImporteur, istPortal, istGesperrt, PORTALE, MAX_ALTER } from "./kern.mjs";
 
 const origin = "https://board.example.invalid";
 const id = "11111111-1111-4111-8111-111111111111";
@@ -143,14 +143,26 @@ function ersatz() {
 
 test("Auf Portalen wird kein Skript eingeschleust; Adresse und Titel stammen vom Tab, sonst wird erfasst", async () => {
   const portal = ersatz();
-  const url = "https://de.linkedin.com/jobs/view/1";
-  portal.tabs.set(5, { id: 5, url, title: "Analyst | LinkedIn", status: "complete" });
+  const url = "https://de.indeed.com/viewjob?jk=1";
+  portal.tabs.set(5, { id: 5, url, title: "Analyst | Indeed", status: "complete" });
   await portal.importer.starten(portal.tabs.get(5));
   assert.equal(portal.aufrufe.filter((a) => a[0] === "script").length, 0);
-  assert.deepEqual(Object.values(portal.session).map((p) => p.payload), [{ link: url, titel: "Analyst | LinkedIn" }]);
+  assert.deepEqual(Object.values(portal.session).map((p) => p.payload), [{ link: url, titel: "Analyst | Indeed" }]);
   const normal = ersatz();
   await normal.importer.starten(normal.tabs.get(7));
   assert.equal(normal.aufrufe.filter((a) => a[0] === "script" && a[1].func === erfasseAnzeige).length, 1);
+});
+
+test("Auf LinkedIn, StepStone und XING wird gar nichts übernommen (Q135/Q137)", async () => {
+  for (const h of ["linkedin.com", "de.linkedin.com", "WWW.LinkedIn.com.", "www.stepstone.de", "stepstone.at", "www.xing.com"]) assert.equal(istGesperrt(h), true, h);
+  for (const h of ["evil-linkedin.com", "linkedin.com.evil.example", "linkedin.de", "stepstone.evil.com", "xing.de", "de.indeed.com"]) assert.equal(istGesperrt(h), false, h);
+  for (const url of ["https://de.linkedin.com/jobs/view/1", "https://www.stepstone.de/stellenangebote--Analyst-1.html", "https://www.xing.com/jobs/analyst-1"]) {
+    const f = ersatz();
+    f.tabs.set(5, { id: 5, url, title: "Analyst", status: "complete" });
+    await f.importer.starten(f.tabs.get(5));
+    assert.equal(f.aufrufe.filter((a) => a[0] === "script").length, 0, url);
+    assert.equal(Object.keys(f.session).length, 0, url);
+  }
 });
 
 test("Nur gestarteter Transfer wird im gebundenen App-Tab ausgeführt, danach einmalig beendet", async () => {

@@ -26,6 +26,9 @@ class FakeDB:
         self.ohne_funktion = False
         self.ohne_logo_spalte = False
         self.ohne_ki_spalten = False
+        self.ohne_nachruesten = False
+        self.ohne_whitelist = False
+        self.rpc_nein = 0
         self.nachgeruestet = 0
         self.pruefungen = 0
         self.t = {"companies": {}, "jobs": {}, "laeufe": [], "applications": []}
@@ -37,6 +40,14 @@ class FakeDB:
             if self.ohne_funktion:
                 raise RuntimeError("Supabase POST rpc/snapshot_nachruesten: 404 {\"code\":\"PGRST202\"}")
             return 3
+        elif method == "POST" and pfad == "rpc/nein_ausblenden":
+            self.rpc_nein += 1
+            if self.ohne_whitelist:
+                raise RuntimeError("Supabase POST Abfrage: 404 PGRST202")
+            treffer = [z for z in self.t["jobs"].values() if z.get("studium") == "nein" and z["status"] == "offen" and z["sichtbar"]]
+            for z in treffer:
+                z["sichtbar"] = False
+            return len(treffer)
         elif method == "POST" and pfad == "laeufe":
             self.t["laeufe"].append(json)
         elif method == "POST":
@@ -73,10 +84,16 @@ class FakeDB:
             assert params["firma"] == params["titel"] == "is.null"
             return [{"id": a["id"], "snapshot_text": a["snapshot_text"]} for a in self.t["applications"]
                     if a["firma"] is None and a["titel"] is None]
+        elif method == "GET" and pfad == "applications" and params.get("select") == "id,link,firma":
+            if self.ohne_nachruesten:
+                raise RuntimeError("Supabase GET applications: 400 42703")
+            assert params["nachruesten"] == "eq.true"
+            return [{"id": a["id"], "link": a["link"], "firma": a.get("firma")} for a in self.t["applications"] if a.get("nachruesten")][:params["limit"]]
         elif method == "PATCH" and pfad == "applications":
-            assert params["firma"] == params["titel"] == "is.null"
+            # wie PostgREST: alle Filter "is.null" müssen passen
+            leer = [k for k, v in params.items() if v == "is.null"]
             for a in self.t["applications"]:
-                if a["id"] == params["id"][3:] and a["firma"] is None and a["titel"] is None:
+                if a["id"] == params["id"][3:] and all(a.get(k) is None for k in leer):
                     a.update(json)
         elif method == "GET" and pfad == "jobs" and params.get("select") == "abschnitte,land,steckbrief":
             self.pruefungen += 1

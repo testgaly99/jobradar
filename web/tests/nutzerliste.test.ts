@@ -50,3 +50,18 @@ test("selbstLoeschenErlaubt: ohne/leere ADMIN_EMAIL gesperrt, Admin gesperrt, so
   assert.equal(selbstLoeschenErlaubt({ istAdmin: true, adminEnv: "a@x.de" }), "Das Admin-Konto kann nicht gelöscht werden.");
   assert.equal(selbstLoeschenErlaubt({ istAdmin: false, adminEnv: "a@x.de" }), null);
 });
+
+test("Zwei Admin-Konten (Q236): beide Admin, beide geschützt, Freunde unverändert", async () => {
+  const { istAdmin } = await import("../lib/admin.ts");
+  const env = "erste@example.com, Zweite@Example.com";
+  assert.equal(istAdmin("erste@example.com", env), true);
+  assert.equal(istAdmin("zweite@example.com", env), true);
+  assert.equal(istAdmin("freund@example.com", env), false);
+  // Admin A kann Admin B nicht entfernen und umgekehrt; einen Freund schon.
+  assert.match(entfernenErlaubt({ zielId: "b", zielEmail: "zweite@example.com", eigeneId: "a", adminEnv: env })!, /Admin-Konto/);
+  assert.match(entfernenErlaubt({ zielId: "a", zielEmail: "erste@example.com", eigeneId: "b", adminEnv: env })!, /Admin-Konto/);
+  assert.equal(entfernenErlaubt({ zielId: "f", zielEmail: "freund@example.com", eigeneId: "a", adminEnv: env }), null);
+  // Selbst löschen: beide Admins gesperrt, Freund darf.
+  assert.match(selbstLoeschenErlaubt({ istAdmin: istAdmin("zweite@example.com", env), adminEnv: env })!, /Admin-Konto/);
+  assert.equal(selbstLoeschenErlaubt({ istAdmin: istAdmin("freund@example.com", env), adminEnv: env }), null);
+});

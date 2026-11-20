@@ -98,18 +98,24 @@ def lade_anzeige(job_id):
 
 
 def speichere_ki(job_id, ergebnis, modell, text_hash):
-    """ergebnis=None (Fehler): nur Modell/Hash vermerken. studium/taetigkeit liegen in eigenen Spalten, 'nein' blendet aus."""
+    """ergebnis=None (Fehler): nur Modell/Hash vermerken. studium/taetigkeit liegen in eigenen Spalten.
+    Ausgeblendet wird nur über nein_ausblenden (kennt die Whitelist)."""
     patch = {"ki": None, "ki_modell": modell, "ki_hash": text_hash}
     if ergebnis:
         patch["ki"] = {k: v for k, v in ergebnis.items() if k not in ("studium", "taetigkeit")}
         patch["studium"], patch["taetigkeit"] = ergebnis["studium"], ergebnis["taetigkeit"]
-        if ergebnis["studium"] == "nein":
-            patch["sichtbar"] = False
     _req("PATCH", "jobs", params={"id": f"eq.{job_id}"}, json=patch)
 
 
 def nein_ausblenden():
-    """Blendet offene Stellen mit studium=nein aus (z. B. nach Nutzer-Korrektur). Gibt die Anzahl zurück."""
+    """Blendet offene Stellen mit studium=nein aus, außer bei Whitelist-Firmen (Migration 011). Gibt die Anzahl zurück.
+    Ohne Migration 011: alte Regel ohne Whitelist."""
+    try:
+        return _req("POST", "rpc/nein_ausblenden", json={}) or 0
+    except RuntimeError as e:
+        if ": 404 " not in str(e) and "PGRST202" not in str(e):
+            raise
+        print("Hinweis: nein_ausblenden fehlt (Migration 011 offen), alte Regel ohne Whitelist.")
     r = _req("PATCH", "jobs", params={"studium": "eq.nein", "status": "eq.offen", "sichtbar": "eq.true", "select": "id"},
              json={"sichtbar": False}, headers={"Prefer": "return=representation"})
     return len(r or [])
@@ -233,6 +239,28 @@ def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):
         for i in range(0, len(liste), CHUNK):
             _req("PATCH", "jobs", params={"id": _in(liste[i:i + CHUNK])}, json=patch)
     return sum(1 for i in gesehen if i not in alt), len(fehlend)
+
+
+def bewerbungen_zum_nachruesten(limit=50):
+    """Bewerbungen aus Firmenseiten (Link-Schnellstart). Ohne Migration 012 antwortet PostgREST mit 400: dann nichts."""
+    try:
+        return _req("GET", "applications", params={"select": "id,link,firma", "nachruesten": "eq.true", "limit": limit})
+    except RuntimeError as e:
+        if ": 400 " not in str(e):
+            raise
+        print("Hinweis: Migration 012 offen, Nachrüsten übersprungen.")
+        return []
+
+
+def fuelle_leere(app_id, felder):
+    """Nur leere Felder füllen (je Feld mit Filter is.null): was der Nutzer eingetragen hat, bleibt unberührt."""
+    for k, v in felder.items():
+        if v:
+            _req("PATCH", "applications", params={"id": f"eq.{app_id}", k: "is.null"}, json={k: v})
+
+
+def setze_nachgeruestet(app_id, patch):
+    _req("PATCH", "applications", params={"id": f"eq.{app_id}"}, json={**patch, "nachruesten": False})
 
 
 def speichere_lauf(bericht):

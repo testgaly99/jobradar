@@ -34,7 +34,7 @@ globalThis.fetch = async (input, init = {}) => {
   // Keine echte Loopback-Verbindung und keine gelockerte Socket-/Domainsperre.
   if (['http://localhost:3002', 'http://127.0.0.1:3002'].includes(url.origin)
       && (url.pathname === '/stellen' || url.pathname.startsWith('/stellen/')
-        || ['/konto', '/dokumente', '/login'].includes(url.pathname))
+        || ['/konto', '/unterlagen', '/login'].includes(url.pathname))
       && init.method === 'GET' && init.next?.internal === 1 && headers.get('rsc') === '1') {
     return new Response(null, { status: 204 });
   }

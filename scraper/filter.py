@@ -1,4 +1,4 @@
-"""Vorfilter: nur Deutschland plus Remote (Europa/EMEA/EU), keine Ausbildung/Praktikum/etc."""
+"""Vorfilter: nur Deutschland plus Remote (Europa/EMEA/EU oder weltweit), keine Ausbildung/Praktikum/etc."""
 import re
 
 _TITEL_WOERTER = (
@@ -35,6 +35,9 @@ _STAEDTE = (
 _DE_RE = re.compile(r"\b(" + "|".join(_STAEDTE) + r"|Germany|Deutschland)\b", re.IGNORECASE)
 _DE_CODE = re.compile(r"\bDE\b")
 _REMOTE_RE = re.compile(r"\b(Europe|EMEA|EU)\b", re.IGNORECASE)
+# Remote ohne Länderbeschränkung (Q44): Ortstext nur aus "Remote" und Weltweit-Wörtern, z. B. "Remote - Worldwide", "Anywhere".
+# Strenger als "enthält global": "Global Ventures, New York" bleibt draußen.
+_WELTWEIT_RE = re.compile(r"(?:\b(?:remote|worldwide|anywhere|global|weltweit)\b|[\s,()\-/|])+", re.IGNORECASE)
 
 
 # Nutzer (Q23): Stellen unter 35 Wochenstunden ausblenden, ab 35 behalten. Nur mit Wochenbezug, sonst träfe es "24h-Service".
@@ -57,7 +60,7 @@ def ist_relevant(titel: str, ort_text: str, remote: bool) -> tuple[bool, str]:
         return False, "Stellenart: teilzeit"
     if _DE_RE.search(ort_text) or _DE_CODE.search(ort_text):
         return True, ""
-    if remote and (not ort_text.strip() or _REMOTE_RE.search(ort_text)):
+    if remote and (not ort_text.strip() or _REMOTE_RE.search(ort_text) or _WELTWEIT_RE.fullmatch(ort_text)):
         return True, ""
     return False, "Ausland"
 

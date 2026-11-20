@@ -165,8 +165,165 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q92 | Unicorns (wertvolle Startups) als Quelle? | Nutzer wünscht deutsche und europäische Unicorns | Keine Liste mit offener Lizenz vorhanden; keine automatische Quelle. | entschieden |
 | Q93 | Die 13 heutigen Firmen: für wen sichtbar? | „Nur für mich“ | Werden mit 4e private Firmen des Admins; Zusatzfirmen-Limit 50 gilt nicht für den Admin (Nutzer: „Es soll außerdem zwar für alle ein Limit von 50 eigenen Firmen gelten, für den Admin gilt das aber nicht“). | entschieden |
 | Q94 | Wie viele Firmen je Liste? (Nutzer 2026-11-19: „Als zweites möchte ich festlegen, dass wir aus jeder Liste, auch die, bei denen ich gesagt habe top 300, doch nur die top 200 Companies nehmen. Wie viele Firmen haben wir dann etwa in Summe?“) | Nutzerfestlegung | Aus jeder Liste höchstens Top 200 (Arbeitgeber-Liste 200 statt 300, Scoreboard 200 statt 250). Schätzung Claude: roh ~3.100, ohne Doppelte ~1.500–2.000, aktiv ~900–1.300. | entschieden |
-| Q95 | Listen ohne Rang (EIC) und Listen unter 200 Firmen? | Nutzer: „Ausnahme von der 200 Grenze, wenn eine Liste weniger als 200 Firmen hat“ | Kleinere Listen ganz. Für EIC (mehr als 200, ohne Rang) Claudes Vorschlag bis zur Gegenrede: die 200 zuletzt geförderten. | teilweise entschieden |
+| Q95 | Listen ohne Rang (EIC) und Listen unter 200 Firmen? | Nutzer: „Ausnahme von der 200 Grenze, wenn eine Liste weniger als 200 Firmen hat“ | Kleinere Listen ganz. Für EIC (mehr als 200, ohne Rang) Claudes Vorschlag bis zur Gegenrede: die 200 zuletzt geförderten; ersetzt durch Q97. | entschieden (Q97) |
 | Q96 | Nutzer sehen Kategorien statt Einzellisten? Vorschlag: Top-Arbeitgeber · Beliebt bei Studierenden · Große Unternehmen · Börsennotiert · Innovation · Wachstum & Startups · Top-Gehalt Tech | Nutzer: „Das passt so. … Ich möchte für mich aber nicht nur den Rang sehen, sondern auch nach Rang sortieren können“ | Sieben Kategorien als Filter; wer eine Liste sehen darf, sieht Rang und sortiert nach Rang. | entschieden |
+| Q97 | EIC Accelerator ohne Rang, mehr als 200 Firmen: welche 200? | Nutzer: „200 mit höchster Förderung“ | Die 200 Firmen mit der höchsten EU-Förderung (ersetzt Claudes Vorschlag aus Q95). | entschieden |
+| Q98 | Eine Kategorie, zu der nur eine einzige Quelle beiträgt: trotzdem für alle Angemeldeten zeigen? | Nutzer: „So lassen“ | Alle sieben Kategorien bleiben wie in Q96 festgelegt. | entschieden |
+| Q99 | Weitere Listen zur Auswahl vom 2026-11-19 ergänzen? | Nutzer: „Nichts, war ein Versehen“ | Es bleibt bei der getroffenen Auswahl. | entschieden |
+| Q100 | Für welche Phase als Nächstes Fragen klären bzw. den Plan schreiben? | Nutzer: „Phase 6 CV-Abgleich (Empfohlen)“ | Als Nächstes Phase 6: Claude prüft Abo-Kontingent und Abo-Bedingungen, dann Design und Plan. | entschieden |
+| Q101 | Wie viele Stellen merkst du dir pro Woche ungefähr vor? (für die Kontingent-Schätzung Phase 6) | Nutzer: „10–30“ | Normale Woche ≈ 40 Abgleiche inkl. Stichwort-Treffer, ≈ 0,4 Mio. Tokens (Schätzung, `docs/plans/2026-11-16-cv-abgleich.md`). | beantwortet |
+| Q102 | Wie viele CV-Versionen wirst du hochladen? | Nutzer: „5 oder mehr“ | Mit 6 Versionen gerechnet; mehrere Stellen je Aufruf bündeln, damit die CVs nur einmal mitgelesen werden. | beantwortet |
+| Q103 | Admin: sofort vorläufige Farben aus dem kostenlosen Bedeutungsvergleich im Browser, Grenzfälle nachts durch Claude? (Anlass, Nutzer: „Aber die Farben werden ja auch erstellt beim gratis Modell ohne Claude, oder?“) | Nutzer: „Ja, sofort + nachts genauer (Empfohlen)“ | Admin bekommt beim Merken sofort Grün/Gelb aus Stufe 1, Grenzfälle als „wird heute Nacht geprüft“; der Nachtlauf ersetzt das vorläufige Ergebnis. Kein zusätzliches Kontingent. Ergänzt Q37. | entschieden |
+| Q104 | Welchen Bereich als Nächstes klären und planen? | Nutzer: „Phase 4g Stelle aus Link“ | Nächster Plan: 4g (Stelle aus Portal-Link auf der Originalquelle finden); Codex baut es erst nach 4b/4c. | entschieden |
+| Q105 | Freunde: Chromes eingebautes Modell muss erst heruntergeladen werden (mehrere GB, Klick nötig). Wie umgehen? (Anlass, Nutzer: „Hast du für Phase 6 keine Fragen an mich? Ist alles endgültig geklärt?“) | Nutzer: „Knopf anbieten (Empfohlen)“ | Hinweis mit Größe und Knopf „Genauer prüfen: Chrome-KI einmalig laden“; ohne Klick bleibt es bei Grün/Gelb. Ersetzt „kein Download auslösen“ im Plan 6b. | entschieden |
+| Q106 | „Wichtige Punkte“ nach Bedeutung (CLAUDE.md 6) fehlte im Konzept. Was damit tun? | Nutzer: „In 6b mitnehmen (Empfohlen)“ | Neuer Task 5 in Plan 6b: gleicher Bedeutungsvergleich im Browser, für alle, kein Claude-Kontingent. | entschieden |
+| Q107 | 4g: Wann die Originalstelle zu einem Portal-Link suchen? | Nutzer: „Sofort + neue Firmen nachts (Empfohlen)“ | Bekannte Firma sofort in den jobradar-Stellen; unbekannte Firma (Website, Portal, Stelle) im Nachtlauf. | entschieden |
+| Q108 | 4g: Was passiert mit einer unbekannten Firma, deren Stelle gefunden wurde? | Nutzer: „Nur Stelle + Knopf (Empfohlen)“ | Nur diese Stelle wird übernommen; Knopf „Firma dauerhaft beobachten“ macht sie zur Zusatzfirma (4e, zählt zur Grenze 50). | entschieden |
+| Q109 | 4g: Kein Treffer mit gleichem Titel auf der Firmenseite? | Nutzer: „Ähnliche zur Auswahl (Empfohlen)“ | Bis zu 5 ähnliche Stellen (ohne KI, gemeinsame Wörter) zur Auswahl; „Keine davon“ behält Firma/Titel mit Hinweis. | entschieden |
+| Q110 | 4g: Firma ohne Website in Wikidata? | Nutzer: „Nur Hinweis“ | Hinweis „Original nicht gefunden“, kein Website-Feld. | entschieden |
+| Q111 | Phase 6: Bewerbungen ohne Stelle in jobradar auch abgleichen? (Fund der Kontrollfrage beim 4g-Plan) | Nutzer: „Ja, auch abgleichen (Empfohlen)“ | Anforderungen aus der gespeicherten Anzeige der Bewerbung; 6a/6b und Migration 018 ergänzt. | entschieden |
+| Q112 | Firmendaten falsch (z. B. Mitarbeiterzahl): soll Claude auf Wunsch recherchieren und eine Korrektur mit Quelle vorschlagen? (Fund der Kontrollfrage vor dem Hochladen; erste Fassung mit Label/Pull Request – Nutzer: „Ich verstehe die Frage nicht“) | Nutzer: „Ja, auf Klick (Empfohlen)“ | Knopf „Firmendaten prüfen lassen“ für den Admin; Claude recherchiert, Pull Request auf die Korrekturdatei, Nutzer bestätigt. Neuer Task 2b in 4f. | entschieden |
+| Q113 | Wöchentlicher Kurzbericht (CLAUDE.md 4.3) fehlt in den Plänen. Was tun? | Nutzer: „Streichen“ | Entfällt; CLAUDE.md 4.3 angepasst. | entschieden |
+| Q114 | Firmendaten anreichern (Rolle im Markt, Eigentümer, Gründungsjahr)? | Nutzer: „Mit Phase 5 Filtern (Empfohlen)“ | Felder und Quellen werden mit den Filtern in Phase 5 geklärt. | entschieden |
+| Q115 | TK nur per „Mehr laden“: Playwright-Entscheidung? | Nutzer: „Nach Portal-Messung 4c (Empfohlen)“ | Entscheidung, wenn die Messung zeigt, wie viele Firmen nur per Browser gehen. | entschieden |
+| Q116 | Phase 5, Unternehmen: welche Filter wirklich nutzen? (Mehrfachauswahl) | Nutzer: „Mitarbeiterzahl als Spanne, Eigentümer“ | Beide in Phase 5; Unternehmensalter und eigene Firmenbewertung in den Backlog. | entschieden |
+| Q117 | Phase 5, Rolle: welche Filter? (Mehrfachauswahl) | Nutzer: „Jahre Berufserfahrung, Personalverantwortung, Vertriebsanteil“ | Alle drei in Phase 5; Abschluss siehe Q120. | entschieden |
+| Q118 | Phase 5, Gehalt, Vertrag und Ort: welche Filter? (Mehrfachauswahl) | Nutzer: „Mindestgehalt, Vertragsdetails, Präsenztage / Remote-Gebiet“ | Alle drei in Phase 5; Umkreis um München in den Backlog. | entschieden |
+| Q119 | Phase 5, Qualität und Suche: welche Funktionen? (Mehrfachauswahl) | Nutzer: „Ghost-Job-Ampel, Vermittler erkennen, Synonymgruppen“ | Alle drei in Phase 5; Muss-/Soll-Kriterien in den Backlog. | entschieden |
+| Q120 | Nachtrag des Nutzers zu Q117 | Nutzer: „Ich habe ausversehen "Geforderter Abschluss" nicht angeklickt. Das soll aber auch filterbar sein“ | Geforderter Abschluss in Phase 5 (Text kommt schon von Groq, Regel übersetzt in Stufen). | entschieden |
+| Q121 | Stellen ohne Angabe bei gesetztem Filter? | Nutzer: „Zeigen mit Hinweis (Empfohlen)“ | Sichtbar mit „nicht angegeben“; Häkchen „nur mit Angabe“ blendet sie aus (wie Q65). | entschieden |
+| Q122 | Neue Groq-Felder für Bestandsstellen? | Nutzer: „Nach und nach (Empfohlen)“ | Neue Stellen zuerst, Bestand mit Rest-Kontingent je Nacht, gemerkte zuerst. | entschieden |
+| Q123 | Firmen ausschließen: wie wirken? | Nutzer: „Beides (Empfohlen)“ | Ausschluss im Filter (Teil der gespeicherten Suche) und dauerhafte Sperrliste auf der Konto-Seite. | entschieden |
+| Q124 | Gespeicherte Suchen mit Benachrichtigung? | Nutzer: „Nein, nur speichern“ | Nur speichern und wieder öffnen, keine Nachrichten. | entschieden |
+| Q125 | Filter „Geforderter Abschluss“: wie funktionieren? | Nutzer: „Promotion soll nur wegfallen, wenn in der Anzeige ausdrücklich steht, dass Promotion benötigt wird, nicht so etwas wie Master oder Promotion. Diese Stelle müsste definitiv bleibem“ | „Mein Abschluss“ wie Deutschniveau; maßgeblich ist die niedrigste akzeptierte Alternative („Master oder Promotion“ = Master). | entschieden |
+| Q126 | Ghost-Job-Ampel: Kriterien? (Mehrfachauswahl) | Nutzer: „Taucht immer wieder auf, Lange online“ | Mehr als 60 Tage online; gleiche Firma und gleicher Titel verschwindet und erscheint neu. Keine Groq-Bewertung. | entschieden |
+| Q127 | Vermittler standardmäßig? | Nutzer: „Kennzeichnen, sichtbar (Empfohlen)“ | Markierung „Vermittler“, Filter zum Ausblenden. | entschieden |
+| Q128 | Vertriebsanteil: Stufen? | Nutzer: „Kein / etwas / überwiegend (Empfohlen)“ | Drei Stufen durch Groq. | entschieden |
+| Q129 | Mindestgehalt bei Spanne 60–75 k und Filter 70 k? | Nutzer: „Ja, obere Grenze zählt (Empfohlen)“ | Stelle erscheint; Spanne wird daneben angezeigt. | entschieden |
+| Q130 | Neue Filter auch für Gäste? | Nutzer: „Nur für Angemeldete (Empfohlen)“ | Gäste behalten die bisherigen Filter; neue Spalten bleiben für Gäste gesperrt (Migration 007). | entschieden |
+| Q131 | Kontrollfrage Phase 5: weitere Punkte aus CLAUDE.md 4.1? (Mehrfachauswahl) | Nutzer: „Dubletten zusammenführen, Workation, Rolle im Markt / Kundenbranche“ | Alle drei in Phase 5; Ansprechpartner/Bewerbungsweg in den Backlog. | entschieden |
+| Q132 | Was ist mit „Rolle im Markt“ gemeint? (Geschäftsmodell / Marktposition / Beides) | Nutzer: „Geschäftsmodell (Empfohlen)“ | Hersteller, Zulieferer, Dienstleister, Beratung, Handel, Software/Plattform, Finanzdienstleister; Groq aus dem Firmenteil der Anzeigen. Marktposition entfällt (keine verlässliche Quelle). | entschieden |
+| Q133 | Gehaltsschätzung für Stellen ohne Angabe – wohin? (Anlass, Nutzer: „Haben wir irgendwo im Plan noch festgelegt, dass du Gehälter schätzen sollst?“ – war zwischen Phase 4 und 5 hin- und hergeschoben, ohne Rückfrage) | Nutzer: „Phase 5, mit Filter (Empfohlen)“ | Schätzung aus Daten ohne KI (Firma → ähnliche Titel → Entgeltatlas nach Prüfung), markiert „geschätzt aus …“, Häkchen „Schätzung beim Filtern mitzählen“. Plan Phase 5 Task 0 und 3b. | entschieden |
+| Q134 | Gehaltsschätzung Stufe 3: Entgeltatlas ohne offizielle Schnittstelle – was tun, wenn weder Angabe noch genug ähnliche Anzeigen? (Anlass, Nutzer: „Warum ist das nicht geprüft?“) | Nutzer: „Keine Schätzung (Empfohlen)“ | Stufe 3 entfällt; Stelle zeigt „Gehalt: nicht angegeben“. | entschieden |
+| Q135 | LinkedIn verbietet Browser-Erweiterungen, die Inhalte kopieren – was soll die Erweiterung auf LinkedIn tun? | Nutzer: „LinkedIn ganz raus“ | Erweiterung übernimmt auf LinkedIn nichts; Link fügt der Nutzer selbst ein. | entschieden |
+| Q136 | e5-small ist 118 MB statt ≤ 50 MB – wie für die Website lösen? | Nutzer: „Modell verkleinern (Empfohlen)“ | Codex kürzt den Wortschatz auf Deutsch/Englisch (6a Task 0b), Prüfung Ähnlichkeit ≥ 0,99. | entschieden |
+| Q137 | Nachtrag des Nutzers zu Q135 | Nutzer: „XING uns Stepstone darfst du nicht auslesen“ / „Ich möchte mein LinkedIn Konto auf gar keinem Fall riskieren!“ | Erweiterung übernimmt auf LinkedIn, StepStone und XING nichts; keine Anleitung mehr, LinkedIn-Texte zu kopieren (Klicktest A10 geändert). | entschieden |
+| Q138 | Phase 3 (Gmail/Kalender): für wen? | Nutzer: „Erst ich, Freunde später“ | Nur Admin, aber so gebaut, dass Freunde später dazukommen können (kein Persönlicher Modus). | entschieden |
+| Q139 | Phase 3: welche Teile? (Mehrfachauswahl) | Nutzer: „Interview-Briefing, Mailverlauf an Bewerbung, Alle Mails von der Firma sollen ausgelesen werden und basierend darauf sollen Status, next steps etc. gesetzt werden“ | Briefing, Mailverlauf, Auswertung aller Firmenmails; Nachfass-Erinnerung in den Backlog. | entschieden |
+| Q140 | Termine im Google Kalender anlegen? | Nutzer: „Eigener Kalender (Empfohlen)“ | Eigener Kalender „Jobradar“ (`calendar.app.created`), andere Kalender nur lesen. | entschieden |
+| Q141 | Kanal für Briefing und Erinnerungen? | Nutzer: „Telegram (Empfohlen)“ | Telegram (Bot aus 4f). | entschieden |
+| Q142 | Mail mit Einladung: setzen oder vorschlagen? | Nutzer: „Setzen, mit Hinweis (Empfohlen)“ | Automatisch setzen mit „Automatisch aus Mail vom …“ und „Rückgängig“; Einladung/Absage/Angebot zusätzlich per Telegram. Ersetzt CLAUDE.md 4.7 „nur vorgeschlagen“. | entschieden |
+| Q143 | Welche Mails lesen? | Nutzer: „Firma + Bewerbungssysteme (Empfohlen)“ | Firmen-Domains und bekannte Bewerbungssysteme, wenn der Firmenname einer laufenden Bewerbung vorkommt. | entschieden |
+| Q144 | Wie viel einer Mail speichern? | Nutzer: „Volltext (Empfohlen)“ | Absender, Betreff, Datum, Text ohne Anhänge, Link zu Gmail. | entschieden |
+| Q145 | Briefing in Telegram / Vorbereitungsfragen | Nutzer: „Kurz + Link (Empfohlen)“ / „Claude erstellt sie (Empfohlen)“ | Telegram nur kurz mit Link; Briefing-Seite in jobradar; Claude erstellt Fragen. | entschieden |
+| Q146 | Bauweise Phase 3 | Nutzer: „B: Knopf auf der Website“ | Knopf „Google verbinden“, Token verschlüsselt in der Datenbank (Claude hatte A empfohlen). | entschieden |
+| Q147 | Website nur verschließen, nur stündlicher Lauf öffnet? | Nutzer: „Ja, so bauen (Empfohlen)“ | Öffentlicher Schlüssel in Vercel, privater nur im privaten Repo; Trennen im nächsten Lauf. | entschieden |
+| Q148 | Welches Postfach? | Nutzer: „Entscheide ich noch“ | Entscheidung beim Verbinden; Anleitung empfiehlt eigene Bewerbungs-Adresse. | entschieden |
+| Q149 | Nachtrag zur Pünktlichkeit des 1-Stunden-Briefings | Nutzer: „Dann stellen wir hier lieber 1,5std ein sicherheitshalber“ | Kurznachricht ab 2,5 h vorher → kommt etwa 1,5–2,5 h vorher. | entschieden |
+| Q150 | Wie schnell Status nach Mail? | Nutzer: „Stündlich (Empfohlen)“ | Stündlicher Lauf im privaten Repo. | entschieden |
+| Q151 | Mail-Texte und Gmail-Schlüssel im GitHub-Backup? | Nutzer: „Nicht sichern (Empfohlen)“ | Nicht im Backup; Mails neu aus Gmail holbar. | entschieden |
+| Q152 | Telegram mit oder ohne Firmennamen? | Nutzer: „Mit Firma (Empfohlen)“ | Firma, Stelle, Uhrzeit, Art; nie Mailtext oder Personen. | entschieden |
+| Q153 | Wie lange Mail-Texte aufbewahren? | Nutzer: „Solange die Bewerbung (Empfohlen)“ | Bis Bewerbung/Konto gelöscht oder per Knopf. | entschieden |
+| Q154 | Gespeicherte Mails beim Trennen? | Nutzer: „Behalten (Empfohlen)“ | Bleiben; Knopf „Gespeicherte Mails löschen“. | entschieden |
+| Q155 | Erinnerung für jährliche Hand-Quellen der Rankings mit Phase 3? | Nutzer: „Ja, per Telegram (Empfohlen)“ | Telegram, wenn Quelle älter als 12 Monate. | entschieden |
+| Q156 | Markierung „Anzeige offline“ mitnehmen? | Nutzer: „Ja, mit Phase 3 (Empfohlen)“ | Hinweis in der Bewerbung plus Telegram. | entschieden |
+| Q157 | Runde 1: In welcher Form liegen Anschreiben-Vorlagen in jobradar? | Nutzer: „Text + Briefkopf (Empfohlen)“ | Word-Datei hochladen oder Text einfügen, jobradar übernimmt nur den Text; Briefkopf einmal eintragen; PDF und Word im gleichen DIN-5008-Layout. | entschieden |
+| Q158 | Fertiges Anschreiben an der Bewerbung speichern? | Nutzer: „Ja, an der Bewerbung (Empfohlen)“ | Wird als Anschreiben der Bewerbung abgelegt (bestehendes Feld). | entschieden |
+| Q159 | „Mit Claude bearbeiten“: Rückweg des Texts? | Nutzer: „Claude macht die Datei“ | jobradar öffnet claude.ai mit Vorlage + Anzeige; Claude erstellt das Dokument selbst, kein Rückweg in jobradar (Claude hatte „Zurück einfügen“ empfohlen). | entschieden |
+| Q160 | „Über meine Seite bewerben“ (Erweiterung füllt Karriereseite vor, Nutzer schickt selbst ab): wann planen? | Nutzer: „Eigene Runde danach (Empfohlen)“ | Eigene Runde „Bewerben-Helfer“ direkt nach Runde 1, mit Prüfung der Nutzungsbedingungen der ATS; nie auf LinkedIn/StepStone/XING. | entschieden |
+| Q161 | Knopf „Endfassung hochladen“ nach Claude? | Nutzer: „Ja, Knopf (Empfohlen)“ | Hochgeladene Endfassung ersetzt das gespeicherte Anschreiben der Bewerbung. | entschieden |
+| Q162 | Textbausteine noch nötig? | Nutzer: „Weglassen (Empfohlen)“ | Nicht bauen; Backlog. Vorlagen + Claude decken es ab. | entschieden |
+| Q163 | Anlagen einmal hochladen und je Bewerbung anhaken? | Nutzer: „Ja (Empfohlen)“ | Ja; Grundlage für den Bewerben-Helfer. | entschieden |
+| Q164 | Wo Vorlagen, Briefkopf, CVs, Anlagen verwalten? | Nutzer: „Reiter „Unterlagen“ (Empfohlen)“ | Reiter kommt als „Unterlagen“ zurück (beantwortet Backlog „Dokumente klären“). | entschieden |
+| Q165 | Bewerbungsformular neu definieren: wann? | Nutzer: „Eigene Runde (Empfohlen)“ | Eigene Runde nach dem Bewerben-Helfer. | entschieden |
+| Q166 | Runde 1: Wie entstehen PDF und Word des Anschreibens? | Nutzer: „A: Im Browser (Empfohlen)“ | Im Browser mit docx, pdfmake, mammoth (dynamisch geladen); PDF wird direkt an der Bewerbung gespeichert. | entschieden |
+| Q167 | Platzhalter {{anrede}}: woher? | Nutzer: „Feld am Kontakt (Empfohlen)“ | Feld Frau/Herr/ohne am Ansprechpartner; sonst „Sehr geehrte Damen und Herren,“. | entschieden |
+| Q168 | Wann baut Codex Runde 1? | Nutzer: „Als Nächstes (Empfohlen)“ | Direkt nach dem laufenden Paket in der Codex-Warteschlange. | entschieden |
+| Q169 | Vorlagen für andere freigeben? | Nutzer: „Vorerst privat, aber Freunde sollen auch Vorlagen einfügen können“ | Jeder Nutzer hat eigene private Vorlagen; Teilen zwischen Konten in den Backlog. | entschieden |
+| Q170 | Design Runde 1 freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Codex-Warteschlange Nr. 0. | entschieden |
+| Q171 | Plan Runde 1 hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q172 | Was als Nächstes nach Runde 1? | Nutzer: „Runde Bewerben-Helfer planen“ | Planungsrunde Bewerben-Helfer beginnt (Claude hatte Task 0 von Runde 1 empfohlen). | entschieden |
+| Q173 | Bewerben-Helfer: Auslöser des Ausfüllens? | Nutzer: „Ganz automatisch“ | Formular füllt sich beim Öffnen aus jobradar von selbst (Claude hatte „Klick aufs Symbol“ empfohlen); braucht erweiterte Seitenberechtigung. | entschieden |
+| Q174 | Bewerben-Helfer: welche Felder? | Nutzer: „Kontaktdaten, Gehalt + Termine, CV + Anschreiben, Anlagen“ | Alle vier Gruppen. | entschieden |
+| Q175 | Bewerben-Helfer: Reichweite der Seiten-Berechtigung? | Nutzer: „Alle Websites“ | Automatisch auch auf eigenen Karriereseiten; Ausfüllen nur in Tabs, die jobradar geöffnet hat, nie auf LinkedIn/StepStone/XING (Claude hatte „Nur Bewerbungssysteme“ empfohlen). | entschieden |
+| Q176 | Status nach dem Absenden? | Nutzer: „Knopf „Abgeschickt“ (Empfohlen)“ | Kasten „Abgeschickt? → Als beworben markieren“ setzt Status Beworben und Datum. | entschieden |
+| Q177 | Nutzerfrage: „Brauche ich dafür nicht im Idealfall erst noch den Knopf "Bewerbung anlegen", damit ich die Dokumente aussuchen kann, bevor ich auf bewerben klicke?“ | Claude: ja | Beantwortet durch Q178. | entschieden |
+| Q178 | Wie vom Fund zum Bewerben, damit Unterlagen feststehen? | Nutzer: „Ich klicke auf Bebwerbung anlegen (unter merken). Dann wird der passende CV bereits ausgewählt und alle Zeugnisse sind per Default ausgewählt. Dann werde ich gefragt, ob ich ein Anschreiben einfügen möche. Dann kann ich auf bewerben klicken. Dafür braucht es eine sehr übersichtliche und seamless Benutzeroberfläche, damit das mit der minimalen Anzahl an Klicks geht“; Nachtrag: „Ich möchte, dass wenn ich auf Bewerbung anlegen klicke, der passende CV und alle Zeugnisse schon vorausgewählt sind“ | Knopf „Bewerbung anlegen“ unter „Merken“; CV und alle Anlagen vorausgewählt; Frage nach Anschreiben; dann „Bewerben“; minimale Klicks. | entschieden |
+| Q179 | Welcher CV vorausgewählt, bis Phase 6 da ist? | Nutzer: „Erst mit Phase 6“ | Bewerben-Helfer wird erst nach Phase 6 gebaut; dann ist der empfohlene CV vorausgewählt. | entschieden |
+| Q180 | Alle Anlagen oder nur Zeugnisse vorausgewählt? | Nutzer: „Gilt für alle Anlagen, aber Anlagen sollen trotzdem eine Art bekommen, damit beim automatischen Bewerben die richtigen Anlagen an die richtigen Orte hochgeladen werden können. Am besten gehen immer alle Anlagen mit, es werden aber nur die benötigten angehängt auf der Karriereseite“ | Alle Anlagen vorausgewählt; Art je Anlage; Helfer hängt je Upload-Feld nur passende an. | entschieden |
+| Q181 | Bewerben-Helfer: wie Formularfelder erkennen? | Nutzer: „A: Adapter + Allgemein (Empfohlen)“ | Je ein Adapter für Greenhouse, Personio, Workday, SmartRecruiters, Lever; sonst Erkennung über Beschriftungen. | entschieden |
+| Q182 | Art je Anlage schon in Runde 1? | Nutzer: „Ja, in Runde 1 (Empfohlen)“ | Plan Runde 1 wird ergänzt (Zeugnis/Zertifikat/Sonstiges). | entschieden |
+| Q183 | Nutzerwunsch: „Baue diese automatischen Bewerbungen unbedingt so, dass keiner merkt, dass das automatisch passiert. Also verschiedene Time delays, nicht zu schnell, und mir ist ganz wichtig, dass ich jede Bewerbung auf der Karriereseite reviewen kann bevor sie final eingereicht wird“ | siehe Q184 | Review vor dem Absenden: ja (Helfer klickt nie „Absenden“, markiert Ausgefülltes). Keine Tarnung (Q184). | entschieden |
+| Q184 | Ausfüllhilfe ohne Tarnung, Nutzer prüft und schickt selbst ab, Nutzungsbedingungen entscheiden je System? | Nutzer: „Einverstanden (Empfohlen)“; Nachtrag: „Prüfe, ob für diese Erweiterung, die wir gerade planen weitere Anpassungen in anderen Phasen erforderlich sind. Führe eine Umfassende Prüfung durch. Prüfe auch, ob das rechtlich überhaupt erlaubt ist“ | Keine Zufalls-Verzögerungen oder Tarnung; normales Autofill-Tempo; Prüfung Phasen + Recht läuft. | entschieden |
+| Q185 | Nutzerwunsch: „Auf vielen Seiten muss man sich ja zusätzlich registrieren. Ich möchte, dass du das auch automatisch für mich machst, falls ich dort noch keinen Account habe. Dafür muss eben auch geklärt werden, ob ich da schon einen Account habe“ | siehe Q186 | Registrierung vorausfüllen; Passwort nie in jobradar (CLAUDE.md 3.6); Häkchen, Captcha, Bestätigungsmail macht der Nutzer; Konto-Merker ohne Passwort. | entschieden |
+| Q186 | Registrierung auf Karriereseiten: so bauen? | Nutzer: „Vorausfüllen + Konto-Merker (Empfohlen)“ | Helfer füllt Registrierung vor, Chrome-Passwort-Manager, Konto-Merker je Seite ohne Passwort. | entschieden |
+| Q187 | Helfer auf Indeed/Glassdoor/Monster? | Nutzer: „Auf allen Portalen aus (Empfohlen)“ | Helfer nur auf Firmen-Karriereseiten und Bewerbungssystemen, auf allen `PORTALE` aus. | entschieden |
+| Q188 | Woher Gehaltswunsch, Kündigungsfrist, frühester Start? | Nutzer: „Standard im Profil, aber Kündigungsfrist und frühester Start sollen laufened aktualisiert werden. Also wenn ich heute 3 monate eingebe, dann aktualisert sich der früheste Start entsprechend mit“ | Standardwerte im Profil; frühester Start wird täglich aus Kündigungsfrist berechnet (Detail Q190). | entschieden |
+| Q189 | Kein CV-Ergebnis beim Klick auf „Bewerbung anlegen“? | Nutzer: „Abgleich sofort im Browser (Empfohlen)“ | Browser-Abgleich (6b) startet sofort; bei zwei Empfehlungen die erste, zweite als Alternative. | entschieden |
+| Q190 | Frühester Start aus der Kündigungsfrist: wie rechnen? | Nutzer: „Frist + Endtermin wählbar (Empfohlen)“ | Dauer + Endtermin (beliebig/Monatsende/Quartalsende/sofort), täglich neu; Start = Tag nach Fristende. | entschieden |
+| Q191 | Design Bewerben-Helfer freigeben? | Nutzer: „Das klingt sehr gut. Prüfe aber noch, wie bei jobradar gekennzeichnet wird, dass ich mich beworben habe“ | Geprüft: `aufBeworben`, Verlaufs-Trigger, „Beworben ✓“ in Liste/Stellenseite/Board; „Abgeschickt“ nutzt `aufBeworben`, Bewerbungsweg „Karriereseite“ wenn leer. Freigabe-Rückfrage Q192. | entschieden |
+| Q192 | Wie erfährt jobradar, dass eine vom Helfer ausgefüllte Bewerbung abgeschickt wurde? (Nutzer: „Ich meinte, wenn eine automatisierte Bewerbung gelaufen ist, wie erfährt Jobradar davon“) | Nutzer: „Alle vier kombiniert (Empfohlen)“ | Knopf, Danke-Seite erkennen (mit Rückgängig), Nachfrage nach 30 min, Eingangsbestätigung per Mail (Admin, Phase 3; Gmail liest dafür auch gemerkte mit Bewerben-Klick ≤ 14 Tage). | entschieden |
+| Q193 | Design Bewerben-Helfer (mit vier Abschick-Wegen) freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Warteschlange Nr. 11a. | entschieden |
+| Q194 | Design/Plan Bewerben-Helfer, Anlagen-Art Runde 1, Phase-3-Ergänzung hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q195 | Was als Nächstes? | Nutzer: „Runde Bewerbungsformular“ | Planungsrunde Bewerbungsformular beginnt (Claude hatte Task 0 von Runde 1 empfohlen). | entschieden |
+| Q196 | Bewerbungsformular: Felder je nach Status einblenden? | Nutzer: „Ich verstehe die Frage nicht“ | Neu gestellt als Q199 mit Beispiel. | ersetzt durch Q199 |
+| Q197 | Felder aus bekannter Stelle fest mit ✎ oder frei änderbar? | Nutzer: „Verstehe die Frage nicht“ | Neu gestellt als Q200 mit Beispiel. | ersetzt durch Q200 |
+| Q198 | Welche Felder gar nicht gebraucht? | Nutzer: „Portal-Hinweis, Vergleich aktuelles Gehalt“ | Beide Felder entfallen (Portal-Hinweis ersetzt durch Konto-Merker des Bewerben-Helfers). | entschieden |
+| Q199 | Bewerbung zeigt nur, was jetzt zählt; weitere Kästen erst mit dem Status? | Nutzer: „Ja, Schritt für Schritt (Empfohlen)“ | Kästen nach Status; Gefülltes bleibt sichtbar; „Alle Felder zeigen“. | entschieden |
+| Q200 | Stellendaten als Text mit ✎ statt Eingabefeldern? | Nutzer: „Als Text, ✎ zum Ändern (Empfohlen)“ | Bei bekannter Stelle Text mit ✎; bei Hand-Bewerbungen Eingabefelder. | entschieden |
+| Q201 | Design Bewerbungsformular freigeben (inkl. Löschen der zwei Spalten nach Kopie in Notizen)? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan als Warteschlange Nr. 11b, Migration 025. | entschieden |
+| Q202 | Design und Plan Bewerbungsformular hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q203 | Was als Nächstes? | Nutzer: „Runde Phase 6 Teil 2“ | Planungsrunde Phase 6 Teil 2 beginnt (Claude hatte Task 0 von Runde 1 empfohlen). | entschieden |
+| Q204 | Phase 6 Teil 2: welche Bausteine (Passungs-Score, Skill-Lücken, Gehaltsbenchmark, Pendelzeit)? | Nutzer: „Pendelzeit“ | Nur Pendelzeit; Passungs-Score, Skill-Lücken, Gehaltsbenchmark in den Backlog. | entschieden |
+| Q205 | Sofort-Alarm, monatliche Übersicht? | Nutzer: „/“ (nichts gewählt) | Beide in den Backlog. | entschieden |
+| Q206 | Pendelzeit wohin? | Nutzer: „Wenn keine Büro Adresse angegeben ist, nach dem Standort des Büros suchen und diese Adresse verwenden. Am besten direkt beim Anlegen der Firma in der Datenbank danach suchen“ | Büroadresse je Firma und Stadt beim Anlegen suchen: Anzeige → OpenStreetMap → Impressum (gleiche Stadt) → Wikidata (gleiche Stadt) → von Hand; mit Quelle gespeichert. | entschieden |
+| Q207 | Pendelzeit ab wo? | Nutzer: „Deine Haltestelle (Empfohlen)“ | Start-Haltestelle + Minuten Fußweg in „Unterlagen“; Wohnadresse nie für die Berechnung. | entschieden |
+| Q208 | ÖPNV-Fahrzeit: eigene Rechnung (MVV) oder Transitous? | Nutzer: „MVV ist gut, aber just in case brauchen wir das auch für andere deutsche Großstädte. Meine Freunde wohnen nicht in München“ | Eigene Rechnung mit dem Deutschland-Fahrplan von DELFI (CC BY 4.0), je Nutzer-Region (80 km um die Start-Haltestelle). | entschieden |
+| Q209 | Für welche Ankunftszeit gilt die Pendelzeit? | Nutzer: „Werktag, Ankunft bis 9:00 (Empfohlen)“ | Dienstag, Ankunft bis 9:00; Anzeige „35 Min. · 1 Umstieg“. | entschieden |
+| Q210 | Stellen ohne bekannte Pendelzeit im Filter? | Nutzer: „Durchlassen, markiert (Empfohlen)“ | Sichtbar mit „Pendelzeit unbekannt“; Häkchen „nur mit bekannter Pendelzeit“. | entschieden |
+| Q211 | Design Pendelzeit freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Warteschlange Nr. 12a. | entschieden |
+| Q212 | Design und Plan Pendelzeit hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q213 | Was als Nächstes? | Nutzer: „Gibt es sonst noch Pläne oder Fragen die zu klären sind“ | Bestandsaufnahme offener Fragen, Pläne und Backlog. | entschieden |
+| Q214 | Womit weiter nach der Bestandsaufnahme? | Nutzer: „Runde Erinnerungen (Empfohlen)“ | Planungsrunde Erinnerungen beginnt. | entschieden |
+| Q215 | Nachfass-Erinnerung: automatischer nächster Schritt oder eigene Liste? | Nutzer: „Ich verstehe die Frage nicht“ | Neu gestellt als Q219 mit einfacherem Beispiel. | ersetzt durch Q219 |
+| Q216 | Kanal für Erinnerungen? | Nutzer: „Website + Telegram für dich (Empfohlen)“ | Alle: „Diese Woche fällig“; Admin zusätzlich Telegram (Digest 4f). | entschieden |
+| Q217 | Antwortfrist bei Angebot? | Nutzer: „Feld + Erinnerung (Empfohlen)“ | Feld „Antwort bis“; Schritt 2 Tage vorher; am Fristtag Telegram an den Admin. | entschieden |
+| Q218 | Knopf „Nachfass-Mail mit Claude schreiben“? | Nutzer: „Ja (Empfohlen)“ | Öffnet eigenes claude.ai mit Firma, Stelle, Datum, Ansprechpartner; Mail schickt der Nutzer. | entschieden |
+| Q219 | Nach 14 Tagen ohne Antwort automatisch ans Nachfassen erinnern? | Nutzer: „Nein“ | Keine 14-Tage-Erinnerung (ersetzt CLAUDE.md 4.4 „Nachfassen nach 14 Tagen“). | entschieden |
+| Q220 | Wie oft ans Nachfassen erinnern? | Nutzer: „Nach 30 Tagen einmal, dann gar nicht mehr. Das soll aber in den Einstellungen änderbar sein. Ich möchte das auch ausstellen können“ | Einmal nach 30 Tagen (Standard), Tage einstellbar, abschaltbar. | entschieden |
+| Q221 | Design Erinnerungen freigeben? | Nutzer: „Freigeben, Plan schreiben (Empfohlen)“ | Plan geschrieben, Warteschlange Nr. 11c. | entschieden |
+| Q222 | Doku-Bereinigung, Design und Plan Erinnerungen hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q223 | Was als Nächstes? | Nutzer: „Kleine Pakete planen“ | Erweiterung verteilen (Q63), Hand-Listen-Links, monatliche Linksammlung (Claude hatte Task 0 von Runde 1 empfohlen). | entschieden |
+| Q224 | Pläne der kleinen Pakete hochladen (öffentlich und privat)? | Nutzer: „Ja, hochladen + Ja, privat hochladen (Empfohlen)“ | Beide hochgeladen. | entschieden |
+| Q225 | Link-Prüfung (privat) gleich erledigen? | Nutzer: „Ja, jetzt (Empfohlen)“ | Claude prüft per Websuche, Ergebnis privat. | entschieden |
+| Q226 | Runde 1 Task 0: Was steht nach Öffnen von `claude.ai/new?q=Hallo%20Test` im Eingabefeld? | Nutzer zuerst: „Ich kann den Link nicht kopieren“ (Claude öffnete ihn per `Start-Process`); dann Bildschirmfoto: „Hallo Test“ im Feld, darüber Warnhinweis „Sei vorsichtig, bevor du diesen Prompt ausführst…“ | Link-Weg funktioniert; Warnhinweis wird im Knopf-Hinweis erklärt. | entschieden |
+| Q227 | Task-0-Ergebnis hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q228 | Runde 1 (von Claude gebaut, 7 Commits) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`; danach Migration 023 (To-do 31). | entschieden |
+| Q229 | Runde-1-Abschluss und Knopf „Bearbeiten“ für Personen auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q230 | ponytail-Review jetzt laufen lassen? (Nutzer: „Prüfe, ob das ponytail review in diesem Stadium sinnvoll ist für das Projekt“) | Nutzer: „Ja, Runde 1 prüfen (Empfohlen)“ | Review der Runde-1-Änderungen läuft; Funde nur nach OK beheben. | entschieden |
+| Q231 | Review-Korrekturen (Punkte 1–3) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen. | entschieden |
+| Q232 | Nächstes Paket: Nr. 0a jetzt von Claude oder morgen von Codex? (Nutzer: „Kannst du schon mit der nächsten Phase beginnen?“) | Nutzer: „Claude baut 0a jetzt (Empfohlen)“ | Claude baut Nr. 0a; Codex beginnt mit Nr. 1. | entschieden |
+| Q233 | Nr. 0a (Erweiterung verteilen) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen. | entschieden |
+| Q234 | Zwei Profile im Admin-Konto: wofür? (Nutzer: „Ich möchte innerhalb des Admin Accounts 2 verschiedene Profile haben, also selber Account, selbe Berechtigugen etc. selbe Person, 2 verschiedene Profile, die jeweils eigene Stellen speichern und eigene Dateien für Bewerbungen hochladen etc.“) | Rückfrage des Nutzers: „Worin unterscheidet sich der Aufbau und die Funktionalitäten zwischen "Zwei Bewerbungs-Richtlinien" und "Test und echt trennen"“ | Claude erklärt den Unterschied, fragt erneut (Q235). | Präzisierung |
+| Q235 | Zwei Profile: welche Art? (nach Erklärung des Unterschieds) | Nutzer: „Zwei Bewerbungs-Richtlinien, aber auch entsprechend verschiedene Mails und Email Adressen. Ich möchte, dass die beiden trennscharf sind“ | Claude legt zwei Bauweisen vor (Q236). | entschieden |
+| Q236 | Zwei trennscharfe Bewerbungs-Identitäten: zwei Admin-Konten oder Profile in einem Konto? | Nutzer: „Zwei Admin-Konten (Empfohlen)“ | `ADMIN_EMAIL` mit zwei Adressen (Website kann das schon); geplante Pakete auf `db.admin_ids()` umstellen. Zwischenfrage im Chat beantwortet: „Haben einfache Nutzer irgendeine Funktionalität, die der Admin nicht hat?“ – nur Konto selbst löschen. | entschieden |
+| Q237 | Telegram bei zwei Admin-Konten: ein Chat mit Kennzeichnung oder zwei getrennte Chats? | Nutzer: „Zwei getrennte Chats“ | `admins.telegram_chat_id` je Konto (4d), persönliche Nachrichten je Konto, Systemmeldungen an `TELEGRAM_CHAT_ID`; Pläne 4d/4e/4f/Erinnerungen/Phase 3/6a ergänzt. Zwischenfrage im Chat beantwortet: „Hat der Admin all die Filter und Anzeigen, die einfache Nutzer auch haben? Ich frage auch bezüglich den Sprachfiltern“ – ja; nur Voreinstellung der Sprachzeile aus. | entschieden |
+| Q238 | Zwei-Admin-Doku, Plan-Ergänzungen und Schutztest auf `entwurf-ui` hochladen? (Nutzer dazu: „Mir ist wichtig, dass durch diese zwei Admin Accounts Regelung nichts kaputt geht!“) | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q239 | Safari-Erweiterung: wird sie gebraucht? (Nutzer: „"einer Anleitung je Browser (Chrome, Edge) ": Was ist mit Safari?“) | Nutzer: „99 Dollar pro Jahr kommt nicht in Frage“ | Safari bleibt im Backlog; nur eine kostenlose Variante kommt infrage (unsigniert, braucht einen Mac mit Xcode). | entschieden |
+| Q240 | Link-Schnellstart (Nr. 1, von Claude gebaut) mit Doku und Safari-Entscheidung auf `entwurf-ui` hochladen? (Nutzer dazu: „Mach weiter mit der nächsten Phase“) | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q241 | Kosten (/usage): Welche Modellregel für Helfer (Subagenten)? | Nutzer: „Für jede Aufgabe individuell entscheiden, ob viel Denkaufwand nötig ist, oder ob ein simpleres Modell ähnlich gut sein wird“ | Regel vorgeschlagen (Q244). | entschieden |
+| Q242 | Kosten: superpowers global aus und nur in diesem Projekt an? | Nutzer: „Überall an lassen“ | Keine Änderung. | entschieden |
+| Q243 | Kosten: writing-plans günstiger machen (Übergabe ohne Helfer, ggf. Sonnet)? | Nutzer: „Nichts ändern“ | Keine Änderung. | entschieden |
+| Q244 | Modellregel für Helfer in die globale CLAUDE.md eintragen? | Nutzer: „Ja, so einfügen (Empfohlen)“ | Abschnitt „Helfer (Subagenten): Modell je Aufgabe wählen“ in `~/.claude/CLAUDE.md` (haiku Suchen/Lesen, sonnet Umsetzen/normale Reviews, opus Design/Fehler/Sicherheit/große Reviews; Modell immer angeben). | entschieden |
+| Q245 | Phase 4a (Nr. 2, von Claude gebaut) und Fragenprotokoll Q241–Q244 auf `entwurf-ui` hochladen? (Nutzer dazu: „Arbeite weiter an der nächsten Aufgabe“) | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen auf `entwurf-ui`. | entschieden |
+| Q246 | Link-Schnellstart: Websuche lieferte nur abgelaufene Links (Siemens, BSH) oder 403 (SAP). Wie weiter? | Nutzer: „Ich schicke dir Links (Empfohlen)“ | Nutzer schickt 5–10 aktuelle Links von Firmen-Karriereseiten; Claude zählt die Trefferquote. | entschieden |
+| Q247 | Link-Schnellstart findet bei den 7 Konzernen nichts (JavaScript-Seiten, SAP 403). Titel-Rückfall, so lassen oder weiter mit Nr. 3? | Nutzer: „Ich verstehe das Problem nicht. Kannst du das nicht selbst lösen?“ | Claude erklärt und schlägt SmartRecruiters-Schnittstelle (Bosch) plus Titel-Rückfall vor (Q248). | entschieden |
+| Q248 | Bosch über SmartRecruiters und Titel-Rückfall bauen? | Nutzer: „Ja, beides bauen (Empfohlen)“ | Titel-Rückfall gebaut; SmartRecruiters entfällt (robots.txt verbietet). Nutzer dazu: Abrufen muss automatisiert sein, Erweiterung keine Option. | entschieden |
+| Q249 | Wie schnell soll der GitHub-Browser die Anzeige lesen? | Nutzer: „Ich verstehe das nicht. Bitte erklären“; dazu: Karriereseiten nicht lesen zu können wäre ein sehr großes Problem | Claude erklärt (Bilderrahmen), misst mit echtem Browser, fragt erneut (Q250). | entschieden |
+| Q250 | Wann soll GitHub die Anzeige lesen: sofort, stündlich, nachts? | Nutzer: „Sofort, nach 2–5 Minuten (Empfohlen)“ | Website stößt den Workflow „Anzeigen lesen“ an (To-do 35: GitHub-Schlüssel). | entschieden |
+| Q251 | Plan „Browser bei GitHub liest die Anzeige“ so bauen? | Nutzer: „Ja, so bauen (Empfohlen)“; dazu: sofort ein Fenster, nicht warten, Seite verlassen dürfen | Gebaut: sofort anlegen mit Fenster, Rest im Hintergrund, Browser-Workflow. | entschieden |
+| Q252 | 7 Commits (sofort anlegen, Browser-Lauf, Titel-Rückfall, Doku) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen. | entschieden |
+| Q253 | `entwurf-ui` in `main` zusammenführen (alles seit 17.11. auf die echte Website)? | Nutzer: „Ja, zusammenführen (Empfohlen)“ | Zusammenführen mit Tests auf `main`, danach Vercel-Build prüfen. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -177,6 +334,138 @@ Fragetexte Q76–Q79 (Claude, 2026-11-19, Auswahl): Q76 nur Sitemap + Stellensei
 Fragetexte Q80–Q93 (Claude, 2026-11-19, Auswahl; Anlass Nutzerfragen: „Helf mir nochmal zu verstehen, was für Firmen wir genau verwenden? … Das übergeordnete Ziel meiner Seite ist, dass alle Firmen irgendwie Top xx in verschiedenen Kategorien sind. Es geht nicht nur darum die Seite mit irgendwelchen Firmen zu füllen. Sind wir immernoch on track …?“ und „Was für weitere Fragen zu den Listen können wir klären bzw. validieren, damit ich zu 100% weiß, was von wo reinkommt“): Q80 reparieren + Prüfung (Empfohlen) / Top 300 / streichen. Q81 alle 2.000 + 800 (Empfohlen) / Top 500 / Top 1.000. Q82 Mehrfachauswahl EIC / Behörden und Forschung / 13 Firmen. Q83 eigene Firmen (Empfohlen) / wegfallen / alle 13 behalten. Q84 erst nach Durchsicht (Empfohlen) / automatisch. Q85 Mehrfachauswahl Kliniken und Pflegeheime / öffentliche Banken / Krankenkassen / Behörden und Ministerien. Q86 alle vier (Empfohlen) / ohne SDAX. Q87 ja (Empfohlen) / Sitz Europa / weglassen. Q88 ja (Empfohlen) / weglassen. Q89 Accelerator DE (Empfohlen) / Accelerator Europa / alle EIC DE. Q90 Stellen verschwinden (Empfohlen) / bleibt bis Entfernen. Q91 Behörden raus (Empfohlen) / drin lassen. Q93 für alle (Empfohlen) / nur für mich.
 
 Fragetexte Q95–Q96 (Claude, 2026-11-19, Auswahl): Q95 die 200 neuesten (Empfohlen) / die 200 mit höchster Förderung / alle. Q96 passt so (Empfohlen) / weniger Kategorien.
+
+Fragetexte Q97–Q100 (Claude, 2026-11-19, Auswahl): Q97 200 zuletzt geförderte (Empfohlen) / 200 mit höchster Förderung / nur DACH, dafür alle. Q98 erst ab 2 Listen zeigen (Empfohlen) / in Top-Arbeitgeber aufgehen / so lassen. Q99 nichts, war ein Versehen / schlag mir weitere vor. Q100 Phase 6 CV-Abgleich (Empfohlen) / Phase 5 Zusatzfilter / Phase 3 Google / Chrome-Erweiterung verteilen.
+
+Fragetexte Q101–Q102 (Claude, 2026-11-19, Auswahl): Q101 bis 10 / 10–30 / 30–70 / weiß ich noch nicht. Q102 1–2 / 3–4 / 5 oder mehr.
+
+Fragetexte Q104–Q106 (Claude, 2026-11-19, Auswahl): Q104 Phase 5 Filter (Empfohlen) / Phase 4g Stelle aus Link / Phase 3 Kalender/Gmail / Chrome-Erweiterung verteilen. Q105 Knopf anbieten (Empfohlen) / Nie laden / Stufe 2 bei Freunden weglassen. Q106 In 6b mitnehmen (Empfohlen) / Eigenes kleines Paket danach / Streichen.
+
+Fragetexte Q107–Q111 (Claude, 2026-11-19, Auswahl): Q107 Sofort + neue Firmen nachts (Empfohlen) / Alles sofort / Alles nachts. Q108 Nur Stelle + Knopf (Empfohlen) / Automatisch Zusatzfirma / Nur die Stelle. Q109 Ähnliche zur Auswahl (Empfohlen) / Nur exakter Treffer. Q110 Nach Website fragen (Empfohlen) / Nur Hinweis. Q111 Ja, auch abgleichen (Empfohlen) / Nein, nur Stellenliste.
+
+Fragetexte Q112–Q115 (Claude, 2026-11-19, Auswahl): Q112 erste Fassung In 4f ergänzen (Empfohlen) / Später, eigenes Paket / Streichen; zweite Fassung Ja, auf Klick (Empfohlen) / Später entscheiden / Nein, ich korrigiere selbst. Q113 In 4f per Telegram (Empfohlen) / Streichen. Q114 Mit Phase 5 Filtern (Empfohlen) / Gründungsjahr jetzt in 4c / Streichen. Q115 Nach Portal-Messung 4c (Empfohlen) / TK weglassen / Playwright jetzt planen.
+
+Fragetexte Q116–Q131 (Claude, 2026-11-19, Auswahl): Q116 Mitarbeiterzahl als Spanne / Unternehmensalter / Eigentümer / Eigene Firmenbewertung. Q117 Jahre Berufserfahrung / Personalverantwortung / Vertriebsanteil / Geforderter Abschluss. Q118 Mindestgehalt / Vertragsdetails / Präsenztage / Remote-Gebiet / Umkreis um München. Q119 Ghost-Job-Ampel / Vermittler erkennen / Synonymgruppen / Muss-/Soll-Kriterien. Q121 Zeigen mit Hinweis (Empfohlen) / Ausblenden. Q122 Nach und nach (Empfohlen) / Nur neue Stellen. Q123 Beides (Empfohlen) / Nur im Filter / Nur dauerhafte Sperrliste. Q124 Ja, im täglichen Digest (Empfohlen) / Nein, nur speichern. Q125 Mein Abschluss (Empfohlen) / Stufen ankreuzen (Antwort als freier Text). Q126 Lange online / Taucht immer wieder auf / Mehrfach gleichzeitig / Vage Anzeige. Q127 Kennzeichnen, sichtbar (Empfohlen) / Standardmäßig ausblenden. Q128 Kein / etwas / überwiegend (Empfohlen) / Nur ja/nein. Q129 Ja, obere Grenze zählt (Empfohlen) / Nein, untere Grenze zählt. Q130 Nur für Angemeldete (Empfohlen) / Auch für Gäste. Q131 Dubletten zusammenführen / Workation / Rolle im Markt / Kundenbranche / Ansprechpartner / Bewerbungsweg.
+
+Fragetexte Q132–Q133 (Claude, 2026-11-19, Auswahl): Q132 Geschäftsmodell (Empfohlen) / Marktposition / Beides. Q133 Phase 5, mit Filter (Empfohlen) / Phase 6, mit Gehaltsbenchmark / Backlog lassen.
+
+Fragetexte Q134 (Claude, 2026-11-19, Auswahl): „Gehaltsschätzung, Stufe 3: Den Entgeltatlas der Arbeitsagentur dürfen wir nicht automatisch auslesen, weil es keine offizielle Schnittstelle gibt. Was soll passieren, wenn eine Stelle weder ein Gehalt nennt noch genug ähnliche Anzeigen mit Gehalt hat?“ Optionen: Keine Schätzung (Empfohlen) / Jährliche Tabelle von dir / Später entscheiden.
+
+Fragetexte Q135–Q136 (Claude, 2026-11-19, Auswahl): Q135 „LinkedIn verbietet in seinen Nutzungsbedingungen (Stand 3.11.2025) ausdrücklich Browser-Erweiterungen, die Inhalte „kopieren“. Unsere jobradar-Erweiterung übernimmt auf LinkedIn per Klick nur Adresse und Titel der geöffneten Anzeige. […] Was soll die Erweiterung auf LinkedIn tun?“ Optionen: Nur Adresse (Empfohlen) / Wie bisher lassen / LinkedIn ganz raus. Q136 „Das Sprachmodell für den CV-Abgleich (e5-small) ist 118 MB groß, geplant waren höchstens 50 MB. […] Wie lösen wir das für die Website?“ Optionen: Modell verkleinern (Empfohlen) / Von Hugging Face laden / Ohne Modell im Browser.
+
+Fragetexte Q138–Q150 (Claude, 2026-11-19, Auswahl): Q138 Nur für mich (Empfohlen) / Auch für Freunde / Erst ich, Freunde später. Q139 Interview-Briefing / Status-Vorschläge aus Gmail / Nachfass-Erinnerung / Mailverlauf an Bewerbung (Antwort mit freiem Zusatz). Q140 Eigener Kalender (Empfohlen) / Nur lesen. Q141 Telegram (Empfohlen) / E-Mail / Beides. Q142 Setzen, mit Hinweis (Empfohlen) / Alles automatisch, still / Nur vorschlagen. Q143 Firma + Bewerbungssysteme (Empfohlen) / Nur Firmen-Domain / Alles mit Firmennamen. Q144 Volltext (Empfohlen) / Nur Kopfzeile + Link. Q145 Kurz + Link (Empfohlen) / Alles in Telegram; Claude erstellt sie (Empfohlen) / Nur meine Notizen. Q146 A: GitHub-Secret (Empfohlen) / B: Knopf auf der Website. Q147 Ja, so bauen (Empfohlen) / Nein, wie im Konzept. Q148 Mein heutiges Postfach / Eigene Bewerbungs-Adresse / Entscheide ich noch. Q149 freier Nachtrag. Q150 Stündlich (Empfohlen) / Einmal täglich / Alle 15 Minuten.
+
+Fragetexte Q151–Q156 (Claude, 2026-11-19, Auswahl): Q151 Nicht sichern (Empfohlen) / Mitsichern. Q152 Mit Firma (Empfohlen) / Ohne Firma. Q153 Solange die Bewerbung (Empfohlen) / 12 Monate nach Abschluss / 3 Monate nach Abschluss. Q154 Behalten (Empfohlen) / Mit löschen. Q155 Ja, per Telegram (Empfohlen) / Backlog. Q156 Ja, mit Phase 3 (Empfohlen) / Ja, ohne Telegram / Backlog. Nutzerauftrag dazu: „Prüfe alles rund um Datenschutz, was zu prüfen ist“ und „Wie würde das aber für mich laufen? Also die Google Verbindung. Bewerte generell alles rund um die Google Verbindung und gib mir eine Analyse dazu“.
+
+Fragetexte Q157–Q159 (Claude, 2026-11-19, Runde 1 Bewerbungsunterlagen, Auswahl): Q157 Text + Briefkopf (Empfohlen) / Eigene Word-Datei / Nur Word, kein PDF. Q158 Ja, an der Bewerbung (Empfohlen) / Nur merken, welche Vorlage / Nichts speichern. Q159 Zurück einfügen (Empfohlen) / Claude macht die Datei. Nutzerwunsch dazu: „Ich werde mehrere Vorlagen für Anschreiben hochladen und möchte dann zwei buttons haben, entweder Anschreiben übernehmen, dann wird einfach Firma etc eingetragen und ein Download button (download pdf und download word), oder Anschreiben edit with Claude, dann öffnet sich einfach Claude im neuen Tab“. Nachtrag (offen, Q160): „Können wir zusätzlich einbauen, dass ich mich über meine Seite bewerben kann? Dass also alles, was möglich ist, bereits auf den Karriereseiten vorausgefüllt wird, sobald ich auf "Bewerben" klicke“.
+
+Fragetexte Q160–Q161 (Claude, 2026-11-19, Auswahl): Q160 Eigene Runde danach (Empfohlen) / In Runde 1 mit dazu / Backlog. Q161 Ja, Knopf (Empfohlen) / Beide behalten / Nein.
+
+Fragetexte Q162–Q165 (Claude, 2026-11-19, Auswahl): Q162 Weglassen (Empfohlen) / Ja, einbauen. Q163 Ja (Empfohlen) / Nein. Q164 Reiter „Unterlagen“ (Empfohlen) / Auf der Konto-Seite. Q165 Eigene Runde (Empfohlen) / In Runde 1 mit dazu.
+
+Fragetexte Q166 (Claude, 2026-11-19, Auswahl): A: Im Browser (Empfohlen) / B: Auf dem Server / C: Druckfunktion. Zuvor als Textfrage gestellt; Nutzer daraufhin: „Alle Fragen sollen immer klickbar sein. Speicher diese Regel ab“ (gespeichert im Claude-Gedächtnis).
+
+Fragetexte Q167–Q169 (Claude, 2026-11-19, Auswahl): Q167 Feld am Kontakt (Empfohlen) / Immer neutral / Selbst eintippen. Q168 Als Nächstes (Empfohlen) / Hinten anstellen. Q169 Backlog (Empfohlen) / Jetzt mitbauen (Antwort frei formuliert).
+
+Fragetexte Q170–Q171 (Claude, 2026-11-19, Auswahl): Q170 Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden. Q171 Ja, hochladen (Empfohlen) / Passt, noch nicht hochladen / Erst ändern.
+
+Fragetexte Q172 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Runde Bewerben-Helfer planen / Pause.
+
+Fragetexte Q173–Q174 (Claude, 2026-11-19, Runde Bewerben-Helfer, Auswahl): Q173 Klick aufs Symbol (Empfohlen) / Ganz automatisch. Q174 (Mehrfachauswahl) Kontaktdaten / Gehalt + Termine / CV + Anschreiben / Anlagen.
+
+Fragetexte Q175–Q176 (Claude, 2026-11-19, Auswahl): Q175 Nur Bewerbungssysteme (Empfohlen) / Alle Websites. Q176 Knopf „Abgeschickt“ (Empfohlen) / Automatisch erkennen / Nichts.
+
+Fragetexte Q178 (Claude, 2026-11-19, Auswahl): Schritt „Vorbereiten“ (Empfohlen) / Nur in der Bewerbung; Nutzer antwortete frei (siehe Tabelle).
+
+Fragetexte Q179–Q180 (Claude, 2026-11-19, Auswahl): Q179 Standard-CV (Empfohlen) / Neuester CV / Erst mit Phase 6. Q180 Alle Anlagen (Empfohlen) / Häkchen „Standard“ je Anlage (Antwort frei formuliert).
+
+Fragetexte Q181–Q182 (Claude, 2026-11-19, Auswahl): Q181 A: Adapter + Allgemein (Empfohlen) / B: Nur allgemein. Q182 Ja, in Runde 1 (Empfohlen) / Erst mit dem Helfer.
+
+Fragetexte Q184 (Claude, 2026-11-19, Auswahl): Einverstanden (Empfohlen) / Helfer weglassen.
+
+Fragetexte Q186–Q189 (Claude, 2026-11-19, Auswahl): Q186 Vorausfüllen + Konto-Merker (Empfohlen) / Backlog. Q187 Auf allen Portalen aus (Empfohlen) / Nur LinkedIn/StepStone/XING aus. Q188 Standard im Profil (Empfohlen) / Je Bewerbung (Antwort frei ergänzt). Q189 Abgleich sofort im Browser (Empfohlen) / Keinen vorauswählen. Vorab-Prüfung Recht und Phasen: `docs/phasen-vorarbeit.md` „Bewerben-Helfer: Vorab-Prüfung“.
+
+Fragetexte Q190 (Claude, 2026-11-19, Auswahl): Frist + Endtermin wählbar (Empfohlen) / Nur Dauer.
+
+Fragetexte Q191 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden (Antwort frei).
+
+Fragetexte Q192 (Claude, 2026-11-19, Auswahl): Alle vier kombiniert (Empfohlen) / Knopf + Danke-Seite + Nachfrage / Nur Knopf.
+
+Fragetexte Q193 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden.
+
+Fragetexte Q194 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht / Erst ändern.
+
+Fragetexte Q195 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Runde Bewerbungsformular / Pause.
+
+Fragetexte Q196–Q198 (Claude, 2026-11-19, Runde Bewerbungsformular, Auswahl): Q196 Nach Status einblenden (Empfohlen) / Wie heute. Q197 Fest, mit ✎ (Empfohlen) / Frei änderbar. Q198 (Mehrfachauswahl) Vergleich aktuelles Gehalt / Referenzen / Portal-Hinweis / Tags.
+
+Fragetexte Q199–Q200 (Claude, 2026-11-19, Auswahl, mit Beispiel neu gestellt): Q199 Ja, Schritt für Schritt (Empfohlen) / Nein, alles wie heute. Q200 Als Text, ✎ zum Ändern (Empfohlen) / Eingabefelder wie heute.
+
+Fragetexte Q201 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Felder nicht löschen / Erst ändern.
+
+Fragetexte Q202 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht / Erst ändern.
+
+Fragetexte Q203 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Runde Phase 6 Teil 2 / Runde Erinnerungen / Pause.
+
+Fragetexte Q204–Q205 (Claude, 2026-11-19, Runde Phase 6 Teil 2, Mehrfachauswahl): Q204 Passungs-Score / Skill-Lücken / Gehaltsbenchmark / Pendelzeit. Q205 Sofort-Alarm / Monatliche Übersicht.
+
+Fragetexte Q206–Q207 (Claude, 2026-11-19, Auswahl): Q206 Büro, sonst „unbekannt“ (Empfohlen) / Büro, sonst Ortsmitte „ca.“ (Antwort frei). Q207 Deine Haltestelle (Empfohlen) / Deine Adresse.
+
+Fragetexte Q208 (Claude, 2026-11-19, Auswahl): A: Eigene Rechnung, MVV (Empfohlen) / B: Transitous (Antwort frei).
+
+Fragetexte Q209–Q210 (Claude, 2026-11-19, Auswahl): Q209 Werktag, Ankunft bis 9:00 (Empfohlen) / Selbst einstellbar. Q210 Durchlassen, markiert (Empfohlen) / Ausblenden.
+
+Fragetexte Q211 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden.
+
+Fragetexte Q212 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht / Erst ändern.
+
+Fragetexte Q213 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Runde Erinnerungen / Pause (Antwort frei).
+
+Fragetexte Q214 (Claude, 2026-11-19, Auswahl): Runde Erinnerungen (Empfohlen) / Kleine Pakete planen / entwurf-ui in main übernehmen / Pause.
+
+Fragetexte Q215–Q218 (Claude, 2026-11-19, Runde Erinnerungen, Auswahl): Q215 Automatischer nächster Schritt (Empfohlen) / Eigene Erinnerungsliste. Q216 Website + Telegram für dich (Empfohlen) / Nur Website. Q217 Feld + Erinnerung (Empfohlen) / Nur Feld. Q218 Ja (Empfohlen) / Nein.
+
+Fragetexte Q219–Q220 (Claude, 2026-11-19, Auswahl): Q219 Ja, automatisch (Empfohlen) / Nein. Q220 Einmal, dann Frage (Empfohlen) / Zweimal erinnern / Nur einmal (Antwort frei).
+
+Fragetexte Q221 (Claude, 2026-11-19, Auswahl): Freigeben, Plan schreiben (Empfohlen) / Erst ändern / Selbst lesen, dann melden.
+
+Fragetexte Q222 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht / Erst ändern.
+
+Fragetexte Q223 (Claude, 2026-11-19, Auswahl): Task 0 von Runde 1 (Empfohlen) / Kleine Pakete planen / entwurf-ui in main übernehmen / Pause.
+
+Fragetexte Q224–Q225 (Claude, 2026-11-19, Auswahl): Q224 Ja, hochladen + Ja, privat hochladen (Empfohlen) / Nur öffentlich hochladen / Noch nicht. Q225 Ja, jetzt (Empfohlen) / Später.
+
+Fragetexte Q226 (Claude, 2026-11-19, Auswahl): „Hallo Test“ steht drin / Feld ist leer / Etwas anderes.
+
+Fragetexte Q227 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q228 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Erst Migration 023, dann hochladen / Noch nicht.
+Fragetexte Q229 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q230 (Claude, 2026-11-19, Auswahl): Ja, Review der Runde-1-Änderungen (Empfohlen) / Ganzes Projekt prüfen (ponytail-audit) / Später.
+Fragetexte Q231 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q232 (Claude, 2026-11-19, Auswahl): Claude baut Nr. 0a jetzt (Empfohlen) / Codex macht 0a morgen, Claude pausiert / Claude baut gleich 0a und Nr. 1.
+Fragetexte Q233 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q234 (Claude, 2026-11-19, Auswahl): Zwei Bewerbungs-Richtungen / Für eine andere Person / Test und echt trennen / (frei).
+Fragetexte Q235 (Claude, 2026-11-19, Auswahl): Zwei Bewerbungs-Richtungen / Test und echt trennen / Lieber zweites Konto statt Profile / (frei). Zwischenfrage des Nutzers, im Chat beantwortet: „Erinnere mich nochmal: Was für funktionalitäten sind für jeden außer dem Admin verfügbar?“
+Fragetexte Q236 (Claude, 2026-11-19, Auswahl): Zwei Admin-Konten (Empfohlen) / Profile in einem Konto.
+Fragetexte Q237 (Claude, 2026-11-19, Auswahl): Ein Chat, jede Nachricht mit Kontokürzel (Empfohlen) / Zwei getrennte Chats.
+Fragetexte Q238 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q239 (Claude, 2026-11-19, Auswahl): Nein, kein Mac – Safari bleibt im Backlog (Empfohlen) / Ja, ich nutze einen Mac – Safari planen / Erst für Freunde mit Mac.
+Fragetexte Q240 (Claude, 2026-11-19, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q241 (Claude, 2026-11-19, Auswahl): Sonnet Standard (Empfohlen) / Nur CLAUDE.md-Regel / Nichts ändern.
+Fragetexte Q242 (Claude, 2026-11-19, Auswahl): Global aus, hier an (Empfohlen) / Überall an lassen.
+Fragetexte Q243 (Claude, 2026-11-19, Auswahl): Übergabe ohne Helfer (Empfohlen) / Übergabe + Sonnet / Nichts ändern.
+Fragetexte Q244 (Claude, 2026-11-19, Auswahl): Ja, so einfügen (Empfohlen) / Nicht eintragen.
+Fragetexte Q245 (Claude, 2026-11-20, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q246 (Claude, 2026-11-20, Auswahl): Ich schicke dir Links (Empfohlen) / Claude sucht weiter / Später im Alltag.
+Fragetexte Q247 (Claude, 2026-11-20, Auswahl): Titel-Rückfall einbauen (Empfohlen) / So lassen, Konzerne später / Weiter mit Nr. 3.
+Fragetexte Q248 (Claude, 2026-11-20, Auswahl): Ja, beides bauen (Empfohlen) / Nur Bosch / Nichts bauen.
+Fragetexte Q249 (Claude, 2026-11-20, Auswahl): In 2–5 Minuten (Empfohlen) / In der nächsten Nacht / Stündlich.
+Fragetexte Q250 (Claude, 2026-11-20, Auswahl): Sofort, nach 2–5 Minuten (Empfohlen) / Jede Stunde / Jede Nacht.
+Fragetexte Q251 (Claude, 2026-11-20, Auswahl): Ja, so bauen (Empfohlen) / Änderungen.
+Fragetexte Q252 (Claude, 2026-11-20, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q253 (Claude, 2026-11-20, Auswahl): Ja, zusammenführen (Empfohlen) / Erst später.
+
+Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
 Fragetexte Q56/Q57 (Claude, Auswahl, jeweils frei beantwortet): Q56 Vorschlag + Häkchen des Admins (Empfohlen) / vollautomatisch / automatisch mit Wochen-Stichprobe. Q57 Mehrfachauswahl EU R&D Scoreboard / Börsenindizes / Top 20 je Branche (Wikidata) / EIC-Startups + Behörden/Forschung.
 

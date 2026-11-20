@@ -6,10 +6,11 @@ import { AUSGEBLENDET_BRANCHE, ID_FORM, heuteLokal, tagePlus } from "@/lib/filte
 import { datumDe } from "@/lib/bewerbung";
 import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
 import { firmenTrend } from "@/lib/firmentrend";
-import { istUmgerechnet, UMGERECHNET_HINWEIS, modellText, FELDER, FELD_TITEL, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
+import { modellText, FELDER, kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
 import { firmenFarbe } from "@/lib/farbe";
 import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
-import { leseKi, voraussetzungen } from "@/lib/zusammenfassung";
+import { leseKi } from "@/lib/zusammenfassung";
+import { SteckbriefKarte, Ueberblick } from "../../anzeige-bloecke";
 import { merken, beworben, entmerken } from "../actions";
 import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
@@ -64,7 +65,6 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   }, [...FELDER]);
   const link = sicher(j.url);
   const ki = leseKi(kr.data?.ki);
-  const mitbringen = ki ? voraussetzungen(ki) : [];
 
   return (
     <>
@@ -74,44 +74,9 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       <Ranglisten zuordnungen={ranglisten.zuordnungen} />
       {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
       {nutzer && (
-        <details className="karte ueberblick" open>
-          <summary>
-            <span className="ueberblick-stern" aria-hidden="true">★</span>
-            <h2>Auf einen Blick</h2>
-            <span className="ueberblick-hinweis">KI-Zusammenfassung</span>
-          </summary>
-          {ki ? (
-            <div lang={ki.sprache}>
-              {ki.rahmen.length + ki.benefits.length > 0 && (
-                <ul className="chips">
-                  {ki.rahmen.map((r, i) => <li key={`${i}-${r}`} className="chip">{r}</li>)}
-                  {ki.benefits.map((b, i) => <li key={`${i}-${b}`} className="chip chip-benefit"><span aria-hidden="true">★ </span>{b}</li>)}
-                </ul>
-              )}
-              <div className="ueberblick-spalten">
-                <section aria-labelledby="ki-aufgaben">
-                  <h3 id="ki-aufgaben" lang="de">Das machst du</h3>
-                  <ul>{ki.aufgaben.map((a, i) => <li key={`${i}-${a}`}>{a}</li>)}</ul>
-                </section>
-                {mitbringen.length > 0 && (
-                  <section aria-labelledby="ki-mitbringen">
-                    <h3 id="ki-mitbringen" lang="de">Das bringst du mit</h3>
-                    <ul className="haken">{mitbringen.map((m, i) => <li key={`${i}-${m}`}>{m}</li>)}</ul>
-                  </section>
-                )}
-              </div>
-            </div>
-          ) : (
-            <p className="gedaempft">{kr.data?.ki_modell === "fehler" ? "Für diese Anzeige gibt es keine Zusammenfassung." : "Zusammenfassung folgt."}</p>
-          )}
-        </details>
+        <Ueberblick ki={ki} ohne={kr.data?.ki_modell === "fehler" ? "Für diese Anzeige gibt es keine Zusammenfassung." : "Zusammenfassung folgt."} />
       )}
-      {eintraege.length > 0 && (
-        <section className="steckbrief karte" aria-labelledby="steckbrief-titel">
-          <h2 id="steckbrief-titel">Steckbrief</h2>
-          <dl>{eintraege.map((e) => <div key={e.feld}><dt>{FELD_TITEL[e.feld]}</dt><dd title={e.feld === "gehalt" && istUmgerechnet(e.text) ? UMGERECHNET_HINWEIS : undefined}>{e.text}</dd></div>)}</dl>
-        </section>
-      )}
+      <SteckbriefKarte eintraege={eintraege} />
       {nutzer && firma && (
         <section className="karte block" aria-labelledby="firma-titel">
           <h2 id="firma-titel">Über {firma}</h2>

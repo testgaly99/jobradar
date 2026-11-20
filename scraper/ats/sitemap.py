@@ -76,6 +76,9 @@ def _jobposting(seite):
     raise ValueError("kein JobPosting")
 
 
+jobposting = _jobposting  # auch für scraper/nachruesten.py
+
+
 def _liste(x):
     return x if isinstance(x, list) else [x] if x else []
 

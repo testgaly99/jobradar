@@ -58,14 +58,16 @@ def _get(basis: str, url: str) -> requests.Response:
         _zuletzt[domain] = time.monotonic()
 
 
-def _mit_weiterleitungen(url, robots_pruefen):
+def _mit_weiterleitungen(url, robots_pruefen, pruefe=None):
     gesehen = set()
     for hops in range(MAX_REDIRECTS + 1):
         url, basis = _adresse(url)
         if url in gesehen:
             raise requests.TooManyRedirects("Weiterleitungsschleife")
         gesehen.add(url)
-        if robots_pruefen and not _darf(basis, url):
+        if pruefe:
+            pruefe(url)  # z. B. Nachrüsten: Ziel darf nie intern sein, auch nach Weiterleitung
+        if robots_pruefen and not _darf(basis, url, pruefe):
             raise VerbotenDurchRobots(url)
         antwort = _get(basis, url)
         if antwort.status_code not in _REDIRECTS:
@@ -84,13 +86,13 @@ def _mit_weiterleitungen(url, robots_pruefen):
             antwort.close()
 
 
-def _darf(basis: str, url: str) -> bool:
+def _darf(basis: str, url: str, pruefe=None) -> bool:
     if basis not in _robots:
         parser = None
         try:
             # RFC 9309: Redirect-Regeln gehören zum Ursprung. Keine rekursive Robots-Abfrage
             # für den Ablageort der Datei; die Domainpause gilt trotzdem für jeden Hop.
-            antwort = _mit_weiterleitungen(basis + "/robots.txt", robots_pruefen=False)
+            antwort = _mit_weiterleitungen(basis + "/robots.txt", robots_pruefen=False, pruefe=pruefe)
         except (requests.RequestException, ValueError) as e:
             status = getattr(getattr(e, "response", None), "status_code", None)
             raise RobotsNichtErreichbar("robots.txt nicht erreichbar", status) from e
@@ -104,7 +106,7 @@ def _darf(basis: str, url: str) -> bool:
     return parser is None or parser.can_fetch(USER_AGENT, url)
 
 
-def hole(url: str) -> requests.Response:
-    antwort = _mit_weiterleitungen(url, robots_pruefen=True)
+def hole(url: str, pruefe=None) -> requests.Response:
+    antwort = _mit_weiterleitungen(url, robots_pruefen=True, pruefe=pruefe)
     antwort.raise_for_status()
     return antwort

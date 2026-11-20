@@ -1,4 +1,8 @@
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { aktualisieren, anleitung, browserAus } from "@/lib/erweiterung-anleitung";
+import erweiterung from "@/lib/erweiterung-version.json";
+import { AdresseKopieren } from "./erweiterung";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { kiStand, ladeAlle, sichererLink } from "@/lib/ki-stand";
 import { aktuellerNutzer } from "@/lib/nutzer";
@@ -6,10 +10,14 @@ import { SendeKnopf } from "../bewerbungen/knoepfe";
 import { selbstLoeschenErlaubt, nutzerZeilen } from "@/lib/nutzerliste";
 import { STATUS, STATUS_LABEL } from "@/lib/bewerbung";
 import { FELDER, FELD_TITEL, waehleFelder } from "@/lib/steckbrief";
-import { begriffHinzufuegen, felderSpeichern, begriffEntfernen, kontoLoeschen } from "./actions";
+import { begriffHinzufuegen, felderSpeichern, begriffEntfernen, kontoLoeschen, whitelistSetzen } from "./actions";
 
 export default async function Seite({ searchParams }: { searchParams: Promise<{ fehler?: string }> }) {
   const { fehler } = await searchParams;
+  // Eigene Adresse aus der Anfrage: so steht keine Website-Adresse im Code (CLAUDE.md 4.6).
+  const h = await headers();
+  const adresse = `${h.get("x-forwarded-proto") ?? "http"}://${h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3002"}`;
+  const browser = browserAus(h.get("user-agent"));
   const n = await aktuellerNutzer();
   const verboten = selbstLoeschenErlaubt({ istAdmin: !!n?.admin, adminEnv: process.env.ADMIN_EMAIL });
   const sb = await createClient();
@@ -34,11 +42,20 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
           if (r.error) throw r.error;
           return r.data;
         }),
-        a.from("jobs").select("id,unternehmen,titel,url").eq("status", "offen").eq("studium", "nein").order("unternehmen").limit(500),
-        a.from("jobs").select("id", { count: "exact", head: true }).eq("status", "offen").eq("studium", "nein"),
+        // nur wirklich ausgeblendete: bei Whitelist-Firmen bleiben "nein"-Stellen sichtbar
+        a.from("jobs").select("id,unternehmen,titel,url").eq("status", "offen").eq("studium", "nein").eq("sichtbar", false).order("unternehmen").limit(500),
+        a.from("jobs").select("id", { count: "exact", head: true }).eq("status", "offen").eq("studium", "nein").eq("sichtbar", false),
       ]);
       ki = weg.error || anzahl.error ? "fehler" : { stand: kiStand(offen), weg: weg.data ?? [], wegAnzahl: anzahl.count ?? 0 };
     } catch { ki = "fehler"; }
+  }
+  // Whitelist (Migration 011): Fehler beim Lesen heißt meist, dass die Spalte noch fehlt.
+  let whitelist: { name: string; whitelist: boolean | null }[] | "fehlt" | null = null;
+  if (n?.admin) {
+    try {
+      const r = await createAdminClient().from("companies").select("name, whitelist").order("name");
+      whitelist = r.error ? "fehlt" : (r.data ?? []);
+    } catch { whitelist = "fehlt"; }
   }
   return (
     <div className="karte">
@@ -119,6 +136,44 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
           )}
         </section>
       )}
+      {whitelist && (
+        <section className="abschnitt" id="whitelist">
+          <h2>Stellen ohne Studium trotzdem zeigen</h2>
+          <p>Bei angehakten Firmen blendet jobradar keine Stelle wegen „Studium: nein“ aus. Das wirkt sofort für alle.</p>
+          {whitelist === "fehlt" ? <p className="gedaempft">Migration 011 fehlt: bitte im Supabase SQL Editor einspielen.</p> : (
+            <ul className="whitelist">
+              {whitelist.map((f) => (
+                <li key={f.name}>
+                  <form action={whitelistSetzen}>
+                    <input type="hidden" name="firma" value={f.name} />
+                    <input type="hidden" name="wert" value={f.whitelist ? "aus" : "an"} />
+                    <button className="knopf knopf-leise" type="submit" aria-pressed={!!f.whitelist}
+                      aria-label={`${f.name}: ${f.whitelist ? "von der Whitelist nehmen" : "auf die Whitelist setzen"}`}>
+                      <span aria-hidden="true">{f.whitelist ? "☑" : "☐"}</span> {f.name}
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+      <section className="abschnitt">
+        <h2>Browser-Erweiterung</h2>
+        <p>Mit dem Knopf „Anzeige merken“ übernimmst du eine geöffnete Stellenanzeige mit einem Klick in deine Bewerbungen.</p>
+        {browser === "mobil" ? <p className="gedaempft">{anleitung("mobil")[0]}</p> : (
+          <>
+            <p><a className="knopf knopf-schmal" href="/downloads/jobradar-erweiterung.zip" download>Erweiterung herunterladen (Version {erweiterung.version})</a></p>
+            <ol>{anleitung(browser).map((s) => <li key={s}>{s}</li>)}</ol>
+            <AdresseKopieren adresse={adresse} />
+            <details>
+              <summary>Aktualisieren</summary>
+              <ol>{aktualisieren(browser).map((s) => <li key={s}>{s}</li>)}</ol>
+            </details>
+          </>
+        )}
+        <p className="gedaempft klein">Auf LinkedIn, StepStone und XING übernimmt die Erweiterung nichts.</p>
+      </section>
       <section className="abschnitt">
         <h2>Meine Daten exportieren</h2>
         <p>Wir empfehlen dir, deine Bewerbungen vorher zu exportieren. Nach dem Löschen sind sie nicht wiederherstellbar.</p>

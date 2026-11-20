@@ -38,7 +38,7 @@ function get(url: string): Promise<Response> {
 }
 
 // shortcut: nur Disallow-Präfixe der Gruppen "*" und jobradar, kein Allow/Wildcard; bei Bedarf Parser-Lib nehmen.
-function parseRobots(text: string): (pfad: string) => boolean {
+export function parseRobots(text: string): (pfad: string) => boolean {
   const verbote: string[] = [];
   let gilt = false, gruppeOffen = false;
   for (const roh of text.split(/\r?\n/)) {
