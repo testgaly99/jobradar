@@ -58,3 +58,31 @@ def test_stammdaten_aus_wikidata_werden_uebernommen():
                                   'mitarbeitende': {'value': '1234'}, 'branchen': {'value': 'Q1|Q2'}}]}}
     k = wikidata.lies(a)[0]
     assert k['hauptsitz'] == 'Berlin' and k['mitarbeitende'] == 1234
+
+
+def test_wikidata_ueber_qlever_mit_praefixen_nie_wikidata_selbst():
+    # query.wikidata.org/sparql und die Wikidata-API verbietet robots.txt (geprüft 2026-11-20); QLever (Uni Freiburg) erlaubt es
+    from urllib.parse import parse_qs, urlsplit
+    from scraper.quellen import wikidata
+    from scraper import ranglisten_holen
+    for url in (wikidata.url('SELECT ?firma WHERE { ?firma wdt:P31 wd:Q4830453 }'),
+                ranglisten_holen._url('SELECT ?firma WHERE { ?firma wdt:P31 wd:Q4830453 }')):
+        t = urlsplit(url)
+        assert t.hostname == 'qlever.dev' and t.path == '/api/wikidata'
+        q = parse_qs(t.query)['query'][0]
+        assert 'PREFIX wdt: <http://www.wikidata.org/prop/direct/>' in q and q.rstrip().endswith('}')
+    for name in ('index', 'arbeitgeber', 'name_zu_id'):
+        assert 'wikidata.org/sparql' not in wikidata.vorlage(name) and 'mwapi' not in wikidata.vorlage(name)
+
+
+def test_namenssuche_mit_schreibweisen_statt_suchdienst():
+    from scraper.quellen import wikidata
+    urls = []
+    wikidata.suche_name('VOLKSWAGEN AG', lambda u: urls.append(u) or type('R', (), {'content': b'{"results":{"bindings":[]}}'})())
+    from urllib.parse import parse_qs, urlsplit
+    q = parse_qs(urlsplit(urls[0]).query)['query'][0]
+    for variante in ('"VOLKSWAGEN AG"@de', '"Volkswagen Ag"@en', '"VOLKSWAGEN"@de', '"Volkswagen"@en'):
+        assert variante in q
+    # Anführungszeichen im Namen dürfen die Abfrage nicht aufbrechen
+    wikidata.suche_name('Firma "X" GmbH', lambda u: urls.append(u) or type('R', (), {'content': b'{"results":{"bindings":[]}}'})())
+    assert '"Firma \\"X\\" GmbH"@de' in parse_qs(urlsplit(urls[1]).query)['query'][0]
