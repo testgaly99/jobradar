@@ -411,3 +411,8 @@ Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT:
 - Gebaut statt Codex nach „Arbeite weiter an der nächsten Aufgabe“. Commits 126bba2, cfeda57, 7ee3c22, e98d59f.
 - Tests: `cd web && npm test` → 344 bestanden; `npx tsc --noEmit` ohne Fehler; `npm run pruefe:build` und `npm run pruefe:browser` bestanden; `py -B -m pruefe_offline` → 825 bestanden.
 - Nicht gelaufen: `tests/sql/whitelist.sql` (kein lokales Postgres). Keine Live-DB, keine Migration eingespielt, nichts hochgeladen.
+
+## 2026-11-20 – Claude: Phase 4b Portal-Erkennung und Sprachniveau (Warteschlange Nr. 3 und 4)
+- Gebaut statt Codex nach „Starte das nächste Arbeitspaket“ und „Weiter mit der nächsten Aufgabe“. Nr. 3: Commit 87299a8 (Sicherheitsprüfung durch Helfer, 2 Lücken behoben). Nr. 4: Commits 2c1a39d, 4090a12, d188dfd, 03b52e7, 63208fd.
+- Tests: `py -B -m pruefe_offline` → 956 bestanden; `cd web && npm test` → 359 bestanden; `npx tsc --noEmit` ohne Fehler; `npm run build` und `npm run pruefe:browser` grün; Prüfung durch Helfer (opus): Stellen von vor Migration 013 und eine kaputte Anzeige hätten das Nachrüsten verfehlt bzw. gestoppt, beide behoben; Klicktest Sprachniveau ohne Migration 013 mit Wegwerf-Konto 9/9.
+- Keine Migration eingespielt. Offen: Migration 013 (Nutzer), Live-Prüfung und Messung an 20 neuen Anzeigen (Claude).

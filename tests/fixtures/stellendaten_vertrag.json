@@ -4,19 +4,19 @@
     {
       "name": "Null Jahre, Jahresgehalt und Sprache",
       "text": "0 years experience. German C1. 70k-85k EUR. Security clearance.", "abschnitte": [],
-      "roh": {"erfahrung_jahre": 0, "sprachen": [{"sprache": "Deutsch", "niveau": "C1"}], "gehalt": {"min": 70000, "max": 85000, "waehrung": "EUR", "zeitraum": "Jahr"}, "sicherheitsueberpruefung": true},
+      "roh": {"erfahrung_jahre": 0, "sprachen": [{"sprache": "Deutsch", "niveau": "C1"}], "gehalt": {"min": 70000, "max": 85000, "waehrung": "EUR", "zeitraum": "Jahr"}, "sicherheitsueberpruefung": true, "deutsch": {"status": "pflicht", "stufe": "C1", "geschaetzt": false}},
       "anzeige": {"erfahrungJahre": 0, "sprachen": [{"sprache": "Deutsch", "niveau": "C1"}], "gehalt": {"min": 70000, "max": 85000, "waehrung": "EUR", "zeitraum": "Jahr"}, "sicherheit": true}
     },
     {
       "name": "Monatsbetrag und Erfahrung aus Abschnitt",
       "text": "5.500 CHF pro Monat", "abschnitte": [{"titel": "Profil", "punkte": ["3 years experience"]}],
-      "roh": {"erfahrung_jahre": 3, "sprachen": [], "gehalt": {"min": 5500, "max": 5500, "waehrung": "CHF", "zeitraum": "Monat"}, "sicherheitsueberpruefung": false},
+      "roh": {"erfahrung_jahre": 3, "sprachen": [], "gehalt": {"min": 5500, "max": 5500, "waehrung": "CHF", "zeitraum": "Monat"}, "sicherheitsueberpruefung": false, "deutsch": {"status": "ohne_niveau", "stufe": null, "geschaetzt": false}},
       "anzeige": {"erfahrungJahre": 3, "sprachen": [], "gehalt": {"min": 5500, "max": 5500, "waehrung": "CHF", "zeitraum": "Monat"}, "sicherheit": false}
     },
     {
       "name": "Unbekannte Werte bleiben unbekannt",
       "text": "Ein künstlicher Anzeigentext ohne Angaben.", "abschnitte": [],
-      "roh": {"erfahrung_jahre": null, "sprachen": [], "gehalt": null, "sicherheitsueberpruefung": false},
+      "roh": {"erfahrung_jahre": null, "sprachen": [], "gehalt": null, "sicherheitsueberpruefung": false, "deutsch": {"status": "ohne_niveau", "stufe": null, "geschaetzt": false}},
       "anzeige": {"erfahrungJahre": null, "sprachen": [], "gehalt": null, "sicherheit": false}
     }
   ],

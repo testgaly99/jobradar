@@ -13,6 +13,10 @@ import { SendeKnopf } from "../bewerbungen/knoepfe";
 import FirmenLogo from "../firmenlogo";
 import Ranglisten from "../ranglisten";
 import { ladeRankingKatalog, ladeRankingZuordnungen, rankingFilter, rankingHinweis } from "@/lib/rankings";
+import { STUFEN, deutschText, deutschWirksam, leseDeutsch } from "@/lib/sprachniveau";
+
+// Spalte jobs.deutsch_stufe fehlt (Migration 013 offen): Postgres 42703, PostgREST PGRST204
+const OHNE_DEUTSCH_SPALTE = ["42703", "PGRST204"];
 
 const TITEL: Record<Gruppe, string> = {
   liste: "Liste",
@@ -43,11 +47,19 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const f = rankingFilter(landNurMitFacette(roh, !!fa.land), !!nutzer);
   const listenHinweis = rankingHinweis(f, katalog);
   const listeGesperrt = !!listenHinweis && f.liste.length > 0;
-  const [ergebnis, lauf, erster] = await Promise.all([
-    listeGesperrt ? { data: [], count: 0, error: null } : stellenAbfrage(sb, f),
+  // Gespeicherte Spracheinstellung (Konto); fehlt die Tabelle (Migration 013), gilt nur die Adresse.
+  const sprach = nutzer ? await sb.from("sprach_einstellung").select("zeigen,niveau").maybeSingle() : { data: null, error: null };
+  let deutsch = deutschWirksam(f.deutsch, sprach.error ? null : sprach.data?.niveau, !!nutzer);
+  let [ergebnis, lauf, erster] = await Promise.all([
+    listeGesperrt ? { data: [], count: 0, error: null } : stellenAbfrage(sb, { ...f, deutsch }),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
     sb.from("laeufe").select("datum").order("datum", { ascending: true }).limit(1).maybeSingle(), // fehlt die Tabelle: nur 3-Tage-Regel
   ]);
+  const deutschFehlt = !!deutsch && OHNE_DEUTSCH_SPALTE.includes(ergebnis.error?.code ?? "");
+  if (deutschFehlt) {
+    deutsch = "";
+    ergebnis = await stellenAbfrage(sb, { ...f, deutsch });
+  }
   const ersterLauf: string | null = erster.data?.datum ?? null;
   const jobs = (ergebnis.data ?? []) as unknown as Job[];
   const gesamt = ergebnis.count ?? 0;
@@ -55,7 +67,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const veraltet = letzterLauf !== null && letzterLauf < tagePlus(heuteLokal(), -2);
   const jetzt = new Date();
   const seiten = Math.max(1, Math.ceil(gesamt / PRO_SEITE));
-  const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.ohne ? 1 : 0) + (f.seit ? 1 : 0);
+  const aktiv = GRUPPEN.reduce((n, g) => n + f[g].length, 0) + (f.q ? 1 : 0) + (f.ohne ? 1 : 0) + (f.seit ? 1 : 0) + (deutsch ? 1 : 0);
   // Eine Abfrage für alle angezeigten Stellen: welche sind schon gemerkt oder beworben? (RLS liefert nur eigene Zeilen)
   const status = new Map<string, { status: string; id: string }>();
   const steckbriefe = new Map<string, unknown>();
@@ -91,6 +103,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
       {listenHinweis && <p className="meldung hinweis" role="status">{listenHinweis} <Link href={filterZuUrl({ ...f, liste: [], sort: f.sort === "rang" ? "neu" : f.sort, seite: 1 })}>Listenfilter zurücksetzen</Link></p>}
       {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
+      {deutschFehlt && <p className="meldung hinweis" role="status">Deutsch-Filter geht erst nach Migration 013.</p>}
       {ergebnis.error && ergebnis.error.code !== "PGRST103" && <p className="meldung fehler">Stellen konnten nicht geladen werden.</p>}
       <div className="stellen-layout">
         <aside className="filterleiste">
@@ -124,6 +137,16 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   {nutzer && f.liste.length === 1 && !listeGesperrt && <option value="rang">Rang in der Liste</option>}
                 </select>
               </label>
+              {nutzer && (
+                <label>Mein Deutschniveau
+                  {/* "egal" muss eine gespeicherte Wahl für diesen Aufruf überstimmen ("alle"), sonst entfällt der Parameter */}
+                  <select key={deutsch} name="deutsch" defaultValue={deutsch || (sprach.data?.niveau ? "alle" : "")}>
+                    <option value={sprach.data?.niveau ? "alle" : ""}>Egal</option>
+                    {STUFEN.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <span className="gedaempft klein">Zeigt Stellen bis zu diesem Niveau, dazu solche ohne Deutsch-Pflicht oder ohne Angabe. Dauerhaft unter Konto.</span>
+                </label>
+              )}
               <fieldset className="gruppe">
                 <legend>Online seit</legend>
                 <div className="optionen">
@@ -191,6 +214,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               }, felder);
               const app = status.get(j.id);
               const st = app?.status;
+              // Bei aktivem Deutsch-Filter ausdrücklich sagen, warum eine Stelle trotz Filter erscheint
+              const de = deutsch ? leseDeutsch((steckbriefe.get(j.id) as { deutsch?: unknown } | null)?.deutsch) : null;
+              const deHinweis = de && (de.status === "vorteil" || de.status === "ohne_niveau") ? deutschText(de) : null;
               return (
                 <li key={j.id} className="stelle" style={{ "--firma-h": firmenFarbe(j.unternehmen) } as React.CSSProperties}>
                   <FirmenLogo firma={j.unternehmen} url={logos.get(j.unternehmen)} gross />
@@ -207,6 +233,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                         {kurz.map((e) => <li key={e.feld} title={e.feld === "gehalt" && istUmgerechnet(e.text) ? UMGERECHNET_HINWEIS : undefined}>{e.text}</li>)}
                       </ul>
                     )}
+                    {deHinweis && <p className="gedaempft klein">{deHinweis}</p>}
                   </div>
                   {!nutzer ? (
                     <Link className="knopf knopf-rand knopf-schmal" href="/login">Anmelden zum Merken</Link>

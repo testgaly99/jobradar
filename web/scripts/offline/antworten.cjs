@@ -99,7 +99,7 @@ globalThis.fetch = async (input, init = {}) => {
     return antwort(daten.slice(offset, offset + limit), 200, { 'content-range': `${offset}-${Math.max(offset, total - 1)}/${total}` });
   }
   if (url.pathname === '/rest/v1/laeufe') return antwort([{ datum: heute, bericht: {} }]);
-  if (['/rest/v1/companies', '/rest/v1/applications', '/rest/v1/listen_felder', '/rest/v1/wichtige_punkte'].includes(url.pathname)) return antwort([]);
+  if (['/rest/v1/companies', '/rest/v1/applications', '/rest/v1/listen_felder', '/rest/v1/sprach_einstellung', '/rest/v1/wichtige_punkte'].includes(url.pathname)) return antwort([]);
   throw new Error('Nicht vorbereitete Testanfrage: ' + url.pathname);
 };
 const denied = () => { throw new Error('HTTP-Zugriff außerhalb der Testdaten gesperrt'); };

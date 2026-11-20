@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { stufenRang } from "./sprachniveau.ts";
 import { ausschlussBedingungen, ausschlussWoerter, onlineSeitGrenze, seitenBereich, suchBedingung, type Filter } from "./filter.ts";
 
 // Postgres-Array-Literal mit Anführungszeichen, damit Kommas in Werten ("Luft- & Raumfahrt, Verteidigung") nicht trennen.
@@ -33,6 +34,9 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   if (f.land.length) q = q.in("land", f.land); // Spalte erst nach Migration 005; ohne sie gibt es in der Oberfläche keinen Land-Filter
   if (f.q) q = q.or(suchBedingung(f.q, f.volltext));
   for (const b of ausschlussBedingungen(ausschlussWoerter(f.ohne), f.volltext)) q = q.or(b);
+  // Stellen ohne Pflicht-Stufe (kein Deutsch, nur von Vorteil, ohne Niveau, noch nicht nachgerüstet) bleiben sichtbar.
+  const de = stufenRang(f.deutsch);
+  if (de !== null) q = q.or(`deutsch_stufe.is.null,deutsch_stufe.lte.${de}`);
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
   const { von, bis } = seitenBereich(f.seite);
   const o = f.sort === "groesse" ? q.order(mitListe ? "companies->groesse_rang" : "companies(groesse_rang)")

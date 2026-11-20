@@ -8,6 +8,8 @@
 
 **Tech Stack:** Python 3 (pytest), Next.js 16 / TypeScript (node:test), Supabase/PostgREST, SQL-Migration.
 
+**Stand 2026-11-20:** Tasks 1–6 von Claude gebaut (statt Codex); wartet auf Migration 013 und die Live-Messung (Halte-Punkt Task 6).
+
 **Spec:** `docs/superpowers/specs/2026-11-18-sprachniveau-design.md` (verbindliche Referenz für die Erkennung: `docs/superpowers/specs/2026-11-18-sprachniveau-prototyp.py`)
 
 ## Global Constraints

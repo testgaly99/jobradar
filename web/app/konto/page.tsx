@@ -10,7 +10,8 @@ import { SendeKnopf } from "../bewerbungen/knoepfe";
 import { selbstLoeschenErlaubt, nutzerZeilen } from "@/lib/nutzerliste";
 import { STATUS, STATUS_LABEL } from "@/lib/bewerbung";
 import { FELDER, FELD_TITEL, waehleFelder } from "@/lib/steckbrief";
-import { begriffHinzufuegen, felderSpeichern, begriffEntfernen, kontoLoeschen, whitelistSetzen } from "./actions";
+import { STUFEN, sprachenZeigen } from "@/lib/sprachniveau";
+import { begriffHinzufuegen, spracheSpeichern, felderSpeichern, begriffEntfernen, kontoLoeschen, whitelistSetzen } from "./actions";
 
 export default async function Seite({ searchParams }: { searchParams: Promise<{ fehler?: string }> }) {
   const { fehler } = await searchParams;
@@ -31,6 +32,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
   const { data: punkte, error: punkteFehler } = await sb.from("wichtige_punkte").select("id,begriff").order("erstellt_am");
   const fz = await sb.from("listen_felder").select("felder").maybeSingle();
   const gewaehlt = waehleFelder(fz.error ? null : fz.data?.felder);
+  const se = await sb.from("sprach_einstellung").select("zeigen,niveau").maybeSingle();
+  const seFehlt = !!se.error && ["42P01", "PGRST205"].includes(se.error.code);
   // Nur für Admins, nur serverseitig: der Service-Key verlässt diesen Code nie. Ohne "text" (zu groß, nicht nötig).
   let ki: { stand: ReturnType<typeof kiStand>; weg: { id: string; unternehmen: string | null; titel: string | null; url: string | null }[]; wegAnzahl: number } | "fehler" | null = null;
   if (n?.admin) {
@@ -110,6 +113,26 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
             </fieldset>
             {fz.error && <p className="gedaempft klein">Speichern geht erst nach Migration 005. Bis dahin gilt die Standardauswahl.</p>}
             <SendeKnopf text="Auswahl speichern" klasse="knopf knopf-rand knopf-schmal" />
+          </form>
+        )}
+      </section>
+      <section className="abschnitt">
+        <h2>Sprach<wbr />kenntnisse</h2>
+        {se.error && !seFehlt ? <p className="gedaempft">Die Einstellung konnte gerade nicht geladen werden.</p> : (
+          <form action={spracheSpeichern} className="formular">
+            <label className="option">
+              <input type="checkbox" name="zeigen" value="1" defaultChecked={sprachenZeigen(se.data?.zeigen, !!n?.admin)} />
+              <span>Sprachkenntnisse in „Das bringst du mit“ zeigen</span>
+            </label>
+            <label>Mein Deutschniveau (Filter in der Stellenliste)
+              <select name="niveau" defaultValue={se.data?.niveau ?? ""}>
+                <option value="">Kein Filter</option>
+                {STUFEN.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </label>
+            <p className="gedaempft klein">Gezeigt werden dann Stellen bis zu diesem Niveau, dazu Stellen ohne Deutsch-Pflicht oder ohne Angabe; diese tragen einen Hinweis. In der Stellenliste lässt sich die Wahl jederzeit ändern.</p>
+            {seFehlt && <p className="gedaempft klein">Geht erst nach Migration 013.</p>}
+            <SendeKnopf text="Speichern" klasse="knopf knopf-rand knopf-schmal" />
           </form>
         )}
       </section>

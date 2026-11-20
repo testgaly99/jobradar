@@ -94,11 +94,11 @@ Ein abschließender Slash ist zulässig. Hostvergleich ohne Beachtung der Groß-
 ## Umsetzung nach Planfreigabe
 
 - [x] **0. Umfang klären und Entwurf nachführen:** Q10-Antwort vom 2026-11-17 samt Wortlaut festgehalten; Link zuerst, drei direkte Muster, HTML zurückgestellt. Aktuelle Anschlusspfade geprüft; keine Anwendung implementiert.
-- [ ] **1. Überarbeitete Fassung gemeinsam bestätigen:** Eingang, unterstützte Muster, Ablehnungsgründe und Offline-Grenze dieses Dokuments bestätigen. Zustimmung zum alten ungeklärten HTML-Entwurf daraus nicht ableiten.
-- [ ] **2. Vertrag und Fehlfälle zuerst:** `tests/test_ats_erkennung.py` mit künstlichen absoluten URLs, HTML nur als abzulehnender Eingabe. Die unten genannten beobachtbaren Ergebnisse und Begründungen prüfen; gezielte Tests zunächst rot sehen.
-- [ ] **3. Kleine URL-Erkennung:** `scraper/ats_erkennung.py` ohne neue Pakete implementieren. Eingang prüfen, genau die drei Host-/Pfadmuster auswerten, keine automatische Adapterausführung oder Seitensuche. Kein zweites Linkimport-System und keine allgemeine Crawler-Bibliothek.
-- [ ] **4. Offline-Abnahme und unabhängiger Review:** Geschützten vorhandenen Einstieg verwenden, etwa `py -B -m pruefe_offline tests/test_ats_erkennung.py`, danach reguläre Offline-Suite. Netzwerk und Zugangsdaten bleiben gesperrt. Hosttäuschung, sichere Kennungen und tatsächliche Importabhängigkeiten unabhängig prüfen. Keine Live-Testmodule importieren.
-- [ ] **5. Abgabe:** STATUS, Entscheidungen und Agentenprotokoll mit lokalem Commit, Ergebnissen und offenen Grenzen aktualisieren. Ergebnis zunächst als abgegrenzten Baustein abgeben; spätere Website-/Privatfirmenanbindung ist ein gesonderter Auftrag.
+- [x] **1. Überarbeitete Fassung gemeinsam bestätigen:** Eingang, unterstützte Muster, Ablehnungsgründe und Offline-Grenze dieses Dokuments bestätigen. Zustimmung zum alten ungeklärten HTML-Entwurf daraus nicht ableiten.
+- [x] **2. Vertrag und Fehlfälle zuerst:** `tests/test_ats_erkennung.py` mit künstlichen absoluten URLs, HTML nur als abzulehnender Eingabe. Die unten genannten beobachtbaren Ergebnisse und Begründungen prüfen; gezielte Tests zunächst rot sehen.
+- [x] **3. Kleine URL-Erkennung:** `scraper/ats_erkennung.py` ohne neue Pakete implementieren. Eingang prüfen, genau die drei Host-/Pfadmuster auswerten, keine automatische Adapterausführung oder Seitensuche. Kein zweites Linkimport-System und keine allgemeine Crawler-Bibliothek.
+- [x] **4. Offline-Abnahme und unabhängiger Review:** Geschützten vorhandenen Einstieg verwenden, etwa `py -B -m pruefe_offline tests/test_ats_erkennung.py`, danach reguläre Offline-Suite. Netzwerk und Zugangsdaten bleiben gesperrt. Hosttäuschung, sichere Kennungen und tatsächliche Importabhängigkeiten unabhängig prüfen. Keine Live-Testmodule importieren.
+- [x] **5. Abgabe:** STATUS, Entscheidungen und Agentenprotokoll mit lokalem Commit, Ergebnissen und offenen Grenzen aktualisieren. Ergebnis zunächst als abgegrenzten Baustein abgeben; spätere Website-/Privatfirmenanbindung ist ein gesonderter Auftrag.
 
 ## Konkrete Abnahmefälle
 
@@ -129,5 +129,8 @@ Diese Tabelle sind geplante Abnahmen, keine bereits bestandenen Tests. Die Sperr
 - **Ranking-Firmen:** Erst im späteren Importpaket anschließen, wenn Quellenwahl, Nutzungsumfang und Bereinigung geklärt sind. Die offene SQL-Abnahme des Ranking-Unterbaus bleibt separat bestehen.
 
 ## Übergabestand
+
+**Gebaut von Claude 2026-11-20** (Q13 freigegeben; Nutzer: „Starte das nächste Arbeitspaket“): `scraper/ats_erkennung.py` mit `erkenne_portal(url) -> Ergebnis(status, grund, kandidat)`, Tests `tests/test_ats_erkennung.py` (69 Fälle). Unabhängige Sicherheitsprüfung (Helfer, opus) fand zwei Lücken, beide behoben und mit Tests belegt: Absturz bei kaputten IPv6-/Unicode-Hosts und Doppelgänger-Zeichen im Host (jetzt nur ASCII). Dazu `%2e` im Pfad und Nicht-ASCII-Ziffern als Jobnummer abgelehnt. Offline-Suite 899 grün. Noch nirgends angeschlossen (Website/Zusatzfirmen folgen mit 4e).
+
 
 Q10 wurde am 2026-11-17 beantwortet und in diese engere Fassung eingearbeitet. Der Plan beschreibt jetzt einen konkret prüfbaren URL-only-Baustein für drei vorhandene Portal-Muster; die alte optionale HTML-Suche ist zurückgestellt. Aktuelle Anschlussstellen und geplante Offline-Abnahmen sind benannt. **Nächster Schritt: diese überarbeitete Fassung gemeinsam bestätigen, dann erst Schritte 2–5 umsetzen.** Kein Anwendungscode für die Firmenportal-Erkennung geändert, keine echte Probe durchgeführt. Keine automatische Anbindung, Anbieter-/Quellenaktivierung, Installation, Live-Verbindung, Migration oder Veröffentlichung freigegeben.
