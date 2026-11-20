@@ -33,15 +33,63 @@ def app(f, link, i="a1"):
     return f.t["applications"][-1]
 
 
-def lauf(f, seite=SEITE, frage=lambda text, modell: KI, ips=("93.184.216.34",)):
+def lauf(f, seite=SEITE, frage=lambda text, modell: KI, ips=("93.184.216.34",), browser=None, frage_ft=None):
     geholt = []
 
     def hole(url, pruefe=None):
         pruefe(url)
         geholt.append(url)
         return Seite(seite)
-    erg = nachruesten.lauf(frage=frage, hole=hole, aufloesen=lambda host: list(ips))
+    erg = nachruesten.lauf(frage=frage, hole=hole, aufloesen=lambda host: list(ips), browser=browser, frage_ft=frage_ft)
     return erg, geholt
+
+
+def leere_app(f, link="https://jobs.konzern.example/job/7"):
+    f.t["applications"].append({"id": "b1", "link": link, "nachruesten": True, "firma": None, "titel": None,
+                                "standort": None, "snapshot_text": None})
+    return f.t["applications"][-1]
+
+
+def test_ohne_jobposting_liest_der_browser_und_fuellt_leere_felder(fake):
+    a = leere_app(fake)
+    gesehen = []
+
+    def browser(url, pruefe):
+        gesehen.append(url)
+        return {"jobposting": {**JP, "jobLocation": {"address": {"addressLocality": "Wolfsburg"}}}, "titel": "egal", "text": "x"}
+    erg, _ = lauf(fake, seite="<html>Gerüst</html>", browser=browser)
+    assert gesehen == ["https://jobs.konzern.example/job/7"]
+    assert (a["firma"], a["titel"], a["standort"]) == ("Seiten GmbH", "Controller", "Wolfsburg")
+    assert "Monatsabschluss" in a["snapshot_text"] and a["nachruesten"] is False and erg["nachgeruestet"] == 1
+
+
+def test_browser_ohne_jobposting_nimmt_text_und_titel_und_fragt_groq_nach_der_firma(fake):
+    a = leere_app(fake)
+    text = "Praktikum Konzernbeschaffung. " * 20
+    erg, _ = lauf(fake, seite="<html></html>", browser=lambda url, pruefe: {"jobposting": None, "titel": "Praktikum Konzernbeschaffung (w/m/d)", "text": text},
+                  frage_ft=lambda t: ("Volkswagen AG", "anderer Titel"))
+    assert (a["firma"], a["titel"]) == ("Volkswagen AG", "Praktikum Konzernbeschaffung (w/m/d)")
+    assert a["snapshot_text"] == text and "snapshot_abschnitte" not in a and a["snapshot_steckbrief"] is not None
+
+
+def test_eingetragenes_bleibt_und_zu_wenig_text_wird_uebersprungen(fake):
+    a = app(fake, "https://jobs.konzern.example/job/8")  # Nutzer hat Firma X und Titel Y eingetragen
+    lauf(fake, seite="<html></html>", browser=lambda url, pruefe: {"jobposting": JP, "titel": "", "text": ""})
+    assert (a["firma"], a["titel"]) == ("X", "Y")
+    b = leere_app(fake)
+    erg, _ = lauf(fake, seite="<html></html>", browser=lambda url, pruefe: {"jobposting": None, "titel": "Cookies", "text": "Wir nutzen Cookies."})
+    assert b["nachruesten"] is False and b["firma"] is None and erg["uebersprungen"] == 1
+
+
+def test_robots_verbot_ruft_keinen_browser(fake):
+    leere_app(fake)
+
+    def hole(url, pruefe=None):
+        raise http.VerbotenDurchRobots("robots")
+    benutzt = []
+    erg = nachruesten.lauf(frage=None, frage_ft=None, hole=hole, aufloesen=lambda h: ["93.184.216.34"],
+                           browser=lambda url, pruefe: benutzt.append(url))
+    assert benutzt == [] and erg["uebersprungen"] == 1
 
 
 def test_gueltige_seite_bekommt_alle_drei_snapshots(fake):
@@ -131,3 +179,14 @@ def test_http_hole_prueft_jeden_hop_auch_robots(monkeypatch):
     with pytest.raises(ValueError, match="intern"):
         http.hole("https://a.example.invalid/job", pruefe=pruefe)
     assert geholt == ["https://a.example.invalid/robots.txt", "https://a.example.invalid/job"]
+
+
+def test_titel_og_vor_h1_und_kein_cookie_banner():
+    from scraper.browser_seite import _jobposting, waehle_titel
+    assert waehle_titel("Manufacture Digitalization Intern #2", "We value your privacy") == "Manufacture Digitalization Intern #2"
+    assert waehle_titel("", "We value your privacy") == ""
+    assert waehle_titel(None, "  Praktikum   Konzernbeschaffung (w/m/d) ") == "Praktikum Konzernbeschaffung (w/m/d)"
+    assert waehle_titel("Cookie-Einstellungen", "Controller (m/w/d)") == "Controller (m/w/d)"
+    assert _jobposting(["kaputt", json.dumps({"@graph": [{"@type": "Organization"}, JP]})])["title"] == "Controller"
+    assert _jobposting([json.dumps([{"@type": ["JobPosting"], "title": "T"}])])["title"] == "T"
+    assert _jobposting([]) is None

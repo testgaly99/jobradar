@@ -244,12 +244,19 @@ def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):
 def bewerbungen_zum_nachruesten(limit=50):
     """Bewerbungen aus Firmenseiten (Link-Schnellstart). Ohne Migration 012 antwortet PostgREST mit 400: dann nichts."""
     try:
-        return _req("GET", "applications", params={"select": "id,link", "nachruesten": "eq.true", "limit": limit})
+        return _req("GET", "applications", params={"select": "id,link,firma", "nachruesten": "eq.true", "limit": limit})
     except RuntimeError as e:
         if ": 400 " not in str(e):
             raise
         print("Hinweis: Migration 012 offen, Nachrüsten übersprungen.")
         return []
+
+
+def fuelle_leere(app_id, felder):
+    """Nur leere Felder füllen (je Feld mit Filter is.null): was der Nutzer eingetragen hat, bleibt unberührt."""
+    for k, v in felder.items():
+        if v:
+            _req("PATCH", "applications", params={"id": f"eq.{app_id}", k: "is.null"}, json={k: v})
 
 
 def setze_nachgeruestet(app_id, patch):
