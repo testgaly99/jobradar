@@ -1,3 +1,5 @@
+import { stufenRang } from "./sprachniveau.ts";
+
 // Reine Funktionen: URL <-> Filter. Mehrfachwerte stehen als wiederholte Parameter (?stadt=A&stadt=B).
 export const GRUPPEN = ["liste", "groesse", "kategorie", "level", "modell", "vertrag", "bereich", "firma", "stadt", "land"] as const;
 export type Gruppe = (typeof GRUPPEN)[number];
@@ -5,7 +7,7 @@ export const SEIT_WERTE = ["heute", "3", "7", "30"] as const;
 export type Seit = (typeof SEIT_WERTE)[number];
 export const SORTIERUNG = ["neu", "firma", "titel", "groesse", "rang"] as const;
 export type Sortierung = (typeof SORTIERUNG)[number];
-export type Filter = Record<Gruppe, string[]> & { q: string; ohne: string; volltext: boolean; seit: Seit | ""; seite: number; sort: Sortierung };
+export type Filter = Record<Gruppe, string[]> & { q: string; ohne: string; volltext: boolean; seit: Seit | ""; seite: number; sort: Sortierung; deutsch: string };
 type Params = Record<string, string | string[] | undefined>;
 
 export const PRO_SEITE = 50;
@@ -22,13 +24,16 @@ const liste = (v: string | string[] | undefined) =>
   [...new Set((Array.isArray(v) ? v : v === undefined ? [] : [v]).map((s) => s.trim()).filter(Boolean))];
 
 export function leseFilter(p: Params): Filter {
-  const f = { q: liste(p.q)[0] ?? "", ohne: liste(p.ohne)[0] ?? "", volltext: liste(p.volltext)[0] === "1", seit: "", seite: 1, sort: "neu" } as Filter;
+  const f = { q: liste(p.q)[0] ?? "", ohne: liste(p.ohne)[0] ?? "", volltext: liste(p.volltext)[0] === "1", seit: "", seite: 1, sort: "neu", deutsch: "" } as Filter;
   for (const g of GRUPPEN) f[g] = liste(p[g]);
   const seit = liste(p.seit)[0] as Seit;
   if (SEIT_WERTE.includes(seit)) f.seit = seit;
   const so = liste(p.sort)[0] as Sortierung;
   if (SORTIERUNG.includes(so)) f.sort = so;
   f.seite = seitenBereich(Number(liste(p.seite)[0])).seite;
+  // Stufe oder "alle" (= gespeicherte Wahl für diesen Aufruf aus); Unsinn wird verworfen
+  const de = liste(p.deutsch)[0] ?? "";
+  if (de === "alle" || stufenRang(de) !== null) f.deutsch = de;
   return f;
 }
 
@@ -40,6 +45,7 @@ export function filterZuUrl(f: Filter): string {
   if (f.volltext) u.set("volltext", "1");
   if (f.seit) u.set("seit", f.seit);
   if (f.sort !== "neu") u.set("sort", f.sort);
+  if (f.deutsch) u.set("deutsch", f.deutsch);
   const { seite } = seitenBereich(f.seite);
   if (seite > 1) u.set("seite", String(seite));
   const s = u.toString();
