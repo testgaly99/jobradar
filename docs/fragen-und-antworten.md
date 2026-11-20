@@ -324,6 +324,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q251 | Plan „Browser bei GitHub liest die Anzeige“ so bauen? | Nutzer: „Ja, so bauen (Empfohlen)“; dazu: sofort ein Fenster, nicht warten, Seite verlassen dürfen | Gebaut: sofort anlegen mit Fenster, Rest im Hintergrund, Browser-Workflow. | entschieden |
 | Q252 | 7 Commits (sofort anlegen, Browser-Lauf, Titel-Rückfall, Doku) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen. | entschieden |
 | Q253 | `entwurf-ui` in `main` zusammenführen (alles seit 17.11. auf die echte Website)? | Nutzer: „Ja, zusammenführen (Empfohlen)“ | Zusammenführen mit Tests auf `main`, danach Vercel-Build prüfen. | entschieden |
+| Q254 | Phase 4b und zwei Statusnachträge auf entwurf-ui hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | 3 Commits auf entwurf-ui hochgeladen, main unverändert. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -464,6 +465,7 @@ Fragetexte Q250 (Claude, 2026-11-20, Auswahl): Sofort, nach 2–5 Minuten (Empfo
 Fragetexte Q251 (Claude, 2026-11-20, Auswahl): Ja, so bauen (Empfohlen) / Änderungen.
 Fragetexte Q252 (Claude, 2026-11-20, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
 Fragetexte Q253 (Claude, 2026-11-20, Auswahl): Ja, zusammenführen (Empfohlen) / Erst später.
+Fragetexte Q254 (Claude, 2026-11-20, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
