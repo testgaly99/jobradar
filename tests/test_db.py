@@ -98,7 +98,8 @@ def test_sync_companies(fake):
     db.sync_companies([f, {**f, "name": "Zwei", "mitarbeitende_ca": "", "aktiv": "nein"}])
     assert fake.t["companies"]["Neu"] == {
         "name": "Neu", "careers_url": "u", "ats_typ": "ashby", "ats_id": "n", "mitarbeitende_ca": 900,
-        "groesse_klasse": "250-999", "kategorie": ["A", "B"], "hauptsitz": "Berlin", "aktiv": True}
+        "groesse_klasse": "250-999", "kategorie": ["A", "B"], "hauptsitz": "Berlin", "aktiv": True,
+        "website": None, "wikidata_id": None, "quellen": [], "status": "aktiv", "status_grund": None}
     assert fake.t["companies"]["Zwei"]["mitarbeitende_ca"] is None and fake.t["companies"]["Zwei"]["aktiv"] is False
 
 

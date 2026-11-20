@@ -215,17 +215,57 @@ def lade_offene(firma):
     return {i: z for i, z in _bestand(firma).items() if z["status"] == "offen"}
 
 
+_firmen_quellen = None
+
+
+def firmen_quellen_da():
+    global _firmen_quellen
+    if _firmen_quellen is None:
+        try:
+            _req('GET', 'companies', params={'select': 'website,wikidata_id,quellen,status,status_grund', 'limit': 0})
+            _firmen_quellen = True
+        except RuntimeError as e:
+            if ': 400 ' not in str(e):
+                raise
+            _firmen_quellen = False
+            print('Hinweis: Migration 014 offen, Firmenquellen werden nicht geschrieben.')
+    return _firmen_quellen
+
+
 def sync_companies(firmen):
     def zahl(x):
         try:
             return int(str(x).strip())
         except ValueError:
             return None
+    erweitert = firmen_quellen_da()
     _upsert("companies", [{
         "name": f["name"], "careers_url": f["careers_url"], "ats_typ": f["ats_typ"], "ats_id": f["ats_id"],
         "mitarbeitende_ca": zahl(f["mitarbeitende_ca"]), "groesse_klasse": f["groesse_klasse"],
-        "kategorie": f["kategorie"], "hauptsitz": f["hauptsitz"], "aktiv": f["aktiv"] == "ja",
+        "kategorie": f["kategorie"], "hauptsitz": f["hauptsitz"],
+        "aktiv": f["aktiv"] == "ja" and f.get('status', 'aktiv') == 'aktiv',
+        **({k: f.get(k) or (list() if k == 'quellen' else 'aktiv' if k == 'status' else None)
+            for k in ('website', 'wikidata_id', 'quellen', 'status', 'status_grund')} if erweitert else {}),
     } for f in firmen], "name")
+
+
+def importiere_ausgabe(daten):
+    from scraper.rankings import pruefe_ausgabe
+    bekannte, offset = set(), 0
+    while True:
+        teil = _objektliste(_req('GET', 'companies', params={'select': 'name', 'order': 'name',
+                                                           'limit': SEITE, 'offset': offset}), 'Firmenantwort')
+        bekannte.update(z['name'] for z in teil)
+        offset += len(teil)
+        if len(teil) < SEITE:
+            break
+    zeilen = pruefe_ausgabe(daten, bekannte)
+    # Ein REST-Aufruf, eine Datenbanktransaktion: nie halbe Ausgaben sichtbar.
+    _req('POST', 'rpc/importiere_ranking_ausgabe', json={'p_daten': zeilen})
+
+
+def bereinige_ausgaben():
+    _req('POST', 'rpc/bereinige_ranking_ausgaben', json={})
 
 
 def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):

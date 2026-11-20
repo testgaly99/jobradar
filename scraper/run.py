@@ -2,6 +2,8 @@
 import os
 import sys
 import tempfile
+import json
+import time
 from collections import Counter
 from datetime import date
 from pathlib import Path
@@ -138,6 +140,9 @@ def _markdown(bericht):
         z.append("- KI: " + ", ".join(f"{k}: {v}" for k, v in bericht["ki"].items()))
     if bericht.get("nachruesten"):
         z.append("- Bewerbungen nachgerüstet: " + ", ".join(f"{k}: {v}" for k, v in bericht["nachruesten"].items()))
+    z.extend('- ' + s for s in bericht.get('ranglisten_hinweise', []))
+    if 'laufzeit_min' in bericht:
+        z.append(f"- Laufzeit: {bericht['laufzeit_min']} min")
     return "\n".join(z) + "\n"
 
 
@@ -209,16 +214,43 @@ def _nachruesten():
 
 
 def lauf(heute, datenordner="data"):
+    start = time.monotonic()
     datenordner = Path(datenordner)
     firmen = lade_unternehmen(datenordner / "companies.csv")
+    hinweise, ausgaben = [], []
+    # Abgelaufene Ausgaben nur nicht importieren; Firmen schaltet allein der monatliche Ranglisten-Lauf ab (Nutzer, Q258).
+    for pfad in sorted((datenordner / 'ranglisten').glob('*.json')):
+        try:
+            a = json.loads(pfad.read_text(encoding='utf-8'))
+            if a['ausgabe']['gueltig_bis'] <= heute:
+                hinweise.append(f'Rangliste {pfad.name} abgelaufen; nicht importiert.')
+                continue
+            ausgaben.append((pfad, a))
+        except Exception as e:
+            hinweise.append(f'Ranglisten-Import {pfad.name}: {kurzfehler(e)}')
     db._spalten = db._deutsch = None  # Spalten-Pruefungen (Migration 005, 013) einmal pro Lauf neu
+    db._firmen_quellen = None
     db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
-    _logos(firmen)
-    bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in firmen if f["aktiv"] == "ja"]}
+    if not db.firmen_quellen_da():
+        hinweise.append('Migration 014 offen; Ranglisten-Import übersprungen.')
+    else:
+        try:
+            db.bereinige_ausgaben()
+        except Exception as e:
+            hinweise.append(f'Ranglisten-Aufbewahrung: {kurzfehler(e)}')
+        for pfad, a in ausgaben:
+            try:
+                db.importiere_ausgabe(a)
+            except Exception as e:
+                hinweise.append(f'Ranglisten-Import {pfad.name}: {kurzfehler(e)}')
+    aktive = [f for f in firmen if f['aktiv'] == 'ja' and f.get('status', 'aktiv') == 'aktiv']
+    _logos(aktive)
+    bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in aktive], 'ranglisten_hinweise': hinweise}
     db.snapshot_nachruesten()  # nach allen Firmen
     bericht["deutsch"] = _deutsch_nachruesten()  # vor den KI-Schritten (Plan Sprachniveau, Task 3)
     bericht["ki"] = _ki(heute)
     bericht["nachruesten"] = _nachruesten()
+    bericht['laufzeit_min'] = round((time.monotonic() - start) / 60, 1)
     _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
     db.speichere_lauf(bericht)
     return bericht

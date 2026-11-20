@@ -2,6 +2,39 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Startauftrag 2026-11-20 (Codex)
+
+Nutzer im Wortlaut:
+> Prüfe alle Dokumentationen und alle files im Projekt, damit du genau weißt, was der aktuelle Stand ist.
+>
+> Starte das nächste Arbeitspaket was noch offen ist.
+
+Ableitung: Nr. 5 Phase 4c ist der oberste offene Eintrag; die Startanweisung gilt bis zum bestehenden Haltepunkt. Keine neue Frage gestellt, keine Zustimmung zu Live-Zugriff, Migration oder Veröffentlichung abgeleitet. Ergebnis und tatsächliche Prüfgrenzen siehe STATUS und Agentenprotokoll.
+
+### Ergänzung zum Startauftrag: Migration 014 (2026-11-20)
+
+Nutzer im Wortlaut: „014 ist eingebaut“.
+
+Status: Migration 014 laut Nutzer eingespielt. Keine unabhängige Datenbankprüfung durch Codex; keine zusätzliche Freigabe für Push, Merge, echte Quellen oder das nächste Paket aus dieser Bestätigung abgeleitet. Nächster Schritt bleibt genehmigtes Hochladen mit anschließender Live-Abnahme durch Claude.
+
+## Q-Codex-Zeit01 – Aufwandsschätzung 2026-11-20
+
+Nutzer im Wortlaut:
+> Führe eine Schätzung durch: Wie lange dauert es, bis alle Arbeitspakete abgearbeitet sind, vorausgesetzt ich arbeite weiter mit GPT 6.1 Sol Medium?
+
+Antwort/Schätzung: 12 noch nicht gebaute Pakete in der bestehenden Warteschlange, zusätzlich offene Live-Abnahmen bereits gebauter Pakete. Für GPT 6.1 Sol Medium werden **40–70 Stunden Agentenarbeit einschließlich Tests, Fehlersuche, Prüfung und Dokumentation** sowie **6–12 Stunden aktive Mitwirkung des Nutzers** angesetzt. Das ist eine Planungsspanne aus dem Umfang der vorliegenden Pläne, kein gemessener Modellvergleich und keine Zusage.
+
+| Restumfang | Agentenarbeit vor zusätzlichem Gesamtpuffer |
+|---|---|
+| 4d–4g: Ranglisten-Anzeige, Zusatzfirmen, Überwachung, Originalsuche | 6–10 h |
+| 6a/6b: CV-Abgleich im Nachtlauf und Browser | 8–14 h |
+| Bewerben-Helfer, Formular, Erinnerungen | 6–10 h |
+| Phase 5: Filter | 4–7 h |
+| Pendelzeit | 5–9 h |
+| Gmail und Google Kalender | 5–9 h |
+
+Summe 34–59 h; mit etwa 20 % Reserve gerundet 40–70 h. Kalenderannahme: regelmäßige Arbeit, zeitnahe Freigaben, keine längeren Nutzungslimits und keine wesentlichen neuen Anforderungen. Bei etwa 2 h täglich: 5–8 Wochen; bei 4 h täglich: 3–5 Wochen; intensive Arbeit: etwa 2–3 Wochen. Arbeitsfreie Tage und Verzögerungen können die Spanne verlängern. Größte Unsicherheiten: Modellverkleinerung für den CV-Abgleich, unterschiedliche Bewerbungsformulare, Fahrplandaten und Google-Anbindung. Einige Live-/Datenschutz-Abnahmen sind laut geltenden Regeln dem Nutzer/Claude vorbehalten; diese Freigaben werden nicht durch die Schätzung ersetzt. Ungeplante Portaladapter und der allgemeine Backlog sind nicht enthalten. Status: beantwortet; keine neue Umsetzung, Reihenfolge oder Freigabe beschlossen.
+
 ## Allgemeiner Nutzerauftrag
 
 Erste ausdrückliche Anweisung im bisherigen Gespräch:
@@ -327,6 +360,9 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q254 | Phase 4b und zwei Statusnachträge auf entwurf-ui hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | 3 Commits auf entwurf-ui hochgeladen, main unverändert. | entschieden |
 | Q255 | Paket Nr. 4 Sprachniveau auf entwurf-ui hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Commits auf entwurf-ui hochgeladen, main unverändert. | entschieden |
 | Q256 | Phase 4b und Sprachniveau von entwurf-ui in main zusammenführen und hochladen? | Nutzer: „Ja, zusammenführen (Empfohlen)“ | Zusammengeführt nach Tests und Build auf main; Vercel und Codeprüfung kontrolliert. | entschieden |
+| Q257 | Wer behebt die vier Prüfbefunde in Codex' Phase 4c (EPA-Ränge öffentlich, Zeitlimit Einrichtung, Absturz bei unvollständiger Firmenzeile, robots.txt je Stellenlink)? | Nutzer: „Claude behebt sofort (Empfohlen)“ | Von Claude behoben (3504a91), dazu Jobportal-Sperre und README. | entschieden |
+| Q258 | Soll der Nachtlauf Firmen mit abgelaufener Ranglisten-Datei abschalten (Codex' Abweichung) oder nur der Monatslauf (Plan)? | Nutzer: „Nur im Monatslauf“ | Abschalten aus dem Nachtlauf entfernt; der Monatslauf schaltet über seinen Änderungsvorschlag ab. | entschieden |
+| Q259 | Phase 4c (Codex, geprüft und nachgebessert) hochladen und in main zusammenführen? | Nutzer: „Hochladen und in main (Empfohlen)“ | Nach Tests und Build auf main zusammengeführt und hochgeladen; erster echter Ranglisten-Lauf nach Aufgabe 32 gemeinsam. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -470,6 +506,9 @@ Fragetexte Q253 (Claude, 2026-11-20, Auswahl): Ja, zusammenführen (Empfohlen) /
 Fragetexte Q254 (Claude, 2026-11-20, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
 Fragetexte Q255 (Claude, 2026-11-20, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
 Fragetexte Q256 (Claude, 2026-11-20, Auswahl): Ja, zusammenführen (Empfohlen) / Noch nicht.
+Fragetexte Q257 (Claude, 2026-11-20, Auswahl): Claude behebt sofort (Empfohlen) / Zurück an Codex.
+Fragetexte Q258 (Claude, 2026-11-20, Auswahl): So lassen (Empfohlen) / Nur im Monatslauf.
+Fragetexte Q259 (Claude, 2026-11-20, Auswahl): Hochladen und in main (Empfohlen) / Nur auf entwurf-ui hochladen / Noch nicht.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

@@ -1,0 +1,51 @@
+name: Einrichtung
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: firmen-dateien
+  cancel-in-progress: false
+
+jobs:
+  einrichtung:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - name: Neue Firmen einmalig einrichten
+        # Endet vor dem Jobabbruch (350 min); der Fortschritt steht nach jeder Firma in den Dateien
+        timeout-minutes: 300
+        run: python -m scraper.einrichtung
+      - name: Ergebnisse zur Prüfung vorschlagen
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          zweig="einrichtung-$(date -u +%F)-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$zweig"
+          git add data/companies.csv
+          for f in data/karriereseite_nicht_gefunden.md data/einrichtung_stand.json; do if test -f "$f"; then git add "$f"; fi; done
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Neue Firmen einrichten und offene Portale melden'
+          git push origin "$zweig"
+          cat > "$RUNNER_TEMP/einrichtung-pr.md" <<'TEXT'
+          Die einmalige Firmeneinrichtung hat ihren Fortschritt gespeichert. Bitte die Firmendatei und Karriereseite nicht gefunden prüfen.
+
+          Nach Übernahme kann der nächste manuelle Lauf beim gespeicherten Stand fortsetzen. Die Tabelle Portal-Arten zeigt die noch fehlenden Adapter.
+          TEXT
+          gh pr create --base main --head "$zweig" --title 'Firmeneinrichtung prüfen' --body-file "$RUNNER_TEMP/einrichtung-pr.md"
