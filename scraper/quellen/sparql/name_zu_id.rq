@@ -1,16 +1,14 @@
-# Firmenname (z. B. aus Scoreboard oder EPA) -> Wikidata-Kennung. Platzhalter {NAME}.
-# Übernahme nur, wenn GENAU EIN Ergebnis passt: bereinigter Name (ohne Rechtsform wie AG, SE, GmbH, Inc., Ltd.,
-# ohne Satzzeichen, klein) gleich bereinigter Bezeichnung oder einem Alias UND Land gleich dem Land der Quelle.
+# Firmenname (z. B. aus Scoreboard oder EPA) -> Wikidata-Kennung. Platzhalter {NAMEN}: Schreibweisen des Namens
+# (wie geliefert, Titel-Schreibweise, ohne Rechtsform) jeweils auf Deutsch und Englisch, z. B. "Siemens AG"@de "Siemens"@en.
+# Exakter Abgleich mit Bezeichnung oder Alias statt Wikidata-Suchdienst: dessen API verbietet robots.txt (2026-11-20).
+# Übernahme nur, wenn GENAU EIN Ergebnis passt: bereinigter Name gleich UND Land gleich dem Land der Quelle.
 # Sonst: Liste "nicht gefunden" für die Morgen-Sitzung mit Claude (Spec 4c-2 Schritt 2).
 SELECT ?firma ?land ?iso2 ?iso3 (SAMPLE(?web) AS ?website)
        (SAMPLE(?bezeichnung) AS ?name) (MAX(?ma) AS ?mitarbeitende)
        (GROUP_CONCAT(DISTINCT STRAFTER(STR(?branche), "entity/"); separator="|") AS ?branchen)
        (SAMPLE(?sitzname) AS ?hauptsitz) (GROUP_CONCAT(DISTINCT ?n; separator="|") AS ?namen) WHERE {
-  SERVICE wikibase:mwapi {
-    bd:serviceParam wikibase:api "EntitySearch" ; wikibase:endpoint "www.wikidata.org" ;
-                    mwapi:search "{NAME}" ; mwapi:language "en" .
-    ?firma wikibase:apiOutputItem mwapi:item .
-  }
+  VALUES ?n { {NAMEN} }
+  ?firma rdfs:label|skos:altLabel ?n .
   ?firma wdt:P31/wdt:P279? ?typ . VALUES ?typ { wd:Q4830453 wd:Q891723 wd:Q6881511 wd:Q783794 }
   OPTIONAL { ?firma wdt:P17 ?land . OPTIONAL { ?land wdt:P297 ?iso2 } OPTIONAL { ?land wdt:P298 ?iso3 } }
   OPTIONAL { ?firma wdt:P856 ?web }
@@ -18,5 +16,4 @@ SELECT ?firma ?land ?iso2 ?iso3 (SAMPLE(?web) AS ?website)
   OPTIONAL { ?firma wdt:P1128 ?ma }
   OPTIONAL { ?firma wdt:P452 ?branche }
   OPTIONAL { ?firma wdt:P159 ?sitz . ?sitz rdfs:label ?sitzname FILTER(lang(?sitzname) = "de") }
-  { ?firma rdfs:label ?n } UNION { ?firma skos:altLabel ?n } FILTER(lang(?n) IN ("en", "de"))
 } GROUP BY ?firma ?land ?iso2 ?iso3

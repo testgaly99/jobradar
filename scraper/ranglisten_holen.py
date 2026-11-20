@@ -5,7 +5,6 @@ from io import BytesIO, StringIO
 import json
 import hashlib
 from pathlib import Path
-from urllib.parse import urlencode
 from zipfile import ZipFile
 import re
 
@@ -37,7 +36,7 @@ def _scoreboard(daten):
 
 
 def _url(abfrage):
-    return wikidata.ENDPUNKT + '?' + urlencode({'query': abfrage, 'format': 'json'})
+    return wikidata.url(abfrage)
 
 
 def _arbeitgeber(daten):

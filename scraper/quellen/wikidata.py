@@ -7,15 +7,26 @@ from urllib.parse import urlencode
 from scraper import http
 from scraper.quellen import kandidat
 
-ENDPUNKT = 'https://query.wikidata.org/sparql'
+# Wikidata-Daten (CC0) über QLever der Uni Freiburg: query.wikidata.org/sparql und die Wikidata-API verbietet
+# robots.txt für Programme (geprüft 2026-11-20); QLever hat keine solche Sperre und kennt keine Standard-Präfixe.
+ENDPUNKT = 'https://qlever.dev/api/wikidata'
+PRAEFIXE = ''.join(f'PREFIX {k}: <{v}>\n' for k, v in {
+    'wd': 'http://www.wikidata.org/entity/', 'wdt': 'http://www.wikidata.org/prop/direct/',
+    'p': 'http://www.wikidata.org/prop/', 'ps': 'http://www.wikidata.org/prop/statement/',
+    'pq': 'http://www.wikidata.org/prop/qualifier/', 'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
+    'skos': 'http://www.w3.org/2004/02/skos/core#'}.items())
+_RECHTSFORM = re.compile(r'[\s,]+(?:AG|SE|GmbH|KGaA|Inc\.?|Ltd\.?|Corp\.?|PLC|S\.?\s?A\.?|N\.?\s?V\.?)$', re.I)
 LAENDER = {'DE': 'Q183', 'US': 'Q30', 'GB': 'Q145', 'UK': 'Q145', 'FR': 'Q142',
            'CN': 'Q148', 'KR': 'Q884', 'JP': 'Q17', 'NL': 'Q55', 'CH': 'Q39',
            'SE': 'Q34', 'FI': 'Q33', 'DK': 'Q35', 'IT': 'Q38', 'ES': 'Q29', 'AT': 'Q40'}
 
 
+def url(text):
+    return ENDPUNKT + '?' + urlencode({'query': PRAEFIXE + text, 'format': 'json'})
+
+
 def abfrage(text, holen=None):
-    r = (holen or http.hole)(ENDPUNKT + '?' + urlencode({'query': text, 'format': 'json'}))
-    return json.loads(r.content)
+    return json.loads((holen or http.hole)(url(text)).content)
 
 
 def vorlage(name):
@@ -65,10 +76,16 @@ def _normal(name):
     return re.sub(r'[^\w]', '', name)
 
 
+def _schreibweisen(name):
+    """Exakte Bezeichnungen für den Abgleich: wie geliefert, in Titel-Schreibweise ("VOLKSWAGEN" -> "Volkswagen"),
+    jeweils auch ohne Rechtsform, auf Deutsch und Englisch. JSON-Quoting ist zugleich gültiges SPARQL-Quoting."""
+    basis = [name.strip(), name.strip().title()]
+    alle = [v for v in dict.fromkeys(basis + [_RECHTSFORM.sub('', b).strip() for b in basis]) if v]
+    return ' '.join(f'{json.dumps(v, ensure_ascii=False)}@{sprache}' for v in alle for sprache in ('de', 'en'))
+
+
 def suche_name(name, holen=None):
-    # JSON-Quoting ist zugleich gültiges SPARQL-String-Quoting.
-    text = vorlage('name_zu_id').replace('"{NAME}"', json.dumps(name, ensure_ascii=False))
-    return abfrage(text, holen)
+    return abfrage(vorlage('name_zu_id').replace('{NAMEN}', _schreibweisen(name)), holen)
 
 
 def name_zu_id(name, land, suche=None):
