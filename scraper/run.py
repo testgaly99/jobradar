@@ -236,7 +236,11 @@ def lauf(heute, datenordner="data"):
     db._zusatzfirmen = None
     from scraper.bestand_umziehen import umziehen
     firmen = umziehen(firmen, datenordner / 'companies.csv')
-    db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
+    konflikt = set(db.sync_companies(firmen))  # Stellen verweisen per FK auf companies
+    if konflikt:
+        # Nur die Anzahl: bericht.md ist öffentlich, die Namen stehen in der Datenbank.
+        hinweise.append(f'Firmen mit Namenskonflikt zu einer DB-Firma übersprungen: {len(konflikt)} (mit Claude prüfen).')
+        firmen = [f for f in firmen if f['name'] not in konflikt]
     if not db.firmen_quellen_da():
         hinweise.append('Migration 014 offen; Ranglisten-Import übersprungen.')
     else:

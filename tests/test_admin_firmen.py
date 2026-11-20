@@ -12,8 +12,8 @@ def test_sync_schuetzt_private_namenskollision(monkeypatch):
     monkeypatch.setattr(db, 'db_firmen', lambda status=None: [dict(name='A', herkunft='admin')], raising=False)
     calls=[]
     monkeypatch.setattr(db, '_upsert', lambda *a: calls.append(a))
-    with pytest.raises(ValueError, match='Herkunft'):
-        db.sync_companies([firma('A')])
+    monkeypatch.setattr(db, '_req', lambda *a, **kw: calls.append(a))
+    assert db.sync_companies([firma('A')]) == ['A']
     assert not calls
 
 

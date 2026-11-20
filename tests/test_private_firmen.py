@@ -88,8 +88,33 @@ def test_source_promotion_nur_bei_exaktem_portal(monkeypatch):
     monkeypatch.setattr(db,'db_firmen',lambda status=None:[dict(firma('A'),herkunft='nutzer',fuer_alle=False,nutzer=1)])
     calls=[]
     monkeypatch.setattr(db,'_req',lambda *a,**kw:calls.append((a,kw)))
-    db.sync_companies([firma('A')])
+    assert db.sync_companies([firma('A')]) == []
     assert calls[0][1]['json']['p_firmen'][0]['fuer_alle'] is True
-    with pytest.raises(ValueError,match='Herkunft'):
-        db.sync_companies([dict(firma('A'),ats_id='andere')])
-    assert len(calls)==1
+    # Anderes Portal: Dateizeile wird übersprungen, die private Firma bleibt unberührt.
+    assert db.sync_companies([dict(firma('A'),ats_id='andere'), firma('B')]) == ['A']
+    assert [z['name'] for z in calls[1][1]['json']['p_firmen']] == ['B']
+
+
+def test_namensgleichheit_mit_privatfirma_stoppt_den_nachtlauf_nicht(aufbau, monkeypatch):
+    # Fall nach dem ersten Ranglisten-Lauf: eine offene Liste bringt eine private Firma ohne Portal zurück in die Datei.
+    d, t = aufbau([firma('Datei'), dict(firma('Doppelt'), ats_typ='', ats_id='')],
+                  {'fake': lambda *a, **kw: [stelle('1')]})
+    monkeypatch.setattr(db, 'herkunft_da', lambda: True)
+    monkeypatch.setattr(db, 'zusatzfirmen_da', lambda: True)
+    monkeypatch.setattr(db, 'db_firmen', lambda status=None: [
+        dict(firma('Doppelt'), status='aktiv', herkunft='nutzer', fuer_alle=False, nutzer=1)])
+    echt = db._req
+
+    def req(method, pfad, **kw):
+        if pfad == 'rpc/sync_dateifirmen':
+            return echt('POST', 'companies', params={'on_conflict': 'name'}, json=kw['json']['p_firmen'],
+                        headers={'Prefer': 'resolution=merge-duplicates'})
+        return echt(method, pfad, **kw)
+    monkeypatch.setattr(db, '_req', req)
+    b = run.lauf('2026-11-20', d)
+    assert 'Datei:1' in t['jobs']
+    assert 'Doppelt' not in t['companies']  # die Dateizeile hat die Privatfirma nicht überschrieben
+    assert [z['name'] for z in b['firmen']] == ['Datei']  # nicht als öffentliche Firma abgerufen
+    assert b['private_firmen'] == {'abgerufen': 1, 'fehler': 0}  # die private Firma läuft weiter
+    bericht = (d / 'bericht.md').read_text(encoding='utf-8')
+    assert 'Namenskonflikt' in bericht and 'Doppelt' not in bericht

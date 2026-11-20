@@ -309,13 +309,17 @@ def sync_companies(firmen):
     erweitert = firmen_quellen_da()
     mit_herkunft = herkunft_da()
     mit_sichtbarkeit = mit_herkunft and zusatzfirmen_da()
+    konflikt = []
     if mit_herkunft:
+        # Gleicher Name wie eine DB-Firma, aber anderes oder fehlendes Portal: nur diese Dateizeile
+        # überspringen. Ein Abbruch würde jede Nacht alle Firmen stoppen.
         privat={f['name']: f for f in db_firmen()}
         for firma in firmen:
             alt=privat.get(firma['name'])
             if alt and not (mit_sichtbarkeit and firma.get('ats_typ') and firma.get('ats_id')
                             and firma['ats_typ']==alt.get('ats_typ') and firma['ats_id']==alt.get('ats_id')):
-                raise ValueError('Herkunft-Konflikt; keine Stammdaten überschrieben')
+                konflikt.append(firma['name'])
+        firmen = [f for f in firmen if f['name'] not in konflikt]
     zeilen = [{
         "name": f["name"], "careers_url": f["careers_url"], "ats_typ": f["ats_typ"], "ats_id": f["ats_id"],
         "mitarbeitende_ca": zahl(f["mitarbeitende_ca"]), "groesse_klasse": f["groesse_klasse"],
@@ -327,9 +331,11 @@ def sync_companies(firmen):
             for k in ('website', 'wikidata_id', 'quellen', 'status', 'status_grund')} if erweitert else {}),
     } for f in firmen]
     if mit_herkunft:
-        _req('POST','rpc/sync_dateifirmen',json={'p_firmen':zeilen})
+        if zeilen:
+            _req('POST','rpc/sync_dateifirmen',json={'p_firmen':zeilen})
     else:
         _upsert('companies',zeilen,'name')
+    return konflikt
 
 
 def importiere_ausgabe(daten):
