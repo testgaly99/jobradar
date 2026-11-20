@@ -65,6 +65,8 @@ with sync_playwright() as p:
             page = user.new_page()
             errors = []
             page.on("pageerror", lambda e: errors.append(str(e)))
+            page.goto(BASE + "/admin/firmen")
+            expect(page.get_by_role("heading", name="404", exact=True)).to_be_visible()
             page.goto(BASE + "/stellen")
             expect(page.locator("#stellenliste > li")).to_have_count(3)
             if width < 900:

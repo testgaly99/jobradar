@@ -11,6 +11,32 @@ import { selbstLoeschenErlaubt, begriffPruefen } from "@/lib/nutzerliste";
 import { FELDER } from "@/lib/steckbrief";
 import { spracheEingabe } from "@/lib/sprachniveau";
 import { loescheNutzer } from "@/lib/nutzer-loeschen";
+import { fuegeZusatzfirmaHinzu } from '@/lib/zusatzfirma';
+import { darfAbrufen } from '@/lib/seiten-abruf';
+
+export async function zusatzfirmaHinzufuegen(formData: FormData) {
+  const n=await aktuellerNutzer();if(!n)redirect('/login');
+  if(!darfAbrufen(n.id))zurueck('Bitte warte eine Minute, bevor du weitere Firmen prüfst.');
+  const result=await fuegeZusatzfirmaHinzu(n.id,String(formData.get('name')??''),String(formData.get('link')??''),{
+    speichern:async daten=>{
+      const {data,error}=await createAdminClient().rpc('zusatzfirma_hinzufuegen',daten);
+      if(error)throw new Error('Speichern fehlgeschlagen');
+      return data as {status:string};
+    },
+  });
+  if(result.fehler)zurueck(result.fehler);
+  revalidatePath('/konto');revalidatePath('/stellen');
+  redirect('/konto?hinweis=Eigene%20Firma%20hinzugef%C3%BCgt.');
+}
+
+export async function zusatzfirmaEntfernen(formData:FormData) {
+  const n=await aktuellerNutzer();if(!n)redirect('/login');
+  const name=String(formData.get('unternehmen')??'');
+  if(!name.trim()||name.length>200)zurueck('Ungültige Firma.');
+  const {error}=await (await createClient()).from('firmen_sichtbar').delete().eq('unternehmen',name).eq('owner_id',n.id);
+  if(error)zurueck('Die Firma konnte nicht entfernt werden.');
+  revalidatePath('/konto');revalidatePath('/stellen');
+}
 
 function zurueck(m: string): never {
   redirect(`/konto?fehler=${encodeURIComponent(m)}`);

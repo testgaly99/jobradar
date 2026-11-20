@@ -8,6 +8,7 @@ from tests.test_run import firma, stelle, aufbau
 def test_sync_schuetzt_private_namenskollision(monkeypatch):
     monkeypatch.setattr(db, 'herkunft_da', lambda: True, raising=False)
     monkeypatch.setattr(db, 'firmen_quellen_da', lambda: True)
+    monkeypatch.setattr(db, 'zusatzfirmen_da', lambda: False)
     monkeypatch.setattr(db, 'db_firmen', lambda status=None: [dict(name='A', herkunft='admin')], raising=False)
     calls=[]
     monkeypatch.setattr(db, '_upsert', lambda *a: calls.append(a))
@@ -18,6 +19,7 @@ def test_sync_schuetzt_private_namenskollision(monkeypatch):
 
 def test_db_firmen_pagination_und_normalisierung(monkeypatch):
     monkeypatch.setattr(db, 'herkunft_da', lambda: True, raising=False)
+    monkeypatch.setattr(db, 'zusatzfirmen_da', lambda: False)
     calls=[]
     def req(m,p,**kw):
         calls.append(kw['params'])

@@ -10,6 +10,12 @@
 
 **Spec:** `docs/superpowers/specs/2026-11-17-phase4-firmen-ranglisten-design.md` (Abschnitt 4e, Festlegung 2; Anti-Ziel „Private Zusatzfirmen werden für andere sichtbar“)
 
+## Lokaler Baufortschritt 2026-11-20
+
+Tasks 1–4b als Code lokal umgesetzt; Bestandsdaten selbst unverändert, Umzug wird später im Nachtlauf nur nach DB-Bestätigung ausgeführt. Task 5: Übergabe dokumentiert, Ergebnisse im Agentenprotokoll. Echte Migration/RLS-Abnahme und neue Mehrkonten-Bedienfolge bleiben offen; kein Upload. Drei Helfer plus unabhängige Gegenprüfung von SQL, Web und Admin-Verträgen; Root prüft Integration.
+
+Technische Planpräzisierungen: atomare Service-RPCs für Quota, Portalidentität und Freigabe statt mehrerer REST-Schreibvorgänge. Recruitee-ID im Speicher vollständiger Host, im Web lokale Subdomain für die feste API. Wiederholbarer DB-Bestandsumzug vor CSV-Entfernung; Tagesworkflow commitet danach nur öffentliche/bereinigte CSV und Bericht. Private Quellenübernahme setzt Herkunft `datei` nur bei passender Portalidentität und echter Quelle, nicht durch veraltetes `bestand`. Verwaiste Privatfirmen werden auch vom Einrichtungslauf übersprungen. Keine neue Abhängigkeit, kein neues Dienstkonto. Kleinere Grenzen siehe STATUS; keine reale SQL-Ausführung behauptet.
+
 ## Global Constraints
 
 - **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** Task 4b legt für **jede** Zeile in `admins` eine Zeile in `firmen_sichtbar` an (beide Admin-Konten sehen die 13 heutigen Firmen); „kein Limit“ gilt für jedes Admin-Konto.

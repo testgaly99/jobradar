@@ -237,6 +237,8 @@ def lauf(datenordner='data', budget_s=17100, mit_db=True):  # 285 min, vor dem 3
         privat=[]
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             for f in db.db_firmen('offen'):
+                if f.get('fuer_alle', True) is False and f.get('nutzer', 0) <= 0:
+                    continue
                 if time.monotonic()-start >= max(0,budget_s-60):
                     break
                 if not f.get('website') and not f.get('careers_url'):

@@ -248,9 +248,38 @@ def herkunft_da():
     return _herkunft
 
 
+_zusatzfirmen = None
+
+
+def zusatzfirmen_da():
+    global _zusatzfirmen
+    if _zusatzfirmen is None:
+        try:
+            _req('GET', 'companies', params={'select': 'fuer_alle', 'limit': 0})
+            _zusatzfirmen = True
+        except RuntimeError as e:
+            if ': 400 ' not in str(e):
+                raise
+            _zusatzfirmen = False
+    return _zusatzfirmen
+
+
+def privatisiere_bestand(namen):
+    return _req('POST', 'rpc/bestand_privatisieren', json={'p_firmen': namen}) is True
+
+
 def db_firmen(status=None):
     if not herkunft_da():
         return []
+    if zusatzfirmen_da():
+        rows = _objektliste(_req('POST', 'rpc/firmen_fuer_nachtlauf', json={}), 'DB-Firmenantwort')
+        result = []
+        for f in rows:
+            if type(f.get('fuer_alle')) is not bool or type(f.get('nutzer')) is not int or f['nutzer'] < 0:
+                raise ValueError('Ungültige DB-Firmensichtbarkeit')
+            if status is None or f.get('status') == status:
+                result.append(dict(f, aktiv='ja' if f.get('aktiv') is True else 'nein'))
+        return result
     result=[]
     while True:
         params={'select':'name,careers_url,ats_typ,ats_id,mitarbeitende_ca,groesse_klasse,kategorie,hauptsitz,aktiv,website,wikidata_id,quellen,status,status_grund,herkunft',
@@ -279,16 +308,21 @@ def sync_companies(firmen):
             return None
     erweitert = firmen_quellen_da()
     mit_herkunft = herkunft_da()
+    mit_sichtbarkeit = mit_herkunft and zusatzfirmen_da()
     if mit_herkunft:
-        privat={f['name'] for f in db_firmen()}
-        if any(f['name'] in privat for f in firmen):
-            raise ValueError('Herkunft-Konflikt; keine Stammdaten überschrieben')
+        privat={f['name']: f for f in db_firmen()}
+        for firma in firmen:
+            alt=privat.get(firma['name'])
+            if alt and not (mit_sichtbarkeit and firma.get('ats_typ') and firma.get('ats_id')
+                            and firma['ats_typ']==alt.get('ats_typ') and firma['ats_id']==alt.get('ats_id')):
+                raise ValueError('Herkunft-Konflikt; keine Stammdaten überschrieben')
     zeilen = [{
         "name": f["name"], "careers_url": f["careers_url"], "ats_typ": f["ats_typ"], "ats_id": f["ats_id"],
         "mitarbeitende_ca": zahl(f["mitarbeitende_ca"]), "groesse_klasse": f["groesse_klasse"],
         "kategorie": f["kategorie"], "hauptsitz": f["hauptsitz"],
         "aktiv": f["aktiv"] == "ja" and f.get('status', 'aktiv') == 'aktiv',
         **({'herkunft':'datei'} if mit_herkunft else {}),
+        **({'fuer_alle':True} if mit_sichtbarkeit else {}),
         **({k: f.get(k) or (list() if k == 'quellen' else 'aktiv' if k == 'status' else None)
             for k in ('website', 'wikidata_id', 'quellen', 'status', 'status_grund')} if erweitert else {}),
     } for f in firmen]

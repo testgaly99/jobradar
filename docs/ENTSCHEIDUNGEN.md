@@ -2,6 +2,11 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-20 | Direkter Folgeauftrag startet 4e auf lokalem 4d; dessen Live-Abnahme bleibt offen. | Nutzer fordert ausdrücklich das nächste Paket und bestätigt Fortsetzung; keine Veröffentlichung oder Migration daraus ableiten. |
+| 2026-11-20 | 4e: Privatfirmen über Portalidentität, Eigentümerlimit und atomare Service-RPCs; Freigabe mit zweitem Klick, Herkunft bleibt beim Admin-Knopf erhalten. | Keine Namenszusammenlegung, keine Kontodaten in der Admin-Meldeliste, keine Quota-Rennen. |
+| 2026-11-20 | 4e: Recruitee-ID als vollständiger Host, im Web lokal Subdomain normalisieren. | Bestehender Python-Adapter erwartet einen Host; neue Direktanzeigen passen über URL-Slug statt numerischer Offers-ID. |
+| 2026-11-20 | 4e: CSV-Bestandszeilen erst nach wiederholbarer atomarer DB-Privatisierung für alle Admins entfernen; Tagesworkflow übernimmt bereinigte Datei. | Ein abgebrochener Lauf darf weder Daten verlieren noch eine private Firma erneut als Dateifirma veröffentlichen. |
+| 2026-11-20 | 4e: Echte Quellenübernahme einer privaten Firma verlangt passendes Portal und eine Quelle außer `bestand`, setzt danach Herkunft `datei`. | Schutz gegen veraltete Dateien und doppelte Portalabrufe; private Zuordnungen und Bewerbungen bleiben erhalten. |
 | 2026-11-20 | Phase 4d startet auf direkten Nutzerauftrag; Rangkorrektheit und sichere Identitätszuordnung haben Vorrang. | Neue Fehlerfälle mit künstlichen Daten prüfen; unklare Firmenzuordnungen und unbelegte Ränge nicht automatisch übernehmen. |
 | 2026-11-20 | 4d: Teilimporte derselben Ausgabe werden atomar ergänzt, Metadaten-/Rangkonflikte abgewiesen, Erstfristen bleiben erhalten. Listen-ID enthält zusätzlich einen Hash aus Name/Herausgeber. | Kein Teilstand, keine versehentliche Überschreibung bei ähnlichen Listennamen und keine Verlängerung der Speicherfrist durch Teilimporte. |
 | 2026-11-20 | 4d: Privater Einrichtungsbericht bleibt lokal und ignoriert; kein Artefakt im öffentlichen Repo. | Workflow-Artefakte öffentlicher Repos wären kein vertraulicher Ablageort; Status/Grund stehen außerdem in der Datenbank. Privater Ablauf wird mit Claude eingerichtet. |

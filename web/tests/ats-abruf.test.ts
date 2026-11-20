@@ -67,6 +67,27 @@ function abstaende(aufrufe: Aufruf[]) {
   }
 }
 
+test('Recruitee liest Offers-Fixture nur über offiziellen Host mit Robots und Pause',async()=>{
+  const fixture=JSON.parse(readFileSync(new URL('../../tests/fixtures/recruitee_quantum.json',import.meta.url),'utf8'));
+  const t=vorbereiten(a=>({...antwort(),json:async()=>fixture}));
+  const stellen=await t.fertig<any[]>(t.api.alleStellen('recruitee','beispiel'));
+  assert.equal(stellen.length,3); assert.equal(stellen[0].extId,'2819908');
+  assert.equal(stellen[0].titel,'UX/UI Designer (m/f/d)');
+  assert.equal(t.aufrufe[1].url.href,'https://beispiel.recruitee.com/api/offers/');
+  abstaende(t.aufrufe);
+});
+test('Recruitee-Einzelanzeigen werden anhand des URL-Slugs gefunden',async()=>{
+  const fixture=JSON.parse(readFileSync(new URL('../../tests/fixtures/recruitee_quantum.json',import.meta.url),'utf8'));
+  const t=vorbereiten(a=>({...antwort(),json:async()=>fixture}));
+  const stelle=await t.fertig<any>(t.api.holeStelle({typ:'recruitee',id:'beispiel',jobId:'uxui-designer-mfd'}));
+  assert.equal(stelle.extId,'2819908');
+});
+test('Recruitee lehnt unsichere careers_url aus beschädigter Antwort ab',()=>{
+  const t=vorbereiten();
+  for(const url of ['javascript:alert(1)','https://user:pass@example.org/o/engineer','https://example.org:123/o/engineer'])
+    assert.throws(()=>t.api.recruiteeStellen({offers:[{id:1,title:'Engineer',careers_url:url}]}));
+});
+
 for (const robotsStatus of [200, 404]) {
   test(`Parallele Boards teilen Robots (${robotsStatus}) und starten je Host im Sekundenabstand`, async () => {
     const t = vorbereiten(a => antwort(a.url.pathname === "/robots.txt" ? robotsStatus : 200));

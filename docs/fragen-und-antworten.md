@@ -2,6 +2,12 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Folgeauftrag Phase 4e (2026-11-20)
+
+Nutzer im Wortlaut: „Führe im Anschluss das nächste Arbeitspaket aus“. Anschließend: „continue“.
+
+Ableitung: Nr. 7 Phase 4e lokal bauen, auf den bereits vorhandenen Dateien von 4d. Offene Abnahmen/Migration015 bleiben offen; keine Freigabe für Live-Daten, Migrationen oder Veröffentlichung abgeleitet. Genauigkeitspriorität des vorherigen Nutzerauftrags bleibt bestehen. Helfer wurden durch Nutzungslimit unterbrochen und nach ausdrücklichem Fortsetzungsauftrag wieder aufgenommen; keine vorherigen Teiländerungen übergangen.
+
 ## Startauftrag 2026-11-20 (Codex)
 
 ### Folgeauftrag Phase 4d (2026-11-20)

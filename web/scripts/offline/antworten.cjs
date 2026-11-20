@@ -78,7 +78,7 @@ globalThis.fetch = async (input, init = {}) => {
   if (url.pathname === '/rest/v1/rpc/facetten') return antwort({ groesse: { '250–999': 3 }, kategorie: { Technik: 3 }, land: { Deutschland: 3 } });
   // Die neuen 4d-Abfragen gehören zur Stellenliste, auch ohne vorhandene Kategorien/Links.
   // Eine leere synthetische Antwort verhindert Supabase-Wiederholungen für unbekannte Endpunkte.
-  if (['/rest/v1/rpc/ranking_kategorien', '/rest/v1/stoebern_links'].includes(url.pathname)) return antwort([]);
+  if (['/rest/v1/rpc/ranking_kategorien', '/rest/v1/stoebern_links', '/rest/v1/firmen_sichtbar'].includes(url.pathname)) return antwort([]);
   if (url.pathname === '/rest/v1/rpc/ranking_katalog') {
     if (mode === 'missing') return antwort({ code: 'PGRST202', message: 'synthetisch fehlende Migration' }, 404);
     if (mode === 'error') return antwort({ code: 'XX000', message: 'interne Testdetails' }, 500);

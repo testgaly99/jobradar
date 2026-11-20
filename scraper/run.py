@@ -233,6 +233,9 @@ def lauf(heute, datenordner="data"):
     db._spalten = db._deutsch = None  # Spalten-Pruefungen (Migration 005, 013) einmal pro Lauf neu
     db._firmen_quellen = None
     db._herkunft = None
+    db._zusatzfirmen = None
+    from scraper.bestand_umziehen import umziehen
+    firmen = umziehen(firmen, datenordner / 'companies.csv')
     db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
     if not db.firmen_quellen_da():
         hinweise.append('Migration 014 offen; Ranglisten-Import übersprungen.')
@@ -250,12 +253,27 @@ def lauf(heute, datenordner="data"):
     _logos(aktive)
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in aktive], 'ranglisten_hinweise': hinweise}
     oeffentliche_firmen=list(bericht['firmen'])
+    bericht['private_firmen'] = {'abgerufen': 0, 'fehler': 0}
+    bereits_abgerufen = {(f.get('ats_typ'), f.get('ats_id')) for f in aktive if f.get('ats_typ') and f.get('ats_id')}
     # Adapter können URLs ausgeben: DB-Firmen auch vor öffentlichen Workflow-Logs schützen.
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
         private_firmen=db.db_firmen()
         for f in private_firmen:
             if f.get('status')=='aktiv' and f.get('aktiv')=='ja':
-                bericht['firmen'].append(_firma(f,heute))
+                portal = (f.get('ats_typ'), f.get('ats_id'))
+                if f.get('ats_typ') and f.get('ats_id') and portal in bereits_abgerufen:
+                    continue
+                privat = f.get('fuer_alle', True) is False
+                if privat and f.get('nutzer', 0) <= 0:
+                    continue
+                if f.get('ats_typ') and f.get('ats_id'):
+                    bereits_abgerufen.add(portal)
+                zeile = _firma(f,heute)
+                if privat:
+                    bericht['private_firmen']['abgerufen'] += 1
+                    bericht['private_firmen']['fehler'] += bool(zeile['fehler'])
+                else:
+                    bericht['firmen'].append(zeile)
     db.snapshot_nachruesten()  # nach allen Firmen
     bericht["deutsch"] = _deutsch_nachruesten()  # vor den KI-Schritten (Plan Sprachniveau, Task 3)
     bericht["ki"] = _ki(heute)

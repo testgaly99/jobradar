@@ -36,7 +36,7 @@ class FakeDB:
 
     def __call__(self, method, pfad, params=None, json=None, headers=None):
         params = params or {}
-        if method=='GET' and pfad=='companies' and params.get('select')=='herkunft':
+        if method=='GET' and pfad=='companies' and params.get('select') in ('herkunft', 'fuer_alle'):
             raise RuntimeError('Supabase GET companies: 400 column herkunft does not exist')
         if method == 'POST' and pfad == 'rpc/bereinige_ranking_ausgaben':
             return None
