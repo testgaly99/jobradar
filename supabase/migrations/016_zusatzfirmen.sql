@@ -83,7 +83,9 @@ create or replace function public.zusatzfirma_hinzufuegen(
 ) returns jsonb language plpgsql security invoker set search_path = '' as $$
 declare f public.companies; neu text; n integer := 1;
 begin
-  if p_owner is null or not exists(select 1 from auth.users where id=p_owner)
+  -- Kein Lesen von auth.users: service_role hat dort keine Rechte. Ein unbekannter
+  -- Nutzer scheitert am Fremdschlüssel von firmen_sichtbar, die ganze Transaktion rollt zurück.
+  if p_owner is null
      or p_name is null or length(btrim(p_name)) not between 2 and 80
      or p_name ~ '[[:cntrl:]]' or p_link is null or length(p_link)>4096
      or p_link !~ '^https://[^[:space:]<>"\\]+$'

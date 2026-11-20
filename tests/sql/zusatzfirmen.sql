@@ -23,6 +23,8 @@ insert into public.admins(user_id) values
 insert into public.companies(name,ats_typ,ats_id,aktiv,fuer_alle)
  values('Offline-4e-Öffentlich','greenhouse','offline4epublic',true,true);
 
+-- Service-RPCs mit den echten Rechten der Website aufrufen (service_role darf auth.users nicht lesen).
+set local role service_role;
 do $$ declare result jsonb; begin
   result := public.zusatzfirma_hinzufuegen('00000000-0000-0000-0000-000000004e03',
     'Offline-4e-Privat','https://boards.greenhouse.io/offline4e','greenhouse','offline4e');
@@ -42,6 +44,7 @@ insert into public.ranking_ausgaben(id,liste_id,jahr,veroeffentlicht_am,geprueft
 insert into public.ranking_firmen(ausgabe_id,unternehmen,rang)
  values('offline-4e-liste-2026','Offline-4e-Privat',1);
 
+reset role;
 set local role authenticated;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000004e03',true);
 do $$ begin
@@ -74,6 +77,17 @@ do $$ begin
   end if;
 end $$;
 reset role;
+set local role service_role;
+-- Unbekannter Nutzer: Fremdschlüssel bricht ab, keine halbe Firma bleibt zurück.
+do $$ begin
+  begin
+    perform public.zusatzfirma_hinzufuegen('00000000-0000-0000-0000-00000000dead','Offline-4e-Geist',
+      'https://boards.greenhouse.io/offline4egeist','greenhouse','offline4egeist');
+    raise exception 'Unbekannter Nutzer angenommen' using errcode='P0002';
+  exception when foreign_key_violation then null;
+  end;
+  if exists(select 1 from public.companies where ats_id='offline4egeist') then raise exception 'Halbe Firma übrig'; end if;
+end $$;
 do $$ declare result jsonb; begin
   if (select count(*) from public.firmen_sichtbar where unternehmen='Offline-4e-Privat')<>1 then
     raise exception 'Fremdes Löschen war möglich';
@@ -150,6 +164,7 @@ do $$ begin
 end $$;
 
 -- Kontolöschung räumt Zuordnungen auf; verwaiste Firmen werden im Backend übersprungen.
+reset role;
 delete from auth.users where id='00000000-0000-0000-0000-000000004e05';
 do $$ begin
   if exists(select 1 from public.firmen_sichtbar where owner_id='00000000-0000-0000-0000-000000004e05') then

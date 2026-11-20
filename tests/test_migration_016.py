@@ -18,6 +18,12 @@ def test_016_firmen_und_stellen_rechte_ersetzen_ohne_altfreigabe():
     assert "security definer set search_path = ''" in s
 
 
+def test_016_service_funktionen_lesen_auth_users_nicht():
+    # service_role darf auth.users bei Supabase nicht lesen; live 2026-11-20 schlug „Eigene Firma hinzufügen“ daran fehl.
+    s = sql()
+    assert 'from auth.users' not in s
+
+
 def test_016_nutzerzeilen_nur_eigene_und_kaskade():
     s = sql()
     assert 'create table if not exists public.firmen_sichtbar' in s

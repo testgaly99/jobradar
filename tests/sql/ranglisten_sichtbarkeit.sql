@@ -53,6 +53,7 @@ end $$;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000004d02',true);
 do $$ begin if not public.ist_admin() then raise exception 'Zweiter Admin fehlt'; end if; end $$;
 reset role;
+set local role service_role;  -- mit den echten Rechten der Website speichern
 
 -- Zweiter Teil ergänzt, ursprüngliche Frist bleibt erhalten. Rangkonflikt muss atomar scheitern.
 do $$
