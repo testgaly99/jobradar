@@ -15,7 +15,7 @@ import requests
 
 from scraper import http
 from scraper.abschnitte import abschnitte, text_aus_html
-from scraper.filter import _TITEL_RE
+from scraper.filter import _TITEL_RE, deutsche_staedte
 
 _LD = re.compile(r"<script[^>]*application/ld\+json[^>]*>(.*?)</script>", re.S | re.I)
 # dm: die JSON-LD-description ist nur ein Anrisstext, Aufgaben/Profil stehen im Seiten-HTML
@@ -47,11 +47,24 @@ def _urls(sitemap, index_aufloesen=True):
     return urls
 
 
+def ort_aus_url(url):
+    m = re.search(r'/job/([^/]+)', unquote(urlsplit(url).path), re.I)
+    if not m:
+        return None
+    segment = m.group(1)
+    # Numerische Kennungen oder bloße Stellentitel sind kein erkennbarer Ort.
+    if not re.match(r'(?:Germany|Deutschland|DE|US|USA|Vietnam|India|China|Japan|France|UK|Singapore|Canada|Australia|Poland|Spain|Italy|Brazil|Remote)(?:-|$)', segment, re.I) and not deutsche_staedte(segment.replace('-', ' ')):
+        return None
+    return segment.replace('-', ' ')
+
+
 def _vorgefiltert(url):
     titel = re.sub(r"[-_/]", " ", unquote(urlsplit(url).path)).lower()
     for aus, ein in (("ae", "ä"), ("oe", "ö"), ("ue", "ü")):
         titel = titel.replace(aus, ein)
-    return bool(_TITEL_RE.search(titel))
+    ort = ort_aus_url(url)
+    ausserhalb = ort and not (re.search(r'\b(?:Germany|Deutschland|DE|Remote)\b', ort, re.I) or deutsche_staedte(ort))
+    return bool(_TITEL_RE.search(titel) or ausserhalb)
 
 
 def _objekte(x):

@@ -2,6 +2,15 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Startauftrag 2026-11-20 (Codex)
+
+Nutzer im Wortlaut:
+> Prüfe alle Dokumentationen und alle files im Projekt, damit du genau weißt, was der aktuelle Stand ist.
+>
+> Starte das nächste Arbeitspaket was noch offen ist.
+
+Ableitung: Nr. 5 Phase 4c ist der oberste offene Eintrag; die Startanweisung gilt bis zum bestehenden Haltepunkt. Keine neue Frage gestellt, keine Zustimmung zu Live-Zugriff, Migration oder Veröffentlichung abgeleitet. Ergebnis und tatsächliche Prüfgrenzen siehe STATUS und Agentenprotokoll.
+
 ## Allgemeiner Nutzerauftrag
 
 Erste ausdrückliche Anweisung im bisherigen Gespräch:

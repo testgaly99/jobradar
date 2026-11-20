@@ -5,11 +5,12 @@
 SELECT ?firma ?name (MAX(?ma) AS ?mitarbeitende)
        (GROUP_CONCAT(DISTINCT STRAFTER(STR(?typ), "entity/"); separator=" ") AS ?typen)
        (GROUP_CONCAT(DISTINCT STRAFTER(STR(?branche), "entity/"); separator=" ") AS ?branchen)
-       (SAMPLE(?web) AS ?website) WHERE {
+       (SAMPLE(?web) AS ?website) (SAMPLE(?sitzname) AS ?hauptsitz) WHERE {
   ?firma wdt:P17 wd:Q183 ; wdt:P1128 ?ma . FILTER(?ma >= 1000)
   FILTER NOT EXISTS { ?firma wdt:P576 ?aufgeloest }
   OPTIONAL { ?firma wdt:P31 ?typ }
   OPTIONAL { ?firma wdt:P452 ?branche }
   OPTIONAL { ?firma wdt:P856 ?web }
+  OPTIONAL { ?firma wdt:P159 ?sitz . ?sitz rdfs:label ?sitzname FILTER(lang(?sitzname) = "de") }
   ?firma rdfs:label ?name FILTER(lang(?name) = "de")
 } GROUP BY ?firma ?name

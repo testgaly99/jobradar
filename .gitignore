@@ -24,6 +24,8 @@ Thumbs.db
 
 # Isolierte lokale Prüfkopien, keine Produktdaten
 .pruefung/
+.test-temp/
+.superpowers/
 
 # ZIP der Chrome-Erweiterung entsteht beim Build (web/scripts/erweiterung-zip.mjs)
 web/public/downloads/

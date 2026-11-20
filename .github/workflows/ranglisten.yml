@@ -1,0 +1,49 @@
+name: Ranglisten
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 1 * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: firmen-dateien
+  cancel-in-progress: false
+
+jobs:
+  ranglisten:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - name: Offene Quellen abrufen
+        run: python -m scraper.ranglisten_holen
+      - name: Änderungen zur Prüfung vorschlagen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          zweig="ranglisten-$(date -u +%F)-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$zweig"
+          git add data/companies.csv data/quellen_stand.json data/quellen_ausgaben.json data/kandidaten_bericht.md data/ranglisten/
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Offene Ranglisten und Firmen aktualisieren'
+          git push origin "$zweig"
+          cat > "$RUNNER_TEMP/ranglisten-pr.md" <<'TEXT'
+          Offene Firmenquellen wurden monatlich eingelesen. Bitte Firmen, Zuordnungen und den Kandidatenbericht prüfen.
+
+          Rohseiten werden nicht gespeichert. Die Übernahme nach main erfolgt von Hand.
+          TEXT
+          gh pr create --base main --head "$zweig" --title 'Offene Ranglisten aktualisieren' --body-file "$RUNNER_TEMP/ranglisten-pr.md"

@@ -2,6 +2,11 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-20 | Direkter Nutzerauftrag startet Nr. 5 Phase 4c bis zum bestehenden Haltepunkt. | Erneutes „okay“ würde die erteilte Startanweisung wiederholen; Migration und Veröffentlichung bleiben separat. |
+| 2026-11-20 | 4c: XLSX mit Standardbibliothek; Bestandsfirmen über `bestand`, bewusst inaktive Firmen erhalten; Austritt über Firmendatei und Ablaufprüfung, keine Bewerbungen löschen. | Keine neue Abhängigkeit; Portale und persönliche Bewerbungen erhalten. |
+| 2026-11-20 | 4c: Service-RPC für atomaren Ausgabenwechsel und tägliche Ablaufbereinigung in Migration 014. | Drei getrennte REST-Schreibvorgänge könnten halbe Ausgaben hinterlassen; Fristen müssen durchgesetzt werden. |
+| 2026-11-20 | 4c: `quellen_ausgaben.json` speichert Inhaltsfingerabdruck und Fristen; bekannte unaufgelöste Einträge werden nur innerhalb derselben Quelle wiederverwendet. | Keine künstliche Verlängerung alter Quellen, keine monatlichen Duplikate; Zusammenlegung über Quellen hinweg nur mit ID/Domain. |
+| 2026-11-20 | 4c: Unbekannte Größe bleibt leer; mehrere unterstützte oder nicht unterstützte Portale bleiben offen. | Fehlende Daten dürfen Filter nicht verfälschen und keine falsche Portalwahl auslösen. |
 | 2026-11-17 | **Firmenauswahl und Ranglisten (Q41–Q43, Q51):** Grundlage offene Quellen (EU-Scoreboard, Wikidata, EPA, CORDIS, offen lizenzierte Listen), dazu Behörden und Forschung; eine Firma = ein Karriereportal. Angezeigte Ränge nur bei passender Lizenz, Sichtbarkeit je Rang-Eintrag per RLS; Admin kann Listen von Hand einfügen; Linksammlung „Rankings zum Stöbern“. Ersetzt die Quellen-Entscheidungen vom 2026-11-10. | Rechte-Audit: fast alle Arbeitgeber-Rankings brauchen eine Lizenz; offene Quellen tragen auch eine spätere öffentliche Nutzung. |
 | 2026-11-17 | **Keine Freigabe des Claude-Abos für andere Nutzer (Q38 „A“).** | Anthropic verbietet Anfragen über Abo-Zugangsdaten im Auftrag anderer Nutzer; Kontosperre wäre das Risiko. |
 | 2026-11-17 | **CV-KI nach Rolle (Q37): Admin über Claude-Abo nachts, alle anderen kostenlos im Browser.** Zusätzlicher Auto-Abgleich für Stellen mit Stichwort im Titel aus eigener Liste (Q35/Q36). | Privates Abo darf nur der Admin selbst nutzen; Browser-Abgleich kostet nichts und hält fremde CVs auf deren Gerät. |

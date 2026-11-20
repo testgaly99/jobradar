@@ -1,6 +1,6 @@
 # Phase 4c: Firmen aus Ranglisten – Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Codex: Auftrag kommt über `docs/codex-warteschlange.md` (AGENTS.md Abschnitt 0). **Codex ruft keine echte Quelle ab**; alle Tests laufen gegen Beispieldateien aus Task 0.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking. Codex: Auftrag kommt über `docs/codex-warteschlange.md` (AGENTS.md Abschnitt 0). **Codex ruft keine echte Quelle ab**; alle Tests laufen gegen Beispieldateien aus Task 0.
 
 **Goal:** Aus offenen Ranglisten entsteht eine Kandidatenliste (~1.000 Firmen), jede Firma wird einmal eingerichtet (Karriereseite → Portal → Probeabruf) und steht danach mit Status in `data/companies.csv`; Ranglisten-Ausgaben landen in den Tabellen aus Migration 010.
 
@@ -9,6 +9,12 @@
 **Tech Stack:** Python 3 nur Standardbibliothek + `requests` (XLSX per `zipfile` + `xml.etree`, kein neues Paket), pytest, SQL-Migration, GitHub Actions.
 
 **Spec:** `docs/superpowers/specs/2026-11-17-phase4-firmen-ranglisten-design.md` (Abschnitt 4c, „Festlegungen nach der Bauprüfung“ 1, 3, 4, 6, 7)
+
+## Umsetzung 2026-11-20 durch Codex
+
+Tasks 1–8 lokal gebaut, Tests und unabhängige Prüfung siehe `docs/agenten-protokoll.md`. Keine Live-Abrufe oder Migration ausgeführt. Commit-Schritte werden als zusammenhängendes Paket abgegeben; keine Veröffentlichung. Der Haltepunkt unten bleibt offen.
+
+Abweichungen mit Begründung: Geschützter Offline-Prüfeinstieg statt ungeschütztem pytest; transaktionaler Service-RPC und Ablaufbereinigung in 014 statt mehrerer nicht atomarer REST-Schreibvorgänge; `data/quellen_ausgaben.json` hält Inhaltsfingerabdruck und Fristen gegen Wiederaufnahme veralteter Ausgaben. Quellenfehler zählen als monatlicher Versuch gegen Abrufflut. Bestands-Websites aus vorhandenen Angaben ergänzt, damit Bestand und Listenquellen zugeordnet werden können; unbekannte Größe leer statt erfundener Klasse. Bestehende Quelleneinträge ohne Identität bleiben innerhalb ihrer Quelle erhalten; keine Zusammenlegung gleichnamiger Firmen anderer Quellen. Eigene Karrierehosts mit Job-Links dürfen die in robots.txt angebotene Sitemap nutzen. Gemeinsame Wikidata-ID verschiedener Portale nur an einem Eintrag, weitere Zuordnungen werden gemeldet (Unique-Regel).
 
 ## Global Constraints
 
@@ -57,11 +63,11 @@
 - Migration: `companies` bekommt `website text`, `wikidata_id text unique`, `quellen text[] not null default '{}'`, `status text not null default 'aktiv' check (status in ('aktiv','kein_portal','portal_nicht_unterstuetzt','keine_stellen_de','offen'))`, `status_grund text`.
 - `sync_companies` schreibt die neuen Felder nur, wenn `db._spalten_da`-artige Prüfung (`firmen_quellen_da() -> bool`) wahr ist; `aktiv` = `status == "aktiv" and aktiv == "ja"`.
 
-- [ ] **Step 1: Tests.** Alte Datei ohne neue Spalten lädt wie bisher; neue Datei liefert `quellen == ["scoreboard-world", "dax"]`; Korrektur `Helsing,hauptsitz,Berlin,Impressum` setzt `hauptsitz`; unbekanntes Feld → `ValueError`; `sync_companies` sendet `wikidata_id` nur mit Spalte; SQL-Prüftest für 014 (idempotent, `unique`, `check`).
-- [ ] **Step 2:** `py -m pytest -q` → FAIL.
-- [ ] **Step 3:** Umsetzen; `data/companies.csv` um die Spalten ergänzen (13 Zeilen: `,,bestand,aktiv,`).
-- [ ] **Step 4:** `py -m pytest -q` → grün.
-- [ ] **Step 5: Commit** — „4c: Firmendatei mit Quellen und Status, Migration 014“ + `Agent: Codex`.
+- [x] **Step 1: Tests.** Alte Datei ohne neue Spalten lädt wie bisher; neue Datei liefert `quellen == ["scoreboard-world", "dax"]`; Korrektur `Helsing,hauptsitz,Berlin,Impressum` setzt `hauptsitz`; unbekanntes Feld → `ValueError`; `sync_companies` sendet `wikidata_id` nur mit Spalte; SQL-Prüftest für 014 (idempotent, `unique`, `check`).
+- [x] **Step 2:** `py -m pytest -q` → FAIL.
+- [x] **Step 3:** Umsetzen; `data/companies.csv` um die Spalten ergänzen (13 Zeilen: `,,bestand,aktiv,`).
+- [x] **Step 4:** `py -m pytest -q` → grün.
+- [x] **Step 5: Commit** — „4c: Firmendatei mit Quellen und Status, Migration 014“ + `Agent: Codex`.
 
 ### Task 2: Quellen-Parser
 
@@ -77,9 +83,9 @@
 - `wikidata.top_arbeitgeber(antwort: dict, ausschluss: list[dict], anzahl: int = 200) -> list[Kandidat]` (Abfrage `sparql/arbeitgeber.rq`, Q80/Q85/Q91/Q94): Zeilen mit einer Kennung aus `data/arbeitgeber_ausschluss.csv` (`art=behalten`) bleiben immer; sonst raus, wenn ein Typ (`art=typ`) passt oder ein Namensteil (`art=name`, Groß/klein egal) im Namen steht; Rest nach Mitarbeitenden absteigend, die ersten 200, `rang` = Platz. Kategorie für den Filter über `data/branchen_zuordnung.csv` (erste zuordenbare Branche, sonst `Sonstige`). Fehler, die durchrutschen (Doppelte wie „DHL“/„DHL AG“, einzelne Werke, Pflegeheimketten ohne Typ), streicht der Nutzer später über `data/firmen_korrekturen.csv` (Q84: automatisch live).
 - `wikidata.name_zu_id(name: str, land: str, suche=…) -> str | None` (Abfrage `sparql/name_zu_id.rq`): Stufe 1 vollständiger Name (Groß/klein egal) gleich Bezeichnung oder Alias; nur wenn Stufe 1 nichts findet, Stufe 2 ohne Rechtsform (AG, SE, GmbH, KGaA, Inc., Ltd., Corp., S.A., N.V., PLC) und Satzzeichen; jeweils nur Ergebnisse mit passendem Land; genau ein Treffer → Kennung, sonst `None` (→ Liste „nicht gefunden“). Für Scoreboard und EPA, die keine Kennung liefern.
 
-- [ ] **Step 1: Tests** gegen die Fixtures: `scoreboard_world2000.xlsx` → 5 Kandidaten, erster „AMAZON.COM, INC.“ Rang 1, Land „US“; Zeile mit Rang 201 (im Test angehängt) fällt weg; `wikidata_index_dax.json` → je Firma ein Kandidat; `wikidata_arbeitgeber.json` (33 Zeilen) → Bundeswehr, Bundespolizei, Deutscher Caritasverband, Ludwig-Maximilians-Universität München, Helios Kliniken und Landeshauptstadt München fehlen, Auswärtiges Amt und Deutsche Bundesbank sind dabei (`behalten`), Rang 1 = meiste Mitarbeitende; mit `top_arbeitgeber(..., anzahl=5)` → 5; `epa_top_applicants.xlsx` (Titelzeile überspringen) → 3 Kandidaten; `name_zu_id("VOLKSWAGEN AG", "DE")` mit `wikidata_name_volkswagen.json` → `Q156578` (nicht die Marke `Q246`).
-- [ ] **Step 2:** FAIL. **Step 3:** Umsetzen. **Step 4:** grün.
-- [ ] **Step 5: Commit** — „4c: Parser für offene Ranglisten“ + `Agent: Codex`.
+- [x] **Step 1: Tests** gegen die Fixtures: `scoreboard_world2000.xlsx` → 5 Kandidaten, erster „AMAZON.COM, INC.“ Rang 1, Land „US“; Zeile mit Rang 201 (im Test angehängt) fällt weg; `wikidata_index_dax.json` → je Firma ein Kandidat; `wikidata_arbeitgeber.json` (33 Zeilen) → Bundeswehr, Bundespolizei, Deutscher Caritasverband, Ludwig-Maximilians-Universität München, Helios Kliniken und Landeshauptstadt München fehlen, Auswärtiges Amt und Deutsche Bundesbank sind dabei (`behalten`), Rang 1 = meiste Mitarbeitende; mit `top_arbeitgeber(..., anzahl=5)` → 5; `epa_top_applicants.xlsx` (Titelzeile überspringen) → 3 Kandidaten; `name_zu_id("VOLKSWAGEN AG", "DE")` mit `wikidata_name_volkswagen.json` → `Q156578` (nicht die Marke `Q246`).
+- [x] **Step 2:** FAIL. **Step 3:** Umsetzen. **Step 4:** grün.
+- [x] **Step 5: Commit** — „4c: Parser für offene Ranglisten“ + `Agent: Codex`.
 
 ### Task 3: Zusammenführen und Branchen
 
@@ -92,9 +98,9 @@
 - `kategorie_fuer(branche_wd: str|None, zuordnung: dict) -> str` → nicht zuordenbar = `Sonstige` und Berichtszeile `Branche ohne Zuordnung: <wert>`.
 - `ausgaben(kandidaten, heute: str) -> list[dict]`: je Liste ein Objekt im Eingabeformat von `scraper.rankings.pruefe_ausgabe` (`gueltig_bis` = heute + 12 Monate, `freigegeben` false für `epa-patente`, sonst true).
 
-- [ ] **Step 1: Tests** (u. a. Review Focus 1): gleiche Wikidata-ID → ein Eintrag mit beiden Quellen; gleiche Domain ohne Wikidata-ID → ein Eintrag; gleicher Name, verschiedene Domains → zwei Einträge + Berichtszeile; Bestandsfirma behält `ats_typ`; Korrekturen aus `firmen_korrekturen.csv` gewinnen; jede erzeugte Ausgabe besteht `pruefe_ausgabe`.
-- [ ] **Step 2–4:** FAIL → Umsetzen → `py -m pytest -q` grün.
-- [ ] **Step 5: Commit** — „4c: Kandidaten zusammenführen, Branchen zuordnen“ + `Agent: Codex`.
+- [x] **Step 1: Tests** (u. a. Review Focus 1): gleiche Wikidata-ID → ein Eintrag mit beiden Quellen; gleiche Domain ohne Wikidata-ID → ein Eintrag; gleicher Name, verschiedene Domains → zwei Einträge + Berichtszeile; Bestandsfirma behält `ats_typ`; Korrekturen aus `firmen_korrekturen.csv` gewinnen; jede erzeugte Ausgabe besteht `pruefe_ausgabe`.
+- [x] **Step 2–4:** FAIL → Umsetzen → `py -m pytest -q` grün.
+- [x] **Step 5: Commit** — „4c: Kandidaten zusammenführen, Branchen zuordnen“ + `Agent: Codex`.
 
 ### Task 4: Monatlicher Abruf der Quellen
 
@@ -106,9 +112,9 @@
 - `lauf(heute: str, datenordner="data", holen=http.hole) -> dict` (Bericht): liest `data/quellen_stand.json` (`{liste_id: "YYYY-MM-DD"}`), überspringt Quellen, die in diesem Kalendermonat schon geholt wurden, ruft Parser (Task 2), `zusammenfuehren` (Task 3), schreibt `data/companies.csv`, `data/ranglisten/<liste_id>.json` (Ausgabe-Objekt) und `data/kandidaten_bericht.md`. Eine kaputte Quelle stoppt die anderen nicht.
 - Workflow: `workflow_dispatch` und `cron: "0 3 1 * *"`; Ergebnis auf Zweig `ranglisten-<datum>` committen und per `gh pr create` als Pull Request öffnen (nie nach `main` pushen).
 
-- [ ] **Step 1: Tests:** zweiter Lauf im selben Monat holt nichts; Fehler einer Quelle → Bericht nennt sie, übrige Dateien geschrieben; keine Rohdaten im Datenordner.
-- [ ] **Step 2–4:** FAIL → Umsetzen → grün.
-- [ ] **Step 5: Commit** — „4c: monatlicher Ranglisten-Abruf als Pull Request“ + `Agent: Codex`.
+- [x] **Step 1: Tests:** zweiter Lauf im selben Monat holt nichts; Fehler einer Quelle → Bericht nennt sie, übrige Dateien geschrieben; keine Rohdaten im Datenordner.
+- [x] **Step 2–4:** FAIL → Umsetzen → grün.
+- [x] **Step 5: Commit** — „4c: monatlicher Ranglisten-Abruf als Pull Request“ + `Agent: Codex`.
 
 ### Task 5: Einmalige Einrichtung je Firma
 
@@ -126,9 +132,9 @@
 - Workflow: nur `workflow_dispatch`, `timeout-minutes: 350`, Ergebnis als Pull Request wie Task 4.
 - **Vorfilter im Sitemap-Adapter (`scraper/ats/sitemap.py`):** Workday-Sitemaps enthalten alle Stellen weltweit, der Ort steht in der Adresse (`…/job/Vietnam-Hanoi/…`). Neue Funktion `ort_aus_url(url: str) -> str | None` (Segment nach `/job/`, Bindestriche → Leerzeichen); Stellen-URLs, deren Ort weder Deutschland/Germany, eine deutsche Stadt (`deutsche_staedte`) noch „Remote“ enthält, werden vor dem Abruf als `vorgefiltert` gezählt. Ohne erkennbaren Ort: abrufen. Test: `…/job/Vietnam-Hanoi/…` vorgefiltert, `…/job/Germany-Munich/…` und `…/job/US-WA-Remote/…` abgerufen (Remote entscheidet danach wie heute `ist_relevant`).
 
-- [ ] **Step 1: Tests** (Review Focus 2 und 3): ein Portal + Stelle in München → `aktiv`; nur Stellen in den USA (nicht remote) → `keine_stellen_de`; zwei Portale → `offen` + Grund; kein Link → Eintrag in der Liste; `budget_s=0` → nichts bearbeitet, Stand unverändert; zweiter Lauf überspringt erledigte Firmen; robots.txt-Verbot (`http.hole` wirft) → Grund `robots.txt verbietet Abruf`.
-- [ ] **Step 2–4:** FAIL → Umsetzen → grün.
-- [ ] **Step 5: Commit** — „4c: einmalige Einrichtung je Firma“ + `Agent: Codex`.
+- [x] **Step 1: Tests** (Review Focus 2 und 3): ein Portal + Stelle in München → `aktiv`; nur Stellen in den USA (nicht remote) → `keine_stellen_de`; zwei Portale → `offen` + Grund; kein Link → Eintrag in der Liste; `budget_s=0` → nichts bearbeitet, Stand unverändert; zweiter Lauf überspringt erledigte Firmen; robots.txt-Verbot (`http.hole` wirft) → Grund `robots.txt verbietet Abruf`.
+- [x] **Step 2–4:** FAIL → Umsetzen → grün.
+- [x] **Step 5: Commit** — „4c: einmalige Einrichtung je Firma“ + `Agent: Codex`.
 
 ### Task 6: Nachtlauf, Aufnahme und Austritt, Ausgaben-Import
 
@@ -142,9 +148,9 @@
 - Austritt (Spec 4c-4): Firma ohne jede Liste und ohne `bestand` → `aktiv=nein` beim Erzeugen in Task 3/4 (nicht im Nachtlauf löschen); ihre Stellen verschwinden über den vorhandenen Ablauf, Bewerbungen bleiben.
 - Bericht: Gesamtlaufzeit in Minuten (`Laufzeit: N min`), Ziel < 120.
 
-- [ ] **Step 1: Tests:** Import mit Fake-DB schreibt drei Tabellen; ungültige Datei → Berichtszeile, andere Dateien importiert; `bestand`-Firma ohne Liste bleibt aktiv; Firma mit `status=offen` wird nicht abgerufen; ohne Migration 014 (`firmen_quellen_da` falsch) Lauf wie heute.
-- [ ] **Step 2–4:** FAIL → Umsetzen → `py -m pytest -q` grün.
-- [ ] **Step 5: Commit** — „4c: Nachtlauf importiert Ranglisten, ruft nur eingerichtete Firmen ab“ + `Agent: Codex`.
+- [x] **Step 1: Tests:** Import mit Fake-DB schreibt drei Tabellen; ungültige Datei → Berichtszeile, andere Dateien importiert; `bestand`-Firma ohne Liste bleibt aktiv; Firma mit `status=offen` wird nicht abgerufen; ohne Migration 014 (`firmen_quellen_da` falsch) Lauf wie heute.
+- [x] **Step 2–4:** FAIL → Umsetzen → `py -m pytest -q` grün.
+- [x] **Step 5: Commit** — „4c: Nachtlauf importiert Ranglisten, ruft nur eingerichtete Firmen ab“ + `Agent: Codex`.
 
 ### Task 7: Portal-Messung (4c-3, nur Messen)
 
@@ -156,12 +162,12 @@
 - `PORTAL_HOSTS = {"workday": r"\.myworkdayjobs\.com$|\.wd\d+\.myworkdaysite\.com$", "successfactors": r"successfactors\.(com|eu)$|^jobs\.sap\.com$|career\d*\.successfactors", "smartrecruiters": r"smartrecruiters\.com$", "lever": r"lever\.co$", "softgarden": r"softgarden\.io$", "join": r"join\.com$"}`.
 - `portal_art(url: str) -> str|None`; `lauf` zählt je Art die Firmen mit Status `portal_nicht_unterstuetzt` und schreibt die Tabelle „Portal-Arten“ (Art, Anzahl Firmen, bester Rang, 3 Beispielfirmen) in `data/karriereseite_nicht_gefunden.md`.
 
-- [ ] **Step 1: Test:** drei Links (Workday, SuccessFactors, unbekannt) → Zählung 1/1, unbekannt fällt in „sonstige“.
-- [ ] **Step 2–4:** FAIL → Umsetzen → grün.
-- [ ] **Step 5: Commit** — „4c: Häufigkeit der Portal-Arten messen“ + `Agent: Codex`.
+- [x] **Step 1: Test:** drei Links (Workday, SuccessFactors, unbekannt) → Zählung 1/1, unbekannt fällt in „sonstige“.
+- [x] **Step 2–4:** FAIL → Umsetzen → grün.
+- [x] **Step 5: Commit** — „4c: Häufigkeit der Portal-Arten messen“ + `Agent: Codex`.
 
 ### Task 8: Doku und Halt
 
-- [ ] `docs/STATUS.md` (Stand, Nutzer-To-dos: Migration 014 einspielen, Workflows „Ranglisten“ und „Einrichtung“ einmal von Hand starten, Pull Requests ansehen), `docs/ENTSCHEIDUNGEN.md` (XLSX ohne Zusatzpaket; Bestandsfirmen bleiben über `bestand` aktiv; Austritt nur beim Erzeugen der Datei, nie im Nachtlauf löschen), `docs/agenten-protokoll.md`, Warteschlange `🛑 wartet auf Nutzer/Claude`.
-- [ ] Commit — „4c: Doku“ + `Agent: Codex`.
-- [ ] **🛑 Halte-Punkt:** Nutzer spielt Migration 014 ein und lädt hoch; Claude startet mit dem Nutzer den ersten echten Abruf („Ranglisten“), prüft den Pull Request (Stichprobe 20 Firmen: Name, Website, Branche), dann „Einrichtung“; am Morgen danach arbeiten Nutzer und Claude `karriereseite_nicht_gefunden.md` ab. Anhand der Portal-Messung schreibt Claude den Plan für die Adapter (Workday/SuccessFactors) und 4g.
+- [x] `docs/STATUS.md` (Stand, Nutzer-To-dos: Migration 014 einspielen, Workflows „Ranglisten“ und „Einrichtung“ einmal von Hand starten, Pull Requests ansehen), `docs/ENTSCHEIDUNGEN.md` (XLSX ohne Zusatzpaket; Bestandsfirmen bleiben über `bestand` aktiv; Austritt nur beim Erzeugen der Datei, nie im Nachtlauf löschen), `docs/agenten-protokoll.md`, Warteschlange `🛑 wartet auf Nutzer/Claude`.
+- [x] Commit — „4c: Doku“ + `Agent: Codex`.
+- [ ] **🛑 Halte-Punkt (noch offen):** Nutzer spielt Migration 014 ein und lädt hoch; Claude startet mit dem Nutzer den ersten echten Abruf („Ranglisten“), prüft den Pull Request (Stichprobe 20 Firmen: Name, Website, Branche), dann „Einrichtung“; am Morgen danach arbeiten Nutzer und Claude `karriereseite_nicht_gefunden.md` ab. Anhand der Portal-Messung schreibt Claude den Plan für die Adapter (Workday/SuccessFactors) und 4g.

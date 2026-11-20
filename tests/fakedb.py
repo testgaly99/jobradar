@@ -36,7 +36,9 @@ class FakeDB:
 
     def __call__(self, method, pfad, params=None, json=None, headers=None):
         params = params or {}
-        if method == "POST" and pfad == "rpc/snapshot_nachruesten":
+        if method == 'POST' and pfad == 'rpc/bereinige_ranking_ausgaben':
+            return None
+        elif method == "POST" and pfad == "rpc/snapshot_nachruesten":
             self.nachgeruestet += 1
             if self.ohne_funktion:
                 raise RuntimeError("Supabase POST rpc/snapshot_nachruesten: 404 {\"code\":\"PGRST202\"}")
