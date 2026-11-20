@@ -322,6 +322,8 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q249 | Wie schnell soll der GitHub-Browser die Anzeige lesen? | Nutzer: „Ich verstehe das nicht. Bitte erklären“; dazu: Karriereseiten nicht lesen zu können wäre ein sehr großes Problem | Claude erklärt (Bilderrahmen), misst mit echtem Browser, fragt erneut (Q250). | entschieden |
 | Q250 | Wann soll GitHub die Anzeige lesen: sofort, stündlich, nachts? | Nutzer: „Sofort, nach 2–5 Minuten (Empfohlen)“ | Website stößt den Workflow „Anzeigen lesen“ an (To-do 35: GitHub-Schlüssel). | entschieden |
 | Q251 | Plan „Browser bei GitHub liest die Anzeige“ so bauen? | Nutzer: „Ja, so bauen (Empfohlen)“; dazu: sofort ein Fenster, nicht warten, Seite verlassen dürfen | Gebaut: sofort anlegen mit Fenster, Rest im Hintergrund, Browser-Workflow. | entschieden |
+| Q252 | 7 Commits (sofort anlegen, Browser-Lauf, Titel-Rückfall, Doku) auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Hochgeladen. | entschieden |
+| Q253 | `entwurf-ui` in `main` zusammenführen (alles seit 17.11. auf die echte Website)? | Nutzer: „Ja, zusammenführen (Empfohlen)“ | Zusammenführen mit Tests auf `main`, danach Vercel-Build prüfen. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -460,6 +462,8 @@ Fragetexte Q248 (Claude, 2026-11-20, Auswahl): Ja, beides bauen (Empfohlen) / Nu
 Fragetexte Q249 (Claude, 2026-11-20, Auswahl): In 2–5 Minuten (Empfohlen) / In der nächsten Nacht / Stündlich.
 Fragetexte Q250 (Claude, 2026-11-20, Auswahl): Sofort, nach 2–5 Minuten (Empfohlen) / Jede Stunde / Jede Nacht.
 Fragetexte Q251 (Claude, 2026-11-20, Auswahl): Ja, so bauen (Empfohlen) / Änderungen.
+Fragetexte Q252 (Claude, 2026-11-20, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q253 (Claude, 2026-11-20, Auswahl): Ja, zusammenführen (Empfohlen) / Erst später.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
