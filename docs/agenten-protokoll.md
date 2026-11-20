@@ -16,6 +16,12 @@ Vorlage für einen Eintrag:
 
 Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT: ok` bzw. die gefundenen Punkte.
 
+## 2026-11-20 (Uhrzeit nicht separat erhoben) – Codex – Migration 014 bestätigt
+- Nutzer im Wortlaut: „014 ist eingebaut“. Als Vollzugsmeldung der Migration dokumentiert, keine unabhängige Live-Prüfung behauptet.
+- Dateien: STATUS, Warteschlange, Fragenprotokoll, 4c-Plan und dieses Protokoll. Lokaler Dokumentationscommit „4c: Eingespielte Migration 014 vermerken“, Schlusszeile `Agent: Codex`.
+- Prüfung: Dokumentationsdiff und `git diff --check`; keine Anwendungstests, ausschließlich Übergabestatus geändert. Letzter Codeprüfstand: Python 1002, Web 359, Typen und isolierter Build grün.
+- Offen: ausdrückliche Freigabe zum Hochladen/Übernehmen in main; danach Live-Abnahme und erster echter Quellen-/Einrichtungslauf mit Claude. Keine Live-Daten, Geheimnisse oder echten Quellen gelesen, keine Veröffentlichung, kein nächstes Paket begonnen. Keine Abweichung von den Projektregeln.
+
 ## 2026-11-20 (Uhrzeit nicht separat erhoben) – Codex – Restaufwand schätzen
 - Auftrag: Dauer bis zur Abarbeitung aller Pakete unter Annahme GPT 6.1 Sol Medium schätzen.
 - Grundlage: aktuelle Warteschlange und Aufgaben/Haltepunkte der zwölf verbleibenden Baupläne. Ergebnis: 40–70 h Agentenarbeit mit Reserve, 6–12 h aktive Nutzermitwirkung; Kalenderdauer abhängig von täglichem Einsatz und Abnahmen. Kein gemessener Modellvergleich; ungeplanter Backlog ausgeschlossen.

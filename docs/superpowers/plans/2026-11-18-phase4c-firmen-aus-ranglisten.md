@@ -12,7 +12,7 @@
 
 ## Umsetzung 2026-11-20 durch Codex
 
-Tasks 1–8 lokal gebaut, Tests und unabhängige Prüfung siehe `docs/agenten-protokoll.md`. Keine Live-Abrufe oder Migration ausgeführt. Commit-Schritte werden als zusammenhängendes Paket abgegeben; keine Veröffentlichung. Der Haltepunkt unten bleibt offen.
+Tasks 1–8 lokal gebaut, Tests und unabhängige Prüfung siehe `docs/agenten-protokoll.md`. Keine Live-Abrufe oder Migration durch Codex ausgeführt. Nachtrag 2026-11-20: Nutzer bestätigt „014 ist eingebaut“; Migration damit laut Nutzer erledigt, Live-Prüfung noch offen. Commit-Schritte werden als zusammenhängendes Paket abgegeben; keine Veröffentlichung. Der Haltepunkt für Hochladen und echten Abruf unten bleibt offen.
 
 Abweichungen mit Begründung: Geschützter Offline-Prüfeinstieg statt ungeschütztem pytest; transaktionaler Service-RPC und Ablaufbereinigung in 014 statt mehrerer nicht atomarer REST-Schreibvorgänge; `data/quellen_ausgaben.json` hält Inhaltsfingerabdruck und Fristen gegen Wiederaufnahme veralteter Ausgaben. Quellenfehler zählen als monatlicher Versuch gegen Abrufflut. Bestands-Websites aus vorhandenen Angaben ergänzt, damit Bestand und Listenquellen zugeordnet werden können; unbekannte Größe leer statt erfundener Klasse. Bestehende Quelleneinträge ohne Identität bleiben innerhalb ihrer Quelle erhalten; keine Zusammenlegung gleichnamiger Firmen anderer Quellen. Eigene Karrierehosts mit Job-Links dürfen die in robots.txt angebotene Sitemap nutzen. Gemeinsame Wikidata-ID verschiedener Portale nur an einem Eintrag, weitere Zuordnungen werden gemeldet (Unique-Regel).
 

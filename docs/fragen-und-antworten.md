@@ -11,6 +11,12 @@ Nutzer im Wortlaut:
 
 Ableitung: Nr. 5 Phase 4c ist der oberste offene Eintrag; die Startanweisung gilt bis zum bestehenden Haltepunkt. Keine neue Frage gestellt, keine Zustimmung zu Live-Zugriff, Migration oder Veröffentlichung abgeleitet. Ergebnis und tatsächliche Prüfgrenzen siehe STATUS und Agentenprotokoll.
 
+### Ergänzung zum Startauftrag: Migration 014 (2026-11-20)
+
+Nutzer im Wortlaut: „014 ist eingebaut“.
+
+Status: Migration 014 laut Nutzer eingespielt. Keine unabhängige Datenbankprüfung durch Codex; keine zusätzliche Freigabe für Push, Merge, echte Quellen oder das nächste Paket aus dieser Bestätigung abgeleitet. Nächster Schritt bleibt genehmigtes Hochladen mit anschließender Live-Abnahme durch Claude.
+
 ## Q-Codex-Zeit01 – Aufwandsschätzung 2026-11-20
 
 Nutzer im Wortlaut:
