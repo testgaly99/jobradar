@@ -10,8 +10,10 @@ import { erkenneFirmaTitel } from "@/lib/groq";
 import { istPortal } from "@/lib/stellen-import";
 import { darfAbrufen } from "@/lib/seiten-abruf";
 import { zielAusFirmenseite, type FirmenseitenZiel } from "@/lib/jobposting";
+import { anzeigeLesenAnstossen } from "@/lib/github-anstoss";
+import { after } from "next/server";
 
-type Ergebnis = { brauchtEingabe: true; grund?: "kein_jobposting" } | { fehler: string };
+type Ergebnis = { brauchtEingabe: true } | { fehler: string };
 type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; job?: JobZeile | null };
 
 // text: eingefügter Anzeigentext, nur wenn es keinen Text aus Stellenliste oder ATS gibt. Es wird nichts abgerufen, was GESPERRT ist.
@@ -122,7 +124,8 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   // Schritt 4: aus der Firmenseite, sonst nur Link, Firma und Titel.
   const ausSeite = !ziel && !!seite?.titel;
   if (!ziel) {
-    if (!firma && !titel) return seite?.abgerufen ? { brauchtEingabe: true, grund: "kein_jobposting" } : { brauchtEingabe: true };
+    // Seite erreicht, aber nichts erkennbar: trotzdem anlegen, der Browser-Lauf liest die Anzeige (2–5 Minuten).
+    if (!firma && !titel && !seite?.abgerufen) return { brauchtEingabe: true };
     ziel = { firma, titel, link, quelle: a.quelle, ...(ausSeite ? { ort: seite!.ort, text: seite!.text } : {}) };
   }
 
@@ -136,14 +139,15 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
     firma: ziel.firma ?? null, titel: ziel.titel ?? null, link: ziel.link, quelle: ziel.quelle,
     standort: ziel.ort || null, snapshot_text: ziel.text || text || null, ...NEU,
   };
-  // nachruesten: der Nachtlauf ergänzt Gliederung, Steckbrief und Zusammenfassung (nur mit Anzeigentext aus dem JobPosting,
-  // nicht beim Titel-Rückfall). Ohne Migration 012 fehlt die Spalte: dann ohne Markierung.
-  const nachSeite = ausSeite && !!seite!.text;
+  // nachruesten: der Browser-Lauf bei GitHub (sofort angestoßen, sonst nachts) liest die Anzeige, füllt leere Felder und ergänzt
+  // Gliederung, Steckbrief und Zusammenfassung. Nicht, wenn Text schon aus Stellenliste oder ATS kam. Ohne Migration 012: ohne Markierung.
+  const nachSeite = !!seite && !ziel.job && (ausSeite || !ziel.text);
   let { data, error } = await sb.from("applications").insert(nachSeite ? { ...zeile, nachruesten: true } : zeile).select("id").single();
   if (error && nachSeite && (error.code === "PGRST204" || error.message?.includes("nachruesten"))) {
     ({ data, error } = await sb.from("applications").insert(zeile).select("id").single());
   }
   if (error || !data) return { fehler: "Bewerbung konnte nicht angelegt werden." };
+  if (nachSeite) after(() => anzeigeLesenAnstossen());
   redirect(`/bewerbung/${data.id}`);
 }
 

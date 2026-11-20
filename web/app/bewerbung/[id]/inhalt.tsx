@@ -346,7 +346,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         </form>
       </details>
 
-      {nach.nachruesten && <p className="meldung hinweis">Gliederung und Zusammenfassung folgen nach dem nächsten Nachtlauf.</p>}
+      {nach.nachruesten && <p className="meldung hinweis">Die Anzeige wird gerade gelesen. Das dauert meist 2–5 Minuten, spätestens bis zum nächsten Morgen. Danach die Seite neu laden.</p>}
       {kiSnap && <Ueberblick ki={kiSnap} ohne="" />}
       <SteckbriefKarte eintraege={steckSnap} />
       <details className="karte block">

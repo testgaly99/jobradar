@@ -43,9 +43,8 @@ test("Schritt 1d: nur ohne Treffer, ohne ATS, nicht für Portale, mit Abrufgrenz
   assert.match(a, /!ziel && !a\.ats && !istPortal\(u\.hostname\) && darfAbrufen\(/);
   assert.match(a, /nachruesten: true/);
   assert.match(a, /PGRST204/);
-  assert.match(a, /grund: "kein_jobposting"/);
-  const k = readFileSync(new URL("../app/bewerbungen/knoepfe.tsx", import.meta.url), "utf8");
-  assert.ok(k.includes("Diese Seite enthält keine maschinenlesbare Anzeige. Bitte Firma und Titel eintragen oder den Anzeigentext einfügen."));
+  // Seite erreicht, aber nichts erkennbar: trotzdem anlegen (Browser-Lauf liest nach), nur ohne Abruf nachfragen
+  assert.match(a, /if \(!firma && !titel && !seite\?\.abgerufen\) return \{ brauchtEingabe: true \};/);
 });
 
 test("Nachgerüstete Snapshots im Format des Nachtlaufs werden gelesen", async () => {
@@ -69,5 +68,4 @@ test("Ohne JobPosting: Titel aus og:title als Rückfall, ohne Text und ohne Nach
   assert.equal((await zielAusFirmenseite(URL_, {}, { holen: async () => umgedreht })).titel, "Controller (m/w/d)");
   assert.equal((await zielAusFirmenseite(URL_, { titel: "Mein Titel" }, { holen: async () => seite })).titel, "Mein Titel");
   const a = readFileSync(new URL("../app/bewerbungen/actions.ts", import.meta.url), "utf8");
-  assert.match(a, /const nachSeite = ausSeite && !!seite!\.text;/);
 });

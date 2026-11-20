@@ -1,0 +1,33 @@
+# Liest Anzeigen neu angelegter Bewerbungen aus Firmen-Karriereseiten, auch wenn die Seite die Anzeige erst per JavaScript lädt.
+# Wird von der Website direkt nach dem Anlegen angestoßen (GITHUB_DISPATCH_TOKEN); per Knopf ebenfalls startbar.
+# Bewusst ohne Eingaben: Die Protokolle sind öffentlich, der Lauf liest die markierten Bewerbungen selbst aus der Datenbank
+# und gibt nur Zähler aus, nie Adressen, Firmen oder Titel.
+name: Anzeigen lesen
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: anzeige-lesen
+  cancel-in-progress: false
+
+jobs:
+  lesen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m playwright install --with-deps chromium
+      - run: python -m scraper.nachruesten
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}

@@ -23,7 +23,7 @@ export function LoeschForm({ action, frage, text = "Löschen" }: { action: () =>
   );
 }
 
-type Zustand = { brauchtEingabe: true; fuer: string; grund?: string } | { fehler: string } | null;
+type Zustand = { brauchtEingabe: true; fuer: string } | { fehler: string } | null;
 
 export function LinkFormular() {
   const [url, setUrl] = useState("");
@@ -40,7 +40,7 @@ export function LinkFormular() {
   const [zustand, aktion] = useActionState<Zustand, FormData>(
     async () => {
       const r = await bewerbungAusLink(url, firma, titel, text);
-      return r && "brauchtEingabe" in r ? { brauchtEingabe: true as const, fuer: url, grund: r.grund } : r;
+      return r && "brauchtEingabe" in r ? { brauchtEingabe: true as const, fuer: url } : r;
     },
     null,
   );
@@ -51,9 +51,7 @@ export function LinkFormular() {
       <label>Link zur Anzeige
         <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
       </label>
-      {brauchtEingabe && <p className="meldung info">{"grund" in zustand && zustand.grund === "kein_jobposting"
-        ? "Diese Seite enthält keine maschinenlesbare Anzeige. Bitte Firma und Titel eintragen oder den Anzeigentext einfügen."
-        : "Aus dem Link ist nichts erkennbar. Bitte Firma und Titel eintragen."}</p>}
+      {brauchtEingabe && <p className="meldung info">Aus dem Link ist nichts erkennbar. Bitte Firma und Titel eintragen.</p>}
       <p className="gedaempft">Mit Link wird übernommen, was sich daraus erkennen lässt; was du einträgst, geht vor. Ohne Link sind Firma und Titel Pflicht, außer du fügst den Anzeigentext ein.</p>
       <label>Firma
         <input value={firma} required={(!url.trim() && !text.trim()) || brauchtEingabe} onChange={(e) => setFirma(e.target.value)} />

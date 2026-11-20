@@ -1,2 +1,3 @@
 requests>=2.32
 pytest>=8.0
+playwright>=1.49  # nur für Karriereseiten, die die Anzeige per JavaScript laden (scraper/browser_seite.py)
