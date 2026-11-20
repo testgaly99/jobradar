@@ -59,7 +59,7 @@ def test_ohne_migration_014_kein_import(aufbau, monkeypatch):
     assert 'Migration 014' in (d / 'bericht.md').read_text(encoding='utf-8')
 
 
-def test_abgelaufene_datei_deaktiviert_nur_listenfirma(aufbau, monkeypatch):
+def test_abgelaufene_datei_wird_nicht_importiert_firma_bleibt_bis_monatslauf(aufbau, monkeypatch):
     f = dict(firma('A'), quellen=['dax'], status='aktiv')
     d, t = aufbau([f, dict(firma('B'), quellen=['bestand'], status='aktiv')],
                   {'fake': lambda *a, **kw: [stelle('1')]})
@@ -68,8 +68,9 @@ def test_abgelaufene_datei_deaktiviert_nur_listenfirma(aufbau, monkeypatch):
     (d / 'ranglisten/dax.json').write_text(json.dumps(a), encoding='utf-8')
     monkeypatch.setattr(db, 'importiere_ausgabe', lambda _: pytest.fail('Abgelaufener Import'))
     run.lauf('2026-11-20', d)
-    assert not t['companies']['A']['aktiv'] and t['companies']['B']['aktiv']
-    assert 'A:1' not in t['jobs'] and 'B:1' in t['jobs']
+    # Nutzer (Q258): Abschalten nur im monatlichen Ranglisten-Lauf, nicht im Nachtlauf
+    assert t['companies']['A']['aktiv'] and t['companies']['B']['aktiv']
+    assert 'A:1' in t['jobs'] and 'B:1' in t['jobs']
 
 
 def test_ablauf_bereinigt_ausgaben_mit_service_rpc(monkeypatch):

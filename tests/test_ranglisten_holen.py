@@ -45,3 +45,12 @@ def test_abgelaufene_quelle_haelt_firma_nicht_aktiv(tmp_path, monkeypatch):
     assert not (tmp_path / 'ranglisten/dax.json').exists()
     from scraper.companies import lade_unternehmen
     assert lade_unternehmen(tmp_path / 'companies.csv')[0]['quellen'] == []
+
+
+def test_epa_raenge_nie_in_oeffentlichen_dateien(tmp_path, monkeypatch):
+    # Design: EPA-Ränge nur für den Admin, bis die Lizenz geklärt ist; data/ranglisten/ liegt im öffentlichen Repo
+    k = kandidat('A', 'epa-patente'); k.update(rang=1, website='https://example.org')
+    monkeypatch.setattr(rh, 'QUELLEN', {'epa-patente': ('https://example.org/epa', lambda _: [k])})
+    rh.lauf('2026-11-20', tmp_path, lambda _: SimpleNamespace(content=b''))
+    a = json.loads((tmp_path / 'ranglisten/epa-patente.json').read_text())
+    assert [f['rang'] for f in a['firmen']] == [None] and a['firmen'][0]['unternehmen'] == 'A'

@@ -10,12 +10,20 @@ SPALTEN = ['name', 'careers_url', 'ats_typ', 'ats_id', 'groesse_klasse',
 def lade_unternehmen(pfad="data/companies.csv"):
     with open(pfad, encoding="utf-8-sig", newline="") as f:
         zeilen = list(csv.DictReader(f))
+    # Von Hand ergänzte Zeilen dürfen den Nachtlauf nie kippen: fehlende Spalten liefert csv als None.
+    kennungen = set()
     for z in zeilen:
-        z["kategorie"] = [k.strip() for k in z["kategorie"].split(";") if k.strip()]
-        z['quellen'] = [q.strip() for q in z.get('quellen', '').split(';') if q.strip()]
+        z["kategorie"] = [k.strip() for k in (z.get("kategorie") or "").split(";") if k.strip()]
+        z['quellen'] = [q.strip() for q in (z.get('quellen') or '').split(';') if q.strip()]
         for feld in ('website', 'wikidata_id', 'status_grund'):
-            z.setdefault(feld, '')
-        z.setdefault('status', 'aktiv' if z.get('aktiv') == 'ja' else 'offen')
+            z[feld] = z.get(feld) or ''
+        if not z.get('status'):
+            z['status'] = 'aktiv' if z.get('aktiv') == 'ja' else 'offen'
+        if z['wikidata_id'] in kennungen:  # kopierte Zeile: die Datenbank erlaubt jede Kennung nur einmal
+            print('Hinweis: doppelte Wikidata-Kennung in companies.csv, bei der späteren Zeile ignoriert.')
+            z['wikidata_id'] = ''
+        elif z['wikidata_id']:
+            kennungen.add(z['wikidata_id'])
     return zeilen
 
 

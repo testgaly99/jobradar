@@ -69,6 +69,11 @@ Die Liste steht in `data/companies.csv` (eine Tabelle als Textdatei). Bearbeite 
 | `hauptsitz` | Stadt |
 | `aktiv` | `ja` = wird abgerufen, `nein` = übersprungen |
 | `notiz` | Freitext |
+| `website` | Startseite der Firma (optional) |
+| `wikidata_id` | Wikidata-Kennung, z. B. `Q162222`. **Beim Kopieren einer Zeile leeren**: jede Kennung darf nur einmal vorkommen. |
+| `quellen` | Herkunft, getrennt durch `;`. Von Hand eingetragene Firmen: `bestand`. |
+| `status` | `aktiv`, wenn die Firma abgerufen werden soll |
+| `status_grund` | Freitext, meist leer |
 
 ## Datenbank einrichten (Migrationen 001–006)
 

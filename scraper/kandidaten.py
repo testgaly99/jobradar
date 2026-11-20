@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 
 from scraper.companies import SPALTEN
 
+OHNE_OEFFENTLICHEN_RANG = {'epa-patente'}
 LISTEN = {
     'scoreboard-world': ('EU R&D Scoreboard – Top 200 weltweit', 'Europäische Kommission', 'Innovation',
                         'https://iri.jrc.ec.europa.eu/scoreboard', 'CC BY 4.0'),
@@ -126,5 +127,7 @@ def ausgaben(kandidaten, heute):
                        'ausgabe': dict(id=f'{liste}-{heute}', jahr=jahr, veroeffentlicht_am=heute,
                                        geprueft_am=heute, quelle_url=quelle, lizenz=lizenz,
                                        gueltig_bis=ende.isoformat(), freigegeben=liste != 'epa-patente'),
-                       'firmen': [dict(unternehmen=n, rang=r) for n, r in firmen.items()]})
+                       # Ränge ohne Wiederverwendungserlaubnis nie in Dateien: data/ranglisten/ ist öffentlich (Design: EPA nur Admin)
+                       'firmen': [dict(unternehmen=n, rang=None if liste in OHNE_OEFFENTLICHEN_RANG else r)
+                                  for n, r in firmen.items()]})
     return result

@@ -47,3 +47,20 @@ def test_migration_014_nur_ergaenzend():
     assert 'if not exists' in sql and 'unique' in sql and 'check' in sql
     assert all(s in sql for s in ['kein_portal', 'portal_nicht_unterstuetzt', 'keine_stellen_de', 'offen'])
     assert 'drop table' not in sql
+
+
+def test_unvollstaendige_oder_kopierte_zeile_kippt_den_lauf_nicht(tmp_path, capsys):
+    p = tmp_path / 'firmen.csv'
+    zeilen = [
+        'name,careers_url,ats_typ,ats_id,groesse_klasse,mitarbeitende_ca,kategorie,hauptsitz,aktiv,notiz,website,wikidata_id,quellen,status,status_grund',
+        'A,,,,,,Tech,,ja,,https://a.example,Q1,bestand,aktiv,',
+        'B,,,,,,Tech,,ja,,https://b.example,Q1,bestand,aktiv,',  # Zeile kopiert, Kennung stehen gelassen
+        'C,,,,,,Tech,,ja,',                                       # von Hand, ohne neue Spalten
+        'D,,,,,,,,ja,,,,,,',                                      # leerer Status und leere Kategorie
+    ]
+    p.write_text('\n'.join(zeilen) + '\n', encoding='utf-8')
+    a, b, c, d = companies.lade_unternehmen(p)
+    assert a['wikidata_id'] == 'Q1' and b['wikidata_id'] == ''
+    assert c['quellen'] == [] and c['status'] == 'aktiv' and c['website'] == ''
+    assert d['status'] == 'aktiv' and d['kategorie'] == []
+    assert 'doppelte Wikidata-Kennung' in capsys.readouterr().out

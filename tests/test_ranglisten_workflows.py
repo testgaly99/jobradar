@@ -13,3 +13,10 @@ def test_workflows_nur_vorschlagszweige_und_einrichtung_manuell():
         assert 'git push origin main' not in text
     assert '0 3 1 * *' in (root / 'ranglisten.yml').read_text()
     assert 'schedule:' not in (root / 'einrichtung.yml').read_text()
+
+
+def test_einrichtung_sichert_fortschritt_vor_dem_jobabbruch():
+    text = (Path(__file__).parents[1] / '.github/workflows/einrichtung.yml').read_text(encoding='utf-8')
+    schritt = text[text.index('python -m scraper.einrichtung') - 200:text.index('python -m scraper.einrichtung')]
+    assert 'timeout-minutes: 300' in schritt          # Python-Schritt endet vor dem 350-min-Jobabbruch
+    assert 'if: always()' in text[text.index('python -m scraper.einrichtung'):]  # Vorschlag auch nach Abbruch

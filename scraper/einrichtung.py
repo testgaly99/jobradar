@@ -8,12 +8,15 @@ import time
 from urllib.parse import urljoin, urlsplit
 from urllib.robotparser import RobotFileParser
 
+import requests
+
 from scraper import http
 from scraper.ats import ADAPTER
 from scraper.ats_erkennung import erkenne_portal
 from scraper.companies import lade_unternehmen, wende_korrekturen_an
 from scraper.fehler import kurzfehler
 from scraper.filter import ist_relevant
+from scraper.nachruesten import ist_portal
 from scraper.ranglisten_holen import lies_json, schreibe_json, schreibe_firmen
 from scraper.run import _schreibe_text
 
@@ -66,7 +69,12 @@ def _sitemap_portal(url, holen, stellenpfad='/job/'):
         return None
     t = urlsplit(url)
     basis = f'https://{t.netloc}'
-    text = holen(basis + '/robots.txt').text
+    try:
+        text = holen(basis + '/robots.txt').text
+    except requests.HTTPError as exc:
+        if 400 <= getattr(exc.response, 'status_code', 0) < 500:
+            return None  # ohne robots.txt bietet die Seite keine Sitemap an
+        raise
     robots = RobotFileParser(); robots.parse(text.splitlines())
     if not robots.can_fetch(http.USER_AGENT, basis + stellenpfad):
         return None
@@ -83,6 +91,8 @@ def richte_ein(firma, holen=None, adapter=None):
     url = firma.get('careers_url') or firma.get('website')
     if not url:
         return result
+    if ist_portal(urlsplit(url).hostname or ''):  # LinkedIn, StepStone, Indeed …: nie abrufen
+        return dict(result, status_grund='Website ist ein Jobportal (nicht abgerufen)')
     kandidaten, unbekannt, verboten = {}, [], False
     try:
         direkt = erkenne_portal(url)
@@ -94,7 +104,7 @@ def richte_ein(firma, holen=None, adapter=None):
         else:
             basis = f'https://{urlsplit(url).netloc}'
             ziele = list(dict.fromkeys([url] + [basis + p for p in PFADE]))
-            besucht = set()
+            besucht, sitemap_hosts = set(), set()  # robots.txt höchstens einmal je Host, nicht je Seite oder Stellenlink
             while ziele:
                 ziel = ziele.pop(0)
                 if ziel in besucht:
@@ -120,7 +130,8 @@ def richte_ein(firma, holen=None, adapter=None):
                           and link not in besucht and link not in ziele and len(besucht) + len(ziele) < 12):
                         ziele.append(link)
                     elif (urlsplit(link).hostname == urlsplit(seiten_url).hostname
-                          and '/job/' in urlsplit(link).path):
+                          and '/job/' in urlsplit(link).path and urlsplit(seiten_url).hostname not in sitemap_hosts):
+                        sitemap_hosts.add(urlsplit(seiten_url).hostname)
                         k = _sitemap_portal(seiten_url, holen)
                         if k:
                             kandidaten[(k['ats_typ'], k['ats_id'])] = k
@@ -189,7 +200,7 @@ def portal_statistik(firmen, raenge):
     return result
 
 
-def lauf(datenordner='data', budget_s=19800):
+def lauf(datenordner='data', budget_s=17100):  # 285 min, vor dem 300-min-Limit des Workflow-Schritts
     start, d = time.monotonic(), Path(datenordner)
     firmen = lade_unternehmen(d / 'companies.csv')
     stand = lies_json(d / 'einrichtung_stand.json', {})

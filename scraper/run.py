@@ -217,25 +217,17 @@ def lauf(heute, datenordner="data"):
     start = time.monotonic()
     datenordner = Path(datenordner)
     firmen = lade_unternehmen(datenordner / "companies.csv")
-    hinweise, ausgaben, mitgliedschaften, defekt = [], [], {}, set()
+    hinweise, ausgaben = [], []
+    # Abgelaufene Ausgaben nur nicht importieren; Firmen schaltet allein der monatliche Ranglisten-Lauf ab (Nutzer, Q258).
     for pfad in sorted((datenordner / 'ranglisten').glob('*.json')):
         try:
             a = json.loads(pfad.read_text(encoding='utf-8'))
             if a['ausgabe']['gueltig_bis'] <= heute:
                 hinweise.append(f'Rangliste {pfad.name} abgelaufen; nicht importiert.')
                 continue
-            mitgliedschaften[a['liste']['id']] = {z['unternehmen'] for z in a['firmen']}
             ausgaben.append((pfad, a))
         except Exception as e:
-            defekt.add(pfad.stem)
             hinweise.append(f'Ranglisten-Import {pfad.name}: {kurzfehler(e)}')
-    if (datenordner / 'ranglisten').exists():
-        from scraper.kandidaten import LISTEN
-        for f in firmen:
-            quellen = set(f.get('quellen', []))
-            if (quellen and quellen <= set(LISTEN) and not quellen & defekt
-                    and not any(f['name'] in mitgliedschaften.get(q, set()) for q in quellen)):
-                f['aktiv'] = 'nein'
     db._spalten = db._deutsch = None  # Spalten-Pruefungen (Migration 005, 013) einmal pro Lauf neu
     db._firmen_quellen = None
     db.sync_companies(firmen)  # Stellen verweisen per FK auf companies

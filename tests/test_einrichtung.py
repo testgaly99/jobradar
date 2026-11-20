@@ -107,3 +107,25 @@ def test_firmeneigener_karrierehost_mit_sitemap():
         return SimpleNamespace(text='<a href="/job/Germany-Berlin/Engineer">Engineer</a>')
     r = e.richte_ein(f, holen=holen, adapter={'sitemap': lambda _: [dict(titel='Engineer', ort='Berlin', remote=False)]})
     assert r['status'] == 'aktiv' and r['ats_typ'] == 'sitemap'
+
+
+def test_robots_einmal_je_seite_und_404_ist_kein_fehlschlag():
+    import requests
+    calls = []
+    f = dict(firma(), website='https://karriere.beispiel.example')
+    def holen(url):
+        calls.append(url)
+        if url.endswith('/robots.txt'):
+            raise requests.HTTPError('404', response=SimpleNamespace(status_code=404))
+        return SimpleNamespace(text=''.join(f'<a href="/job/Germany-Berlin/Stelle-{i}">x</a>' for i in range(20)))
+    r = e.richte_ein(f, holen=holen, adapter={})
+    assert not r['status_grund'].startswith('Probe fehlgeschlagen')
+    assert sum(u.endswith('/robots.txt') for u in calls) == 1
+
+
+@pytest.mark.parametrize('website', ['https://www.linkedin.com/company/beispiel', 'https://de.indeed.com/cmp/beispiel'])
+def test_jobportal_als_website_wird_nie_abgerufen(website):
+    def holen(url):
+        raise AssertionError('Jobportal abgerufen: ' + url)
+    r = e.richte_ein(dict(firma(), website=website), holen=holen, adapter={})
+    assert r['status'] == 'offen' and 'Jobportal' in r['status_grund']
