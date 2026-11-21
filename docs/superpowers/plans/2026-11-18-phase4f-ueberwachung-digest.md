@@ -16,6 +16,10 @@ Tasks 1, 2, 2b, 3 und 4 lokal implementiert und getrennt geprüft; Task 5 Überg
 
 Begründete Präzisierungen: Private Diagnosen in zusätzlicher Service-Tabelle statt privater Namen in laeufe/Dateien; aktueller Workflow-/Schreibstatus verhindert alte Meldungen. Erfolgreicher Versandstand plus gelieferte IDs je Admin (Stellen haben Tagesdatum), weil der vorige Scraperlauf fehlgeschlagenen Versand sonst dauerhaft überspringt; Restlink zur vollständigen Liste statt nur „heute“. Telegram-Erfolg mit fehlender DB-Quittung kann wiederholt werden. Reparatur-/Recherchewerkzeuge und Akteure eingeschränkt, generierter Code nur offline in Docker ohne Host-Secrets/Git; Nachher-Livezahl bleibt vor menschlicher Übernahme zu prüfen. Keine Behauptung einer feindlichen-Code-Sandbox durch bloße Umgebungsfilter/Python-Audits. Ein persönliches Issue-Token in Actions ermöglicht automatische Folgeworkflows; Standardtoken benötigt menschliches Neu-Setzen des Labels. CLI-Berechtigungen gegen offizielle aktuelle Dokumentation geprüft; keine neuen Python-/NPM-Pakete.
 
+### Ergänzung 2026-11-21: Migration bestätigt
+
+Nutzer: „017 ist drin“. Migration 017 damit als eingespielt vermerkt, ohne eigene Live-Prüfung durch Codex. Die obige Aussage über nicht ausgeführte Migrationen beschreibt Codex und den damaligen Bauabschluss. Offen bleiben isolierte SQL-/Rechteabnahme, Bot/Secrets sowie echte Nachrichten-/Reparaturprüfung; der gesamte Haltepunkt ist noch nicht abgeschlossen.
+
 ## Global Constraints
 
 - **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** statt `db.admin_id()` gibt es `db.admin_ids() -> list[dict]` (`user_id`, `telegram_chat_id`); der Digest läuft je Admin-Konto mit dessen Wunschfirmen und Stichwörtern und geht an dessen `telegram_chat_id` (`sende(text, chat=...)`); fehlt sie, wird für dieses Konto nichts gesendet (Log nur Zahlen). Systemmeldungen ohne Bewerbungsbezug (Gesundheitscheck, Lauf fehlgeschlagen) gehen an `TELEGRAM_CHAT_ID`. Test: zwei Admins mit je eigenem Chat bekommen je nur ihre eigenen Zeilen.

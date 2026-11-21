@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-21 | Migration 017 als vom Nutzer eingespielt dokumentiert; SQL-/Rechte- und Bot-/Reparaturabnahme bleiben offen. | „017 ist drin“ ist eine Vollzugsmeldung, kein eigener Datenbanknachweis oder Abschluss der Integrationsprüfung. |
 | 2026-11-21 | Direkter Auftrag startet 4f nach Claudes verifizierten 4d/4e; keine erneute lokale Startfreigabe, Live-Halt bleibt. | Nutzer bestätigt ausdrücklich den Prüfstand und verlangt das nächste Paket. |
 | 2026-11-21 | Private Diagnose nur in Service-Tabelle, öffentliche Probleme im Laufbericht; je Admin Sichtbarkeitsprüfung und eigener Chat. | Ein separater Gesundheitsprozess benötigt Diagnosen, ohne private Namen in Dateien, Issues oder fremden Nachrichten zu veröffentlichen. |
 | 2026-11-21 | Digests verwenden persistenten Versandstand und gelieferte IDs je Admin statt nur des vorherigen Scraperdatums. | Fehlgeschlagener/fehlender Versand darf Stellen nicht verlieren; mehrere Läufe desselben Tages dürfen neue Stellen nicht überspringen. Bestätigung nach Telegram, Wiederholung bei fehlender DB-Quittung möglich. |

@@ -2,6 +2,12 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Q-Codex-017 – Migration bestätigt (2026-11-21)
+
+Nutzer im Wortlaut: „017 ist drin“.
+
+Status: Migration 017 laut Nutzer eingespielt. Keine eigene Datenbankprüfung durch Codex; keine bestätigte SQL-/Rechteabnahme und keine Bestätigung eingerichteter Bots/Secrets oder erfolgreicher echter Nachrichten-/Reparaturläufe. Diese offenen Teile des 4f-Haltepunkts bleiben bestehen. Kein nächstes Paket oder Upload aus der Vollzugsmeldung abgeleitet.
+
 ## Folgeauftrag Phase 4e (2026-11-20)
 
 Nutzer im Wortlaut: „Führe im Anschluss das nächste Arbeitspaket aus“. Anschließend: „continue“.

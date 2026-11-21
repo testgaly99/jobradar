@@ -16,6 +16,13 @@ Vorlage für einen Eintrag:
 
 Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT: ok` bzw. die gefundenen Punkte.
 
+## 2026-11-21 09:11 (Europe/Berlin) – Codex – Migration 017 bestätigt
+- Auftrag/Nutzer im Wortlaut: „017 ist drin“. Vollzugsmeldung dokumentiert, keine unabhängige Live-Prüfung behauptet.
+- Dateien: STATUS, Entscheidungen, Fragenprotokoll, Warteschlange, 4f-Plan und dieses Protokoll. Migrationseinspielen erledigt laut Nutzer; isolierte SQL-/Rechteabnahme, Bot/Secrets und echte Nachrichten-/Reparaturprüfung weiter offen. Keine erneute Live-Migration angewiesen.
+- Commit: lokaler Dokumentationscommit „4f: Eingespielte Migration 017 vermerken“, Schlusszeile Agent: Codex. Kein Push/Merge.
+- Prüfung: ausschließlich Dokumentation, gezielter Diff und git diff --check; keine erneuten Anwendungstests. Letzter Codeprüfstand: Python 1078, Web 390, Typen, isolierter Build und bestehende Browserprüfung grün.
+- Grenzen/Abweichungen: keine Datenbank, Umgebungsdateien oder Geheimnisse gelesen, keine externen Nachrichten oder Folgeaufgabe begonnen; keine Abweichung. 4f-Haltepunkt bleibt für offene Integrationsschritte bestehen.
+
 ## 2026-11-21 09:08 (Europe/Berlin) – Codex – Phase 4f Überwachung und Digest
 - Auftrag: „Fahre fort mit der nächsten Aufgabe, Claude hat gerade 4d und 4e verifiziert“. Nr. 8 auf sauberem Ausgangsstand d085595 gebaut. Claudes dokumentierte SQL-/Live-Abnahme von 015/016 berücksichtigt. Direkter Bauauftrag ersetzt erneute Startfrage, erlaubt keine Migration/Veröffentlichung oder echte Nachrichten durch Codex.
 - Ergebnis: Gesundheitscheck mit exakt sieben Kalendertagen, allen fünf Kriterien und strenger >50%-Grenze; neue Firmen ohne Null-/Einbruchsalarm. Öffentliche Dateifirmen bekommen höchstens drei neue Reparatur-Issues je UTC-Tag einschließlich Wiederholungen; bestehende Issues bekommen Kommentare, Erholung schließt sie nicht. Alle öffentlichen Probleme vor Issue-Limit in laeufe und Telegram. DB-Firmendiagnosen in kurzer Service-only-Tabelle; nur dem jeweiligen Admin sichtbare Firmen gehen in dessen persönlichen Chat, fremde private Firmen nie. Workflow-ID/Versuch und erfolgreicher Diagnoseschreibstatus verhindern veraltete Meldungen. Fehlertexte auf technische Typen/Status beschränkt.
