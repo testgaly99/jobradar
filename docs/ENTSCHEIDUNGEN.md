@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-21 | Reparatur-PR misst „Stellenzahl nachher“ nicht automatisch; Claude misst sie lokal vor jedem Merge (Q264, ergänzt CLAUDE.md 4.3). | Vom Modell geschriebener Code läuft nie mit Netz und Zugangsdaten; eine präparierte Seite könnte ihn sonst missbrauchen. |
 | 2026-11-21 | Migration 017 als vom Nutzer eingespielt dokumentiert; SQL-/Rechte- und Bot-/Reparaturabnahme bleiben offen. | „017 ist drin“ ist eine Vollzugsmeldung, kein eigener Datenbanknachweis oder Abschluss der Integrationsprüfung. |
 | 2026-11-21 | Direkter Auftrag startet 4f nach Claudes verifizierten 4d/4e; keine erneute lokale Startfreigabe, Live-Halt bleibt. | Nutzer bestätigt ausdrücklich den Prüfstand und verlangt das nächste Paket. |
 | 2026-11-21 | Private Diagnose nur in Service-Tabelle, öffentliche Probleme im Laufbericht; je Admin Sichtbarkeitsprüfung und eigener Chat. | Ein separater Gesundheitsprozess benötigt Diagnosen, ohne private Namen in Dateien, Issues oder fremden Nachrichten zu veröffentlichen. |

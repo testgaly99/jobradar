@@ -391,6 +391,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q261 | Prüfung 4d/4e: Wer behebt den Befund „Nachtlauf bricht bei Namensgleichheit von Datei- und Privatfirma komplett ab“? | Nutzer: „Claude behebt sofort (Empfohlen)“ | Überspringen statt abbrechen, Hinweis nur als Anzahl, Test auf Laufebene. | entschieden |
 | Q262 | Prüfung 4d/4e: Wie werden Migration 015/016 vor dem Einspielen in einer echten Datenbank geprüft? | Nutzer: „Lokale Wegwerf-Datenbank (Empfohlen)“ | Lokale Wegwerf-Datenbank im Scratchpad (pgserver, nicht im Projekt), Migrationen 001–016 zweimal plus Codex' SQL-Proben. | entschieden |
 | Q263 | 4d/4e (geprüft, 015/016 live 31/31) und Statusnachträge auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Nur `entwurf-ui`; Merge in main erst nach Klicktest. | entschieden |
+| Q264 | 4f: Reparatur-PR zeigt die Stellenzahl „nachher“ nicht automatisch (Modellcode läuft aus Sicherheitsgründen nie mit Netz). So akzeptieren? | Nutzer: „So akzeptieren (Empfohlen)“ | Claude misst „nachher“ lokal vor jedem Merge eines Reparatur-PR. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -541,6 +542,7 @@ Fragetexte Q260 (Claude, 2026-11-20, Auswahl): Hochladen und in main (Empfohlen)
 Fragetexte Q261 (Claude, 2026-11-20, Auswahl): Claude behebt sofort (Empfohlen) / Codex behebt / Später.
 Fragetexte Q262 (Claude, 2026-11-20, Auswahl): Lokale Wegwerf-Datenbank (Empfohlen) / Direkt live mit Wegwerf-Konten / Später.
 Fragetexte Q263 (Claude, 2026-11-21, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q264 (Claude, 2026-11-21, Auswahl): So akzeptieren, Claude misst vor dem Merge (Empfohlen) / Automatisch messen lassen (Modellcode mit Netz) / Später entscheiden.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
