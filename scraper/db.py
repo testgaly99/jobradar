@@ -1,6 +1,7 @@
 """Supabase per PostgREST (Service-Key). Jeder HTTP-Aufruf geht durch _req, damit Tests ihn ersetzen koennen."""
 import hashlib
 import os
+from datetime import date, timedelta
 from pathlib import Path
 
 import requests
@@ -448,6 +449,105 @@ def setze_nachgeruestet(app_id, patch):
 
 def speichere_lauf(bericht):
     _req("POST", "laeufe", json={"datum": bericht["stand"], "bericht": bericht})
+
+
+def letzte_laeufe(n=7):
+    if type(n) is not int or not 1 <= n <= 100:
+        raise ValueError('Ungültige Laufanzahl')
+    rows = _objektliste(_req('GET', 'laeufe', params={'select':'datum,bericht', 'order':'datum.desc', 'limit':n}), 'Laufantwort')
+    result=[]
+    for r in rows:
+        if not isinstance(r.get('bericht'),dict):
+            raise ValueError('Ungültiger Laufbericht')
+        result.append({**r['bericht'],'stand':r['datum']})
+    return result
+
+
+def ergaenze_lauf(datum, felder):
+    date.fromisoformat(datum)
+    if not isinstance(felder,dict) or 'stand' in felder or 'firmen' in felder:
+        raise ValueError('Ungültige Ergänzung')
+    rows = _objektliste(_req('GET','laeufe',params={'select':'datum,bericht','datum':'eq.'+datum,'limit':1}), 'Laufantwort')
+    if not rows or not isinstance(rows[0].get('bericht'),dict):
+        raise ValueError('Lauf zum Ergänzen fehlt')
+    _req('PATCH','laeufe',params={'datum':'eq.'+datum},json={'bericht':{**rows[0]['bericht'],**felder}})
+
+
+def _alle_zeilen(tabelle, params):
+    result=[]
+    while True:
+        teil=_objektliste(_req('GET',tabelle,params={**params,'offset':len(result),'limit':SEITE}), 'Datenantwort')
+        result.extend(teil)
+        if len(teil)<SEITE:
+            return result
+
+
+def admin_ids():
+    return _alle_zeilen('admins',{'select':'user_id,telegram_chat_id','order':'user_id'})
+
+
+def digest_fenster(owner, initial):
+    date.fromisoformat(initial)
+    result=_req('POST','rpc/digest_fenster',json={'p_owner':owner,'p_initial':initial})
+    if not isinstance(result,dict) or not isinstance(result.get('gesendet_ids'),list) or not all(isinstance(i,str) for i in result['gesendet_ids']):
+        raise ValueError('Ungültiges Digest-Fenster')
+    date.fromisoformat(result['ab'])
+    return result
+
+
+def digest_erfolg(owner, ids, ab):
+    date.fromisoformat(ab)
+    if not isinstance(ids,list) or not all(isinstance(i,str) and i for i in ids):
+        raise ValueError('Ungültige Digest-Zuordnung')
+    if _req('POST','rpc/digest_erfolg',json={'p_owner':owner,'p_ids':ids,'p_ab':ab}) is not True:
+        raise ValueError('Digest-Versand wurde nicht gespeichert')
+
+
+def neue_stellen_seit(datum):
+    date.fromisoformat(datum)
+    return _alle_zeilen('jobs',{'select':'id,unternehmen,titel','status':'eq.offen','sichtbar':'eq.true',
+                               'erstmals_gesehen':'gt.'+datum,'order':'id'})
+
+
+def wunsch_und_stichwoerter(owner):
+    wunsch=_alle_zeilen('wunschfirmen',{'select':'unternehmen','owner_id':'eq.'+owner,'order':'unternehmen'})
+    woerter=_alle_zeilen('abgleich_stichwoerter',{'select':'begriff','owner_id':'eq.'+owner,'order':'id'})
+    return {z['unternehmen'] for z in wunsch},[z['begriff'] for z in woerter]
+
+
+def sichtbare_firmen(owner):
+    firmen=_alle_zeilen('companies',{'select':'name','fuer_alle':'eq.true','aktiv':'eq.true','order':'name'})
+    eigene=_alle_zeilen('firmen_sichtbar',{'select':'unternehmen','owner_id':'eq.'+owner,'order':'unternehmen'})
+    return {z['name'] for z in firmen}|{z['unternehmen'] for z in eigene}
+
+
+def speichere_firmen_gesundheit(datum, rows):
+    date.fromisoformat(datum)
+    berichte=[]
+    for r in rows:
+        if not isinstance(r,dict) or not isinstance(r.get('name'),str) or not r['name'].strip():
+            raise ValueError('Ungültiger Firmenbericht')
+        z={'name':r['name'], 'fehler':str(r.get('fehler') or '')[:1000]}
+        for k in ('gefunden','gefiltert','neu','geschlossen'):
+            wert=r.get(k,0)
+            if type(wert) is not int or wert<0:
+                raise ValueError('Ungültige Firmenzahl')
+            z[k]=wert
+        z['uebersprungen']={k:v for k,v in (r.get('uebersprungen') or {}).items()
+                           if k in {'ohne Titel','ohne URL','ungültige ID','doppelte ID','kein Objekt','ungültige Markierung','unbekannte ID'}
+                           and type(v) is int and v>=0}
+        berichte.append(z)
+    _req('POST','rpc/speichere_firmen_gesundheit',json={'p_datum':datum,'p_berichte':berichte})
+
+
+def lade_firmen_gesundheit(datum=None):
+    params={'select':'datum,bericht','order':'datum.desc,unternehmen'}
+    if datum is not None:
+        date.fromisoformat(datum)
+        params['datum']='eq.'+datum
+    else:
+        params['datum']='gte.'+(date.today()-timedelta(days=7)).isoformat()
+    return _alle_zeilen('firmen_gesundheit',params)
 
 
 def snapshot_nachruesten():

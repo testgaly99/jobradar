@@ -86,7 +86,7 @@ test("Browserfixture beantwortet leere 4d-Kategorien und Stöberlinks ohne Wiede
   const r = spawnSync(process.execPath, ["-e", `
     const a = require('node:assert/strict'); require(process.argv[1]);
     (async () => {
-      for (const p of ['/rest/v1/rpc/ranking_kategorien', '/rest/v1/stoebern_links', '/rest/v1/firmen_sichtbar']) {
+      for (const p of ['/rest/v1/rpc/ranking_kategorien', '/rest/v1/stoebern_links', '/rest/v1/firmen_sichtbar', '/rest/v1/wunschfirmen', '/rest/v1/abgleich_stichwoerter']) {
         const r = await fetch('https://offline.example.invalid' + p, {method:'POST', body:'{}'});
         a.equal(r.status, 200); a.deepEqual(await r.json(), []);
       }

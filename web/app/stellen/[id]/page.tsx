@@ -12,7 +12,8 @@ import { leseAbschnitte, zaehleTreffer } from "@/lib/anzeige";
 import { leseKi } from "@/lib/zusammenfassung";
 import { SteckbriefKarte, Ueberblick } from "../../anzeige-bloecke";
 import { sprachenZeigen, sprachzeilen } from "@/lib/sprachniveau";
-import { merken, beworben, entmerken } from "../actions";
+import { merken, beworben, entmerken, wunschfirmaUmschalten } from "../actions";
+import FirmendatenForm from '../firmendaten-form';
 import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
 import Ranglisten from "../../ranglisten";
@@ -36,6 +37,8 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   // Alles Folgende toleriert fehlende Migration 005: Fehler ergibt leere Daten statt Absturz.
   // Anzeigentext, wichtige Punkte, Merk-Status und "Über <Firma>" nur für Angemeldete.
   const firma = j.unternehmen ?? "";
+  const firmaMeta=nutzer?await sb.from('companies').select('name,herkunft').eq('name',firma).maybeSingle():{data:null,error:null};
+  const wunsch=nutzer?await sb.from('wunschfirmen').select('unternehmen').eq('owner_id',nutzer.id).eq('unternehmen',firma).maybeSingle():{data:null,error:null};
   const ranglisten = await ladeRankingZuordnungen(sb, !!nutzer, [firma]);
   const leer = { data: null, error: null };
   const [tx, ab, sbr, wp, app, lf, schonBeworben, kr, se] = await Promise.all([
@@ -84,6 +87,12 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       {nutzer && firma && (
         <section className="karte block" aria-labelledby="firma-titel">
           <h2 id="firma-titel">Über {firma}</h2>
+          <form action={wunschfirmaUmschalten}>
+            <input type="hidden" name="firma" value={firma}/><input type="hidden" name="job_id" value={j.id}/>
+            <input type="hidden" name="wert" value={wunsch.data?'aus':'an'}/>
+            <SendeKnopf text={wunsch.data?'★ Wunscharbeitgeber':'☆ Wunscharbeitgeber'} klasse="knopf knopf-rand" gedrueckt={!!wunsch.data}/>
+          </form>
+          {nutzer.admin&&firmaMeta.data?.herkunft==='datei'&&<FirmendatenForm firma={firma}/>}
           {schonBeworben > 0 && (
             <p className="meldung hinweis">Du hast dich bei {firma} schon {schonBeworben}× beworben. <Link href={bewerbungenLink(firma)}>Bewerbungen ansehen</Link></p>
           )}

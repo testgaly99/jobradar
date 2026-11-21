@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: taeglich
@@ -32,10 +33,31 @@ jobs:
       - run: python -m playwright install --with-deps chromium
       # Exit 1 = alle Firmen fehlgeschlagen: Job schlägt fehl, GitHub schickt eine Mail.
       - run: python -m scraper.run
+        id: scraper
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      # Ein früher fehlgeschlagener Test darf keine alten Laufberichte melden.
+      # Ein begrenztes PAT kann Issues-Ereignisse auslösen; github.token allein nicht.
+      - name: Gesundheit prüfen
+        if: always() && !cancelled() && steps.scraper.outcome != 'skipped' && steps.scraper.outcome != ''
+        run: python -m scraper.gesundheit
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_ISSUE_TOKEN || github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      - name: Tägliche Zusammenfassungen
+        if: always() && !cancelled() && steps.scraper.outcome != 'skipped' && steps.scraper.outcome != ''
+        run: python -m scraper.digest
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          SEITE_URL: ${{ secrets.SEITE_URL }}
       - name: Änderungen committen
         run: |
           git config user.name "github-actions[bot]"

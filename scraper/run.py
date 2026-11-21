@@ -256,8 +256,12 @@ def lauf(heute, datenordner="data"):
     aktive = [f for f in firmen if f['aktiv'] == 'ja' and f.get('status', 'aktiv') == 'aktiv']
     _logos(aktive)
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in aktive], 'ranglisten_hinweise': hinweise}
+    if os.environ.get('GITHUB_RUN_ID'):
+        bericht['workflow_lauf']={'id':os.environ['GITHUB_RUN_ID'],'versuch':os.environ.get('GITHUB_RUN_ATTEMPT','1')}
     oeffentliche_firmen=list(bericht['firmen'])
     bericht['private_firmen'] = {'abgerufen': 0, 'fehler': 0}
+    diagnosen_db = []
+    bericht['gesundheit_db_aktuell'] = False
     bereits_abgerufen = {(f.get('ats_typ'), f.get('ats_id')) for f in aktive if f.get('ats_typ') and f.get('ats_id')}
     # Adapter können URLs ausgeben: DB-Firmen auch vor öffentlichen Workflow-Logs schützen.
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
@@ -273,11 +277,17 @@ def lauf(heute, datenordner="data"):
                 if f.get('ats_typ') and f.get('ats_id'):
                     bereits_abgerufen.add(portal)
                 zeile = _firma(f,heute)
+                diagnosen_db.append(zeile)
                 if privat:
                     bericht['private_firmen']['abgerufen'] += 1
                     bericht['private_firmen']['fehler'] += bool(zeile['fehler'])
                 else:
                     bericht['firmen'].append(zeile)
+        try:
+            db.speichere_firmen_gesundheit(heute, diagnosen_db)
+            bericht['gesundheit_db_aktuell'] = True
+        except Exception:
+            print('Zusätzliche Gesundheitsdiagnosen nicht gespeichert.')
     db.snapshot_nachruesten()  # nach allen Firmen
     bericht["deutsch"] = _deutsch_nachruesten()  # vor den KI-Schritten (Plan Sprachniveau, Task 3)
     bericht["ki"] = _ki(heute)

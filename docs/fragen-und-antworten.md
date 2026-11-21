@@ -8,6 +8,12 @@ Nutzer im Wortlaut: „Führe im Anschluss das nächste Arbeitspaket aus“. Ans
 
 Ableitung: Nr. 7 Phase 4e lokal bauen, auf den bereits vorhandenen Dateien von 4d. Offene Abnahmen/Migration015 bleiben offen; keine Freigabe für Live-Daten, Migrationen oder Veröffentlichung abgeleitet. Genauigkeitspriorität des vorherigen Nutzerauftrags bleibt bestehen. Helfer wurden durch Nutzungslimit unterbrochen und nach ausdrücklichem Fortsetzungsauftrag wieder aufgenommen; keine vorherigen Teiländerungen übergangen.
 
+## Folgeauftrag Phase 4f (2026-11-21)
+
+Nutzer im Wortlaut: „Fahre fort mit der nächsten Aufgabe, Claude hat gerade 4d und 4e verifiziert“.
+
+Ableitung: Nr. 8 Phase 4f lokal bauen. Neue Git-Vermerke bestätigen Claudes SQL-/Mehrkonten-Prüfungen und eingespielte 015/016; keine eigene Live-Prüfung durch Codex behauptet. Keine Freigabe für Upload, Nachrichten, Issues oder Migration017 aus der lokalen Startanweisung abgeleitet. Bisherige Ranglisten-/Datenschutzpriorität bleibt. Technische Konflikte des Plans (Digest seit letztem Versand, private Diagnose außerhalb öffentlicher Berichte, Isolation generierten Reparaturcodes) mit bestehenden Anforderungen abgeglichen und in Entscheidungen/Plan dokumentiert, keine neue Produktpräferenz erfunden.
+
 ## Startauftrag 2026-11-20 (Codex)
 
 ### Folgeauftrag Phase 4d (2026-11-20)

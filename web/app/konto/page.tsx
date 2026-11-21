@@ -11,7 +11,8 @@ import { selbstLoeschenErlaubt, nutzerZeilen } from "@/lib/nutzerliste";
 import { STATUS, STATUS_LABEL } from "@/lib/bewerbung";
 import { FELDER, FELD_TITEL, waehleFelder } from "@/lib/steckbrief";
 import { STUFEN, sprachenZeigen } from "@/lib/sprachniveau";
-import { begriffHinzufuegen, spracheSpeichern, felderSpeichern, begriffEntfernen, kontoLoeschen, whitelistSetzen, zusatzfirmaHinzufuegen, zusatzfirmaEntfernen } from "./actions";
+import { begriffHinzufuegen, spracheSpeichern, felderSpeichern, begriffEntfernen, kontoLoeschen, whitelistSetzen, zusatzfirmaHinzufuegen, zusatzfirmaEntfernen, stichwortHinzufuegen, stichwortEntfernen } from "./actions";
+import { wunschfirmaUmschalten } from '../stellen/actions';
 import { ZUSATZFIRMA_HINWEIS } from '@/lib/zusatzfirma';
 
 export default async function Seite({ searchParams }: { searchParams: Promise<{ fehler?: string;hinweis?:string }> }) {
@@ -23,6 +24,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
   const n = await aktuellerNutzer();
   const verboten = selbstLoeschenErlaubt({ istAdmin: !!n?.admin, adminEnv: process.env.ADMIN_EMAIL });
   const sb = await createClient();
+  const wunsch=n?await sb.from('wunschfirmen').select('unternehmen').eq('owner_id',n.id).order('unternehmen'):{data:[],error:null};
+  const stichwoerter=n?await sb.from('abgleich_stichwoerter').select('id,begriff').eq('owner_id',n.id).order('begriff'):{data:[],error:null};
   const eigene= n ? await sb.from('firmen_sichtbar').select('unternehmen,companies(ats_typ)').eq('owner_id',n.id).order('unternehmen') : {data:[],error:null};
   const { data: u } = await sb.auth.getUser();
   const z = u.user ? nutzerZeilen([u.user])[0] : null;
@@ -67,6 +70,16 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
       <h1>Konto</h1>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
       {hinweis&&<p className="meldung" role="status">{hinweis}</p>}
+      {n&&<section className="abschnitt"><h2>Wunscharbeitgeber</h2>
+        {wunsch.error?<p>Wunscharbeitgeber sind nach Migration 017 verfügbar.</p>:<ul>{(wunsch.data??[]).map(f=><li key={f.unternehmen}>{f.unternehmen}<form action={wunschfirmaUmschalten}><input type="hidden" name="firma" value={f.unternehmen}/><input type="hidden" name="wert" value="aus"/><button className="knopf knopf-leise">Entfernen</button></form></li>)}</ul>}
+        <p className="gedaempft klein">Den Stern setzt du auf der Stellenseite im Abschnitt über die Firma.</p>
+      </section>}
+      {n&&<section className="abschnitt"><h2>Automatisch abgleichen bei</h2>
+        <p>Titel-Stichwörter für den täglichen Digest. Der spätere CV-Abgleich verwendet dieselbe Liste.</p>
+        {stichwoerter.error?<p>Stichwörter sind nach Migration 017 verfügbar.</p>:<ul>{(stichwoerter.data??[]).map(w=><li key={w.id}>{w.begriff}<form action={stichwortEntfernen}><input type="hidden" name="id" value={w.id}/><button className="knopf knopf-leise">Entfernen</button></form></li>)}</ul>}
+        <form action={stichwortHinzufuegen} className="formular"><label>Titel-Stichwort<input name="begriff" required minLength={2} maxLength={60}/></label><SendeKnopf text="Stichwort hinzufügen"/></form>
+        <p className="gedaempft klein">Bis zu 50 Stichwörter. Ganze Wörter und Wortanfänge zählen.</p>
+      </section>}
       {n&&<section className="abschnitt"><h2>Eigene Firmen</h2>
         <p>{ZUSATZFIRMA_HINWEIS}</p>
         {eigene.error?<p>Eigene Firmen sind nach Migration 016 verfügbar.</p>:<ul>{(eigene.data??[]).map(f=><li key={f.unternehmen}>

@@ -13,6 +13,24 @@ import { spracheEingabe } from "@/lib/sprachniveau";
 import { loescheNutzer } from "@/lib/nutzer-loeschen";
 import { fuegeZusatzfirmaHinzu } from '@/lib/zusatzfirma';
 import { darfAbrufen } from '@/lib/seiten-abruf';
+import { stichwortEingabe } from '@/lib/wunschfirmen';
+
+export async function stichwortHinzufuegen(form:FormData){
+  const n=await aktuellerNutzer();if(!n)redirect('/login');
+  const begriff=stichwortEingabe(form.get('begriff'));if(!begriff)zurueck('Der Begriff muss 2 bis 60 Zeichen lang sein.');
+  const r=await (await createClient()).from('abgleich_stichwoerter').insert({owner_id:n.id,begriff});
+  if(r.error?.code==='23505')zurueck('Diesen Begriff hast du schon.');
+  if(r.error?.message.includes('abgleich_stichwoerter_limit'))zurueck('Du kannst höchstens 50 Stichwörter speichern.');
+  if(r.error)zurueck('Stichwörter sind nach Migration 017 verfügbar oder konnten nicht gespeichert werden.');
+  revalidatePath('/konto');
+}
+export async function stichwortEntfernen(form:FormData){
+  const n=await aktuellerNutzer();if(!n)redirect('/login');
+  const id=String(form.get('id')??'');if(!/^[1-9][0-9]{0,18}$/.test(id))zurueck('Ungültige Stichwort-ID.');
+  const r=await (await createClient()).from('abgleich_stichwoerter').delete().eq('id',id).eq('owner_id',n.id);
+  if(r.error)zurueck('Stichwort konnte nicht entfernt werden.');
+  revalidatePath('/konto');
+}
 
 export async function zusatzfirmaHinzufuegen(formData: FormData) {
   const n=await aktuellerNutzer();if(!n)redirect('/login');
