@@ -1,7 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createClient } from "@supabase/supabase-js";
+import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { runInNewContext } from "node:vm";
 import { aufBeworben, entmerkenMit } from "../lib/bewerbung-schutz.ts";
+import { anlegenAusJob } from "../lib/bewerbung-anlegen.ts";
 
 function datenbank(optionen: {
   app?: Record<string, unknown> | null; lesefehler?: boolean; loeschfehler?: boolean; schreibfehler?: boolean;
@@ -122,4 +126,117 @@ test("aufBeworben prüft Updateergebnis und bewahrt bereits vorhandene Werte", a
   }
   const d = datenbank({ schreibfehler: true });
   assert.equal(await aufBeworben(d.sb, "test-bewerbung", "2026-11-16"), false);
+});
+
+const uid = "11111111-1111-4111-8111-111111111111";
+const eigeneId = "22222222-2222-4222-8222-222222222222";
+const job = { id: "Prüffirma:7", url: "https://karriere.example.invalid/stellen", titel: "Analyst" };
+const manuell = { id: eigeneId, owner_id: uid, job_id: null, link: job.url, status: "gemerkt", beworben_am: null, notizen: "Eigene Notiz" };
+const andererJob = { ...manuell, id: "33333333-3333-4333-8333-333333333333", job_id: "Prüffirma:9" };
+const neueId = "44444444-4444-4444-8444-444444444444";
+const require = createRequire(import.meta.url);
+const ts = require("typescript");
+const stellenActions = ts.transpileModule(readFileSync(new URL("../app/stellen/actions.ts", import.meta.url), "utf8"), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+}).outputText;
+
+function stellenAktionen({ vorhanden, kollidiert, migrationFehlt }: {
+  vorhanden?: Record<string, unknown>; kollidiert?: Record<string, unknown>; migrationFehlt?: boolean;
+} = {}) {
+  const zeilen: Record<string, unknown>[] = [{ ...manuell, id: "55555555-5555-4555-8555-555555555555", owner_id: neueId }, andererJob];
+  if (vorhanden) zeilen.push({ ...vorhanden });
+  const aufrufe: { methode: string; q: URLSearchParams }[] = [];
+  const sb = createClient("https://datenbank.example.invalid", "synthetisch", {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    global: { fetch: async (input, init) => {
+      const url = new URL(String(input));
+      const q = url.searchParams;
+      const methode = init?.method ?? "GET";
+      if (url.pathname.endsWith("/jobs")) return Response.json([job]);
+      assert.equal(url.pathname, "/rest/v1/applications");
+      aufrufe.push({ methode, q });
+      if (migrationFehlt && q.has("portal_link")) return Response.json({ code: "42703" }, { status: 400 });
+      const sichtbar = zeilen.filter(z => z.owner_id === uid); // Eigentümergrenze der Datenbank
+      const a = sichtbar.filter(z => [...q].every(([feld, wert]) => ["select", "limit", "order"].includes(feld)
+        || (wert === "is.null" ? z[feld] === null : wert === `eq.${z[feld]}`))).slice(0, Number(q.get("limit") ?? sichtbar.length));
+      if (methode === "GET") return Response.json(a);
+      if (methode === "PATCH") {
+        for (const z of a) Object.assign(z, JSON.parse(String(init?.body)));
+        return Response.json(a);
+      }
+      assert.equal(methode, "POST");
+      if (kollidiert) {
+        zeilen.push({ ...kollidiert });
+        return Response.json({ code: "23505" }, { status: 409 });
+      }
+      zeilen.push({ ...JSON.parse(String(init?.body)), id: neueId, owner_id: uid, beworben_am: null });
+      return Response.json({ id: neueId }, { status: 201 });
+    } },
+  });
+  sb.auth.getClaims = (async () => ({ data: { claims: { sub: uid } }, error: null })) as typeof sb.auth.getClaims;
+  const imports: Record<string, object> = {
+    "next/navigation": { redirect: (pfad: string) => { throw new Error(pfad); } },
+    "next/cache": { revalidatePath: () => {} },
+    "@/lib/supabase/server": { createClient: async () => sb },
+    "@/lib/bewerbung-anlegen": { anlegenAusJob, aufBeworben },
+    "@/lib/fehler": { fehlerText: () => "Künstlicher allgemeiner Fehler" },
+    "@/lib/filter": { heuteLokal: () => "2026-11-21" },
+    "@/lib/bewerbung-schutz": {}, "@/lib/nutzer": {}, "@/lib/supabase/admin": {}, "@/lib/firmendaten-issue": {}, "@/lib/wunschfirmen": {},
+  };
+  const exports = {} as Record<"merken" | "beworben", (id: string) => Promise<void>>;
+  runInNewContext(stellenActions, { exports, require: (name: string) => imports[name] ?? assert.fail(name) });
+  return { ...exports, aufrufe, zeilen };
+}
+
+test("Merken und Bewerben öffnen eine eigene manuelle Bewerbung zur Stellen-URL ohne Schreibzugriff", async () => {
+  for (const aktion of ["merken", "beworben"] as const) {
+    const d = stellenAktionen({ vorhanden: manuell });
+    await assert.rejects(d[aktion](job.id), { message: `/bewerbung/${eigeneId}` });
+    assert.deepEqual(d.aufrufe.map(({ methode, q }) => [methode, q.get("owner_id"), q.get("job_id"), q.get("link")]),
+      [["GET", `eq.${uid}`, `eq.${job.id}`, null], ["GET", `eq.${uid}`, "is.null", `eq.${job.url}`]]);
+    assert.deepEqual(d.zeilen.at(-1), manuell);
+  }
+});
+
+test("URL-Dublette nach konkurrierender Anlage wird erneut gelesen und bleibt unverändert", async () => {
+  const d = stellenAktionen({ kollidiert: manuell });
+  await assert.rejects(d.beworben(job.id), { message: `/bewerbung/${eigeneId}` });
+  assert.deepEqual(d.aufrufe.map(a => a.methode), ["GET", "GET", "GET", "POST", "GET", "GET"]);
+  assert.deepEqual(d.zeilen.at(-1), manuell);
+});
+
+test("Stellenaktionen finden den eigenen Eintrag über portal_link auch nach Schreibkonflikt", async () => {
+  const alias = { ...manuell, link: "https://andere.example.invalid/stellen/7", portal_link: job.url };
+  for (const aktion of ["merken", "beworben"] as const) {
+    for (const option of [{ vorhanden: alias }, { kollidiert: alias }]) {
+      const d = stellenAktionen(option);
+      await assert.rejects(d[aktion](job.id), { message: `/bewerbung/${eigeneId}` });
+      assert.deepEqual(d.zeilen.at(-1), alias);
+      assert.equal(d.aufrufe.filter(a => a.methode === "POST").length, "kollidiert" in option ? 1 : 0);
+      assert.ok(!d.aufrufe.some(a => a.methode === "PATCH" || a.methode === "DELETE"));
+      assert.deepEqual([...d.aufrufe.at(-1)!.q.entries()].filter(([feld]) => ["owner_id", "job_id", "portal_link"].includes(feld)),
+        [["owner_id", `eq.${uid}`], ["job_id", "is.null"], ["portal_link", `eq.${job.url}`]]);
+    }
+  }
+  const andereStelle = stellenAktionen({ vorhanden: { ...alias, job_id: andererJob.job_id } });
+  await andereStelle.merken(job.id);
+  assert.equal(andereStelle.zeilen.at(-1)?.id, neueId);
+  assert.equal(andereStelle.zeilen.at(-1)?.job_id, job.id);
+});
+
+test("Merken bleibt auch vor Migration 020 möglich", async () => {
+  const d = stellenAktionen({ migrationFehlt: true });
+  await d.merken(job.id);
+  assert.equal(d.zeilen.at(-1)?.job_id, job.id);
+});
+
+test("Andere Job-ID derselben URL bleibt eine eigene Stelle und normales Bewerben setzt Status und Datum", async () => {
+  const d = stellenAktionen();
+  await d.merken(job.id);
+  await assert.rejects(d.beworben(job.id), { message: `/bewerbung/${neueId}` });
+  const neu = d.zeilen.at(-1);
+  assert.equal(neu?.job_id, job.id);
+  assert.equal(neu?.status, "beworben");
+  assert.equal(neu?.beworben_am, "2026-11-21");
+  assert.deepEqual(d.zeilen[1], andererJob);
 });

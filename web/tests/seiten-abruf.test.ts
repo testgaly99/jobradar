@@ -48,6 +48,9 @@ test("Weiterleitungen: interne Ziele und mehr als drei werden abgelehnt", async 
   const intern = netz({ "https://firma.example/job": () => weiter("http://169.254.169.254/") });
   await assert.rejects(holeFirmenseite("https://firma.example/job", intern.dep));
   assert.ok(!intern.abrufe.some((u) => u.includes("169.254")));
+  const portal = netz({ "https://firma.example/job": () => weiter("https://de.indeed.com/viewjob?jk=1") });
+  await assert.rejects(holeFirmenseite("https://firma.example/job", portal.dep), /Jobportale/);
+  assert.deepEqual(portal.abrufe, ["https://firma.example/robots.txt", "https://firma.example/job"]);
 
   const vier = netz({
     "https://firma.example/a": () => weiter("/b"), "https://firma.example/b": () => weiter("/c"),

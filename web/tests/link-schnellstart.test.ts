@@ -46,8 +46,6 @@ test("Schritt 1d: nur ohne Treffer, ohne ATS, nicht für Portale, mit Abrufgrenz
   assert.match(a, /after\(\(\) => vervollstaendigen\(/);
   assert.ok(a.lastIndexOf("return { angelegt: id };") > a.indexOf("after(() => vervollstaendigen("));
   assert.ok(!/redirect\(`\/bewerbung\//.test(a.slice(a.indexOf("export async function bewerbungAusLink"), a.indexOf("async function fuelleLeere"))), "kein Warten auf Weiterleitung");
-  // nur bei Jobportalen ohne Firma und Titel nachfragen (ohne Netz, also sofort)
-  assert.match(a, /if \(istPortal\(u\.hostname\) && !f0 && !t0\) return \{ brauchtEingabe: true \};/);
   const k = readFileSync(new URL("../app/bewerbungen/knoepfe.tsx", import.meta.url), "utf8");
   assert.ok(k.includes("Du musst nicht warten.") && k.includes("Du kannst diese Seite verlassen."));
 });

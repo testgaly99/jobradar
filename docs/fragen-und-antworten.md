@@ -2,6 +2,14 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Q-Codex-4g-Start (2026-11-21)
+
+Nutzer im Wortlaut: „Claude hat 4f verifiziert. Prüfe, ob es da noch ein offenes To do für dich gibt. Wenn nicht, fahre mit der nächsten Aufgabe fort“.
+
+Fortsetzung während der Umsetzung: Nutzer „Continue“. Gleicher Auftrag und bestehende Live-Halte gelten weiter.
+
+Prüfergebnis: Claudes Commit 246c6ab nennt keine Codefehler, SQL-/Live-Abnahme017 erfolgreich. Offene To-dos42/43 (Bot/Secrets/echte Integrationsläufe) liegen bei Nutzer/Claude. Nr.9 Phase4g-1 damit direkt zum lokalen Bau freigegeben; Migration020 und Live-/Upload-Halte bleiben. Echte Indeed-Tabtitel fehlen als Nutzer-/Claude-Vorarbeit; keine Portalabrufe und keine angeblich echte Fixture erfinden.
+
 ## Q-Codex-017 – Migration bestätigt (2026-11-21)
 
 Nutzer im Wortlaut: „017 ist drin“.

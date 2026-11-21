@@ -21,6 +21,8 @@ import { dokumentHerunterladen } from "@/app/unterlagen/actions";
 import { SteckbriefKarte, Ueberblick } from "../../anzeige-bloecke";
 import { kurzzeile, leseSteckbrief } from "@/lib/steckbrief";
 import { leseKi } from "@/lib/zusammenfassung";
+import { firmaBereitsBekannt, originalPortal } from "@/lib/original-daten";
+import OriginalKnopf from "./original-knopf";
 
 type Row = Record<string, string | number | string[] | null>;
 type Dok = { id: string; name: string | null; version_datum: string | null };
@@ -111,6 +113,13 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   ];
   const speichern = (ab: Abschnitt) => abschnittSpeichern.bind(null, id, ab);
   const link = sicher(row.link as string | null);
+  const portal = a.original_suche === "gefunden" ? originalPortal(a.original_portal) : null;
+  const beobachtbar = portal && a.firma && link && !(await firmaBereitsBekannt(sb, a.firma, portal));
+  const vorschlaege: { titel?: unknown; ort?: unknown; firma?: unknown }[] =
+    Array.isArray(a.original_vorschlaege) ? a.original_vorschlaege.slice(0, 5) : [];
+  const originalVorschlaege = vorschlaege.flatMap((v, index) => v && typeof v.titel === "string"
+      ? [{ index, titel: v.titel, ort: typeof v.ort === "string" ? v.ort : null, firma: typeof v.firma === "string" ? v.firma : null }]
+      : []);
   const dokOptionen = (art: string) => (
     <>
       <option value="">keins</option>
@@ -131,6 +140,25 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
         {link && <a href={link} target="_blank" rel="noopener noreferrer">Anzeige öffnen</a>}
       </p>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+      {a.original_suche === "offen" && <p className="meldung hinweis kein-druck">Original wird heute Nacht auf der Karriereseite der Firma gesucht.</p>}
+      {a.original_suche === "auswahl" && (
+        <section className="karte kein-druck" aria-labelledby="original-frage">
+          <h2 id="original-frage">Welche dieser Stellen ist es?</h2>
+          <ul>{originalVorschlaege.map(v => (
+            <li key={v.index}>
+              <span>{[v.titel, v.firma, v.ort].filter(Boolean).join(" · ")}</span>{" "}
+              <OriginalKnopf appId={id} wahl={v.index} text="Diese Stelle wählen" />
+            </li>
+          ))}</ul>
+          <OriginalKnopf appId={id} wahl="keine" text="Keine davon" />
+        </section>
+      )}
+      {a.original_suche === "nicht_gefunden" && (
+        <p className="meldung hinweis kein-druck">{istUuid(a.original_dublette ?? "")
+          ? <Link href={`/bewerbung/${a.original_dublette}`}>Diese Stelle hast du schon</Link>
+          : "Original nicht gefunden."}</p>
+      )}
+      {beobachtbar && <OriginalKnopf appId={id} wahl="beobachten" text="Firma dauerhaft beobachten" />}
       {weitere > 0 && (
         <p className="meldung hinweis kein-druck">Bei {v(row.firma)} hast du dich noch {weitere}× beworben. <Link href={bewerbungenLink(v(row.firma))}>Alle ansehen</Link></p>
       )}

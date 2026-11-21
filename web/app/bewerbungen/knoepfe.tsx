@@ -3,6 +3,7 @@ import { useActionState, useEffect, useRef, useState, useTransition } from "reac
 import { useFormStatus } from "react-dom";
 import { bewerbungAusLink, firmaTitelVorschlag } from "./actions";
 import { MAX_TEXT } from "@/lib/uebernahme";
+import { PORTAL_EINGABE } from "@/lib/jobportale";
 
 // Absende-Knopf: sperrt sich, solange das Formular läuft.
 export function SendeKnopf({ text, klasse = "knopf", warte = "Bitte warten …", gedrueckt, title }: { text: string; klasse?: string; warte?: string; gedrueckt?: boolean; title?: string }) {
@@ -23,7 +24,7 @@ export function LoeschForm({ action, frage, text = "Löschen" }: { action: () =>
   );
 }
 
-type Zustand = { brauchtEingabe: true; fuer: string } | { fehler: string } | { angelegt: string; vorhanden?: boolean } | null;
+type Zustand = { brauchtEingabe: true; fuer: string; grund?: "portal_ohne_firma" } | { fehler: string } | { angelegt: string; vorhanden?: boolean; portal?: boolean } | null;
 
 // Fenster nach "Anlegen": erscheint sofort; die Bewerbung steht nach unter einer Sekunde, der Rest läuft auf dem Server weiter.
 function AngelegtFenster({ offen, laeuft, zustand, weiter }: { offen: boolean; laeuft: boolean; zustand: Zustand; weiter: () => void }) {
@@ -35,11 +36,13 @@ function AngelegtFenster({ offen, laeuft, zustand, weiter }: { offen: boolean; l
   }, [offen]);
   const angelegt = zustand && "angelegt" in zustand ? zustand : null;
   return (
-    <dialog ref={ref} className="archiv-dialog angelegt-fenster" aria-labelledby="angelegt-titel" onClose={weiter}>
+    <dialog ref={ref} className="archiv-dialog angelegt-fenster" aria-labelledby="angelegt-titel" onCancel={weiter}>
       <h2 id="angelegt-titel">{laeuft || !angelegt ? "Bewerbung wird angelegt …" : angelegt.vorhanden ? "Schon vorhanden" : "Bewerbung angelegt"}</h2>
       {angelegt?.vorhanden
-        ? <p>Diese Stelle hattest du schon. Sie steht jetzt auf „beworben“.</p>
-        : <p>Du musst nicht warten. Firma, Titel und Anzeigentext ergänzt jobradar im Hintergrund, meist in 2–5 Minuten. Du kannst diese Seite verlassen.</p>}
+        ? <p>Diese Stelle hattest du schon.</p>
+        : angelegt?.portal
+          ? <p>Du musst nicht warten. Das Ergebnis der Originalsuche steht in der Bewerbung. Du kannst diese Seite verlassen.</p>
+          : <p>Du musst nicht warten. Firma, Titel und Anzeigentext ergänzt jobradar im Hintergrund, meist in 2–5 Minuten. Du kannst diese Seite verlassen.</p>}
       <div className="knopfreihe">
         {angelegt && <a className="knopf knopf-schmal" href={`/bewerbung/${angelegt.angelegt}`}>Zur Bewerbung</a>}
         <button type="button" className="knopf knopf-rand knopf-schmal" onClick={weiter}>Nächsten Link einfügen</button>
@@ -65,7 +68,7 @@ export function LinkFormular() {
     async () => {
       const r = await bewerbungAusLink(url, firma, titel, text);
       if (!("angelegt" in r)) setFenster(false); // Fehler oder Rückfrage stehen im Formular
-      return "brauchtEingabe" in r ? { brauchtEingabe: true as const, fuer: url } : r;
+      return "brauchtEingabe" in r ? { ...r, fuer: url } : r;
     },
     null,
   );
@@ -78,7 +81,7 @@ export function LinkFormular() {
       <label>Link zur Anzeige
         <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
       </label>
-      {brauchtEingabe && <p className="meldung info">Aus dem Link ist nichts erkennbar. Bitte Firma und Titel eintragen.</p>}
+      {brauchtEingabe && <p className="meldung info">{zustand.grund === "portal_ohne_firma" ? PORTAL_EINGABE : "Aus dem Link ist nichts erkennbar. Bitte Firma und Titel eintragen."}</p>}
       <p className="gedaempft">Mit Link wird übernommen, was sich daraus erkennen lässt; was du einträgst, geht vor. Ohne Link sind Firma und Titel Pflicht, außer du fügst den Anzeigentext ein.</p>
       <label>Firma
         <input value={firma} required={(!url.trim() && !text.trim()) || brauchtEingabe} onChange={(e) => setFirma(e.target.value)} />

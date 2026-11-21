@@ -87,9 +87,11 @@ def _sitemap_portal(url, holen, stellenpfad='/job/'):
     return dict(ats_typ='sitemap', ats_id=sitemaps[0] + '#' + stellenpfad, careers_url=url)
 
 
-def richte_ein(firma, holen=None, adapter=None):
-    holen, adapter = holen or http.hole, ADAPTER if adapter is None else adapter
+def _finde_portal(firma, holen=None):
+    holen = holen or http.hole
     result = dict(firma, status='offen', aktiv='nein', status_grund='Karriereseite nicht gefunden')
+    result.pop('ats_typ', None)
+    result.pop('ats_id', None)
     url = firma.get('careers_url') or firma.get('website')
     if not url:
         return result
@@ -162,6 +164,28 @@ def richte_ein(firma, holen=None, adapter=None):
             return result
         k = next(iter(kandidaten.values()))
         result.update(k)
+    except http.VerbotenDurchRobots:
+        result['status_grund'] = 'robots.txt verbietet Abruf'
+    except Exception as exc:
+        result['status_grund'] = 'Probe fehlgeschlagen: ' + kurzfehler(exc)
+    return result
+
+
+def finde_portal(website, holen=None):
+    """Nur Portal finden: keine Probe, keine Firma oder gemeinsame Stelle speichern."""
+    ergebnis = _finde_portal({'website': website}, holen)
+    if ergebnis.get('ats_typ') and ergebnis.get('ats_id'):
+        return {'typ': ergebnis['ats_typ'], 'id': ergebnis['ats_id']}
+    return None
+
+
+def richte_ein(firma, holen=None, adapter=None):
+    adapter = ADAPTER if adapter is None else adapter
+    result = _finde_portal(firma, holen)
+    if not result.get('ats_typ') or not result.get('ats_id'):
+        return result
+    k = result
+    try:
         if k['ats_typ'] not in adapter:
             return dict(result, status='portal_nicht_unterstuetzt', status_grund=k['ats_typ'])
         stellen = adapter[k['ats_typ']](k['ats_id'])

@@ -447,6 +447,32 @@ def setze_nachgeruestet(app_id, patch):
     _req("PATCH", "applications", params={"id": f"eq.{app_id}"}, json={**patch, "nachruesten": False})
 
 
+_ORIGINAL_FELDER = ('id,owner_id,geaendert_am,firma,titel,standort,link,portal_link,job_id,'
+                    'original_suche,original_wahl,original_vorschlaege')
+
+
+def bewerbungen_original_offen(limit=20):
+    try:
+        return _req('GET', 'applications', params={'select': _ORIGINAL_FELDER,
+                    'original_suche': 'eq.offen', 'job_id': 'is.null', 'order': 'erstellt_am,id', 'limit': min(20, max(0, limit))})
+    except RuntimeError as exc:
+        if ': 400 ' not in str(exc) or not any(code in str(exc) for code in ('42703', 'PGRST204')):
+            raise
+        print('Hinweis: Migration 020 offen, Original-Suche übersprungen.')
+        return []
+
+
+def bewerbung_original(app_id, owner):
+    rows = _req('GET', 'applications', params={'select': _ORIGINAL_FELDER, 'id': 'eq.'+app_id,
+                    'owner_id': 'eq.'+owner, 'limit': 1})
+    return rows[0] if rows else None
+
+
+def setze_original(app_id, patch, owner, stand):
+    return _req('POST', 'rpc/setze_original', json={'p_id': app_id, 'p_owner': owner,
+                'p_stand': stand, 'p_patch': patch})
+
+
 def speichere_lauf(bericht):
     _req("POST", "laeufe", json={"datum": bericht["stand"], "bericht": bericht})
 

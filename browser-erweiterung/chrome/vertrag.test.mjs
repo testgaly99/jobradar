@@ -165,6 +165,22 @@ test("Auf LinkedIn, StepStone und XING wird gar nichts übernommen (Q135/Q137)",
   }
 });
 
+test("LinkedIn-Kurzlinks starten weder Skript noch Übernahme und lesen den Titel nicht", async () => {
+  for (const h of ["lnkd.in", "www.lnkd.in", "short.lnkd.in.", "WWW.LNKD.IN."]) {
+    const f = ersatz();
+    const url = `https://${h}/offline`;
+    const tab = { id: 5, url, status: "complete", get title() { assert.fail("Tabtitel eines gesperrten Portals gelesen"); } };
+    f.tabs.set(5, tab);
+    await f.importer.starten(tab);
+    assert.equal(f.aufrufe.filter(([art]) => art === "script").length, 0, url);
+    assert.equal(Object.keys(f.session).length, 0, url);
+    assert.equal(f.tabs.size, 2, url);
+    assert.equal(istPortal(h), true, h);
+    assert.equal(istGesperrt(h), true, h);
+  }
+  for (const h of ["lnkd.in.fremde.example", "fake-lnkd.in"]) assert.equal(istGesperrt(h), false, h);
+});
+
 test("Nur gestarteter Transfer wird im gebundenen App-Tab ausgeführt, danach einmalig beendet", async () => {
   const f = ersatz();
   await f.importer.fortsetzen(99);

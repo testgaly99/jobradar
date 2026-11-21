@@ -59,8 +59,9 @@ export async function merken(jobId: string) {
   const { data: job } = await sb.from("jobs")
     .select("id,unternehmen,titel,url,ort,arbeitsmodell,text").eq("id", jobId).maybeSingle();
   if (!job) redirect("/stellen");
-  const r = await anlegenAusJob(sb, job);
+  const r = await anlegenAusJob(sb, job, claims.claims.sub);
   if ("fehler" in r) redirect(`/stellen?fehler=${encodeURIComponent(fehlerText({}))}`);
+  if (r.manuelleBewerbung) redirect(`/bewerbung/${r.id}`);
   revalidatePath("/stellen");
 }
 
@@ -72,9 +73,9 @@ export async function beworben(jobId: string) {
   const { data: job } = await sb.from("jobs")
     .select("id,unternehmen,titel,url,ort,arbeitsmodell,text").eq("id", jobId).maybeSingle();
   if (!job) redirect("/stellen");
-  const r = await anlegenAusJob(sb, job);
+  const r = await anlegenAusJob(sb, job, claims.claims.sub);
   if ("fehler" in r) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent(fehlerText({}))}`);
-  if (!(await aufBeworben(sb, r.id, heuteLokal()))) {
+  if (!r.manuelleBewerbung && !(await aufBeworben(sb, r.id, heuteLokal()))) {
     redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Der Status konnte nicht gespeichert werden. Bitte erneut versuchen.")}`);
   }
   revalidatePath("/stellen");

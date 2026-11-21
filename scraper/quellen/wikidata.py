@@ -88,6 +88,27 @@ def suche_name(name, holen=None):
     return abfrage(vorlage('name_zu_id').replace('{NAMEN}', _schreibweisen(name)), holen)
 
 
+def website_zu_name(name, holen=None):
+    """Unbekannte Bewerbungsfirma: nur eine eindeutige Organisation und Website.
+
+    Ohne Land wird keine Ranglisten-Zuordnung geraten. Verschiedene Websites
+    desselben Eintrags sind ebenfalls mehrdeutig; keine SAMPLE-Auswahl verwenden.
+    """
+    if not isinstance(name, str) or not name.strip() or len(name) > 300:
+        return None
+    namen = ' '.join(f'{json.dumps(v, ensure_ascii=False)}@{sprache}'
+                     for v in dict.fromkeys((name.strip(), name.strip().title())) for sprache in ('de', 'en'))
+    rows = _rows(abfrage('''SELECT DISTINCT ?firma ?website WHERE {
+      VALUES ?n { '''+namen+''' }
+      ?firma rdfs:label|skos:altLabel ?n .
+      ?firma wdt:P31/wdt:P279? ?typ . VALUES ?typ { wd:Q4830453 wd:Q891723 wd:Q6881511 wd:Q783794 }
+      OPTIONAL { ?firma wdt:P856 ?website }
+    } LIMIT 3''', holen))
+    ids = {z.get('firma') for z in rows if z.get('firma')}
+    websites = {z.get('website') for z in rows if z.get('website')}
+    return next(iter(websites)) if len(ids) == 1 and len(websites) == 1 else None
+
+
 def name_zu_id(name, land, suche=None):
     rows = _rows((suche or suche_name)(name))
     ziel = LAENDER.get(land, land if re.fullmatch(r'Q\d+', land or '') else None)

@@ -1,20 +1,22 @@
 "use server";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { analysiereLink, firmaPasst, hostOhneWww, normFirma, normTitel, slugAusFirma } from "@/lib/link-import";
 import { aufBeworben, type JobZeile } from "@/lib/bewerbung-anlegen";
+import { istUuid } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { holeStelle, sucheTitel, type Stelle } from "@/lib/ats-abruf";
 import { textZuLang } from "@/lib/uebernahme";
 import { erkenneFirmaTitel } from "@/lib/groq";
-import { istPortal } from "@/lib/stellen-import";
+import { istPortal } from "@/lib/jobportale";
+import { firmaBereitsBekannt, keinOriginalMit, originalPortal, originalSpalteFehlt, originalWaehlenMit, ordneOriginalZu } from "@/lib/original-daten";
+import { speichereEigeneFirma } from "@/app/konto/actions";
 import { darfAbrufen } from "@/lib/seiten-abruf";
 import { zielAusFirmenseite, type FirmenseitenZiel } from "@/lib/jobposting";
 import { anzeigeLesenAnstossen } from "@/lib/github-anstoss";
 import { after } from "next/server";
 
-type Ergebnis = { brauchtEingabe: true } | { fehler: string } | { angelegt: string; vorhanden?: boolean };
+type Ergebnis = { brauchtEingabe: true; grund?: "portal_ohne_firma" } | { fehler: string } | { angelegt: string; vorhanden?: boolean; portal?: boolean };
 type Sb = Awaited<ReturnType<typeof createClient>>;
 type Ziel = { firma?: string; titel?: string; ort?: string | null; link: string; quelle: string | null; text?: string | null; job?: JobZeile | null };
 
@@ -28,6 +30,7 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   const sb = await createClient();
   const { data: claims } = await sb.auth.getClaims();
   if (!claims?.claims) return { fehler: "Bitte melde dich an." };
+  const uid = claims.claims.sub;
   const heute = heuteLokal();
   const anlegen = async (zeile: Record<string, unknown>) =>
     (await sb.from("applications").insert({ ...zeile, status: "beworben", beworben_am: heute }).select("id").single()).data?.id as string | undefined;
@@ -47,26 +50,86 @@ export async function bewerbungAusLink(url: string, firma?: string, titel?: stri
   let u: URL;
   try { u = new URL(url.trim()); } catch { return { fehler: "Das ist kein gültiger Link." }; }
   if (u.protocol !== "http:" && u.protocol !== "https:") return { fehler: "Nur http- und https-Links sind möglich." };
+  if (u.username || u.password) return { fehler: "Bitte füge einen Link ohne Zugangsdaten ein." };
   const a = analysiereLink(u.toString());
   const link = a.link ?? u.toString();
   const eigen = { firma: firma?.trim() || undefined, titel: titel?.trim() || undefined };
   const f0 = eigen.firma || a.firma, t0 = eigen.titel || a.titel;
-  // Jobportale werden nie abgerufen: ohne Firma und Titel gleich nachfragen (geht ohne Netz, also sofort).
-  if (istPortal(u.hostname) && !f0 && !t0) return { brauchtEingabe: true };
-
-  const { data: dup } = await sb.from("applications").select("id").eq("link", link).limit(1).maybeSingle();
-  // Schon vorhanden (z. B. gemerkt): auf beworben setzen.
+  const portal = istPortal(u.hostname);
+  const finde = async () => {
+    const ausSpalte = (feld: "link" | "portal_link") => sb.from("applications").select("id").eq("owner_id", uid).eq(feld, link).limit(1).maybeSingle();
+    const direkt = await ausSpalte("link");
+    if (direkt.data || direkt.error || !portal) return direkt;
+    const frueher = await ausSpalte("portal_link");
+    return originalSpalteFehlt(frueher.error) ? direkt : frueher;
+  };
+  const { data: dup, error: suchfehler } = await finde();
+  if (suchfehler) return { fehler: "Der Link konnte nicht geprüft werden. Bitte erneut versuchen." };
+  // Bei Portal-Dubletten bleibt der vorhandene Eintrag unverändert.
   if (dup?.id) {
-    if (!(await aufBeworben(sb, dup.id, heute))) return { fehler: "Der Status konnte nicht gespeichert werden." };
+    if (!portal && !(await aufBeworben(sb, dup.id, heute))) return { fehler: "Der Status konnte nicht gespeichert werden." };
     revalidatePath("/bewerbungen");
-    return { angelegt: dup.id, vorhanden: true };
+    return { angelegt: dup.id, vorhanden: true, ...(portal ? { portal } : {}) };
   }
-  const id = await anlegen({ firma: f0 ?? null, titel: t0 ?? null, link, quelle: a.quelle, snapshot_text: text || null });
+  if (portal && (!f0 || !t0)) return { brauchtEingabe: true, grund: "portal_ohne_firma" };
+  const grund = { firma: f0 ?? null, titel: t0 ?? null, link, quelle: a.quelle, snapshot_text: text || null };
+  if (portal) {
+    const neu = await sb.from("applications")
+      .insert({ ...grund, status: "beworben", beworben_am: heute, portal_link: link, original_suche: "offen" }).select("id").single();
+    const id = originalSpalteFehlt(neu.error) ? await anlegen(grund) : neu.data?.id as string | undefined;
+    if (!id) {
+      const r = neu.error?.code === "23505" ? await finde() : null;
+      return r?.data?.id ? { angelegt: r.data.id, vorhanden: true, portal } : { fehler: "Bewerbung konnte nicht angelegt werden." };
+    }
+    if (!neu.error) after(async () => {
+      try { await ordneOriginalZu(sb, id, uid); } catch { /* Bewerbung bleibt für den Nachtlauf offen. */ }
+      revalidatePath(`/bewerbung/${id}`);
+    });
+    revalidatePath("/bewerbungen");
+    return { angelegt: id, portal };
+  }
+  const id = await anlegen(grund);
   if (!id) return { fehler: "Bewerbung konnte nicht angelegt werden." };
-  after(() => vervollstaendigen(sb, id, { u, a, link, eigen, firma: f0, titel: t0, uid: claims.claims.sub, heute })
+  after(() => vervollstaendigen(sb, id, { u, a, link, eigen, firma: f0, titel: t0, uid, heute })
     .catch((e) => console.error("vervollstaendigen:", (e as Error).name)));
   revalidatePath("/bewerbungen");
   return { angelegt: id };
+}
+
+async function originalAktion(appId: string, aktion: (sb: Sb, uid: string) => Promise<{ fehler: string | null }>) {
+  const sb = await createClient();
+  const { data, error } = await sb.auth.getClaims();
+  const uid = data?.claims?.sub;
+  if (error || !uid || !istUuid(uid)) return { fehler: "Bitte melde dich an." };
+  if (!istUuid(appId)) return { fehler: "Bewerbung nicht gefunden." };
+  const r = await aktion(sb, uid);
+  if (!r.fehler) {
+    revalidatePath(`/bewerbung/${appId}`);
+    revalidatePath("/bewerbungen");
+  }
+  return r;
+}
+
+export async function originalWaehlen(appId: string, index: number) {
+  return originalAktion(appId, (sb, uid) => originalWaehlenMit(sb, appId, uid, index));
+}
+
+export async function keinOriginal(appId: string) {
+  return originalAktion(appId, (sb, uid) => keinOriginalMit(sb, appId, uid));
+}
+
+export async function firmaBeobachten(appId: string) {
+  return originalAktion(appId, async (sb, uid) => {
+    const { data: app } = await sb.from("applications").select("firma,link,original_portal")
+      .eq("id", appId).eq("owner_id", uid).eq("original_suche", "gefunden").maybeSingle();
+    const portal = originalPortal(app?.original_portal);
+    if (!app?.firma || !app.link || !portal) return { fehler: "Für diese Bewerbung wurde kein Original gefunden." };
+    try {
+      if (istPortal(new URL(app.link).hostname)) return { fehler: "Für diese Bewerbung wurde kein Original gefunden." };
+    } catch { return { fehler: "Für diese Bewerbung wurde kein Original gefunden." }; }
+    if (await firmaBereitsBekannt(sb, app.firma, portal)) return { fehler: "Diese Firma gibt es schon in jobradar." };
+    return speichereEigeneFirma(app.firma, app.link);
+  });
 }
 
 // Nur leere Felder füllen: was der Nutzer eingetragen hat (auch inzwischen), bleibt unberührt.

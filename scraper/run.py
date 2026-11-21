@@ -215,6 +215,22 @@ def _nachruesten():
         return {}
 
 
+def _original_suche():
+    """Original-Suche darf keine privaten Fehlermeldungen oder Namen protokollieren."""
+    try:
+        from scraper import original_suche
+        log = io.StringIO()
+        with contextlib.redirect_stdout(log), contextlib.redirect_stderr(io.StringIO()):
+            erg = original_suche.lauf()
+        if 'Hinweis: Migration 020 offen, Original-Suche übersprungen.' in log.getvalue():
+            print('Hinweis: Migration 020 offen, Original-Suche übersprungen.')
+        return {k: erg[k] for k in ('gesucht','gefunden','auswahl','nicht_gefunden')
+                if type(erg.get(k)) is int and erg[k] >= 0}
+    except Exception:
+        print('Hinweis: Original-Suche konnte nicht abgeschlossen werden.')
+        return {}
+
+
 def lauf(heute, datenordner="data"):
     start = time.monotonic()
     datenordner = Path(datenordner)
@@ -292,6 +308,7 @@ def lauf(heute, datenordner="data"):
     bericht["deutsch"] = _deutsch_nachruesten()  # vor den KI-Schritten (Plan Sprachniveau, Task 3)
     bericht["ki"] = _ki(heute)
     bericht["nachruesten"] = _nachruesten()
+    bericht["original_suche"] = _original_suche()
     bericht['laufzeit_min'] = round((time.monotonic() - start) / 60, 1)
     _schreibe_text(datenordner / "bericht.md", _markdown({**bericht,'firmen':oeffentliche_firmen}))
     db.speichere_lauf(bericht)

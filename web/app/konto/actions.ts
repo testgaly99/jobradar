@@ -33,18 +33,23 @@ export async function stichwortEntfernen(form:FormData){
 }
 
 export async function zusatzfirmaHinzufuegen(formData: FormData) {
+  const result=await speichereEigeneFirma(String(formData.get('name')??''),String(formData.get('link')??''));
+  if(result.fehler)zurueck(result.fehler);
+  redirect('/konto?hinweis=Eigene%20Firma%20hinzugef%C3%BCgt.');
+}
+
+export async function speichereEigeneFirma(name:string,link:string) {
   const n=await aktuellerNutzer();if(!n)redirect('/login');
-  if(!darfAbrufen(n.id))zurueck('Bitte warte eine Minute, bevor du weitere Firmen prüfst.');
-  const result=await fuegeZusatzfirmaHinzu(n.id,String(formData.get('name')??''),String(formData.get('link')??''),{
+  if(!darfAbrufen(n.id))return {fehler:'Bitte warte eine Minute, bevor du weitere Firmen prüfst.'};
+  const result=await fuegeZusatzfirmaHinzu(n.id,name,link,{
     speichern:async daten=>{
       const {data,error}=await createAdminClient().rpc('zusatzfirma_hinzufuegen',daten);
       if(error)throw new Error('Speichern fehlgeschlagen');
       return data as {status:string};
     },
   });
-  if(result.fehler)zurueck(result.fehler);
-  revalidatePath('/konto');revalidatePath('/stellen');
-  redirect('/konto?hinweis=Eigene%20Firma%20hinzugef%C3%BCgt.');
+  if(!result.fehler){revalidatePath('/konto');revalidatePath('/stellen');}
+  return result;
 }
 
 export async function zusatzfirmaEntfernen(formData:FormData) {

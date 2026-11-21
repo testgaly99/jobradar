@@ -1,4 +1,10 @@
 """Einziger HTTP-Zugang: robots.txt beachten, max. 1 Anfrage/s pro Domain."""
+from contextlib import contextmanager
+from contextvars import ContextVar
+from http.client import HTTPException, HTTPSConnection
+import ipaddress
+import socket
+import ssl
 import time
 import urllib.robotparser
 from urllib.parse import urljoin, urlsplit, urlunsplit
@@ -9,10 +15,25 @@ USER_AGENT = "jobradar/1.0 (+https://github.com/testgaly99/jobradar)"
 TIMEOUT = 30
 PAUSE = 1.0
 MAX_REDIRECTS = 5  # RFC 9309: mindestens fünf Robots-Weiterleitungen auch über Domains folgen.
+MAX_ANTWORT_BYTES = 20 * 1024 * 1024
 _REDIRECTS = {301, 302, 303, 307, 308}
 
 _robots: dict[str, urllib.robotparser.RobotFileParser | None] = {}
 _zuletzt: dict[str, float] = {}
+_zielpruefungen = ContextVar('jobradar_zielpruefungen', default=())
+_ipbindung = ContextVar('jobradar_ipbindung', default=False)
+
+
+@contextmanager
+def zielschutz(pruefe, *, gepinnt=False):
+    """Zusätzlicher Zielschutz für alle Adapterabrufe innerhalb einer privaten Suche."""
+    token = _zielpruefungen.set((*_zielpruefungen.get(), pruefe))
+    ip_token = _ipbindung.set(_ipbindung.get() or gepinnt)
+    try:
+        yield
+    finally:
+        _ipbindung.reset(ip_token)
+        _zielpruefungen.reset(token)
 
 
 class VerbotenDurchRobots(Exception):
@@ -46,6 +67,73 @@ def _adresse(url):
     return urlunsplit((teile.scheme, netloc, teile.path or "/", teile.query, "")), basis
 
 
+def _verbinde_oeffentlich(ziel, timeout, source_address):
+    # Hook einer einzelnen HTTPSConnection: nur hier wird der Name für TCP aufgelöst.
+    host, port = ziel
+    eintraege = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM, proto=socket.IPPROTO_TCP)
+    ips = [ipaddress.ip_address(e[4][0]) for e in eintraege]
+    if not ips or any(not ip.is_global or ip.is_multicast or ip.is_reserved
+                      or (ip.version == 6 and (ip.is_site_local or ip.scope_id or ip.sixtofour or ip.teredo))
+                      for ip in ips):
+        raise ValueError("Keine öffentliche Zieladresse")
+
+    ende = time.monotonic() + timeout
+    fehler = None
+    for ip in ips:
+        rest = ende - time.monotonic()
+        if rest <= 0:
+            raise TimeoutError("Zeitlimit beim Verbindungsaufbau")
+        try:
+            sock = socket.socket(socket.AF_INET if ip.version == 4 else socket.AF_INET6, socket.SOCK_STREAM)
+        except OSError as exc:
+            fehler = exc
+            continue
+        try:
+            sock.settimeout(rest)
+            sock.connect((str(ip), port))
+            sock.settimeout(timeout)
+            return sock
+        except OSError as exc:
+            sock.close()
+            fehler = exc
+    raise fehler
+
+
+def _get_gepinnt(url):
+    teile = urlsplit(url)
+    if (teile.scheme != "https" or teile.port not in (None, 443)
+            or teile.username is not None or teile.password is not None):
+        raise ValueError("Nur HTTPS auf Port 443 erlaubt")
+    pfad = requests.utils.requote_uri(urlunsplit(("", "", teile.path, teile.query, "")))
+    verbindung = HTTPSConnection(teile.hostname, 443, timeout=TIMEOUT, context=ssl.create_default_context())
+    # TLS prüft weiterhin den Originalhost und http.client setzt den dazugehörigen Host-Header.
+    verbindung._create_connection = _verbinde_oeffentlich
+    try:
+        verbindung.request("GET", pfad, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "identity"})
+        with verbindung.getresponse() as roh:
+            if roh.getheader("Content-Encoding", "identity").strip().lower() != "identity":
+                raise ValueError("Unerwartete HTTP-Inhaltskodierung")
+            if roh.length is not None and roh.length > MAX_ANTWORT_BYTES:
+                raise ValueError("HTTP-Antwort zu groß")
+            inhalt = roh.read(MAX_ANTWORT_BYTES + 1)
+            if len(inhalt) > MAX_ANTWORT_BYTES:
+                raise ValueError("HTTP-Antwort zu groß")
+            if roh.length:
+                raise ValueError("Unvollständige HTTP-Antwort")
+            antwort = requests.Response()
+            antwort.url, antwort.status_code, antwort.reason = url, roh.status, roh.reason
+            antwort.headers.update(roh.getheaders())
+            antwort.encoding = requests.utils.get_encoding_from_headers(antwort.headers)
+            antwort._content, antwort._content_consumed = inhalt, True
+            return antwort
+    except TimeoutError as exc:
+        raise requests.Timeout("Zeitlimit beim HTTPS-Abruf") from exc
+    except (OSError, HTTPException) as exc:
+        raise requests.ConnectionError("HTTPS-Abruf fehlgeschlagen") from exc
+    finally:
+        verbindung.close()
+
+
 def _get(basis: str, url: str) -> requests.Response:
     # Ein Protokoll-/Portwechsel gibt derselben Domain kein zweites Abrufkontingent.
     domain = urlsplit(basis).hostname
@@ -53,6 +141,8 @@ def _get(basis: str, url: str) -> requests.Response:
     if warte > 0:
         time.sleep(warte)
     try:
+        if _ipbindung.get():
+            return _get_gepinnt(url)
         return requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=TIMEOUT, allow_redirects=False)
     finally:
         _zuletzt[domain] = time.monotonic()
@@ -107,6 +197,11 @@ def _darf(basis: str, url: str, pruefe=None) -> bool:
 
 
 def hole(url: str, pruefe=None) -> requests.Response:
+    pruefungen = (*_zielpruefungen.get(), *((pruefe,) if pruefe else ()))
+    if pruefungen:
+        def pruefe(url):
+            for schutz in pruefungen:
+                schutz(url)
     antwort = _mit_weiterleitungen(url, robots_pruefen=True, pruefe=pruefe)
     antwort.raise_for_status()
     return antwort
