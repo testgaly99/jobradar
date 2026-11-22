@@ -16,6 +16,13 @@ Vorlage für einen Eintrag:
 
 Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT: ok` bzw. die gefundenen Punkte.
 
+## 2026-11-22 18:56 (Europe/Berlin) – Codex – Migration 020 bestätigt
+- Nutzer im Wortlaut: „020 ist drin“. Als Vollzugsmeldung dokumentiert, keine unabhängige Datenbankprüfung behauptet.
+- Dateien: STATUS, Entscheidungen, Fragenprotokoll, Warteschlange, 4g-1-Plan und dieses Protokoll. Migration laut Nutzer erledigt; Claudes SQL-/Rechte- und echte Portalabnahme weiterhin offen. Kein erneutes Live-Einspielen angewiesen.
+- Commit: lokaler Dokumentationscommit „4g: Eingespielte Migration 020 vermerken“, Schlusszeile Agent: Codex. Kein Push/Merge.
+- Prüfung: Dokumentationsdiff, git diff --check und Geheimnismusterprüfung; ausschließlich Dokumentation, keine erneuten Anwendungstests. Letzter Codeprüfstand im vorherigen Eintrag bleibt gültig.
+- Grenzen/Abweichungen: keine Live-Datenbank, Umgebungsdateien oder Geheimnisse gelesen, keine externen Aktionen oder Folgeaufgabe; keine Abweichung. Echte Prüfung, Indeed-Tabtitel und Erweiterungsaktualisierung nicht aus der Meldung abgeleitet.
+
 ## 2026-11-21 17:46 (Europe/Berlin) – Codex – Phase 4g-1 Originalsuche
 - Auftrag: „Claude hat 4f verifiziert. Prüfe, ob es da noch ein offenes To do für dich gibt. Wenn nicht, fahre mit der nächsten Aufgabe fort“, später „Continue“. Ausgang `246c6ab` sauber; Claudes 4f-Vermerk keine Codefehler, 017 isoliert/live geprüft. To-dos 42/43 bei Nutzer/Claude, daher Nr. 9 lokal begonnen; keine neue Live-/Uploadfreigabe abgeleitet.
 - Ergebnis: Strenger gemeinsamer TS/Python-Titel-/Ortsvergleich mit Füllwortregel, allen geplanten Geschlechtszusätzen, maximal fünf Vorschlägen. Sichtbare offene Stellen vollständig paginiert, eindeutige Firma erforderlich, bestätigtes Firmenboard als Sofortfallback. Unbekannte Firmen nachts über eindeutige Wikidata-Organisation/Website, Portal-Erkennung und vorhandene Adapter. Nur applications schreiben; Beobachten über 4e. Wörtliche Hinweise, lokale/externe Auswahl, Keine davon, Dublettenlink; Status/Datum/Nutzereingaben erhalten. Portal-Link bleibt zur Wiedererkennung bestehen; Erweiterungs- und manuelle Wege getrennt geprüft, keine Portalseite abgerufen.

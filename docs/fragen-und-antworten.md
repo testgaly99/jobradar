@@ -2,6 +2,12 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Q-Codex-020 – Migration bestätigt (2026-11-22)
+
+Nutzer im Wortlaut: „020 ist drin“.
+
+Status: Migration 020 laut Nutzer eingespielt. Keine eigene Live-Datenbankprüfung durch Codex; SQL-/Rechteabnahme, echte Portal-Links und Indeed-Tabtitel sowie Erweiterungsaktualisierung nicht als erledigt bestätigt. Kein erneutes Live-Einspielen angewiesen, keine Veröffentlichung oder Folgeaufgabe aus der Vollzugsmeldung abgeleitet.
+
 ## Q-Codex-4g-Start (2026-11-21)
 
 Nutzer im Wortlaut: „Claude hat 4f verifiziert. Prüfe, ob es da noch ein offenes To do für dich gibt. Wenn nicht, fahre mit der nächsten Aufgabe fort“.

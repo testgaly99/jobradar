@@ -2,6 +2,7 @@
 
 | Datum | Entscheidung | Begründung |
 |---|---|---|
+| 2026-11-22 | Migration 020 als vom Nutzer eingespielt vermerkt; Rechte- und Funktionsabnahme bleiben offen. | „020 ist drin“ ist eine Vollzugsmeldung, kein unabhängiger Prüfbeleg und keine Freigabe für das nächste Paket oder Veröffentlichung. |
 | 2026-11-21 | Originalsuche schreibt nur eigene Bewerbungen; Firma dauerhaft beobachten bleibt ausdrückliche 4e-Aktion. | Gefundene Firmen dürfen nicht ungefragt die gemeinsame Stellenliste oder Firmenbasis erweitern. |
 | 2026-11-21 | Gleiche Titel nur bei eindeutiger Firmen-/Ortszuordnung übernehmen; sonst bis zu fünf Vorschläge, keine KI-Titelentscheidung. | Falsche Zuordnung wiegt schwerer als eine zusätzliche Auswahl. TS/Python teilen dieselbe Fixture; C++/C#/F# behalten bedeutungstragende Zeichen. |
 | 2026-11-21 | Sofortige Board-Suche nur mit bestätigtem Firmenboard, unbekannte Firma nachts über genau eine Organisation mit genau einer Website. | Ein aus dem Namen geratener Slug oder entfernte Namensbestandteile können auf eine fremde Firma zeigen. |

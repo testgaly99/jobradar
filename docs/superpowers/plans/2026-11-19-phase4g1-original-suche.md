@@ -16,6 +16,10 @@ Aufgaben 1–5 lokal umgesetzt (Paketcommit `2c63b39`); SQL nur vorbereitet, Hal
 
 Begründete Präzisierungen: Sofortige Boardsuche nur bei bestätigtem sichtbarem Firmenboard statt unbestätigtem Slug; strenge Firmenendungen verhindern falsche Rechtsform-/Markenzuordnung. Gemeinsame Snapshot-Aufbereitung liefert Felder für einen atomaren Service-Abschluss statt mehrerer Zwischenupdates. Zusätzliche eigene Dublettenreferenz und DB-Schreibschutz, Versionsprüfung vor zweitem Lesen und beim Schreiben; manuelle Linkkorrektur beendet offene Suche, unveränderte Legacy-URLs dürfen weiter bearbeitet werden. Neue private HTTPS-Verbindungen an geprüfte IPs gebunden,20 MiB identity. Bedeutungstragende C++/C#/F#-Tokens bleiben getrennt. Externe URLs in beiden Sprachen nur mit DNS-Namen/HTTPS/443, keine IP-Literale oder Roh-Hostsonderformen; tatsächliche IP-/TLS-Prüfung erst im Abruf, Erweiterung 0.1.1 neu laden. Zusammenhängender Paketcommit statt Zwischencommits wegen gemeinsamer DB/Web/Nacht-Schnittstellen. Keine neuen Pakete oder Dienste, keine Portal-/Liveabrufe durch Codex.
 
+## Ergänzung 2026-11-22: Migration bestätigt
+
+Nutzer: „020 ist drin“. Migration 020 damit als eingespielt vermerkt, ohne eigene Datenbankprüfung durch Codex. Aussagen über nur vorbereitete SQL-Dateien oben beschreiben den früheren Bauabschluss. Offen bleiben Claudes SQL-/Rechteprüfung und echte Abnahme mit Portal-Links/Indeed-Tabtiteln; der gesamte Haltepunkt ist noch nicht abgeschlossen.
+
 ## Global Constraints
 
 - **Jobportale werden nie abgerufen** (Q16, Q69): vor jedem Abruf in TS `istPortal` (`web/lib/stellen-import.ts`), in Python dieselbe Liste wie `PORTALE`; Test, dass bei Portal-Hosts der Abruf-Attrappe nie aufgerufen wird.
