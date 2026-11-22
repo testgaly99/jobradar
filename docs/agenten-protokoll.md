@@ -16,6 +16,11 @@ Vorlage für einen Eintrag:
 
 Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT: ok` bzw. die gefundenen Punkte.
 
+## 2026-11-22 19:02 (Europe/Berlin) – Codex – Weitere To-dos erläutert
+- Nutzer: „Was sind die weiteren To Dos?“ Aktuelle Warteschlange und Vorprüfung des nächsten Plans6a gelesen; acht Baupakete offen, Claude-Abnahmen wie vereinbart zurückgestellt. Kein Bau-/Liveauftrag abgeleitet.
+- Dateien: Fragenprotokoll und dieser Eintrag; keine neue Produktentscheidung. Lokaler Dokumentationscommit „Weitere offene Arbeitspakete erläutern“, Schlusszeile Agent: Codex.
+- Prüfung: Dokumentationsdiff und git diff --check; keine Anwendungstests bei reiner Statusauskunft. Keine Live-Daten oder Geheimnisse gelesen, keine Veröffentlichung, keine Abweichung.
+
 ## 2026-11-22 18:58 (Europe/Berlin) – Codex – Claude-To-dos zurückgestellt
 - Auftrag im Wortlaut: „Die Claude Prüfungen machen wir später. Halte einfach die offenen To Dos für Claude fest“.
 - Ergebnis: zentrale Tabelle in STATUS für noch offene Abnahmen der gebauten Pakete, mit Voraussetzungen und Verweis auf vorhandene To-do-Nummern; keine erledigten SQL-/Codeprüfungen zurückgesetzt. Warteschlange, Fragenprotokoll, Entscheidungen und4g-Plan entsprechend ergänzt. Kein Termin, keine Folgeaufgabe oder Live-Freigabe abgeleitet.

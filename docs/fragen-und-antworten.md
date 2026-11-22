@@ -2,6 +2,12 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Q-Codex-Weitere-Todos (2026-11-22)
+
+Nutzer: „Was sind die weiteren To Dos?“
+
+Auskunft anhand aktueller Warteschlange: acht noch nicht gebaute Pakete, Nr.10/11/11a/11b/11c/12/12a/13. Nächster Eintrag ist6a (nächtlicher Lebenslauf-Abgleich); anschließend Browser-Abgleich, Bewerben-Helfer, Bewerbungsformular, Erinnerungen, Filter, Pendelzeit und Gmail/Kalender. Vorprüfungen und Haltepunkte der jeweiligen Pläne bleiben bestehen. Bereits gebaute Pakete haben teils zurückgestellte Claude-Abnahmen laut STATUS. Die Statusfrage startet kein Arbeitspaket.
+
 ## Q-Codex-Claude-Spaeter (2026-11-22)
 
 Nutzer im Wortlaut: „Die Claude Prüfungen machen wir später. Halte einfach die offenen To Dos für Claude fest“.
