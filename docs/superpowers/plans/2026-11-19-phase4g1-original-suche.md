@@ -20,6 +20,8 @@ Begründete Präzisierungen: Sofortige Boardsuche nur bei bestätigtem sichtbare
 
 Nutzer: „020 ist drin“. Migration 020 damit als eingespielt vermerkt, ohne eigene Datenbankprüfung durch Codex. Aussagen über nur vorbereitete SQL-Dateien oben beschreiben den früheren Bauabschluss. Offen bleiben Claudes SQL-/Rechteprüfung und echte Abnahme mit Portal-Links/Indeed-Tabtiteln; der gesamte Haltepunkt ist noch nicht abgeschlossen.
 
+**Ergänzung 2026-11-22:** Nutzer verschiebt Claude-Prüfungen auf später. Offene Code-/SQL-/Rechte-/Portalabnahme und benötigte Nutzerbeispiele bleiben gesammelt in STATUS; Haltepunkt bleibt ungeprüft, kein Live-Lauf durch Codex.
+
 ## Global Constraints
 
 - **Jobportale werden nie abgerufen** (Q16, Q69): vor jedem Abruf in TS `istPortal` (`web/lib/stellen-import.ts`), in Python dieselbe Liste wie `PORTALE`; Test, dass bei Portal-Hosts der Abruf-Attrappe nie aufgerufen wird.

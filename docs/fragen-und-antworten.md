@@ -2,6 +2,12 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Q-Codex-Claude-Spaeter (2026-11-22)
+
+Nutzer im Wortlaut: „Die Claude Prüfungen machen wir später. Halte einfach die offenen To Dos für Claude fest“.
+
+Umsetzung: ausstehende Claude-Aufgaben der gebauten Pakete zentral in STATUS mit Voraussetzungen festhalten und Prüfungen als aufgeschoben kennzeichnen. Kein Termin vereinbart, keine Prüfung als bestanden angenommen. Keine weitere Frage gestellt, keine Freigabe für neue Pakete, Live-Zugriffe oder Veröffentlichung abgeleitet.
+
 ## Q-Codex-020 – Migration bestätigt (2026-11-22)
 
 Nutzer im Wortlaut: „020 ist drin“.

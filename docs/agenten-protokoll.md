@@ -16,6 +16,13 @@ Vorlage für einen Eintrag:
 
 Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT: ok` bzw. die gefundenen Punkte.
 
+## 2026-11-22 18:58 (Europe/Berlin) – Codex – Claude-To-dos zurückgestellt
+- Auftrag im Wortlaut: „Die Claude Prüfungen machen wir später. Halte einfach die offenen To Dos für Claude fest“.
+- Ergebnis: zentrale Tabelle in STATUS für noch offene Abnahmen der gebauten Pakete, mit Voraussetzungen und Verweis auf vorhandene To-do-Nummern; keine erledigten SQL-/Codeprüfungen zurückgesetzt. Warteschlange, Fragenprotokoll, Entscheidungen und4g-Plan entsprechend ergänzt. Kein Termin, keine Folgeaufgabe oder Live-Freigabe abgeleitet.
+- Commit: lokaler Dokumentationscommit „Offene Claude-Prüfungen für später festhalten“, Schlusszeile Agent: Codex. Kein Push/Merge.
+- Prüfung: Dokumentationsdiff, git diff --check und Geheimnismusterprüfung; keine Anwendungstests, ausschließlich Dokumentation. Letzter Codeprüfstand unverändert.
+- Grenzen/Abweichungen: Prüfungen nicht ausgeführt und weiter offen; keine Datenbank, Umgebungsdateien oder Geheimnisse gelesen, keine externen Aktionen. Keine Abweichung.
+
 ## 2026-11-22 18:56 (Europe/Berlin) – Codex – Migration 020 bestätigt
 - Nutzer im Wortlaut: „020 ist drin“. Als Vollzugsmeldung dokumentiert, keine unabhängige Datenbankprüfung behauptet.
 - Dateien: STATUS, Entscheidungen, Fragenprotokoll, Warteschlange, 4g-1-Plan und dieses Protokoll. Migration laut Nutzer erledigt; Claudes SQL-/Rechte- und echte Portalabnahme weiterhin offen. Kein erneutes Live-Einspielen angewiesen.

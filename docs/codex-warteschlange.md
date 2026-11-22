@@ -2,6 +2,8 @@
 
 Claude pflegt diese Liste; Codex arbeitet sie von oben nach unten ab (Regel in `AGENTS.md` Abschnitt 0). Ein Eintrag ist **freigegeben**, wenn der Nutzer in der Codex-Sitzung auf Codex' Vorschlag mit „okay“ (oder „ok“, „ja“, „los“) antwortet. Die Freigabe gilt nur für diesen einen Eintrag und nur bis zu seinem nächsten 🛑 Halte-Punkt.
 
+**2026-11-22:** Nutzer verschiebt die Claude-Prüfungen auf später. Offene Abnahmen sind gesammelt in [STATUS – Zurückgestellte To-dos für Claude](STATUS.md#zurückgestellte-to-dos-für-claude). Vorhandene Prüfvermerke bleiben gültig; ausstehende Abnahmen bleiben offen, keine neue Bau-/Live-/Uploadfreigabe aus dieser Entscheidung.
+
 Status: `offen` (wartet auf „okay“) · `in Arbeit` · `🛑 wartet auf Nutzer/Claude` · `erledigt`.
 
 | Nr | Auftrag | Plan | Status | Halt danach |
