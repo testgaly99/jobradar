@@ -84,8 +84,13 @@ def _schreibweisen(name):
     return ' '.join(f'{json.dumps(v, ensure_ascii=False)}@{sprache}' for v in alle for sprache in ('de', 'en'))
 
 
+def suche_namen(namen, holen=None):
+    """Mehrere Firmen in einer Abfrage; name_zu_id trennt die Treffer danach je Name."""
+    return abfrage(vorlage('name_zu_id').replace('{NAMEN}', ' '.join(_schreibweisen(n) for n in namen)), holen)
+
+
 def suche_name(name, holen=None):
-    return abfrage(vorlage('name_zu_id').replace('{NAMEN}', _schreibweisen(name)), holen)
+    return suche_namen([name], holen)
 
 
 def website_zu_name(name, holen=None):

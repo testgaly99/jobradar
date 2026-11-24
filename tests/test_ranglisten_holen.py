@@ -65,18 +65,37 @@ def _http_fehler(status, retry_after=None):
     return requests.HTTPError(f'HTTP {status}', response=antwort)
 
 
+def _zeile(q, name):
+    return {'firma': {'value': 'http://www.wikidata.org/entity/' + q}, 'namen': {'value': name},
+            'land': {'value': 'http://www.wikidata.org/entity/Q183'}, 'website': {'value': 'https://' + q.lower() + '.example'}}
+
+
+def test_abgleich_in_sammelabfragen_zu_zehn(monkeypatch):
+    abfragen, bericht = [], []
+    def suche(namen, holen):
+        abfragen.append(list(namen))
+        return {'results': {'bindings': [_zeile(f'Q{n[1:]}', n) for n in namen]}}
+    monkeypatch.setattr(rh.wikidata, 'suche_namen', suche)
+    kandidaten = [{'name': f'F{i}', 'land': 'DE'} for i in range(25)] + [{'name': 'Schon da', 'wikidata_id': 'Q9'}]
+    rh._anreichern(kandidaten, None, bericht, warte=lambda s: None)
+    assert [len(a) for a in abfragen] == [10, 10, 5]
+    assert kandidaten[0]['wikidata_id'] == 'Q0' and kandidaten[24]['website'] == 'https://q24.example'
+    assert not bericht
+
+
 def test_wikidata_drosselung_kostet_nicht_die_ganze_quelle(monkeypatch):
     # Live 2026-11-24: QLever antwortete beim Abgleich von ~300 Namen mit 429/500, und die ganze
-    # Scoreboard-/EPA-Liste wurde verworfen. Jetzt: einmal warten und neu versuchen, sonst nur diese Firma auslassen.
+    # Scoreboard-/EPA-Liste wurde verworfen. Jetzt: einmal warten und neu versuchen, sonst nur diese Gruppe auslassen.
     aufrufe, pausen, bericht = [], [], []
-    def suche(name, holen):
-        aufrufe.append(name)
-        if name == 'Gedrosselt' and aufrufe.count(name) == 1:
+    def suche(namen, holen):
+        aufrufe.append(namen[0])
+        if namen[0] == 'Gedrosselt' and aufrufe.count('Gedrosselt') == 1:
             raise _http_fehler(429, retry_after=7)
-        if name == 'Kaputt':
+        if namen[0] == 'Kaputt':
             raise _http_fehler(500)
         return {'results': {'bindings': []}}
-    monkeypatch.setattr(rh.wikidata, 'suche_name', suche)
+    monkeypatch.setattr(rh.wikidata, 'suche_namen', suche)
+    monkeypatch.setattr(rh, 'GRUPPE', 1)
     kandidaten = [{'name': n} for n in ('Gedrosselt', 'Kaputt', 'Normal')]
     rh._anreichern(kandidaten, None, bericht, warte=pausen.append)
     assert aufrufe == ['Gedrosselt', 'Gedrosselt', 'Kaputt', 'Kaputt', 'Normal']
@@ -86,11 +105,11 @@ def test_wikidata_drosselung_kostet_nicht_die_ganze_quelle(monkeypatch):
 
 def test_wikidata_abgleich_bricht_nach_fuenf_fehlern_in_folge_ab(monkeypatch):
     aufrufe, bericht = [], []
-    def suche(name, holen):
-        aufrufe.append(name)
+    def suche(namen, holen):
+        aufrufe.append(tuple(namen))
         raise _http_fehler(500)
-    monkeypatch.setattr(rh.wikidata, 'suche_name', suche)
-    rh._anreichern([{'name': f'F{i}'} for i in range(9)], None, bericht, warte=lambda s: None)
+    monkeypatch.setattr(rh.wikidata, 'suche_namen', suche)
+    rh._anreichern([{'name': f'F{i}'} for i in range(90)], None, bericht, warte=lambda s: None)
     assert len(set(aufrufe)) == 5
     assert any('abgebrochen' in z for z in bericht)
 
@@ -98,7 +117,7 @@ def test_wikidata_abgleich_bricht_nach_fuenf_fehlern_in_folge_ab(monkeypatch):
 def test_quelle_bleibt_erhalten_wenn_wikidata_ausfaellt(tmp_path, monkeypatch):
     monkeypatch.setattr(rh, 'QUELLEN', {'scoreboard-world': ('https://example.invalid/s', lambda b: [
         dict(kandidat('Firma A', 'scoreboard-world'), rang=1, land='DE')])})
-    monkeypatch.setattr(rh.wikidata, 'suche_name', lambda name, holen: (_ for _ in ()).throw(_http_fehler(429)))
+    monkeypatch.setattr(rh.wikidata, 'suche_namen', lambda namen, holen: (_ for _ in ()).throw(_http_fehler(429)))
     monkeypatch.setattr(rh.time, 'sleep', lambda s: None)
     b = rh.lauf('2026-11-24', tmp_path, holen=lambda url: SimpleNamespace(content=b''))
     assert b['geholt'] == ['scoreboard-world'] and not b['fehler']
