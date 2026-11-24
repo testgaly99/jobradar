@@ -133,3 +133,46 @@ def test_offen_nur_ohne_gueltiges_ergebnis():
     vorhanden = [{'job_id': 'J1', 'application_id': None, 'weg': 'claude'},
                  {'job_id': 'J2', 'application_id': None, 'weg': 'browser-vorlaeufig'}]
     assert [k.get('job_id') or k.get('application_id') for k in cv_abgleich.offen(kandidaten, vorhanden, 50)] == ['J2', 'B1']
+
+
+def test_stellen_fuer_abgleich_reihenfolge_sichtbarkeit_und_vorhandene(monkeypatch):
+    from scraper import db
+    liste = [{'id': 'a1', 'text': 'SQL', 'muss': True}]
+    daten = {
+        'applications': [{'id': 'B1', 'job_id': 'J1', 'anforderungsliste': None, 'anforderungs_hash': None},
+                         {'id': 'B2', 'job_id': None, 'anforderungsliste': liste, 'anforderungs_hash': 'b2'}],
+        'jobs_gemerkt': [{'id': 'J1', 'anforderungsliste': liste, 'anforderungs_hash': 'j1'}],
+        'jobs_offen': [{'id': 'J2', 'unternehmen': 'Sichtbar', 'titel': 'Data Engineer', 'anforderungsliste': liste, 'anforderungs_hash': 'j2'},
+                       {'id': 'J3', 'unternehmen': 'Fremd privat', 'titel': 'Data Analyst', 'anforderungsliste': liste, 'anforderungs_hash': 'j3'},
+                       {'id': 'J4', 'unternehmen': 'Sichtbar', 'titel': 'Koch', 'anforderungsliste': liste, 'anforderungs_hash': 'j4'},
+                       {'id': 'J5', 'unternehmen': 'Sichtbar', 'titel': 'Data Scientist', 'anforderungsliste': liste, 'anforderungs_hash': 'j5'}],
+        'cv_ergebnisse': [{'job_id': 'J5', 'application_id': None, 'weg': 'claude'}],
+    }
+
+    def alle(tabelle, params):
+        if tabelle == 'applications':
+            assert params['status'] == 'eq.gemerkt' and params['owner_id'] == 'eq.o'
+            return daten['applications']
+        if tabelle == 'jobs':
+            return daten['jobs_gemerkt'] if 'id' in params else daten['jobs_offen']
+        return daten[tabelle]
+    monkeypatch.setattr(db, '_alle_zeilen', alle)
+    monkeypatch.setattr(db, 'wunsch_und_stichwoerter', lambda o: (set(), ['Data']))
+    monkeypatch.setattr(db, 'sichtbare_firmen', lambda o: {'Sichtbar'})
+    erg = db.stellen_fuer_abgleich('o', 50)
+    assert [k.get('job_id') or k.get('application_id') for k in erg] == ['J1', 'B2', 'J2']
+
+
+def test_text_lesen_unbekanntes_format_ist_leer(tmp_path):
+    datei = tmp_path / 'cv.odt'
+    datei.write_bytes(b'x')
+    assert cv_abgleich.text_lesen(datei) == ''
+
+
+def test_text_lesen_word(tmp_path):
+    docx = pytest.importorskip('docx')
+    d = docx.Document()
+    d.add_paragraph('Regelmäßig SQL-Abfragen erstellt.')
+    d.add_paragraph('Englisch C1')
+    d.save(tmp_path / 'cv.docx')
+    assert cv_abgleich.text_lesen(tmp_path / 'cv.docx') == 'Regelmäßig SQL-Abfragen erstellt.\nEnglisch C1'

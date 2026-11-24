@@ -105,6 +105,127 @@ def setze_deutsch(job_id, steckbrief, stufe):
     _req("PATCH", "jobs", params={"id": f"eq.{job_id}"}, json={"steckbrief": steckbrief, "deutsch_stufe": stufe})
 
 
+# --- Plan 6a: Anforderungslisten und CV-Abgleich (Migration 018) ---
+_anforderung = None
+
+
+def anforderung_spalte_da():
+    """Einmal pro Lauf: gibt es jobs.anforderungs_hash schon (Migration 018)? Sonst 400."""
+    global _anforderung
+    if _anforderung is None:
+        try:
+            _req("GET", "jobs", params={"select": "anforderungs_hash", "limit": 0})
+            _anforderung = True
+        except RuntimeError as e:
+            if ": 400 " not in str(e):
+                raise
+            _anforderung = False
+            print("Hinweis: Spalte jobs.anforderungs_hash fehlt (Migration 018 offen), Anforderungslisten nicht gespeichert.")
+    return _anforderung
+
+
+def anforderungen_stellen():
+    return _alle_zeilen('jobs', {'select': 'id,abschnitte,anforderungs_hash', 'status': 'eq.offen', 'order': 'id'})
+
+
+def anforderungen_bewerbungen():
+    """Bewerbungen ohne Stelle (Q111): Anforderungen aus dem gegliederten Snapshot."""
+    return _alle_zeilen('applications', {'select': 'id,snapshot_abschnitte,anforderungs_hash', 'job_id': 'is.null', 'order': 'id'})
+
+
+def setze_anforderungen(tabelle, zeilen_id, liste, pruefsumme):
+    if tabelle not in ('jobs', 'applications'):
+        raise ValueError('Ungültige Tabelle')
+    _req('PATCH', tabelle, params={'id': f'eq.{zeilen_id}'}, json={'anforderungsliste': liste, 'anforderungs_hash': pruefsumme})
+
+
+def hat_cv_einwilligung(owner):
+    return bool(_req('GET', 'cv_einwilligung', params={'select': 'owner_id', 'owner_id': f'eq.{owner}', 'limit': 1}))
+
+
+def cv_dokumente(owner):
+    """CV-Versionen eines Kontos mit gespeichertem Text und Profil (None, wenn noch nicht vorhanden)."""
+    docs = _alle_zeilen('documents', {'select': 'id,name,storage_pfad,standard', 'owner_id': f'eq.{owner}',
+                                      'art': 'eq.cv', 'order': 'id'})
+    texte = {z['dokument_id']: z for z in _alle_zeilen('cv_texte', {'select': 'dokument_id,text,herkunft,hash',
+                                                                     'owner_id': f'eq.{owner}', 'order': 'dokument_id'})}
+    profile = {z['dokument_id']: z for z in _alle_zeilen('cv_profile', {'select': 'dokument_id,text_hash,aussagen',
+                                                                        'owner_id': f'eq.{owner}', 'order': 'dokument_id'})}
+    for d in docs:
+        d['cv_text'] = texte.get(d['id'])
+        d['profil'] = profile.get(d['id'])
+    return docs
+
+
+def lade_datei(pfad):
+    """Datei aus dem privaten Speicher (Bucket dokumente) mit dem Service-Schlüssel; nur in den Arbeitsspeicher."""
+    from urllib.parse import quote
+    _lade_env()
+    url, key = os.environ["SUPABASE_URL"].rstrip("/"), os.environ["SUPABASE_SERVICE_KEY"]
+    try:
+        r = requests.get(f"{url}/storage/v1/object/dokumente/{quote(pfad)}",
+                         headers={"apikey": key, "Authorization": f"Bearer {key}"}, timeout=60)
+    except requests.RequestException as e:
+        raise DatenbankFehler('GET', 'storage', None, ursache=type(e).__name__) from None
+    if not r.ok:
+        raise DatenbankFehler('GET', 'storage', r.status_code)
+    return r.content
+
+
+def speichere_cv_text(dokument_id, owner, text, herkunft, pruefsumme):
+    _req('POST', 'cv_texte', params={'on_conflict': 'dokument_id'}, headers={'Prefer': 'resolution=merge-duplicates'},
+         json={'dokument_id': dokument_id, 'owner_id': owner, 'text': text, 'herkunft': herkunft, 'hash': pruefsumme})
+
+
+def speichere_profil(dokument_id, owner, text_hash, aussagen):
+    _req('POST', 'cv_profile', params={'on_conflict': 'dokument_id'}, headers={'Prefer': 'resolution=merge-duplicates'},
+         json={'dokument_id': dokument_id, 'owner_id': owner, 'text_hash': text_hash, 'aussagen': aussagen})
+
+
+def stellen_fuer_abgleich(owner, grenze):
+    """Gemerkte Stellen zuerst (mit Stelle über deren Liste, ohne Stelle über die Bewerbung), dann offene Stellen mit
+    Titel-Stichwort; nur sichtbare Firmen; ohne gültiges Ergebnis (cv_abgleich.offen)."""
+    from scraper.cv_abgleich import offen
+    from scraper.digest import passt
+    kandidaten = []
+    gemerkt = _alle_zeilen('applications', {'select': 'id,job_id,anforderungsliste,anforderungs_hash',
+                                            'owner_id': f'eq.{owner}', 'status': 'eq.gemerkt', 'order': 'erstellt_am,id'})
+    stellen = {}
+    ids = [a['job_id'] for a in gemerkt if a.get('job_id')]
+    for i in range(0, len(ids), 100):
+        for j in _alle_zeilen('jobs', {'select': 'id,anforderungsliste,anforderungs_hash', 'id': 'in.(' + ','.join(
+                '"' + x.replace('"', '') + '"' for x in ids[i:i + 100]) + ')'}):
+            stellen[j['id']] = j
+    for a in gemerkt:
+        if a.get('job_id') and a['job_id'] in stellen:
+            j = stellen[a['job_id']]
+            kandidaten.append({'job_id': j['id'], 'anforderungen': j.get('anforderungsliste') or [],
+                               'anforderungs_hash': j.get('anforderungs_hash')})
+        elif not a.get('job_id'):
+            kandidaten.append({'application_id': a['id'], 'anforderungen': a.get('anforderungsliste') or [],
+                               'anforderungs_hash': a.get('anforderungs_hash')})
+    _, woerter = wunsch_und_stichwoerter(owner)
+    if woerter:
+        sichtbar = sichtbare_firmen(owner)
+        for j in _alle_zeilen('jobs', {'select': 'id,unternehmen,titel,anforderungsliste,anforderungs_hash',
+                                       'status': 'eq.offen', 'sichtbar': 'eq.true', 'anforderungs_hash': 'not.is.null',
+                                       'order': 'erstmals_gesehen.desc,id'}):
+            if j.get('unternehmen') in sichtbar and passt(j, set(), woerter):
+                kandidaten.append({'job_id': j['id'], 'anforderungen': j.get('anforderungsliste') or [],
+                                   'anforderungs_hash': j.get('anforderungs_hash')})
+    vorhanden = _alle_zeilen('cv_ergebnisse', {'select': 'job_id,application_id,weg', 'owner_id': f'eq.{owner}', 'order': 'id'})
+    return offen(kandidaten, vorhanden, grenze)
+
+
+def speichere_ergebnis(owner, ziel, **daten):
+    """Ein Ergebnis je Konto und Stelle bzw. Bewerbung: altes löschen, neues schreiben (Teilindizes, Migration 018)."""
+    (feld, wert), = ziel.items()
+    if feld not in ('job_id', 'application_id'):
+        raise ValueError('Ungültiges Ziel')
+    _req('DELETE', 'cv_ergebnisse', params={'owner_id': f'eq.{owner}', feld: f'eq.{wert}'})
+    _req('POST', 'cv_ergebnisse', headers={'Prefer': 'return=minimal'}, json={'owner_id': owner, feld: wert, **daten})
+
+
 def ki_spalten_da():
     """Gibt es jobs.ki schon (Migration 009)? Sonst antwortet PostgREST mit 400."""
     try:

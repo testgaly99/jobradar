@@ -1,4 +1,5 @@
 """Plan 6a, Task 1: Anforderungsliste je Stelle (Review Focus 1)."""
+import pytest
 import json
 from html import escape
 from pathlib import Path
@@ -45,3 +46,26 @@ def test_regeln_liegen_einmal_fuer_python_und_web_vor():
     assert {'oben', 'unten', 'fachbegriff', 'soll_woerter', 'anforderungs_titel'} <= set(r)
     assert {'anforderung', 'profil', 'qualifikation', 'das bringst du mit', 'was du mitbringst', 'requirements',
             'your profile', 'what you bring', 'qualifications'} <= set(r['anforderungs_titel'])
+
+
+def test_nachtlauf_traegt_nur_fehlende_oder_geaenderte_listen_ein(monkeypatch):
+    from scraper import db, run
+    profil = [{'titel': 'Your profile', 'punkte': ['SQL']}]
+    aktuell = pruefsumme(zerlege(profil))
+    geschrieben = []
+    monkeypatch.setattr(db, 'anforderung_spalte_da', lambda: True)
+    monkeypatch.setattr(db, 'anforderungen_stellen', lambda: [
+        {'id': 'J1', 'abschnitte': profil, 'anforderungs_hash': None},
+        {'id': 'J2', 'abschnitte': profil, 'anforderungs_hash': aktuell},
+        {'id': 'J3', 'abschnitte': [{'titel': 'Aufgaben', 'punkte': ['x']}], 'anforderungs_hash': 'alt'}])
+    monkeypatch.setattr(db, 'anforderungen_bewerbungen', lambda: [{'id': 'B1', 'snapshot_abschnitte': profil, 'anforderungs_hash': None}])
+    monkeypatch.setattr(db, 'setze_anforderungen', lambda *a: geschrieben.append(a[:2]))
+    assert run._anforderungen_nachruesten() == 3
+    assert geschrieben == [('jobs', 'J1'), ('jobs', 'J3'), ('applications', 'B1')]
+
+
+def test_nachtlauf_ohne_migration_018_ueberspringt_still(monkeypatch):
+    from scraper import db, run
+    monkeypatch.setattr(db, 'anforderung_spalte_da', lambda: False)
+    monkeypatch.setattr(db, 'anforderungen_stellen', lambda: pytest.fail('ohne Spalte nichts lesen'))
+    assert run._anforderungen_nachruesten() == 0
