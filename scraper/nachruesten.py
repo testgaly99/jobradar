@@ -14,22 +14,8 @@ from scraper.ats import sitemap
 from scraper.fehler import kurzfehler
 from scraper.steckbrief import steckbrief
 
-# Gleich wie PORTALE in web/lib/stellen-import.ts (ein Test prüft das); "name.*" steht für beliebige Endungen.
-PORTALE = ["linkedin.com", "lnkd.in", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com"]
-
-
-def ist_portal(host):
-    l = host.lower().rstrip(".").split(".")
-    for p in PORTALE:
-        if not p.endswith(".*"):
-            n = p.split(".")
-            if len(l) >= 2 and l[-len(n):] == n:
-                return True
-        elif len(l) >= 2 and len(l[-1]) >= 2:
-            name = p[:-2]
-            if l[-2] == name or (len(l[-1]) == 2 and len(l) >= 3 and l[-2] in ("co", "com") and l[-3] == name):
-                return True
-    return False
+# Jobportale: zentrale Liste und Prüfung in scraper/http.py (gilt für jeden Abruf).
+PORTALE, ist_portal = http.PORTALE, http.ist_portal
 
 
 def _aufloesen(host):

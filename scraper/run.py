@@ -34,7 +34,7 @@ def _schreibe_text(pfad, text):
         raise
 
 
-_MELDUNGEN = {"kein Objekt", "doppelte ID", "isListed ungültig", "Status ungültig", "vertagt"}  # feste Adapter-Gründe
+_MELDUNGEN = {"kein Objekt", "doppelte ID", "isListed ungültig", "Status ungültig", "vertagt", "unvollstaendig"}  # feste Adapter-Gründe
 
 
 def _grund(s, bekannte, gesehen):
@@ -91,8 +91,9 @@ def _firma(f, heute):
         stellen = adapter(f["ats_id"], bekannte=bekannte)
         schritt = "Antwortprüfung"
         gueltig, uebersprungen = _pruefe_stellen(stellen, bekannte)
-        # alles kaputt: eher Formatwechsel beim ATS als Einzelfehler; nur „vertagt“ (Tagesgrenze, 429) ist keiner
-        if stellen and not gueltig and set(uebersprungen) != {"vertagt"}:
+        # alles kaputt: eher Formatwechsel beim ATS als Einzelfehler; „vertagt“/„unvollstaendig“ (Tagesgrenze, 429,
+        # Liste nicht ganz gelesen) sind keiner
+        if stellen and not gueltig and set(uebersprungen) - {"vertagt", "unvollstaendig"}:
             zeile.update(gefunden=len(stellen), uebersprungen=dict(uebersprungen),
                          fehler=f"{schritt}: alle {len(stellen)} Stellen übersprungen (Format geändert?)")
             return zeile
@@ -115,7 +116,9 @@ def _firma(f, heute):
                 gruende[grund] += 1
         schritt = "Abgleich"
         # Eine übersprungene Stelle könnte eine bestehende sein: dann nichts schließen.
-        neu, geschlossen = db.schreibe(name, behalten, heute, unveraendert, schliessen=not uebersprungen)
+        # „vertagt“ heißt: Adressliste vollständig, nur neue Seiten auf morgen verschoben -> Verschwundenes darf schließen
+        neu, geschlossen = db.schreibe(name, behalten, heute, unveraendert,
+                                       schliessen=not (set(uebersprungen) - {"vertagt"}))
         zeile.update(gefunden=len(stellen), gefiltert=sum(gruende.values()), gruende=dict(gruende),
                      uebersprungen=dict(uebersprungen), neu=neu, geschlossen=geschlossen)
     except Exception as e:

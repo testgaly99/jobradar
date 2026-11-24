@@ -76,12 +76,14 @@ def test_unteradresse_und_stellenadressen_ohne_jobwort():
                   'https://jobs.firma.example/de-sitemap.xml': _karte('https://jobs.firma.example/de', *jobs),
                   **{u: _jp() for u in jobs}})
     r = e.richte_ein(firma(), holen=holen, adapter=PROBE)
-    assert (r['status'], r['ats_typ'], r['ats_id']) == ('aktiv', 'sitemap', 'https://jobs.firma.example/sitemap.xml#')
+    # ohne Stellenwort: nur die Teil-Sitemap mit den Stellen, nie „alle Seiten der Website“ (Review Befund 3)
+    assert (r['status'], r['ats_typ'], r['ats_id']) == ('aktiv', 'sitemap', 'https://jobs.firma.example/de-sitemap.xml#')
 
 
 def test_stellenliste_ohne_sitemap_avature():
     ids = range(530640, 530646)
     links = ''.join(f'<a href="/de_DE/externaljobs/JobDetail/{i}">Stelle</a>' for i in ids)
+    links += '<a href="/de_DE/externaljobs/SearchJobs?folderRecordsPerPage=6&amp;folderOffset=6">Weiter</a>'
     avature = ('<meta property="og:title" content="Ingenieur"><div class="article__content__view__field__label">Standort(e)</div>'
                '<div class="article__content__view__field__value">Berlin</div>')
     seiten = {'https://www.firma.example': '<a href="https://jobs.firma.example/de_DE/externaljobs/SearchJobs">Stellen suchen</a>',
@@ -148,3 +150,49 @@ def test_faellig_fuer_erneuten_versuch():
     assert e.faellig({'status': 'offen'}, '2026-11-24', heute)  # alter Stand ohne Suchversion
     assert not e.faellig({'status': 'offen'}, {'datum': '2026-11-20', 'suche': e.SUCHVERSION}, heute)
     assert e.faellig({'status': 'portal_nicht_unterstuetzt'}, {'datum': '2026-10-20', 'suche': e.SUCHVERSION}, heute)
+
+
+def test_startseite_mit_neuesten_stellen_ohne_blaettern_ist_keine_liste():
+    # Review Befund 4: „die 5 neuesten Stellen“ ohne Blätter-Link würde morgen offene Stellen schließen
+    links = ''.join(f'<a href="/de/job/Stelle-{i}/{i}">Stelle</a>' for i in range(5))
+    seiten = {'https://www.firma.example': links, **{f'https://www.firma.example/de/job/Stelle-{i}/{i}': _jp() for i in range(5)}}
+    r = e.richte_ein(firma(), holen=_web(seiten), adapter=PROBE)
+    assert r.get('ats_typ') != 'liste'
+
+
+def test_jobportal_link_fremder_art_wird_nie_quelle():
+    # Review Befund 1: karriere.at u. a. sind Jobportale; die zentrale Sperre greift vor jedem Abruf
+    from scraper import http
+    assert all(http.ist_portal(h) for h in ('www.karriere.at', 'www.stellenanzeigen.de', 'jobboerse.arbeitsagentur.de',
+                                            'www.heyjobs.co', 'de.jooble.org'))
+    assert not http.ist_portal('karriere.firma.de')
+    aufrufe = []
+    seiten = {'https://www.firma.example': '<a href="https://www.karriere.at/f/firma">Wir auf karriere.at – Jobs</a>'}
+    r = e.richte_ein(firma(), holen=_web(seiten, aufrufe), adapter=PROBE)
+    assert r['status'] == 'offen' and not any('karriere.at' in u for u in aufrufe)
+
+
+def test_fremde_seite_fuehrt_nicht_weiter_auf_dritte_hosts():
+    # Review Befund 1b: von einer fremden Seite aus keine Links auf noch andere Hosts
+    aufrufe = []
+    seiten = {'https://www.firma.example': '<a href="https://partner.example/karriere">Karriere bei Partnern</a>',
+              'https://partner.example/karriere': '<a href="https://dritte.example/jobs">Jobs</a>'}
+    e.richte_ein(firma(), holen=_web(seiten, aufrufe), adapter=PROBE)
+    assert 'https://partner.example/karriere' in aufrufe and not any('dritte.example' in u for u in aufrufe)
+
+
+def test_403_sperrt_den_host_fuer_weitere_pfade():
+    # Review Befund 7: nach einer Absage keine weiteren Pfade auf demselben Host
+    aufrufe = []
+    r = e.richte_ein(firma(), holen=_web({'https://www.firma.example': _fehler(403)}, aufrufe), adapter=PROBE)
+    assert r['status_grund'] == 'lehnt Abruf ab (403)'
+    assert [u for u in aufrufe if u.startswith('https://www.firma.example')] == ['https://www.firma.example']
+
+
+def test_ratenbegrenzung_wird_beim_naechsten_lauf_wiederholt(tmp_path, monkeypatch):
+    # Review Befund 8: 429 in der Probe schreibt keinen Stand, sonst 30 Tage Sperre
+    from scraper.ranglisten_holen import schreibe_firmen
+    schreibe_firmen(tmp_path / 'companies.csv', [firma()])
+    monkeypatch.setattr(e, 'richte_ein', lambda f: dict(f, status='offen', aktiv='nein', status_grund='Ratenbegrenzung, später erneut'))
+    e.lauf(tmp_path, mit_db=False)
+    assert not (tmp_path / 'einrichtung_stand.json').exists() or 'Beispiel' not in (tmp_path / 'einrichtung_stand.json').read_text(encoding='utf-8')

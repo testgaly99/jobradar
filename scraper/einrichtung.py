@@ -18,7 +18,7 @@ from scraper.ats_erkennung import erkenne_portal
 from scraper.companies import lade_unternehmen, wende_korrekturen_an
 from scraper.fehler import kurzfehler
 from scraper.filter import ist_relevant
-from scraper.nachruesten import ist_portal
+from scraper.http import ist_portal, registrierbare_domain as _regdom
 from scraper.ranglisten_holen import lies_json, schreibe_json, schreibe_firmen
 from scraper.run import _schreibe_text
 
@@ -75,11 +75,6 @@ def portal_links(html, basis):
     return list(result.values())
 
 
-def _regdom(host):
-    t = (host or '').lower().split('.')
-    return '.'.join(t[-3:]) if len(t) > 2 and t[-2] in ('co', 'com') and len(t[-1]) == 2 else '.'.join(t[-2:])
-
-
 class _Robots:
     """robots.txt je Host höchstens einmal lesen; 4xx = keine robots.txt (None), andere Fehler gehen durch."""
     def __init__(self, holen):
@@ -133,7 +128,7 @@ def _sitemap_quelle(basis, holen, robots):
     karten = [k for k in karten if urlsplit(k).scheme == 'https'
               and _regdom(urlsplit(k).hostname) == _regdom(urlsplit(basis).hostname)] or [basis + '/sitemap.xml']
     for karte in karten[:3]:
-        ziele, n, adressen = [karte], 0, []
+        ziele, n, adressen, fund = [karte], 0, [], karte
         while ziele and n < MAX_SITEMAPS and not adressen:
             z = ziele.pop(0)
             n += 1
@@ -148,9 +143,11 @@ def _sitemap_quelle(basis, holen, robots):
                 vorne = [x for x in locs if re.search(r'job|stelle|position|career|vacanc', x, re.I)]
                 ziele = vorne[:6] + ziele + [x for x in locs if x not in vorne][:3]
             else:
-                adressen = _stellenadressen(locs)
+                adressen, fund = _stellenadressen(locs), z
         if adressen and _bestaetigt(holen, adressen):
-            return dict(ats_typ='sitemap', ats_id=karte + '#' + _merkmal(adressen[0]), careers_url=basis)
+            merkmal = _merkmal(adressen[0])
+            # Ohne Stellenwort in der Adresse würde '' jede Seite der Website treffen: dann nur die Teil-Sitemap der Stellen
+            return dict(ats_typ='sitemap', ats_id=(karte if merkmal else fund) + '#' + merkmal, careers_url=basis)
     return None
 
 
@@ -159,7 +156,7 @@ def _listen_quelle(seiten_url, links, holen):
     host = urlsplit(seiten_url).hostname
     stellen = list(dict.fromkeys(l for l in links if urlsplit(l).hostname == host and _merkmal(l)
                                  and STELLE.search(urlsplit(l).path) and not LISTENENDE.search(urlsplit(l).path)))
-    if len(stellen) < 3 or not _bestaetigt(holen, stellen):
+    if len(stellen) < 3 or not any(liste._blaetterseite(l, seiten_url) for l in links) or not _bestaetigt(holen, stellen):
         return None
     return dict(ats_typ='liste', ats_id=urldefrag(seiten_url)[0] + '#' + _merkmal(stellen[0]), careers_url=seiten_url)
 
@@ -170,11 +167,11 @@ def _suche(url, holen, robots):
     basis, dom = f'https://{start.netloc}', _regdom(start.hostname)
     ziele = [(url, 0)] + [(f'https://{s}.{dom}/', 1) for s in UNTERADRESSEN if f'{s}.{dom}' != start.hostname]
     ziele += [(basis + p, 1) for p in PFADE if basis + p != url]
-    besucht, geprueft, sitemap_hosts = set(), set(), set()
+    besucht, geprueft, sitemap_hosts, gesperrt = set(), set(), set(), set()
     e = dict(kandidaten={}, unbekannt=[], verboten=False, abgelehnt=False, erreicht=0)
     while ziele and len(besucht) < MAX_SEITEN:
         ziel, tiefe = ziele.pop(0)
-        if ziel in besucht or ist_portal(urlsplit(ziel).hostname or ''):
+        if ziel in besucht or ist_portal(urlsplit(ziel).hostname or '') or urlsplit(ziel).hostname in gesperrt:
             continue
         besucht.add(ziel)
         try:
@@ -183,7 +180,9 @@ def _suche(url, holen, robots):
             e['verboten'] = True
             continue
         except requests.HTTPError as exc:
-            e['abgelehnt'] |= getattr(exc.response, 'status_code', 0) == 403
+            if getattr(exc.response, 'status_code', 0) == 403:  # Q288: Absage gilt für den ganzen Host, nie umgehen
+                gesperrt.add(urlsplit(ziel).hostname)
+                e['abgelehnt'] |= urlsplit(ziel).hostname == start.hostname
             continue
         except Exception:
             continue  # ein üblicher Pfad oder eine Unteradresse kann fehlen
@@ -206,7 +205,12 @@ def _suche(url, holen, robots):
                 if k:
                     e['kandidaten'][(k['ats_typ'], k['ats_id'])] = k
             elif (tiefe < MAX_TIEFE and link not in besucht and not NICHT_FOLGEN.search(link)
-                  and not ist_portal(t.hostname or '') and KARRIERE.search((t.hostname or '') + t.path)):
+                  and not ist_portal(t.hostname or '') and KARRIERE.search((t.hostname or '') + t.path)
+                  # fremde Adressen nur von Seiten der Firma aus; innerhalb einer erreichten Gruppen-Domain weiter
+                  and dom in (_regdom(urlsplit(seiten_url).hostname), _regdom(t.hostname))
+                  or (tiefe < MAX_TIEFE and link not in besucht and not ist_portal(t.hostname or '')
+                      and _regdom(t.hostname) == _regdom(urlsplit(seiten_url).hostname)
+                      and KARRIERE.search((t.hostname or '') + t.path) and not NICHT_FOLGEN.search(link))):
                 ziele.append((urldefrag(link)[0], tiefe + 1))
         if e['kandidaten'] or e['unbekannt']:
             break
@@ -323,7 +327,7 @@ def richte_ein(firma, holen=None, adapter=None):
     try:
         if k['ats_typ'] not in adapter:
             return dict(result, status='portal_nicht_unterstuetzt', status_grund=k['ats_typ'])
-        with _probegrenzen():
+        with probegrenzen():
             antwort = adapter[k['ats_typ']](k['ats_id'])
         if not isinstance(antwort, list):
             raise ValueError('Ungültige Probeantwort')
@@ -344,7 +348,7 @@ def richte_ein(firma, holen=None, adapter=None):
 
 
 @contextlib.contextmanager
-def _probegrenzen():
+def probegrenzen():
     """Probe in der Einrichtung: höchstens PROBE_NEU Stellenseiten und wenige Listenseiten (nicht der Tägliche Lauf)."""
     alt = sitemap.MAX_NEU, liste.MAX_SEITEN
     sitemap.MAX_NEU, liste.MAX_SEITEN = PROBE_NEU, 5
@@ -410,7 +414,8 @@ def lauf(datenordner='data', budget_s=17100, mit_db=True):  # 285 min, vor dem 3
         firmen[i] = richte_ein(f)
         firmen = wende_korrekturen_an(firmen, d / 'firmen_korrekturen.csv')
         schreibe_firmen(d / 'companies.csv', firmen)
-        stand[f['name']] = {'datum': date.today().isoformat(), 'suche': SUCHVERSION}
+        if firmen[i].get('status_grund') != 'Ratenbegrenzung, später erneut':  # 429: beim nächsten Lauf gleich wieder
+            stand[f['name']] = {'datum': date.today().isoformat(), 'suche': SUCHVERSION}
         schreibe_json(d / 'einrichtung_stand.json', stand)
         bearbeitet += 1
     offen = sorted((f for f in firmen if f.get('status') != 'aktiv'), key=lambda f: raenge.get(f['name'], 10**9))

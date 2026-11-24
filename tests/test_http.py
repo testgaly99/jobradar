@@ -75,3 +75,17 @@ def test_robots_netzfehler_wirft(monkeypatch):
     monkeypatch.setattr(requests, "get", get)
     with pytest.raises(http.RobotsNichtErreichbar):
         http.hole("https://example.com/x")
+
+
+def test_pause_gilt_je_firma_ueber_unteradressen(monkeypatch):
+    # Review 2026-11-24 Befund 6: www./jobs./karriere. derselben Firma teilen sich die Sekunde
+    assert http.registrierbare_domain("jobs.firma.de") == http.registrierbare_domain("www.firma.de") == "firma.de"
+    assert http.registrierbare_domain("careers.firma.co.uk") == "firma.co.uk"
+    assert http.registrierbare_domain("jobs.firma.org.uk") == "firma.org.uk"
+    schlaf = []
+    monkeypatch.setattr(http.time, "sleep", schlaf.append)
+    monkeypatch.setattr(http.requests, "get", lambda *a, **k: None)
+    http._zuletzt.clear()
+    http._get("https://www.firma.de", "https://www.firma.de/")
+    http._get("https://jobs.firma.de", "https://jobs.firma.de/")
+    assert schlaf and schlaf[0] > 0

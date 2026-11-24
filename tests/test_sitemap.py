@@ -294,3 +294,24 @@ def test_deutsche_stellen_zuerst(monkeypatch):
     abgerufen = _fake(monkeypatch, {SITEMAP: _sitemap(en, de), en: _seite(), de: _seite()})
     sitemap.hole_stellen(SITEMAP + "#/job/")
     assert abgerufen == [SITEMAP, de, en]
+
+
+def test_startpunkt_wandert_taeglich(monkeypatch):
+    # Review Befund 2: nie gespeicherte Seiten (Ausland, abgelaufen) dürfen nicht jeden Tag dieselben Plätze belegen
+    urls = [_job(i) for i in range(4)]
+    monkeypatch.setattr(sitemap, "MAX_NEU", 2)
+    geladen = []
+    for tag in (100, 101):
+        monkeypatch.setattr(sitemap, "_tag", lambda tag=tag: tag)
+        abgerufen = _fake(monkeypatch, {SITEMAP: _sitemap(*urls), **{u: _seite() for u in urls}})
+        sitemap.hole_stellen(ATS_ID)
+        geladen += abgerufen[1:]
+    assert sorted(geladen) == sorted(urls)  # nach zwei Tagen ist jede Seite einmal dran gewesen
+
+
+def test_mikrodaten_ignorieren_firmenadresse_im_kopf(monkeypatch):
+    url = "https://jobs.beispiel.de/Karriere/job/Muenchen-Data-Analyst-%28mwd%29-BY-80331/1234/"
+    kopf = '<meta itemprop="addressLocality" content="Firmensitz Hamburg">'
+    seite = _lies("sitemap_successfactors.html").replace("<head>", "<head>" + kopf)
+    _fake(monkeypatch, {SITEMAP: _sitemap(url), url: seite})
+    assert sitemap.hole_stellen(SITEMAP + "#/job/")[0]["ort"] == "München, DE"

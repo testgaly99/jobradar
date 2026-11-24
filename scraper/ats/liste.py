@@ -88,7 +88,7 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
     for link in links:
         urls.setdefault(_ext_id(link), link)
     stellen, zaehler, neu, stopp, fehlserie = [], Counter(), 0, False, 0
-    for ext_id, url in urls.items():
+    for ext_id, url in sitemap.reihenfolge(list(urls.items()), lambda x: x[0] not in bekannte and not sitemap._vorgefiltert(x[1])):
         if sitemap._vorgefiltert(url):
             zaehler["vorgefiltert"] += 1
             continue
@@ -121,7 +121,9 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
         if s:
             stellen.append(s)
             zaehler["geladen"] += 1
-    if stopp or not vollstaendig:  # Liste unvollständig, Tagesgrenze oder 429: Rest morgen, der Lauf schließt nichts
+    if not vollstaendig:  # nicht alle Listenseiten gelesen: fehlende Bekannte sind evtl. noch online -> nichts schließen
+        stellen.append({"uebersprungen": "unvollstaendig"})
+    elif stopp:  # Liste vollständig, nur neue Seiten vertagt: fehlende Bekannte sind wirklich weg
         stellen.append({"uebersprungen": "vertagt"})
     print(f"Hinweis: Stellenliste: {len(urls)} Stellen-Adressen, vollständig: {vollstaendig}, "
           + ", ".join(f"{k}: {v}" for k, v in zaehler.items()))

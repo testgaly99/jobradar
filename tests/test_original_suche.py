@@ -189,14 +189,20 @@ def test_http_kontext_prueft_auch_adapterweiterleitungen(monkeypatch):
     def get(url,**kw):
         calls.append(url);r=requests.Response();r.url=url;r._content=b'';r._content_consumed=True
         r.status_code=404 if url.endswith('robots.txt') else 302
-        r.headers['Location']='https://www.indeed.de/viewjob?jk=9'
+        r.headers['Location']=ziel[0]
         return r
     monkeypatch.setattr(requests,'get',get)
     def pruefe(url):
-        if 'indeed' in url:raise ValueError('Portal')
-    with schutz(pruefe),pytest.raises(ValueError,match='Portal'):
+        if 'intern' in url:raise ValueError('Intern')
+    ziel=['https://intern.example.invalid/x']
+    with schutz(pruefe),pytest.raises(ValueError,match='Intern'):
         http.hole('https://firma.example.invalid/jobs')
     assert calls==['https://firma.example.invalid/robots.txt','https://firma.example.invalid/jobs']
+    # Weiterleitung auf ein Jobportal stoppt die zentrale Sperre, auch ohne eigene Prüfung (Review 2026-11-24)
+    calls.clear();http._robots.clear();ziel[0]='https://www.indeed.de/viewjob?jk=9'
+    with pytest.raises(http.Jobportal):
+        http.hole('https://firma.example.invalid/jobs')
+    assert not any('indeed' in u for u in calls)
 
 
 def test_fehlende_migration_020_kontrolliert(monkeypatch,capsys):

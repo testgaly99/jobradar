@@ -1,4 +1,8 @@
-export const PORTALE = ["linkedin.com", "lnkd.in", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com"];
+export const PORTALE = ["linkedin.com", "lnkd.in", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com",
+  "karriere.at", "stellenanzeigen.de", "jobware.de", "meinestadt.de", "absolventa.de", "ausbildung.de",
+  "arbeitsagentur.de", "jobs.ch", "jobscout24.ch", "stellenwerk.de", "yourfirm.de", "experteer.*",
+  "get-in-it.de", "staufenbiel.de", "jobvector.de", "academics.de", "hokify.*", "heyjobs.*", "jobrapido.*",
+  "careerjet.*", "jooble.*", "adzuna.*", "kimeta.de", "jobteaser.com", "ziprecruiter.com", "totaljobs.com"];
 export const ERWEITERUNG_GESPERRT = ["linkedin.com", "lnkd.in", "stepstone.*", "xing.com"];
 export const PORTAL_EINGABE = "Aus diesem Link kann jobradar die Firma nicht lesen. Bitte Firma und Titel eintragen – die Chrome-Erweiterung macht das automatisch.";
 

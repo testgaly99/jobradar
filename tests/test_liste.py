@@ -83,7 +83,7 @@ def test_unvollstaendige_liste_schliesst_nichts(monkeypatch):
     _fake(monkeypatch, seiten | {_detail(1): _avature()})
     monkeypatch.setattr(liste, "MAX_SEITEN", 3)
     stellen = liste.hole_stellen(ATS_ID, bekannte=frozenset({"JobDetail-6", "JobDetail-12"}))
-    assert stellen[-1] == {"uebersprungen": "vertagt"}
+    assert stellen[-1] == {"uebersprungen": "unvollstaendig"}  # Lauf schließt dann nichts
     assert {"ext_id": "JobDetail-6", "unveraendert": True} in stellen
 
 

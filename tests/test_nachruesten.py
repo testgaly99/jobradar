@@ -151,7 +151,7 @@ def test_ohne_migration_012_nichts_tun(fake, capsys):
 
 def test_portalliste_gleich_wie_website():
     ts = (Path(__file__).parent.parent / "web/lib/jobportale.ts").read_text(encoding="utf-8")
-    liste = re.search(r"export const PORTALE(?:: string\[\])? = \[(.*?)\];", ts).group(1)
+    liste = re.search(r"export const PORTALE(?:: string\[\])? = \[(.*?)\];", ts, re.S).group(1)
     assert sorted(re.findall(r'"([^"]+)"', liste)) == sorted(nachruesten.PORTALE)
     for host in ["www.indeed.co.uk", "x.xing.com", "linkedin.de", "jobs.stepstone.de", "karriere.firma.de"]:
         assert nachruesten.ist_portal(host) == (host != "karriere.firma.de" and host != "linkedin.de"), host

@@ -109,14 +109,15 @@ def _inneres(seite, start):
 
 def _mikrodaten(seite):
     """schema.org-JobPosting als Microdata (SuccessFactors-Karriereseiten) in dieselbe Form wie JSON-LD bringen."""
-    if not re.search(r'itemtype="https?://schema\.org/JobPosting"', seite, re.I):
+    treffer = re.search(r'itemtype="https?://schema\.org/JobPosting"', seite, re.I)
+    if not treffer:
         return None
     werte = {}
-    for m in _META.finditer(seite):
+    for m in _META.finditer(seite, treffer.start()):  # Firmenadresse im Seitenkopf ist kein Stellenort
         a = dict((k.lower(), unescape(v)) for k, v in _ATTR.findall(m.group(0)))
         if a.get("itemprop") and "content" in a:
             werte.setdefault(a["itemprop"], a["content"])
-    for m in re.finditer(r'<(?!meta\b)[a-zA-Z0-9]+\b[^>]*\bitemprop="(title|description|employmentType|validThrough)"', seite):
+    for m in re.compile(r'<(?!meta\b)[a-zA-Z0-9]+\b[^>]*\bitemprop="(title|description|employmentType|validThrough)"').finditer(seite, treffer.start()):
         werte.setdefault(m.group(1), _inneres(seite, m.start()))
     if "description" in werte:  # SuccessFactors hängt Schlagwörter an die Beschreibung
         werte["description"] = re.sub(r'<span class="jobsegments">.*', "", werte["description"], flags=re.S)
@@ -158,6 +159,28 @@ def _deutsch_zuerst(url):
     """Sortierschlüssel: Adressen mit deutschem Sprach-/Länderteil oder deutscher Stadt zuerst (Tagesgrenze)."""
     pfad = unquote(urlsplit(url).path)
     return 0 if _DE.search(pfad) or deutsche_staedte(re.sub(r"[-_/]", " ", pfad)) else 1
+
+
+def _tag():
+    return date.today().toordinal()
+
+
+def reihenfolge(urls, ist_neu):
+    """Deutsche Adressen zuerst. Gibt es mehr neue Adressen als MAX_NEU, wandert der Startpunkt täglich um MAX_NEU:
+    Seiten, die nie gespeichert werden (Ausland, abgelaufen), belegen so nicht jeden Tag dieselben Plätze."""
+    gruppen = {}
+    for x in urls:
+        gruppen.setdefault(_deutsch_zuerst(x[1]), []).append(x)
+    aus = []
+    for g in sorted(gruppen):
+        teil = gruppen[g]
+        neu = [x for x in teil if ist_neu(x)]
+        if len(neu) > MAX_NEU:
+            k = (_tag() * MAX_NEU) % len(neu)
+            neu = neu[k:] + neu[:k]
+            teil = neu + [x for x in teil if not ist_neu(x)]
+        aus += teil
+    return aus
 
 
 def _ratenbegrenzt(e):
@@ -239,7 +262,7 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
             continue
         urls[ext_id] = url
     zaehler, fehlserie, neu, vertagt = Counter(), 0, 0, False
-    for ext_id, url in sorted(urls.items(), key=lambda x: _deutsch_zuerst(x[1])):
+    for ext_id, url in reihenfolge(list(urls.items()), lambda x: x[0] not in bekannte and not _vorgefiltert(x[1])):
         if _vorgefiltert(url):
             zaehler["vorgefiltert"] += 1
             continue

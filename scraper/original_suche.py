@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 
 from scraper import db, http, ki, nachruesten
 from scraper.ats import ADAPTER
+from scraper import einrichtung
 from scraper.einrichtung import finde_portal
 from scraper.quellen import wikidata
 from scraper.titel_vergleich import vergleiche
@@ -145,7 +146,9 @@ def lauf(holen=http.hole, adapter=None, frage=_STANDARD, pruefe=None):
             continue
         zaehler['gesucht'] += 1
         try:
-            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()), http.zielschutz(pruefe, gepinnt=True):
+            # Grenzen wie die Probe der Einrichtung: eine Bewerbung darf nie den Täglichen Lauf sprengen (Review 2026-11-24)
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()), http.zielschutz(pruefe, gepinnt=True), \
+                    einrichtung.probegrenzen():
                 patch = _suche(a, holen, adapter, frage, pruefe)
         except (ki.Erschoepft, ki.GroqWeg):
             break  # Markierung bleibt offen, kein halber Abschluss.
