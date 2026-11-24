@@ -1,8 +1,16 @@
+import pytest
 import json
 from types import SimpleNamespace
 
 from scraper import ranglisten_holen as rh
 from scraper.quellen import kandidat
+
+
+@pytest.fixture(autouse=True)
+def ohne_website_abgleich(monkeypatch):
+    # Der Website-Schritt (Plan 2026-11-24) hat eigene Tests in test_websites.py; hier nie Netz, nie Wartezeit
+    from scraper.quellen import websites
+    monkeypatch.setattr(websites, 'websites_zu_namen', lambda namen, *a, **k: {})
 
 
 def test_monatssperre_und_keine_rohdaten(tmp_path, monkeypatch):

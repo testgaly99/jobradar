@@ -348,3 +348,15 @@ def test_eine_kaputte_stelle_stoppt_das_nachruesten_nicht(aufbau, monkeypatch):
     monkeypatch.setattr(run, "deutsch_nachtragen", lambda alt, ab, text: (_ for _ in ()).throw(ValueError("x")) if text == "kaputt" else echt(alt, ab, text))
     t["jobs"]["A:1"]["text"] = "kaputt"
     assert run._deutsch_nachruesten() == 2 and t["jobs"]["A:3"]["deutsch_stufe"] == 5
+
+
+@pytest.mark.parametrize("marke,offen", [("vertagt", False), ("unvollstaendig", True)])
+def test_vertagt_schliesst_verschwundene_unvollstaendig_nicht(aufbau, marke, offen):
+    # „vertagt“: Adressliste vollständig, nur neue Seiten auf morgen -> A:1 ist wirklich weg und wird geschlossen.
+    # „unvollstaendig“: Liste nicht ganz gelesen -> A:1 kann noch online sein, nichts schließen. Beides kein Fehler.
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1")]})
+    run.lauf("2026-11-06", d)
+    run.ADAPTER["a"] = lambda _, **k: [{"uebersprungen": marke}]
+    bericht = run.lauf("2026-11-07", d)["firmen"][0]
+    assert bericht["fehler"] == ""
+    assert (t["jobs"]["A:1"]["status"] == "offen") is offen

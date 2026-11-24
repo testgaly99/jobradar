@@ -67,8 +67,8 @@ test("Fokus oder Auswahlbereich in Formular/Editor wird vor dem Auslesen ausgesc
 });
 
 test("Portale: nur registrierbare Domain samt Subdomains, keine Ähnlichkeiten", () => {
-  for (const h of ["linkedin.com", "de.linkedin.com", "www.stepstone.de", "stepstone.at", "de.indeed.com", "indeed.de", "uk.indeed.co.uk", "www.xing.com", "glassdoor.de", "www.monster.fr", "www.kununu.com", "WWW.LinkedIn.com"]) assert.equal(istPortal(h), true, h);
-  for (const h of ["evil-linkedin.com", "linkedin.com.evil.example", "notindeed.de", "stepstone.evil.com", "linkedin.de", "xing.de", "kununu.de", "karriere.example.invalid", "", "indeed"]) assert.equal(istPortal(h), false, h);
+  for (const h of ["linkedin.com", "de.linkedin.com", "www.stepstone.de", "stepstone.at", "de.indeed.com", "indeed.de", "uk.indeed.co.uk", "www.xing.com", "glassdoor.de", "www.monster.fr", "www.kununu.com", "WWW.LinkedIn.com", "xing.de", "kununu.de"]) assert.equal(istPortal(h), true, h);
+  for (const h of ["evil-linkedin.com", "linkedin.com.evil.example", "notindeed.de", "stepstone.evil.com", "linkedin.de", "karriere.example.invalid", "", "indeed"]) assert.equal(istPortal(h), false, h);
   assert.ok(PORTALE.includes("linkedin.com"));
 });
 
@@ -155,7 +155,8 @@ test("Auf Portalen wird kein Skript eingeschleust; Adresse und Titel stammen vom
 
 test("Auf LinkedIn, StepStone und XING wird gar nichts übernommen (Q135/Q137)", async () => {
   for (const h of ["linkedin.com", "de.linkedin.com", "WWW.LinkedIn.com.", "www.stepstone.de", "stepstone.at", "www.xing.com"]) assert.equal(istGesperrt(h), true, h);
-  for (const h of ["evil-linkedin.com", "linkedin.com.evil.example", "linkedin.de", "stepstone.evil.com", "xing.de", "de.indeed.com"]) assert.equal(istGesperrt(h), false, h);
+  for (const h of ["evil-linkedin.com", "linkedin.com.evil.example", "linkedin.de", "stepstone.evil.com", "de.indeed.com"]) assert.equal(istGesperrt(h), false, h);
+  assert.equal(istGesperrt("www.xing.de"), true);  // „XING darfst du nicht auslesen“ gilt für jede Endung
   for (const url of ["https://de.linkedin.com/jobs/view/1", "https://www.stepstone.de/stellenangebote--Analyst-1.html", "https://www.xing.com/jobs/analyst-1"]) {
     const f = ersatz();
     f.tabs.set(5, { id: 5, url, title: "Analyst", status: "complete" });

@@ -36,8 +36,45 @@ def zielschutz(pruefe, *, gepinnt=False):
         _zielpruefungen.reset(token)
 
 
+# Jobportale: nie abrufen, auch nicht über Weiterleitungen oder robots.txt (CLAUDE.md 4.4; Review 2026-11-24).
+# Gleich wie PORTALE in web/lib/jobportale.ts und browser-erweiterung/chrome/kern.mjs (Tests prüfen das);
+# "name.*" steht für beliebige Endungen.
+PORTALE = ["linkedin.com", "lnkd.in", "stepstone.*", "indeed.*", "xing.*", "glassdoor.*", "monster.*", "kununu.*",
+           "jobs.zeit.de", "jobs.faz.net", "stellenmarkt.sueddeutsche.de", "welcometothejungle.com", "jobup.ch",
+           "azubiyo.de", "kleinanzeigen.de", "willhaben.at", "talent.com", "careerbuilder.*", "jobstairs.de",
+           "karriere.at", "stellenanzeigen.de", "jobware.de", "meinestadt.de", "absolventa.de", "ausbildung.de",
+           "arbeitsagentur.de", "jobs.ch", "jobscout24.ch", "stellenwerk.de", "yourfirm.de", "experteer.*",
+           "get-in-it.de", "staufenbiel.de", "jobvector.de", "academics.de", "hokify.*", "heyjobs.*", "jobrapido.*",
+           "careerjet.*", "jooble.*", "adzuna.*", "kimeta.de", "jobteaser.com", "ziprecruiter.com", "totaljobs.com"]
+_ZWEITE_EBENE = {"co", "com", "org", "net", "gv", "ac", "or", "gov", "edu"}
+
+
+def ist_portal(host):
+    l = (host or "").lower().rstrip(".").split(".")
+    for p in PORTALE:
+        if not p.endswith(".*"):
+            n = p.split(".")
+            if len(l) >= 2 and l[-len(n):] == n:
+                return True
+        elif len(l) >= 2 and len(l[-1]) >= 2:
+            name = p[:-2]
+            if l[-2] == name or (len(l[-1]) == 2 and len(l) >= 3 and l[-2] in ("co", "com") and l[-3] == name):
+                return True
+    return False
+
+
+def registrierbare_domain(host):
+    """firma.de, firma.co.uk: Grundlage für Unteradressen der Suche und für die Pause je Firma."""
+    t = (host or "").lower().rstrip(".").split(".")
+    return ".".join(t[-3:]) if len(t) > 2 and t[-2] in _ZWEITE_EBENE and len(t[-1]) == 2 else ".".join(t[-2:])
+
+
 class VerbotenDurchRobots(Exception):
     pass
+
+
+class Jobportal(VerbotenDurchRobots):
+    """Ziel ist ein Jobportal: wird wie ein robots.txt-Verbot behandelt und nie abgerufen."""
 
 
 class RobotsNichtErreichbar(Exception):
@@ -135,8 +172,8 @@ def _get_gepinnt(url):
 
 
 def _get(basis: str, url: str) -> requests.Response:
-    # Ein Protokoll-/Portwechsel gibt derselben Domain kein zweites Abrufkontingent.
-    domain = urlsplit(basis).hostname
+    # Ein Protokoll-/Port- oder Unteradressen-Wechsel (www./jobs./karriere.) gibt derselben Firma kein zweites Kontingent.
+    domain = registrierbare_domain(urlsplit(basis).hostname)
     warte = _zuletzt.get(domain, float("-inf")) + PAUSE - time.monotonic()
     if warte > 0:
         time.sleep(warte)
@@ -155,6 +192,8 @@ def _mit_weiterleitungen(url, robots_pruefen, pruefe=None):
         if url in gesehen:
             raise requests.TooManyRedirects("Weiterleitungsschleife")
         gesehen.add(url)
+        if ist_portal(urlsplit(url).hostname):  # vor robots.txt, vor jedem Abruf und jeder Weiterleitung
+            raise Jobportal(url)
         if pruefe:
             pruefe(url)  # z. B. Nachrüsten: Ziel darf nie intern sein, auch nach Weiterleitung
         if robots_pruefen and not _darf(basis, url, pruefe):

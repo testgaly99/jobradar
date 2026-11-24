@@ -126,7 +126,8 @@ def test_robots_einmal_je_seite_und_404_ist_kein_fehlschlag():
         return SimpleNamespace(text=''.join(f'<a href="/job/Germany-Berlin/Stelle-{i}">x</a>' for i in range(20)))
     r = e.richte_ein(f, holen=holen, adapter={})
     assert not r['status_grund'].startswith('Probe fehlgeschlagen')
-    assert sum(u.endswith('/robots.txt') for u in calls) == 1
+    robots = [u for u in calls if u.endswith('/robots.txt')]
+    assert robots and len(robots) == len(set(robots))  # je Host höchstens einmal (auch über Unteradressen)
 
 
 @pytest.mark.parametrize('website', ['https://www.linkedin.com/company/beispiel', 'https://de.indeed.com/cmp/beispiel'])
