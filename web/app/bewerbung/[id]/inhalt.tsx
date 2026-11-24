@@ -9,6 +9,7 @@ import {
 } from "@/app/bewerbungen/detail-actions";
 import Abschnitte from "../../abschnitte";
 import { leseAbschnitte } from "@/lib/anzeige";
+import { AbgleichKopf, ladeAbgleich } from "../../cv-abgleich";
 import { zurueckZuGemerkt } from "@/lib/zug";
 import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
 import { DruckKnopf, LoeschForm, SendeKnopf } from "@/app/bewerbungen/knoepfe";
@@ -84,6 +85,9 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
     sb.from("bewerbung_anlagen").select("document_id").eq("application_id", id),
   ]);
   const row = a as Row;
+  // CV-Abgleich nur für Bewerbungen ohne Stelle (Q111); mit Stelle steht er auf der Stellenseite.
+  const anf = a as { job_id?: string | null; anforderungsliste?: unknown; anforderungs_hash?: unknown };
+  const cv = !anf.job_id && "anforderungsliste" in anf ? await ladeAbgleich(sb, { application_id: id }, anf.anforderungsliste, anf.anforderungs_hash) : null;
   const events = (ev.data ?? []) as Ereignis[];
   const personen = (pe.data ?? []) as Person[];
   const interviews = (iv.data ?? []) as Interview[];
@@ -377,11 +381,12 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
       {nach.nachruesten && <p className="meldung hinweis">Die Anzeige wird gerade gelesen. Das dauert meist 2–5 Minuten, spätestens bis zum nächsten Morgen. Danach die Seite neu laden.</p>}
       {kiSnap && <Ueberblick ki={kiSnap} ohne="" />}
       <SteckbriefKarte eintraege={steckSnap} />
-      <details className="karte block">
+      <details className="karte block cv-abgleich" open={cv?.zustand === "fertig"}>
         <summary><h2>Snapshot der Anzeige</h2></summary>
         <div className="kopfzeile"><DruckKnopf /></div>
+        {cv && <AbgleichKopf a={cv} />}
         {row.snapshot_text || (a as { snapshot_abschnitte?: unknown }).snapshot_abschnitte
-          ? <Abschnitte abschnitte={leseAbschnitte((a as { snapshot_abschnitte?: unknown }).snapshot_abschnitte)} text={v(row.snapshot_text)} />
+          ? <Abschnitte abschnitte={abschnitte} text={v(row.snapshot_text)} spalten={cv?.zustand === "fertig" ? cv.spalten : []} />
           : <p className="gedaempft">Kein Snapshot gespeichert.</p>}
       </details>
 

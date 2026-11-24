@@ -4,12 +4,12 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { dateiname } from "@/lib/export";
 import { ANLAGE_ARTEN } from "@/lib/dokumente";
-import { dokumentAnlegen, dokumentLoeschen } from "./actions";
+import { cvTextSpeichern, dokumentAnlegen, dokumentLoeschen, einwilligen } from "./actions";
 import { LoeschForm } from "../bewerbungen/knoepfe";
 
 const MAX = 50 * 1024 * 1024;
-
-export function UploadFormular() {
+// einwilligung: null = gültige Einwilligung liegt vor; sonst der Text (je Konto, web/lib/cv-einwilligung.json).
+export function UploadFormular({ einwilligung }: { einwilligung: string | null }) {
   const router = useRouter();
   const [fehler, setFehler] = useState("");
   const [laeuft, setLaeuft] = useState(false);
@@ -24,6 +24,10 @@ export function UploadFormular() {
     if (datei.size > MAX) return setFehler("Die Datei ist größer als 50 MB.");
     setFehler(""); setLaeuft(true);
     try {
+      if (art === "cv" && einwilligung) {
+        const e = await einwilligen();
+        if (e.fehler) return setFehler(e.fehler);
+      }
       const sb = createClient();
       const { data: c } = await sb.auth.getClaims();
       const uid = c?.claims?.sub;
@@ -60,6 +64,9 @@ export function UploadFormular() {
           </select>
         </label>
       )}
+      {art === "cv" && einwilligung && (
+        <label className="meldung hinweis"><span><input type="checkbox" name="einwilligung" required /> {einwilligung}</span></label>
+      )}
       <label>Versionsname
         <input name="name" required maxLength={120} placeholder="z. B. CV Produktmanagement v3…" />
       </label>
@@ -87,5 +94,46 @@ export function DokumentLoeschen({ id }: { id: string }) {
       }} />
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
     </>
+  );
+}
+
+// Ausgelesener CV-Text: Vorschau und Korrektur; leer = „Kein Text erkannt“ (z. B. Scan ohne Textebene).
+export function CvText({ id, text, herkunft }: { id: string; text: string | null; herkunft: string | null }) {
+  const router = useRouter();
+  const [fehler, setFehler] = useState("");
+  const [gespeichert, setGespeichert] = useState(false);
+  return (
+    <details>
+      <summary className="klein">
+        {text === null ? "Text noch nicht ausgelesen" : text ? `Ausgelesener Text${herkunft === "korrigiert" ? " (korrigiert)" : ""}` : "Kein Text erkannt"}
+      </summary>
+      <form className="formular" action={async (f) => {
+        const r = await cvTextSpeichern(id, f);
+        setFehler(r.fehler ?? ""); setGespeichert(!r.fehler);
+        if (!r.fehler) router.refresh();
+      }}>
+        <label>Text des Lebenslaufs<textarea name="text" rows={12} defaultValue={text ?? ""} onChange={() => setGespeichert(false)} /></label>
+        {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+        {gespeichert && <p className="meldung hinweis" role="status">Gespeichert. Der nächste Abgleich nutzt diesen Text.</p>}
+        <button className="knopf knopf-rand knopf-schmal" type="submit">Korrigieren</button>
+      </form>
+    </details>
+  );
+}
+
+// Für schon hochgeladene CVs ohne (aktuelle) Einwilligung: ohne Häkchen kein Abgleich.
+export function EinwilligungFormular({ text }: { text: string }) {
+  const router = useRouter();
+  const [fehler, setFehler] = useState("");
+  return (
+    <form className="meldung hinweis formular" action={async () => {
+      const r = await einwilligen();
+      if (r.fehler) setFehler(r.fehler); else router.refresh();
+    }}>
+      <p>Deine Lebensläufe werden erst abgeglichen, wenn du einwilligst.</p>
+      <label><span><input type="checkbox" required /> {text}</span></label>
+      {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+      <button className="knopf knopf-schmal" type="submit">Einwilligen</button>
+    </form>
   );
 }

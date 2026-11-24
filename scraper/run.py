@@ -10,6 +10,7 @@ from collections import Counter
 from datetime import date
 from pathlib import Path
 
+from scraper.anforderungen import pruefsumme, zerlege
 from scraper.ats import ADAPTER
 from scraper import db, ki, nachruesten
 from scraper.companies import lade_unternehmen
@@ -206,6 +207,28 @@ def _deutsch_nachruesten():
     return n
 
 
+def _anforderungen_nachruesten(grenze=2000):
+    """Plan 6a, Task 1: Anforderungsliste je offener Stelle und je Bewerbung ohne Stelle (Q111) neu berechnen, wenn
+    die Prüfsumme fehlt oder nicht mehr passt; darf den Lauf nie kippen."""
+    n = 0
+    try:
+        if not db.anforderung_spalte_da():
+            return 0
+        for tabelle, zeilen, feld in (('jobs', db.anforderungen_stellen(), 'abschnitte'),
+                                      ('applications', db.anforderungen_bewerbungen(), 'snapshot_abschnitte')):
+            for z in zeilen:
+                if n >= grenze:
+                    return n
+                liste = zerlege(z.get(feld))
+                summe = pruefsumme(liste)
+                if z.get('anforderungs_hash') != summe:
+                    db.setze_anforderungen(tabelle, z['id'], liste, summe)
+                    n += 1
+    except Exception as e:
+        print(f"Hinweis: Anforderungslisten nachrüsten fehlgeschlagen: {kurzfehler(e)}")
+    return n
+
+
 def _nachruesten():
     """Bewerbungen aus Firmenseiten nachrüsten (Link-Schnellstart); darf den Lauf nie kippen."""
     try:
@@ -246,7 +269,7 @@ def lauf(heute, datenordner="data"):
             ausgaben.append((pfad, a))
         except Exception as e:
             hinweise.append(f'Ranglisten-Import {pfad.name}: {kurzfehler(e)}')
-    db._spalten = db._deutsch = None  # Spalten-Pruefungen (Migration 005, 013) einmal pro Lauf neu
+    db._spalten = db._deutsch = db._anforderung = None  # Spalten-Pruefungen (Migration 005, 013) einmal pro Lauf neu
     db._firmen_quellen = None
     db._herkunft = None
     db._zusatzfirmen = None
@@ -306,6 +329,7 @@ def lauf(heute, datenordner="data"):
             print('Zusätzliche Gesundheitsdiagnosen nicht gespeichert.')
     db.snapshot_nachruesten()  # nach allen Firmen
     bericht["deutsch"] = _deutsch_nachruesten()  # vor den KI-Schritten (Plan Sprachniveau, Task 3)
+    bericht["anforderungen"] = _anforderungen_nachruesten()  # Plan 6a, Task 1
     bericht["ki"] = _ki(heute)
     bericht["nachruesten"] = _nachruesten()
     bericht["original_suche"] = _original_suche()

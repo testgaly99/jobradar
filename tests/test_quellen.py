@@ -86,3 +86,14 @@ def test_namenssuche_mit_schreibweisen_statt_suchdienst():
     # Anführungszeichen im Namen dürfen die Abfrage nicht aufbrechen
     wikidata.suche_name('Firma "X" GmbH', lambda u: urls.append(u) or type('R', (), {'content': b'{"results":{"bindings":[]}}'})())
     assert '"Firma \\"X\\" GmbH"@de' in parse_qs(urlsplit(urls[1]).query)['query'][0]
+
+
+def test_sammelsuche_fragt_mehrere_namen_in_einer_abfrage():
+    # Live 2026-11-24: ~300 Einzelabfragen dauerten rund eine Stunde und liefen in QLevers Drosselung.
+    from urllib.parse import parse_qs, urlsplit
+    urls = []
+    wikidata.suche_namen(['VOLKSWAGEN AG', 'Siemens'], lambda u: urls.append(u) or type('R', (), {'content': b'{"results":{"bindings":[]}}'})())
+    assert len(urls) == 1
+    q = parse_qs(urlsplit(urls[0]).query)['query'][0]
+    for variante in ('"VOLKSWAGEN AG"@de', '"Volkswagen"@en', '"Siemens"@de', '"Siemens"@en'):
+        assert variante in q

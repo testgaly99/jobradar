@@ -1,0 +1,248 @@
+{
+ "hinweis": "Erzeugt 2026-11-24 mit web/public/modell/e5-small aus docs/beispiele/cv-abgleich.json; Profil = CV-Zeilen (Aussage = Beleg).",
+ "anforderungen": [
+  {
+   "id": "a1",
+   "text": "Erfahrung mit SQL-Abfragen für Datenanalysen.",
+   "muss": true
+  },
+  {
+   "id": "a2",
+   "text": "Erfahrung in der Koordination fachübergreifender Projekte.",
+   "muss": true
+  },
+  {
+   "id": "a3",
+   "text": "Abgeschlossenes Studium der Wirtschaftsinformatik.",
+   "muss": true
+  },
+  {
+   "id": "a4",
+   "text": "Englischkenntnisse auf Niveau C1.",
+   "muss": true
+  },
+  {
+   "id": "a5",
+   "text": "Erfahrung mit Power BI.",
+   "muss": true
+  },
+  {
+   "id": "a6",
+   "text": "Führerschein Klasse B vorhanden.",
+   "muss": true
+  }
+ ],
+ "cvs": [
+  {
+   "id": "cv-daten",
+   "profil": [
+    {
+     "aussage": "Abgeschlossenes Bachelorstudium der Wirtschaftsinformatik.",
+     "beleg": "Abgeschlossenes Bachelorstudium der Wirtschaftsinformatik."
+    },
+    {
+     "aussage": "Regelmäßig SQL-Abfragen für Datenanalysen erstellt.",
+     "beleg": "Regelmäßig SQL-Abfragen für Datenanalysen erstellt."
+    },
+    {
+     "aussage": "Englischkenntnisse auf Niveau B2.",
+     "beleg": "Englischkenntnisse auf Niveau B2."
+    },
+    {
+     "aussage": "Führerschein Klasse B nicht vorhanden.",
+     "beleg": "Führerschein Klasse B nicht vorhanden."
+    }
+   ],
+   "aehnlich": [
+    [
+     0.8372,
+     0.9252,
+     0.811,
+     0.7896
+    ],
+    [
+     0.8379,
+     0.809,
+     0.8155,
+     0.7972
+    ],
+    [
+     0.9467,
+     0.8408,
+     0.829,
+     0.8381
+    ],
+    [
+     0.8416,
+     0.815,
+     0.9149,
+     0.8498
+    ],
+    [
+     0.8515,
+     0.8557,
+     0.8519,
+     0.8357
+    ],
+    [
+     0.8396,
+     0.8112,
+     0.8799,
+     0.9363
+    ]
+   ],
+   "erwartet": {
+    "a1": "belegt",
+    "a2": "nicht_belegt",
+    "a3": "belegt",
+    "a4": "teilweise_belegt",
+    "a5": "nicht_belegt",
+    "a6": "nachweislich_nicht_erfuellt"
+   }
+  },
+  {
+   "id": "cv-projekte",
+   "profil": [
+    {
+     "aussage": "Abgeschlossenes Bachelorstudium der Wirtschaftsinformatik.",
+     "beleg": "Abgeschlossenes Bachelorstudium der Wirtschaftsinformatik."
+    },
+    {
+     "aussage": "Fachübergreifende Projekte mit drei Teams koordiniert.",
+     "beleg": "Fachübergreifende Projekte mit drei Teams koordiniert."
+    },
+    {
+     "aussage": "Englischkenntnisse auf Niveau B2.",
+     "beleg": "Englischkenntnisse auf Niveau B2."
+    },
+    {
+     "aussage": "Führerschein Klasse B nicht vorhanden.",
+     "beleg": "Führerschein Klasse B nicht vorhanden."
+    }
+   ],
+   "aehnlich": [
+    [
+     0.8372,
+     0.8157,
+     0.811,
+     0.7896
+    ],
+    [
+     0.8379,
+     0.8834,
+     0.8155,
+     0.7972
+    ],
+    [
+     0.9467,
+     0.8219,
+     0.829,
+     0.8381
+    ],
+    [
+     0.8416,
+     0.8103,
+     0.9149,
+     0.8498
+    ],
+    [
+     0.8515,
+     0.8368,
+     0.8519,
+     0.8357
+    ],
+    [
+     0.8396,
+     0.8028,
+     0.8799,
+     0.9363
+    ]
+   ],
+   "erwartet": {
+    "a1": "nicht_belegt",
+    "a2": "belegt",
+    "a3": "belegt",
+    "a4": "teilweise_belegt",
+    "a5": "nicht_belegt",
+    "a6": "nachweislich_nicht_erfuellt"
+   }
+  },
+  {
+   "id": "cv-kombiniert",
+   "profil": [
+    {
+     "aussage": "Abgeschlossenes Bachelorstudium der Wirtschaftsinformatik.",
+     "beleg": "Abgeschlossenes Bachelorstudium der Wirtschaftsinformatik."
+    },
+    {
+     "aussage": "Regelmäßig SQL-Abfragen für Datenanalysen erstellt.",
+     "beleg": "Regelmäßig SQL-Abfragen für Datenanalysen erstellt."
+    },
+    {
+     "aussage": "Fachübergreifende Projekte mit drei Teams koordiniert.",
+     "beleg": "Fachübergreifende Projekte mit drei Teams koordiniert."
+    },
+    {
+     "aussage": "Englischkenntnisse auf Niveau B2.",
+     "beleg": "Englischkenntnisse auf Niveau B2."
+    },
+    {
+     "aussage": "Führerschein Klasse B nicht vorhanden.",
+     "beleg": "Führerschein Klasse B nicht vorhanden."
+    }
+   ],
+   "aehnlich": [
+    [
+     0.8372,
+     0.9252,
+     0.8157,
+     0.811,
+     0.7896
+    ],
+    [
+     0.8379,
+     0.809,
+     0.8834,
+     0.8155,
+     0.7972
+    ],
+    [
+     0.9467,
+     0.8408,
+     0.8219,
+     0.829,
+     0.8381
+    ],
+    [
+     0.8416,
+     0.815,
+     0.8103,
+     0.9149,
+     0.8498
+    ],
+    [
+     0.8515,
+     0.8557,
+     0.8368,
+     0.8519,
+     0.8357
+    ],
+    [
+     0.8396,
+     0.8112,
+     0.8028,
+     0.8799,
+     0.9363
+    ]
+   ],
+   "erwartet": {
+    "a1": "belegt",
+    "a2": "belegt",
+    "a3": "belegt",
+    "a4": "teilweise_belegt",
+    "a5": "nicht_belegt",
+    "a6": "nachweislich_nicht_erfuellt"
+   }
+  }
+ ]
+}

@@ -1,4 +1,6 @@
 import { markiere, type Anzeigenteil } from "@/lib/anzeige";
+import type { Spalte } from "@/lib/cv-ergebnis";
+import { CvMarke } from "./cv-marke";
 
 // Text mit hervorgehobenen Treffern; <mark> als Element, nie als HTML-String.
 function Markiert({ text, begriffe }: { text: string; begriffe: string[] }) {
@@ -7,7 +9,8 @@ function Markiert({ text, begriffe }: { text: string; begriffe: string[] }) {
 
 // Gegliederte Anzeige. Ohne Abschnitte: Fließtext als Absätze unter "Beschreibung". Alles als Text.
 // ebene: Überschriftenstufe der Abschnitte, passend zur Seite (direkt unter h1: 2, unter einem h2: 3).
-export default function Abschnitte({ abschnitte, text, begriffe = [], ebene = 3 }: { abschnitte: Anzeigenteil[] | null; text: string | null; begriffe?: string[]; ebene?: 2 | 3 }) {
+// spalten: CV-Abgleich je empfohlener CV; Markierung am Punkt mit exakt gleichem Text.
+export default function Abschnitte({ abschnitte, text, begriffe = [], ebene = 3, spalten = [] }: { abschnitte: Anzeigenteil[] | null; text: string | null; begriffe?: string[]; ebene?: 2 | 3; spalten?: Spalte[] }) {
   const H = ebene === 2 ? "h2" : "h3";
   if (abschnitte?.length) {
     return (
@@ -15,7 +18,7 @@ export default function Abschnitte({ abschnitte, text, begriffe = [], ebene = 3 
         {abschnitte.map((a, i) => (
           <section key={i}>
             <H><Markiert text={a.titel} begriffe={begriffe} /></H>
-            <ul>{a.punkte.map((p, j) => <li key={j}><Markiert text={p} begriffe={begriffe} /></li>)}</ul>
+            <ul>{a.punkte.map((p, j) => <li key={j}><Markiert text={p} begriffe={begriffe} />{spalten.map((s, k) => s.markierungen[p] && <CvMarke key={k} m={s.markierungen[p]} spalte={k} />)}</li>)}</ul>
           </section>
         ))}
       </div>

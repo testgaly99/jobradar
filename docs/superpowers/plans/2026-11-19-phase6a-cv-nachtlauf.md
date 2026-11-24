@@ -10,6 +10,11 @@
 
 **Spec:** `docs/superpowers/specs/2026-11-19-phase6-cv-abgleich-design.md` (Gemeinsamer Kern, 6a, Einwilligung); Anforderungen A1–A13 und Abschnitt „Kontingent und Abo-Bedingungen“ in `docs/plans/2026-11-16-cv-abgleich.md`; Abnahmefall `docs/beispiele/cv-abgleich.json`.
 
+## Baufortschritt (Claude)
+
+- 2026-11-24: Task 0 erledigt (Agentenprotokoll: Claude-CLI-Schalter, `is_error` als Abbruchgrund, Pakete gepflegt). Task 0b erledigt: 36,1 MB, Wortschatz 35.925, 199/200 Prüfsätze exakt, Minimum 0,9842 (Nutzer Q273: akzeptiert; Testgrenze ≥ 199 Sätze ≥ 0,99, keiner < 0,98). `numpy`, `onnxruntime`, `tokenizers` in `requirements.txt`.
+- 2026-11-24: Tasks 1–4 erledigt, Migration 018 live (24/24). Task 5 erledigt (Klicktest 29/29; Dateien unter `app/unterlagen/`, da der Reiter seit Runde 1 so heißt). Einwilligung je Konto mit Fassung (Q274/Q275, Migration 024 live). Task 6 erledigt: Workflow `jobradar-privat/.github/workflows/cv-abgleich.yml`, Backup ohne CV-Inhalte, Haltepunkt (a) `pytest -m supabase` 4/4. Offen: Haltepunkte (b) und (c).
+
 ## Global Constraints
 
 - **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** der Nachtlauf läuft je Konto aus `db.admin_ids()` mit dessen CVs und gemerkten Stellen; Ergebnisse nur für dieses Konto. Das Abo-Kontingent wird dadurch bis zu doppelt beansprucht; Reihenfolge der Konten wechselt täglich, damit bei knappem Kontingent nicht immer dasselbe zu kurz kommt.
