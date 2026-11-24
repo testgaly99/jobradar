@@ -430,6 +430,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q286 | Wer setzt den Plan „Firmensuche verbessern“ um? | Nutzer: „Claude jetzt (Empfohlen)“ | Claude baut nach Freigabe des Plans (Q285 offen). | entschieden (bedingt) |
 | Q287 | Überarbeiteter Plan „Karriereseiten zuverlässig finden“ (nach Nutzer: „Finde eine Lösung für das Problem. Der Abruf der Karriereseiten ist Essentiell für meine Website“ und „Unser Ziel sind 9/10. Es gelten natürlich ausnahmen für FIrmen, die das automatische Auslesen verbieten“; Prototyp 17/25, hochgerechnet 21/22) freigeben? | Nutzer: „Freigeben (Empfohlen)“ | Ersetzt den Entwurf aus Q285; Claude baut (Q286). | entschieden |
 | Q288 | Firmen, die den ehrlichen User-Agent mit 403 abweisen (Telekom, Lufthansa): wie behandeln? | Nutzer: „Als Ausnahme werten (Empfohlen)“ | Wie Verbot: markieren, überspringen, alle 30 Tage erneut; kein Umgehen; zählt nicht gegen 9/10. | entschieden |
+| Q289 | Was parallel zur Abnahme (50 Firmen) erledigen (Nutzer: „Was kannst du parallel schon abarbeiten?“)? | Nutzer: „Prüfung + Doku (Empfohlen)“ | Prüf-Helfer (Opus, /ponytail-review) und Doku; Design-Runde To-do 49 und Websites für 211 Firmen nicht jetzt. | entschieden |
 | Q275 | 6a Einwilligung: speichern, welcher Fassung des Textes zugestimmt wurde (Nachweis nach DSGVO; bei Textänderung neu zustimmen)? | Nutzer: „Fassung speichern (Empfohlen)“ | Spalte `fassung` in `cv_einwilligung` (Migration 024); Website und Nachtlauf gelten nur bei aktueller Fassung. | entschieden |
 | Q274 | 6a Einwilligung: Anlass Nutzer 2026-11-24 „Es ist wichtig, dass es vollständig compliant ist, dass die Leute also zustimmen, dass ihre CVs von einer AI ausgelesen werden. Das muss allen beim Upload klar sein“. Text je Konto passend oder ein Text für alle? | Nutzer: „Je Konto passend (Empfohlen)“ | Admin: KI Claude von Anthropic (USA), nachts; alle anderen: KI nur im eigenen Browser, an keinen KI-Dienst. | entschieden |
 | Q273 | 6a Task 0b: verkleinertes Modell (36 MB) erreicht 199/200 Prüfsätze exakt, ein Satz mit unbekanntem Firmennamen nur 0,984 statt ≥ 0,99. Wie weiter? | Nutzer: „So akzeptieren (Empfohlen)“ | 36-MB-Modell; Testgrenze: mindestens 199/200 Prüfsätze ≥ 0,99, keiner unter 0,98. | entschieden |
@@ -610,6 +611,7 @@ Fragetexte Q285 (Claude, 2026-11-24, Auswahl): Freigeben (Empfohlen) / Änderung
 Fragetexte Q286 (Claude, 2026-11-24, Auswahl): Claude jetzt (Empfohlen) / Codex-Warteschlange.
 Fragetexte Q287 (Claude, 2026-11-24, Auswahl): Freigeben (Empfohlen) / Änderungen.
 Fragetexte Q288 (Claude, 2026-11-24, Auswahl): Als Ausnahme werten (Empfohlen) / Mir melden.
+Fragetexte Q289 (Claude, 2026-11-24, Mehrfachauswahl): Prüfung + Doku (Empfohlen) / Design-Runde To-do 49 / Websites für 211 Firmen.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

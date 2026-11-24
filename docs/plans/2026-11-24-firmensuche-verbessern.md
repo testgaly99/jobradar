@@ -57,3 +57,6 @@ Stand 2026-11-24 (Q284–Q286; Nutzerziel: „Unser Ziel sind 9/10. Es gelten na
 3. Fremde Hosts: Links auf andere Hosts nur von Seiten der Firma aus und nur mit Karriere-Merkmal; kein Abdriften auf Agenturen, Presseportale, soziale Netzwerke.
 4. Tagesgrenze verhindert, dass eine Großfirma den Täglichen Lauf sprengt; bekannte Stellen kosten keine Anfrage.
 5. Öffentliche Logs und `companies.csv` zeigen keine Herkunft geschlossener Listen (Q61).
+
+## Baufortschritt
+- 2026-11-24: Tasks 1–4 gebaut (e1e0c6e): `scraper/einrichtung.py` (Suche, `faellig`, Probegrenzen), `scraper/ats/sitemap.py` (Microdata, gz, Tagesgrenze, 429), neu `scraper/ats/liste.py`, `scraper/run.py` („vertagt“). Tests: `py -m pytest -q` → 1233 passed, 5 skipped. Parallele Ausführung des Täglichen Laufs (Task 4, zweiter Punkt) erst nach Messung. Task 5 (Abnahme an 50 Firmen) läuft.
