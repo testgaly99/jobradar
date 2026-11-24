@@ -16,6 +16,12 @@ Vorlage für einen Eintrag:
 
 Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT: ok` bzw. die gefundenen Punkte.
 
+## 2026-11-24 – Claude – Nr. 10 Phase 6a, Task 0 Vorprüfung
+- Auftrag: Nutzer „Erst QLever-Sammelabfragen, dann Nr. 10“ (Q272); Claude baut Nr. 10 statt Codex.
+- Claude-CLI 2.1.100 lokal (`claude --help`, keine Anfrage): `-p`, `--model haiku`, `--output-format json`, `--json-schema`, `--tools ""` (keine Werkzeuge), `--no-session-persistence`, `--bare`, Eingabe über stdin. Verhalten am Limit: kein eigener Subtype dokumentiert; laut offenem Fehlerbericht liefert ein Ratenlimit `subtype: success`, `is_error: true`, Exitcode 0, Text nur in `result` ([Headless-Doku](https://code.claude.com/docs/en/headless.md), [Fehlerbericht](https://claudeissues.com/issue/79500-bug-headless-claude-p-api-errors-e-g-rate-limit-return-subtype-success-exit-code)). Festlegung: jedes `is_error: true` oder Exitcode ≠ 0 beendet den Nachtlauf sofort (Plan: „bei einem Fehler sofort aufhören“).
+- Pakete (PyPI, 2026-11-24): onnxruntime 1.32.0 (13.11.2026, MIT), tokenizers 0.23.3 (09.10.2026, Apache-2.0), pypdf 7.1.1 (18.11.2026, BSD-3-Clause), python-docx 1.2.0 (16.06.2025, MIT). Alle gepflegt; noch nicht installiert.
+- Vorher erledigt (gleicher Tag): Wikidata-Abgleich als Sammelabfragen zu 10 Firmen (24bf44e), live 10 Firmen in 5,5 s.
+
 ## 2026-11-22 19:02 (Europe/Berlin) – Codex – Weitere To-dos erläutert
 - Nutzer: „Was sind die weiteren To Dos?“ Aktuelle Warteschlange und Vorprüfung des nächsten Plans6a gelesen; acht Baupakete offen, Claude-Abnahmen wie vereinbart zurückgestellt. Kein Bau-/Liveauftrag abgeleitet.
 - Dateien: Fragenprotokoll und dieser Eintrag; keine neue Produktentscheidung. Lokaler Dokumentationscommit „Weitere offene Arbeitspakete erläutern“, Schlusszeile Agent: Codex.
