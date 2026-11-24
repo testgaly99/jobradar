@@ -180,6 +180,9 @@ def test_migration_010_definiert_groesse_rang_vor_ranking_stellen_und_nur_dort()
     assert "'groesse_rang', c.groesse_rang" in sql
     # 013 legt ranking_stellen mit zusätzlicher Spalte deutsch_stufe neu an (Plan Sprachniveau, Task 2)
     assert "'groesse_rang', c.groesse_rang" in (ordner / "013_sprachniveau.sql").read_text(encoding="utf-8")
+    # 015 erhält die Größen-/Sprachfelder und ergänzt den Kategorienfilter.
+    sql_015 = (ordner / '015_ranglisten_sichtbarkeit.sql').read_text(encoding='utf-8')
+    assert "'groesse_rang',c.groesse_rang" in sql_015 and 'j.deutsch_stufe' in sql_015
     for datei in ordner.glob("*.sql"):
-        if datei.name not in ("010_rankings.sql", "013_sprachniveau.sql"):
+        if datei.name not in ("010_rankings.sql", "013_sprachniveau.sql", "015_ranglisten_sichtbarkeit.sql"):
             assert "function public.ranking_stellen" not in datei.read_text(encoding="utf-8"), datei.name

@@ -104,6 +104,7 @@ def test_gueltige_seite_bekommt_alle_drei_snapshots(fake):
 
 
 @pytest.mark.parametrize("link", ["https://www.linkedin.com/jobs/view/1/", "https://de.indeed.com/viewjob?jk=1",
+                                  "https://lnkd.in/abcdef",
                                   "http://firma.example/job", "https://firma.example:8443/job", "https://u:p@firma.example/job"])
 def test_portale_und_unzulaessige_links_werden_nie_abgerufen(fake, link):
     a = app(fake, link)
@@ -149,8 +150,8 @@ def test_ohne_migration_012_nichts_tun(fake, capsys):
 
 
 def test_portalliste_gleich_wie_website():
-    ts = (Path(__file__).parent.parent / "web/lib/stellen-import.ts").read_text(encoding="utf-8")
-    liste = re.search(r"export const PORTALE: string\[\] = \[(.*?)\];", ts).group(1)
+    ts = (Path(__file__).parent.parent / "web/lib/jobportale.ts").read_text(encoding="utf-8")
+    liste = re.search(r"export const PORTALE(?:: string\[\])? = \[(.*?)\];", ts).group(1)
     assert sorted(re.findall(r'"([^"]+)"', liste)) == sorted(nachruesten.PORTALE)
     for host in ["www.indeed.co.uk", "x.xing.com", "linkedin.de", "jobs.stepstone.de", "karriere.firma.de"]:
         assert nachruesten.ist_portal(host) == (host != "karriere.firma.de" and host != "linkedin.de"), host

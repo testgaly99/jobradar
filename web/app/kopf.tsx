@@ -32,6 +32,8 @@ export default async function Kopf() {
         <Link href="/bewerbungen">Bewerbungen</Link>
         <Link href="/unterlagen">Unterlagen</Link>
         {nutzer.admin && <Link href="/admin/nutzer">Nutzer</Link>}
+        {nutzer.admin && <Link href="/admin/ranglisten">Ranglisten</Link>}
+        {nutzer.admin && <Link href="/admin/firmen">Firmen</Link>}
         <Link href="/konto">Konto</Link>
         <form action={abmelden}><button className="knopf knopf-leise" type="submit">Abmelden</button></form>
       </nav>

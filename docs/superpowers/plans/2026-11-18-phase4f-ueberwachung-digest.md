@@ -10,6 +10,16 @@
 
 **Spec:** `docs/superpowers/specs/2026-11-17-phase4-firmen-ranglisten-design.md` (Abschnitt 4f), CLAUDE.md 4.3
 
+## Lokaler Baufortschritt 2026-11-21
+
+Tasks 1, 2, 2b, 3 und 4 lokal implementiert und getrennt geprüft; Task 5 Übergabe dokumentiert, Paketcommit `2f40010`; Haltepunkt unten bleibt offen. Keine tatsächliche Migration, Nachricht, Issue-Erstellung oder Modell-Reparatur ausgeführt. Prüfzahlen und Einschränkungen im Agentenprotokoll. Abgehakte Testschritte bezeichnen die lokale Offline-Prüfung; die echte SQL-/RLS- und Integrationsabnahme am Haltepunkt ist ausdrücklich noch offen.
+
+Begründete Präzisierungen: Private Diagnosen in zusätzlicher Service-Tabelle statt privater Namen in laeufe/Dateien; aktueller Workflow-/Schreibstatus verhindert alte Meldungen. Erfolgreicher Versandstand plus gelieferte IDs je Admin (Stellen haben Tagesdatum), weil der vorige Scraperlauf fehlgeschlagenen Versand sonst dauerhaft überspringt; Restlink zur vollständigen Liste statt nur „heute“. Telegram-Erfolg mit fehlender DB-Quittung kann wiederholt werden. Reparatur-/Recherchewerkzeuge und Akteure eingeschränkt, generierter Code nur offline in Docker ohne Host-Secrets/Git; Nachher-Livezahl bleibt vor menschlicher Übernahme zu prüfen. Keine Behauptung einer feindlichen-Code-Sandbox durch bloße Umgebungsfilter/Python-Audits. Ein persönliches Issue-Token in Actions ermöglicht automatische Folgeworkflows; Standardtoken benötigt menschliches Neu-Setzen des Labels. CLI-Berechtigungen gegen offizielle aktuelle Dokumentation geprüft; keine neuen Python-/NPM-Pakete.
+
+### Ergänzung 2026-11-21: Migration bestätigt
+
+Nutzer: „017 ist drin“. Migration 017 damit als eingespielt vermerkt, ohne eigene Live-Prüfung durch Codex. Die obige Aussage über nicht ausgeführte Migrationen beschreibt Codex und den damaligen Bauabschluss. Offen bleiben isolierte SQL-/Rechteabnahme, Bot/Secrets sowie echte Nachrichten-/Reparaturprüfung; der gesamte Haltepunkt ist noch nicht abgeschlossen.
+
 ## Global Constraints
 
 - **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** statt `db.admin_id()` gibt es `db.admin_ids() -> list[dict]` (`user_id`, `telegram_chat_id`); der Digest läuft je Admin-Konto mit dessen Wunschfirmen und Stichwörtern und geht an dessen `telegram_chat_id` (`sende(text, chat=...)`); fehlt sie, wird für dieses Konto nichts gesendet (Log nur Zahlen). Systemmeldungen ohne Bewerbungsbezug (Gesundheitscheck, Lauf fehlgeschlagen) gehen an `TELEGRAM_CHAT_ID`. Test: zwei Admins mit je eigenem Chat bekommen je nur ihre eigenen Zeilen.
@@ -43,9 +53,9 @@
 **Interfaces:**
 - `pruefe(heute: dict, vorher: list[dict]) -> list[dict]`: je Problem `{"firma": str, "art": "null_stellen"|"einbruch"|"fehler"|"ohne_titel_link"|"firmendaten", "text": str, "verlauf": list[int]}`; `verlauf` = `gefunden` der letzten 7 Läufe (fehlende Tage ausgelassen).
 
-- [ ] **Step 1: Tests** je Kriterium (a)–(e) ein Fall, dazu Review Focus 1, und ein Rückgang von genau 50 % → kein Problem.
-- [ ] **Step 2–4:** `py -m pytest -q tests/test_gesundheit.py` FAIL → umsetzen → grün.
-- [ ] **Step 5: Commit** — „4f: Gesundheitscheck nach CLAUDE.md 4.3“ + `Agent: Codex`.
+- [x] **Step 1: Tests** je Kriterium (a)–(e) ein Fall, dazu Review Focus 1, und ein Rückgang von genau 50 % → kein Problem.
+- [x] **Step 2–4:** `py -m pytest -q tests/test_gesundheit.py` FAIL → umsetzen → grün.
+- [x] **Step 5: Commit** — gemeinsamer Paketcommit; Begründung und Nachricht im Agentenprotokoll.
 
 ### Task 2: Issues und Reparatur-Workflow
 
@@ -61,9 +71,9 @@
 - `main()`: lädt heutigen Bericht (`letzte_laeufe(8)[0]` ist heute) und Vorgeschichte, ruft `pruefe`, speichert **alle** Probleme per `ergaenze_lauf(heute, {"gesundheit": probleme})`, dann `melde_issues`, dann `telegram.sende` (Task 3) mit einer Sammelnachricht; Rückgabecode immer 0.
 - `reparatur.yml`: `on: issues: types: [labeled]`, nur wenn `github.event.label.name == 'scraper-defekt'`; `permissions: contents: write, pull-requests: write, issues: write`; Schritt `anthropics/claude-code-action@v1` mit `claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}` und einem Prompt: AGENTS.md/CLAUDE.md lesen, Ursache für die Firma aus dem Issue finden, Adapter oder Firmendaten reparieren, Tests, Pull Request mit Stellenzahl vorher/nachher, nie mergen, keine `.env`. Eingabenamen vor dem Commit mit der README der Action abgleichen (Abweichung im Protokoll begründen).
 
-- [ ] **Step 1: Tests** mit Attrappen: neues Problem → ein POST `/issues`; offenes Issue → POST `/comments`; 5 Probleme → 3 neue Issues, aber alle 5 in `ergaenze_lauf` und in der Telegram-Nachricht; Review Focus 2 und 3; Admin-Firma → kein Issue.
-- [ ] **Step 2–4:** FAIL → umsetzen → `py -m pytest -q` grün.
-- [ ] **Step 5: Commit** — „4f: Issues bei defekten Firmen, Reparatur durch Claude“ + `Agent: Codex`.
+- [x] **Step 1: Tests** mit Attrappen: neues Problem → ein POST `/issues`; offenes Issue → POST `/comments`; 5 Probleme → 3 neue Issues, aber alle 5 in `ergaenze_lauf` und in der Telegram-Nachricht; Review Focus 2 und 3; Admin-Firma → kein Issue.
+- [x] **Step 2–4:** FAIL → umsetzen → `py -m pytest -q` grün.
+- [x] **Step 5: Commit** — gemeinsamer Paketcommit; Begründung und Nachricht im Agentenprotokoll.
 
 ### Task 2b: Firmendaten prüfen lassen (Q112, CLAUDE.md 4.3)
 
@@ -76,9 +86,9 @@
 - `firmendatenIssue(firma: string, hinweis: string, dep?) -> Promise<{ link: string } | { fehler: string }>`: `POST /repos/<repo>/issues` mit Titel exakt `Firmendaten prüfen: <Firma>`, Label `firmendaten-pruefen`, Text: Firmenname, heutige Werte (Größe, Branche, Hauptsitz, Karriere-Link), Hinweis des Admins. Kein Listen- oder Rangname im Text. Ist ein Issue mit gleichem Titel offen → dessen Link zurück, kein neues. Secrets in Vercel: `GITHUB_ISSUE_TOKEN` (fein abgestuftes Token, nur Issues dieses Repos), `GITHUB_REPOSITORY`. Fehlen sie → Meldung „Firmendaten-Prüfung ist noch nicht eingerichtet.“
 - `firmendaten.yml`: `on: issues: types: [labeled]`, nur bei Label `firmendaten-pruefen`; `anthropics/claude-code-action@v1` mit `CLAUDE_CODE_OAUTH_TOKEN`; Prompt: AGENTS.md/CLAUDE.md lesen; Wert nur aus Impressum, Geschäftsbericht oder Handelsregister (nie kununu, Glassdoor, LinkedIn o. Ä.); Pull Request auf `data/firmen_korrekturen.csv` mit Quelle je Zeile; nie mergen; ohne belastbare Quelle nur Kommentar am Issue.
 
-- [ ] **Step 1: Tests:** Nicht-Admin → Fehler; private Firma → Fehler; offenes Issue → kein POST; Text enthält keine Listennamen (Prüfung gegen die Listen-IDs aus `data/`).
-- [ ] **Step 2–4:** FAIL → umsetzen → `npm test`, `npx tsc --noEmit`, `npm run build` grün.
-- [ ] **Step 5: Commit** — „4f: Firmendaten prüfen lassen (Recherche durch Claude)“ + `Agent: Codex`.
+- [x] **Step 1: Tests:** Nicht-Admin → Fehler; private Firma → Fehler; offenes Issue → kein POST; Text enthält keine Listennamen (Prüfung gegen die Listen-IDs aus `data/`).
+- [x] **Step 2–4:** FAIL → umsetzen → `npm test`, `npx tsc --noEmit`, `npm run build` grün.
+- [x] **Step 5: Commit** — gemeinsamer Paketcommit; Begründung und Nachricht im Agentenprotokoll.
 
 ### Task 3: Telegram
 
@@ -89,9 +99,9 @@
 **Interfaces:**
 - `sende(text: str, post=requests.post, token=os.environ.get("TELEGRAM_BOT_TOKEN"), chat=os.environ.get("TELEGRAM_CHAT_ID")) -> bool`: ohne Token/Chat → `False` + Hinweis; teilt Text an Zeilengrenzen in Stücke ≤ 4.096 Zeichen; `POST https://api.telegram.org/bot<token>/sendMessage` mit `chat_id`, `text`, `disable_web_page_preview: true`; Fehler → `False`, nie eine Ausnahme. Das Token erscheint nie im Log.
 
-- [ ] **Step 1: Tests:** ohne Secrets; 9.000 Zeichen → 3 Aufrufe; 429 → `False` (Review Focus 5); Log enthält das Token nicht.
-- [ ] **Step 2–4:** FAIL → umsetzen → grün.
-- [ ] **Step 5: Commit** — „4f: Telegram-Nachrichten“ + `Agent: Codex`.
+- [x] **Step 1: Tests:** ohne Secrets; 9.000 Zeichen → 3 Aufrufe; 429 → `False` (Review Focus 5); Log enthält das Token nicht.
+- [x] **Step 2–4:** FAIL → umsetzen → grün.
+- [x] **Step 5: Commit** — gemeinsamer Paketcommit; Begründung und Nachricht im Agentenprotokoll.
 
 ### Task 4: Migration 017, Wunschfirmen, Stichwörter, Digest
 
@@ -108,12 +118,12 @@
 - `digest.text(treffer, rest: int, basis: str) -> str`: je Treffer `<Firma> – <Titel>\n<basis>/stellen/<id>`, höchstens 20; dann `<rest> weitere neue Stellen: <basis>/stellen?seit=heute` (gültigen `seit`-Wert aus `web/lib/filter.ts` verwenden); keine Treffer → nur die Restzeile; keine neuen Stellen → keine Nachricht.
 - `digest.main()`: vorheriges Laufdatum aus `letzte_laeufe(2)[1]`, sonst gestern.
 
-- [ ] **Step 1: Tests:** Wortanfang („Data“ trifft „Datenanalyst“ nicht, „Daten“ schon); 25 Treffer → 20 Zeilen + Rest; Review Focus 4; ohne `admins`-Eintrag → Hinweis, keine Nachricht; Web: Umschalten legt an und entfernt; Stichwort-Grenze 50.
-- [ ] **Step 2–4:** FAIL → umsetzen → `py -m pytest -q`; in `web/`: `npm test`, `npx tsc --noEmit`, `npm run build` grün.
-- [ ] **Step 5: Commit** — „4f: Wunscharbeitgeber, Stichwörter und täglicher Digest“ + `Agent: Codex`.
+- [x] **Step 1: Tests:** Wortanfang („Data“ trifft „Datenanalyst“ nicht, „Daten“ schon); 25 Treffer → 20 Zeilen + Rest; Review Focus 4; ohne `admins`-Eintrag → Hinweis, keine Nachricht; Web: Umschalten legt an und entfernt; Stichwort-Grenze 50.
+- [x] **Step 2–4:** FAIL → umsetzen → `py -m pytest -q`; in `web/`: `npm test`, `npx tsc --noEmit`, `npm run build` grün.
+- [x] **Step 5: Commit** — gemeinsamer Paketcommit; Begründung und Nachricht im Agentenprotokoll.
 
 ### Task 5: Doku und Halt
 
-- [ ] `docs/STATUS.md` (Nutzer-To-dos: Migration 017; Telegram-Bot bei @BotFather anlegen, Secrets `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `SEITE_URL` und `CLAUDE_CODE_OAUTH_TOKEN` in GitHub eintragen – Claude erklärt es Schritt für Schritt; Labels `scraper-defekt` und `firmendaten-pruefen` in GitHub anlegen; Token `GITHUB_ISSUE_TOKEN` und `GITHUB_REPOSITORY` in Vercel), `docs/ENTSCHEIDUNGEN.md` (kein HTML-Schnappschuss im Issue; höchstens 3 neue Issues je Nacht; Issues nur für Dateifirmen; Issue wird nicht automatisch geschlossen), `docs/agenten-protokoll.md`, Warteschlange `🛑`.
-- [ ] Commit — „4f: Doku“ + `Agent: Codex`.
+- [x] `docs/STATUS.md` (Nutzer-To-dos: Migration 017; Telegram-Bot bei @BotFather anlegen, Secrets `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `SEITE_URL` und `CLAUDE_CODE_OAUTH_TOKEN` in GitHub eintragen – Claude erklärt es Schritt für Schritt; Labels `scraper-defekt` und `firmendaten-pruefen` in GitHub anlegen; Token `GITHUB_ISSUE_TOKEN` und `GITHUB_REPOSITORY` in Vercel), `docs/ENTSCHEIDUNGEN.md` (kein HTML-Schnappschuss im Issue; höchstens 3 neue Issues je Nacht; Issues nur für Dateifirmen; Issue wird nicht automatisch geschlossen), `docs/agenten-protokoll.md`, Warteschlange `🛑`.
+- [x] Commit — Doku im Paketcommit, SHA im folgenden Dokumentationscommit, jeweils `Agent: Codex`.
 - [ ] **🛑 Halte-Punkt:** Nutzer legt Bot und Secrets an und spielt Migration 017 ein; Claude startet mit ihm einen Lauf von Hand, prüft Telegram-Nachricht und Digest und löst einen Test-Issue an einer absichtlich falschen Firmen-Kennung auf einem Wegwerf-Zweig aus (Reparatur-PR ansehen, nicht mergen).

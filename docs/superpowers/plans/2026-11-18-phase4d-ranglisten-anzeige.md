@@ -10,6 +10,11 @@
 
 **Spec:** `docs/superpowers/specs/2026-11-17-phase4-firmen-ranglisten-design.md` (Abschnitt 4d, Festlegung 3 und 5)
 
+## Baufortschritt 2026-11-20
+Tasks 1–5 lokal implementiert; Doku/Prüfprotokoll siehe Agentenprotokoll. Tatsächliche SQL-/RLS-Ausführung und neue Admin-Klickabnahme bleiben ausdrücklich offen, keine Vollständigkeits- oder Fehlerfreiheitsgarantie. Start durch direkten Nutzerauftrag. Drei spezialisierte Helfer, unabhängige Prüfung der Import-/SQL-Verträge; Korrekturen mit Regressionstests.
+
+Technische Abweichungen: Atomare RPCs für Teilimporte und geschützten Dateiabgleich statt mehrerer REST-Schreibvorgänge; Listen-ID mit Hash aus Name/Herausgeber gegen Slug-Kollisionen. Firmen mit abweichenden Rechtsformen werden nicht automatisch zusammengelegt. KI-Ränge werden nur bei textlichem Rang/Firmen-Beleg akzeptiert, andernfalls strukturierte Zeilen verlangen. Privater Einrichtungsbericht bleibt lokal/ignoriert statt als öffentlich lesbares Artefakt hochgeladen zu werden; DB hält Status/Grund. Keine neuen Pakete, keine Live-Proben. EPA-Ränge wurden im Vorgänger aus öffentlichen Dateien entfernt und werden hier nicht rekonstruiert.
+
 ## Global Constraints
 
 - **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** `admins` hat mehrere Zeilen (der Nutzer trägt beide Admin-Konten ein); dazu Spalte `telegram_chat_id text` (je Konto eigener Telegram-Chat, darf leer sein, nur `service_role` liest sie). `ist_admin()` prüft `exists` – gilt für beide Konten.

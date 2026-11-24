@@ -4,7 +4,8 @@ import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { runInNewContext } from "node:vm";
 import { createClient } from "@supabase/supabase-js";
-import { PORTALE, istPortal, pruefeImportDaten, importiereStelle, bearbeiteImportAnfrage } from "../lib/stellen-import.ts";
+import { ERWEITERUNG_GESPERRT, PORTALE, istPortal, pruefeImportDaten, importiereStelle, bearbeiteImportAnfrage } from "../lib/stellen-import.ts";
+import { erweiterungGesperrt } from "../lib/jobportale.ts";
 
 const OWNER = "11111111-1111-4111-8111-111111111111";
 const ID = "22222222-2222-4222-8222-222222222222";
@@ -53,23 +54,45 @@ test("Importdaten normalisieren Link und Klartext ohne Abruf", () => {
   assert.equal(d.text, "Zeile 1\nZeile 2");
 });
 
-test("Portal-Links: Text und Firma aus der Seite werden verworfen, Titel und Link bleiben", () => {
-  const d = eingabe({ link: " https://www.linkedin.com/jobs/search/?currentJobId=123&trk=x ", titel: " Datenanalyse ", firma: " Beispielbetrieb ", text: "Anzeigentext" });
-  assert.equal(d.link, "https://www.linkedin.com/jobs/view/123/");
-  assert.equal(d.quelle, "linkedin.com");
+test("Indeed-Link: Text und übermittelte Firma werden verworfen, der Tab-Titel liefert Firma und Stelle", () => {
+  const d = eingabe({ link: " https://www.indeed.de/viewjob?jk=123 ", titel: " Datenanalyse | bei Beispiel | Indeed ", firma: " Fremdbetrieb ", text: "Anzeigentext" });
+  assert.equal(d.link, "https://www.indeed.de/viewjob?jk=123");
+  assert.equal(d.quelle, "indeed.de");
   assert.equal(d.titel, "Datenanalyse");
-  assert.equal(d.firma, null);
+  assert.equal(d.firma, "Beispiel");
   assert.equal(d.text, null);
-  const s = eingabe({ link: "https://de.stepstone.de/stellenangebote--x", firma: "F", text: "T" });
-  assert.deepEqual([s.firma, s.text], [null, null]);
+  assert.ok("fehler" in pruefeImportDaten({ link: d.link, titel: "Jobsuche | Indeed", firma: "Beispiel" }));
   const evil = eingabe({ link: "https://evil-linkedin.com/jobs/1", firma: "F", text: "T" });
   assert.deepEqual([evil.firma, evil.text], ["F", "T"]);
+});
+
+test("Glassdoor, Monster und kununu bleiben mit Adresse und Tabtitel speicherbar", async () => {
+  for (const link of ["https://de.glassdoor.com/job/123", "https://www.monster.de/job/123", "https://jobs.kununu.com/stellen/123"]) {
+    const daten = eingabe({ link, titel: "Datenanalyse | Stellenportal", firma: "Fremdbetrieb", text: "Portaltext" });
+    assert.deepEqual([daten.link, daten.titel, daten.firma, daten.text], [link, "Datenanalyse | Stellenportal", null, null]);
+    const d = datenbank();
+    assert.deepEqual(await importiereStelle(d.sb, OWNER, daten, () => assert.fail("Ohne Firma startet keine Originalsuche")), { id: ID, vorhanden: false });
+    const gespeichert = d.calls.at(-1)?.body;
+    assert.deepEqual([gespeichert?.link, gespeichert?.titel, gespeichert?.firma, gespeichert?.snapshot_text, gespeichert?.status],
+      [link, daten.titel, null, null, "gemerkt"]);
+    assert.ok(!Object.hasOwn(gespeichert ?? {}, "original_suche"));
+  }
+});
+
+test("Normale Nichtportal-Importe behalten ihr URL-Schema", () => {
+  for (const link of ["http://karriere.example.invalid/1", "https://karriere.example.invalid:8443/2", "https://192.0.2.4/job"]) {
+    assert.equal(eingabe({ link }).link, link);
+  }
 });
 
 test("Portalliste in Website und Erweiterung ist identisch", async () => {
   const kern = await import("../../browser-erweiterung/chrome/kern.mjs");
   assert.deepEqual([...PORTALE].sort(), [...kern.PORTALE].sort());
-  for (const h of ["www.indeed.co.uk", "x.xing.com", "linkedin.de"]) assert.equal(istPortal(h), kern.istPortal(h), h);
+  assert.deepEqual([...ERWEITERUNG_GESPERRT].sort(), [...kern.GESPERRT].sort());
+  for (const h of ["www.indeed.co.uk", "x.xing.com", "linkedin.de", "www.lnkd.in.", "lnkd.in.evil.example"]) {
+    assert.equal(istPortal(h), kern.istPortal(h), h);
+    assert.equal(erweiterungGesperrt(h), kern.istGesperrt(h), h);
+  }
 });
 
 test("Importdaten weisen kaputte Formen, unzulässige Felder, Credentials und zu lange Werte zurück", () => {
@@ -79,12 +102,6 @@ test("Importdaten weisen kaputte Formen, unzulässige Felder, Credentials und zu
     { link: LINK, titel: "a".repeat(501) }, { link: LINK, firma: "a".repeat(301) }, { link: LINK, text: "a".repeat(50_001) },
     { link: `https://jobs.example.invalid/${"a".repeat(4096)}` }, { link: LINK, text: "a\0b" }]) {
     assert.ok("fehler" in pruefeImportDaten(payload), JSON.stringify(payload)?.slice(0, 100));
-  }
-});
-
-test("Auch aus einem Link gelesene Firma und Titel bleiben innerhalb der Feldgrenzen", () => {
-  for (const slug of [`${"titel".repeat(101)}-at-firma-123`, `titel-at-${"firma".repeat(61)}-123`]) {
-    assert.ok("fehler" in pruefeImportDaten({ link: `https://www.linkedin.com/jobs/view/${slug}` }));
   }
 });
 
@@ -198,6 +215,7 @@ test("Tatsächliche POST-Route verwendet denselben geprüften Ablauf", async () 
   const route = ladeTs("../app/api/stellen-import/route.ts", id => {
     if (id === "@/lib/supabase/server") return { createClient: async () => d.sb };
     if (id === "@/lib/stellen-import") return { bearbeiteImportAnfrage };
+    if (id === "next/server") return { after: () => assert.fail("Ohne Portal startet keine Originalsuche.") };
     throw new Error(`Unvorbereiteter Import ${id}`);
   });
   const r = await route.POST(anfrage());

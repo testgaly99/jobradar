@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { firmenFarbe } from "@/lib/farbe";
 import { datumDe } from "@/lib/bewerbung";
-import { AUSGEBLENDET_BRANCHE, GRUPPEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
 import { istUmgerechnet, UMGERECHNET_HINWEIS, kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { merken, entmerken } from "./actions";
@@ -12,7 +12,7 @@ import FilterClient from "./filter-client";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 import FirmenLogo from "../firmenlogo";
 import Ranglisten from "../ranglisten";
-import { ladeRankingKatalog, ladeRankingZuordnungen, rankingFilter, rankingHinweis } from "@/lib/rankings";
+import { ladeRankingKatalog, ladeRankingKategorien, ladeRankingZuordnungen, ladeStoebernLinks, rankingFilter, rankingHinweis } from "@/lib/rankings";
 import { STUFEN, deutschText, deutschWirksam, leseDeutsch } from "@/lib/sprachniveau";
 
 // Spalte jobs.deutsch_stufe fehlt (Migration 013 offen): Postgres 42703, PostgREST PGRST204
@@ -20,6 +20,7 @@ const OHNE_DEUTSCH_SPALTE = ["42703", "PGRST204"];
 
 const TITEL: Record<Gruppe, string> = {
   liste: "Liste",
+  rangkategorie: "Kategorie",
   groesse: "Größe", kategorie: "Branche", level: "Erfahrungslevel", modell: "Arbeitsmodell",
   vertrag: "Vertragsart", bereich: "Funktion", firma: "Unternehmen", stadt: "Stadt", land: "Land",
 };
@@ -75,6 +76,10 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const felderZeile = nutzer ? await sb.from("listen_felder").select("felder").maybeSingle() : { data: null, error: null };
   const felder = waehleFelder(felderZeile.error ? null : felderZeile.data?.felder);
   const ranglisten = await ladeRankingZuordnungen(sb, !!nutzer && katalog.verfuegbar, jobs.map((j) => j.unternehmen));
+  const [rankingKategorien, stoebern] = await Promise.all([
+    ladeRankingKategorien(sb, !!nutzer, jobs.map((j) => j.unternehmen)),
+    ladeStoebernLinks(sb, !!nutzer),
+  ]);
   const logos = new Map<string, string>();
   if (jobs.length) {
     const ids = jobs.map((j) => j.id);
@@ -103,6 +108,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
       {listenHinweis && <p className="meldung hinweis" role="status">{listenHinweis} <Link href={filterZuUrl({ ...f, liste: [], sort: f.sort === "rang" ? "neu" : f.sort, seite: 1 })}>Listenfilter zurücksetzen</Link></p>}
       {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
+      {rankingKategorien.fehler && <p className="meldung hinweis" role="status">{rankingKategorien.fehler}</p>}
       {deutschFehlt && <p className="meldung hinweis" role="status">Deutsch-Filter geht erst nach Migration 013.</p>}
       {ergebnis.error && ergebnis.error.code !== "PGRST103" && <p className="meldung fehler">Stellen konnten nicht geladen werden.</p>}
       <div className="stellen-layout">
@@ -175,7 +181,20 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   </div>
                 </details>
               )}
-              {GRUPPEN.filter((g) => g !== "liste").map((g) => {
+              {nutzer && (
+                <details className="gruppe" open>
+                  <summary>Kategorie{f.rangkategorie.length > 0 && ` (${f.rangkategorie.length})`}</summary>
+                  <div className="optionen">
+                    {[...new Set([...RANKING_KATEGORIEN, ...f.rangkategorie])].map((k) => (
+                      <label key={k} className="option">
+                        <input type="checkbox" name="rangkategorie" value={k} defaultChecked={f.rangkategorie.includes(k)} />
+                        <span>{k}</span>
+                      </label>
+                    ))}
+                  </div>
+                </details>
+              )}
+              {GRUPPEN.filter((g) => g !== "liste" && g !== "rangkategorie").map((g) => {
                 const werte = fa[g] ?? {};
                 // Gewählte Werte bleiben sichtbar, auch wenn sie in den Zahlen fehlen
                 const namen = facettenSortieren(g, [...new Set([...Object.keys(werte), ...f[g]])]
@@ -198,6 +217,17 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
               })}
             </FilterClient>
           </FilterBlock>
+          {stoebern.length > 0 && (
+            <details className="gruppe">
+              <summary>Rankings zum Stöbern</summary>
+              <ul>
+                {stoebern.map((l) => <li key={l.id}>
+                  <a href={l.url} target="_blank" rel="noopener noreferrer">{l.titel}</a>
+                  <p className="gedaempft klein">Stand: {datumDe(l.geprueft_am)}</p>
+                </li>)}
+              </ul>
+            </details>
+          )}
         </aside>
 
         <section aria-label="Stellen">
@@ -228,6 +258,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       {neu && <span className="chip chip-neu" title="Seit höchstens 3 Tagen online">Neu</span>}
                     </p>
                     <Ranglisten zuordnungen={ranglisten.zuordnungen.filter((z) => z.unternehmen === j.unternehmen)} />
+                    {rankingKategorien.kategorien.filter((z) => z.unternehmen === j.unternehmen).map((z) =>
+                      <span className="chip" key={z.kategorie}>{z.kategorie}</span>)}
                     {kurz.length > 0 && (
                       <ul className="kurz" aria-label="Kurzbeschreibung">
                         {kurz.map((e) => <li key={e.feld} title={e.feld === "gehalt" && istUmgerechnet(e.text) ? UMGERECHNET_HINWEIS : undefined}>{e.text}</li>)}

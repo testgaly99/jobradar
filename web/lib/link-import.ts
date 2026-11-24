@@ -1,5 +1,5 @@
 // Reine Link-Erkennung, ruft nichts ab.
-export type Ats = { typ: "greenhouse" | "ashby" | "lever" | "personio"; id: string | null; jobId: string };
+export type Ats = { typ: "greenhouse" | "ashby" | "lever" | "personio" | "recruitee"; id: string | null; jobId: string };
 // link: vereinheitlichte Form, falls es eine gibt (für die Dublettenprüfung).
 export type LinkInfo = { quelle: string; ats?: Ats; titel?: string; firma?: string; link?: string };
 
@@ -22,6 +22,8 @@ export function analysiereLink(url: string): LinkInfo {
     info.ats = { typ: "lever", id: p[0], jobId: p[1] };
   } else if ((m = host.match(/^([a-z0-9-]+)\.jobs\.personio\.de$/)) && p[0] === "job" && p[1]) {
     info.ats = { typ: "personio", id: m[1], jobId: p[1] };
+  } else if ((m=host.match(/^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)\.recruitee\.com$/)) && u.protocol==='https:' && !u.username && !u.password && (!u.port||u.port==='443')) {
+    info.ats={typ:'recruitee',id:m[1],jobId:p[0]==='o'?(p[1]??''):''};
   } else if (/(^|\.)linkedin\.com$/.test(host) && p[0] === "jobs") {
     // Ansicht, Sammlung oder Suche: dieselbe Stelle bekommt immer den Link .../jobs/view/<nummer>/.
     const nr = p[1] === "view" && p[2] ? p[2].match(/(?:^|-)(\d+)$/)?.[1] : u.searchParams.get("currentJobId")?.match(/^\d+$/)?.[0];

@@ -27,6 +27,7 @@ class FakeDB:
         self.ohne_logo_spalte = False
         self.ohne_ki_spalten = False
         self.ohne_nachruesten = False
+        self.ohne_original = True
         self.ohne_whitelist = False
         self.ohne_deutsch = False
         self.rpc_nein = 0
@@ -36,6 +37,8 @@ class FakeDB:
 
     def __call__(self, method, pfad, params=None, json=None, headers=None):
         params = params or {}
+        if method=='GET' and pfad=='companies' and params.get('select') in ('herkunft', 'fuer_alle'):
+            raise RuntimeError('Supabase GET companies: 400 column herkunft does not exist')
         if method == 'POST' and pfad == 'rpc/bereinige_ranking_ausgaben':
             return None
         elif method == "POST" and pfad == "rpc/snapshot_nachruesten":
@@ -104,6 +107,14 @@ class FakeDB:
                 raise RuntimeError("Supabase GET applications: 400 42703")
             assert params["nachruesten"] == "eq.true"
             return [{"id": a["id"], "link": a["link"], "firma": a.get("firma")} for a in self.t["applications"] if a.get("nachruesten")][:params["limit"]]
+        elif method == "GET" and pfad == "applications" and params.get("select", "").startswith("id,owner_id,geaendert_am,"):
+            if self.ohne_original:
+                raise RuntimeError("Supabase GET applications: 400 42703")
+            rows = [dict(a) for a in self.t["applications"] if isinstance(a, dict)]
+            for k in ('id','owner_id','original_suche'):
+                if k in params:
+                    rows = [a for a in rows if a.get(k) == params[k][3:]]
+            return rows[:params.get('limit',20)]
         elif method == "PATCH" and pfad == "applications":
             # wie PostgREST: alle Filter "is.null" müssen passen
             leer = [k for k, v in params.items() if v == "is.null"]

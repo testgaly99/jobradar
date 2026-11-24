@@ -2,7 +2,57 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Q-Codex-Weitere-Todos (2026-11-22)
+
+Nutzer: „Was sind die weiteren To Dos?“
+
+Auskunft anhand aktueller Warteschlange: acht noch nicht gebaute Pakete, Nr.10/11/11a/11b/11c/12/12a/13. Nächster Eintrag ist6a (nächtlicher Lebenslauf-Abgleich); anschließend Browser-Abgleich, Bewerben-Helfer, Bewerbungsformular, Erinnerungen, Filter, Pendelzeit und Gmail/Kalender. Vorprüfungen und Haltepunkte der jeweiligen Pläne bleiben bestehen. Bereits gebaute Pakete haben teils zurückgestellte Claude-Abnahmen laut STATUS. Die Statusfrage startet kein Arbeitspaket.
+
+## Q-Codex-Claude-Spaeter (2026-11-22)
+
+Nutzer im Wortlaut: „Die Claude Prüfungen machen wir später. Halte einfach die offenen To Dos für Claude fest“.
+
+Umsetzung: ausstehende Claude-Aufgaben der gebauten Pakete zentral in STATUS mit Voraussetzungen festhalten und Prüfungen als aufgeschoben kennzeichnen. Kein Termin vereinbart, keine Prüfung als bestanden angenommen. Keine weitere Frage gestellt, keine Freigabe für neue Pakete, Live-Zugriffe oder Veröffentlichung abgeleitet.
+
+## Q-Codex-020 – Migration bestätigt (2026-11-22)
+
+Nutzer im Wortlaut: „020 ist drin“.
+
+Status: Migration 020 laut Nutzer eingespielt. Keine eigene Live-Datenbankprüfung durch Codex; SQL-/Rechteabnahme, echte Portal-Links und Indeed-Tabtitel sowie Erweiterungsaktualisierung nicht als erledigt bestätigt. Kein erneutes Live-Einspielen angewiesen, keine Veröffentlichung oder Folgeaufgabe aus der Vollzugsmeldung abgeleitet.
+
+## Q-Codex-4g-Start (2026-11-21)
+
+Nutzer im Wortlaut: „Claude hat 4f verifiziert. Prüfe, ob es da noch ein offenes To do für dich gibt. Wenn nicht, fahre mit der nächsten Aufgabe fort“.
+
+Fortsetzung während der Umsetzung: Nutzer „Continue“. Gleicher Auftrag und bestehende Live-Halte gelten weiter.
+
+Prüfergebnis: Claudes Commit 246c6ab nennt keine Codefehler, SQL-/Live-Abnahme017 erfolgreich. Offene To-dos42/43 (Bot/Secrets/echte Integrationsläufe) liegen bei Nutzer/Claude. Nr.9 Phase4g-1 damit direkt zum lokalen Bau freigegeben; Migration020 und Live-/Upload-Halte bleiben. Echte Indeed-Tabtitel fehlen als Nutzer-/Claude-Vorarbeit; keine Portalabrufe und keine angeblich echte Fixture erfinden.
+
+## Q-Codex-017 – Migration bestätigt (2026-11-21)
+
+Nutzer im Wortlaut: „017 ist drin“.
+
+Status: Migration 017 laut Nutzer eingespielt. Keine eigene Datenbankprüfung durch Codex; keine bestätigte SQL-/Rechteabnahme und keine Bestätigung eingerichteter Bots/Secrets oder erfolgreicher echter Nachrichten-/Reparaturläufe. Diese offenen Teile des 4f-Haltepunkts bleiben bestehen. Kein nächstes Paket oder Upload aus der Vollzugsmeldung abgeleitet.
+
+## Folgeauftrag Phase 4e (2026-11-20)
+
+Nutzer im Wortlaut: „Führe im Anschluss das nächste Arbeitspaket aus“. Anschließend: „continue“.
+
+Ableitung: Nr. 7 Phase 4e lokal bauen, auf den bereits vorhandenen Dateien von 4d. Offene Abnahmen/Migration015 bleiben offen; keine Freigabe für Live-Daten, Migrationen oder Veröffentlichung abgeleitet. Genauigkeitspriorität des vorherigen Nutzerauftrags bleibt bestehen. Helfer wurden durch Nutzungslimit unterbrochen und nach ausdrücklichem Fortsetzungsauftrag wieder aufgenommen; keine vorherigen Teiländerungen übergangen.
+
+## Folgeauftrag Phase 4f (2026-11-21)
+
+Nutzer im Wortlaut: „Fahre fort mit der nächsten Aufgabe, Claude hat gerade 4d und 4e verifiziert“.
+
+Ableitung: Nr. 8 Phase 4f lokal bauen. Neue Git-Vermerke bestätigen Claudes SQL-/Mehrkonten-Prüfungen und eingespielte 015/016; keine eigene Live-Prüfung durch Codex behauptet. Keine Freigabe für Upload, Nachrichten, Issues oder Migration017 aus der lokalen Startanweisung abgeleitet. Bisherige Ranglisten-/Datenschutzpriorität bleibt. Technische Konflikte des Plans (Digest seit letztem Versand, private Diagnose außerhalb öffentlicher Berichte, Isolation generierten Reparaturcodes) mit bestehenden Anforderungen abgeglichen und in Entscheidungen/Plan dokumentiert, keine neue Produktpräferenz erfunden.
+
 ## Startauftrag 2026-11-20 (Codex)
+
+### Folgeauftrag Phase 4d (2026-11-20)
+
+Nutzer im Wortlaut: „Das hat Claude schon übernommen. Kümmere dich um die nächste Aufgabe. Alle Aufgaben, die mit Ranglisten zu tun haben, müssen unbedingt zu 100% korrekt sein. Das ist sehr wichtig.“
+
+Ableitung: Start von Nr. 6 Phase 4d autorisiert. Bestehende Live-Halte bleiben bestehen. Firmenzuordnung und Rangbelege werden vorsichtig geprüft: keine automatische Gleichsetzung unterschiedlicher Rechtsformen, keine unbelegten KI-Ränge; widersprüchliche Teile derselben Ausgabe werden atomar abgelehnt. Eine absolute Fehlerfreiheitsgarantie wird nicht behauptet; die echte SQL-/RLS-Abnahme bleibt Voraussetzung der Freigabe. Laut lokalen Git-Commits wurde 4c inzwischen hochgeladen und auf QLever umgestellt; der erste echte Quellenlauf ist weiterhin als Nutzer-To-do dokumentiert.
 
 Nutzer im Wortlaut:
 > Prüfe alle Dokumentationen und alle files im Projekt, damit du genau weißt, was der aktuelle Stand ist.
@@ -364,6 +414,14 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q258 | Soll der Nachtlauf Firmen mit abgelaufener Ranglisten-Datei abschalten (Codex' Abweichung) oder nur der Monatslauf (Plan)? | Nutzer: „Nur im Monatslauf“ | Abschalten aus dem Nachtlauf entfernt; der Monatslauf schaltet über seinen Änderungsvorschlag ab. | entschieden |
 | Q259 | Phase 4c (Codex, geprüft und nachgebessert) hochladen und in main zusammenführen? | Nutzer: „Hochladen und in main (Empfohlen)“ | Nach Tests und Build auf main zusammengeführt und hochgeladen; erster echter Ranglisten-Lauf nach Aufgabe 32 gemeinsam. | entschieden |
 | Q260 | Wikidata-Umstellung auf QLever und Statusnachträge hochladen und in main zusammenführen? | Nutzer: „Hochladen und in main (Empfohlen)“ (vorher: „Löse das Problem“) | Nach Tests und Build auf main zusammengeführt und hochgeladen. | entschieden |
+| Q261 | Prüfung 4d/4e: Wer behebt den Befund „Nachtlauf bricht bei Namensgleichheit von Datei- und Privatfirma komplett ab“? | Nutzer: „Claude behebt sofort (Empfohlen)“ | Überspringen statt abbrechen, Hinweis nur als Anzahl, Test auf Laufebene. | entschieden |
+| Q262 | Prüfung 4d/4e: Wie werden Migration 015/016 vor dem Einspielen in einer echten Datenbank geprüft? | Nutzer: „Lokale Wegwerf-Datenbank (Empfohlen)“ | Lokale Wegwerf-Datenbank im Scratchpad (pgserver, nicht im Projekt), Migrationen 001–016 zweimal plus Codex' SQL-Proben. | entschieden |
+| Q263 | 4d/4e (geprüft, 015/016 live 31/31) und Statusnachträge auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Nur `entwurf-ui`; Merge in main erst nach Klicktest. | entschieden |
+| Q268 | Nächstes Arbeitspaket nach der Übernahme in main? | Nutzer: „A Ranglisten + B Transitous (Empfohlen)“ | Nach dem Merge Ranglisten-Lauf (Aufgabe 33) starten, währenddessen Transitous prüfen. | entschieden |
+| Q267 | Übernahme 4d–4g-1 in main: Nach dem ersten Nachtlauf sind alle 13 Bestandsfirmen privat (Admins); Gäste/normale Konten sehen bis zum ersten Ranglisten-Lauf keine Stellen. Trotzdem jetzt übernehmen? | Nutzer: „In main übernehmen“, dann „Jetzt übernehmen (Empfohlen)“ | Übernommen; danach zeitnah Aufgabe 33. | entschieden |
+| Q266 | Klicktest: Wie werden die Admin-Seiten geprüft? | Nutzer: „Wegwerf-Konto kurz Admin (Empfohlen)“ | Wegwerf-Konto vorübergehend als Admin (nur lokaler Server und Zeile in `admins`, danach sofort entfernt); Ranglisten nur Vorschau. | entschieden |
+| Q265 | 4f und 4g-1 (geprüft, 017/020 live) mit Prüfvermerken auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen“ | Nur `entwurf-ui`; main unverändert. | entschieden |
+| Q264 | 4f: Reparatur-PR zeigt die Stellenzahl „nachher“ nicht automatisch (Modellcode läuft aus Sicherheitsgründen nie mit Netz). So akzeptieren? | Nutzer: „So akzeptieren (Empfohlen)“ | Claude misst „nachher“ lokal vor jedem Merge eines Reparatur-PR. | entschieden |
 
 Fragetexte Q69–Q71 (Claude, Auswahl): Q69 Mehrfachauswahl (siehe Tabelle). Q70 komplette Stelle (Empfohlen) / Firma und Titel reichen. Q71 Schnellstart + Rest in Phase 4 (Empfohlen) / alles in Phase 4 / alles vor Phase 4.
 
@@ -511,6 +569,13 @@ Fragetexte Q257 (Claude, 2026-11-20, Auswahl): Claude behebt sofort (Empfohlen) 
 Fragetexte Q258 (Claude, 2026-11-20, Auswahl): So lassen (Empfohlen) / Nur im Monatslauf.
 Fragetexte Q259 (Claude, 2026-11-20, Auswahl): Hochladen und in main (Empfohlen) / Nur auf entwurf-ui hochladen / Noch nicht.
 Fragetexte Q260 (Claude, 2026-11-20, Auswahl): Hochladen und in main (Empfohlen) / Nur auf entwurf-ui / Noch nicht.
+Fragetexte Q261 (Claude, 2026-11-20, Auswahl): Claude behebt sofort (Empfohlen) / Codex behebt / Später.
+Fragetexte Q262 (Claude, 2026-11-20, Auswahl): Lokale Wegwerf-Datenbank (Empfohlen) / Direkt live mit Wegwerf-Konten / Später.
+Fragetexte Q263 (Claude, 2026-11-21, Auswahl): Ja, hochladen (Empfohlen) / Noch nicht.
+Fragetexte Q268 (Claude, 2026-11-24, Auswahl): A Ranglisten + B Transitous (Empfohlen) / B Transitous allein / C CV-Abgleich bauen / D Telegram einrichten.
+Fragetexte Q267 (Claude, 2026-11-24, Auswahl): Jetzt übernehmen (Empfohlen) / Erst Ranglisten-Lauf / Noch nicht.
+Fragetexte Q266 (Claude, 2026-11-24, Auswahl): Wegwerf-Konto vorübergehend Admin (Empfohlen) / Du klickst die Admin-Seiten selbst / Admin-Seiten auslassen.
+Fragetexte Q264 (Claude, 2026-11-21, Auswahl): So akzeptieren, Claude misst vor dem Merge (Empfohlen) / Automatisch messen lassen (Modellcode mit Netz) / Später entscheiden.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

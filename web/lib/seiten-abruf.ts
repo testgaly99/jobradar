@@ -3,7 +3,7 @@
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
 import { parseRobots, USER_AGENT } from "./ats-abruf.ts";
-import { istPortal } from "./stellen-import.ts";
+import { istPortal } from "./jobportale.ts";
 
 const MAX_BYTES = 2_097_152;
 const MAX_WEITER = 3;

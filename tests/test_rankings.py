@@ -31,7 +31,7 @@ def test_normalisiert_tabellenzeilen_ohne_freigabe_oder_eingabe_zu_aendern():
         "id": "test-liste", "name": "Test-Liste", "herausgeber": "Test-Herausgeber", "aktiv": False,
     }]
     assert ergebnis["ranking_ausgaben"] == [{
-        **daten["ausgabe"], "liste_id": "test-liste", "freigegeben": False,
+        **daten["ausgabe"], "liste_id": "test-liste", "freigegeben": False, "sichtbarkeit":"angemeldet",
     }]
     assert ergebnis["ranking_firmen"] == [
         {"ausgabe_id": "test-liste-2026", "unternehmen": "Testfirma A", "rang": 12},

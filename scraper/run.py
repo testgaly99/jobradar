@@ -4,6 +4,8 @@ import sys
 import tempfile
 import json
 import time
+import contextlib
+import io
 from collections import Counter
 from datetime import date
 from pathlib import Path
@@ -213,6 +215,22 @@ def _nachruesten():
         return {}
 
 
+def _original_suche():
+    """Original-Suche darf keine privaten Fehlermeldungen oder Namen protokollieren."""
+    try:
+        from scraper import original_suche
+        log = io.StringIO()
+        with contextlib.redirect_stdout(log), contextlib.redirect_stderr(io.StringIO()):
+            erg = original_suche.lauf()
+        if 'Hinweis: Migration 020 offen, Original-Suche übersprungen.' in log.getvalue():
+            print('Hinweis: Migration 020 offen, Original-Suche übersprungen.')
+        return {k: erg[k] for k in ('gesucht','gefunden','auswahl','nicht_gefunden')
+                if type(erg.get(k)) is int and erg[k] >= 0}
+    except Exception:
+        print('Hinweis: Original-Suche konnte nicht abgeschlossen werden.')
+        return {}
+
+
 def lauf(heute, datenordner="data"):
     start = time.monotonic()
     datenordner = Path(datenordner)
@@ -230,7 +248,15 @@ def lauf(heute, datenordner="data"):
             hinweise.append(f'Ranglisten-Import {pfad.name}: {kurzfehler(e)}')
     db._spalten = db._deutsch = None  # Spalten-Pruefungen (Migration 005, 013) einmal pro Lauf neu
     db._firmen_quellen = None
-    db.sync_companies(firmen)  # Stellen verweisen per FK auf companies
+    db._herkunft = None
+    db._zusatzfirmen = None
+    from scraper.bestand_umziehen import umziehen
+    firmen = umziehen(firmen, datenordner / 'companies.csv')
+    konflikt = set(db.sync_companies(firmen))  # Stellen verweisen per FK auf companies
+    if konflikt:
+        # Nur die Anzahl: bericht.md ist öffentlich, die Namen stehen in der Datenbank.
+        hinweise.append(f'Firmen mit Namenskonflikt zu einer DB-Firma übersprungen: {len(konflikt)} (mit Claude prüfen).')
+        firmen = [f for f in firmen if f['name'] not in konflikt]
     if not db.firmen_quellen_da():
         hinweise.append('Migration 014 offen; Ranglisten-Import übersprungen.')
     else:
@@ -246,12 +272,45 @@ def lauf(heute, datenordner="data"):
     aktive = [f for f in firmen if f['aktiv'] == 'ja' and f.get('status', 'aktiv') == 'aktiv']
     _logos(aktive)
     bericht = {"stand": heute, "firmen": [_firma(f, heute) for f in aktive], 'ranglisten_hinweise': hinweise}
+    if os.environ.get('GITHUB_RUN_ID'):
+        bericht['workflow_lauf']={'id':os.environ['GITHUB_RUN_ID'],'versuch':os.environ.get('GITHUB_RUN_ATTEMPT','1')}
+    oeffentliche_firmen=list(bericht['firmen'])
+    bericht['private_firmen'] = {'abgerufen': 0, 'fehler': 0}
+    diagnosen_db = []
+    bericht['gesundheit_db_aktuell'] = False
+    bereits_abgerufen = {(f.get('ats_typ'), f.get('ats_id')) for f in aktive if f.get('ats_typ') and f.get('ats_id')}
+    # Adapter können URLs ausgeben: DB-Firmen auch vor öffentlichen Workflow-Logs schützen.
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        private_firmen=db.db_firmen()
+        for f in private_firmen:
+            if f.get('status')=='aktiv' and f.get('aktiv')=='ja':
+                portal = (f.get('ats_typ'), f.get('ats_id'))
+                if f.get('ats_typ') and f.get('ats_id') and portal in bereits_abgerufen:
+                    continue
+                privat = f.get('fuer_alle', True) is False
+                if privat and f.get('nutzer', 0) <= 0:
+                    continue
+                if f.get('ats_typ') and f.get('ats_id'):
+                    bereits_abgerufen.add(portal)
+                zeile = _firma(f,heute)
+                diagnosen_db.append(zeile)
+                if privat:
+                    bericht['private_firmen']['abgerufen'] += 1
+                    bericht['private_firmen']['fehler'] += bool(zeile['fehler'])
+                else:
+                    bericht['firmen'].append(zeile)
+        try:
+            db.speichere_firmen_gesundheit(heute, diagnosen_db)
+            bericht['gesundheit_db_aktuell'] = True
+        except Exception:
+            print('Zusätzliche Gesundheitsdiagnosen nicht gespeichert.')
     db.snapshot_nachruesten()  # nach allen Firmen
     bericht["deutsch"] = _deutsch_nachruesten()  # vor den KI-Schritten (Plan Sprachniveau, Task 3)
     bericht["ki"] = _ki(heute)
     bericht["nachruesten"] = _nachruesten()
+    bericht["original_suche"] = _original_suche()
     bericht['laufzeit_min'] = round((time.monotonic() - start) / 60, 1)
-    _schreibe_text(datenordner / "bericht.md", _markdown(bericht))
+    _schreibe_text(datenordner / "bericht.md", _markdown({**bericht,'firmen':oeffentliche_firmen}))
     db.speichere_lauf(bericht)
     return bericht
 
@@ -261,6 +320,5 @@ if __name__ == "__main__":
     fehler = [f for f in b["firmen"] if f["fehler"]]
     print(f"{len(b['firmen'])} Unternehmen, {len(fehler)} Fehler, "
           f"{sum(f['neu'] for f in b['firmen'])} neu, {sum(f['geschlossen'] for f in b['firmen'])} geschlossen")
-    for f in fehler:
-        print(f"  Fehler {f['name']}: {f['fehler']}")
+    # Firmennamen aus DB-Listen dürfen nicht im öffentlichen Workflow-Protokoll stehen.
     sys.exit(1 if b["firmen"] and len(fehler) == len(b["firmen"]) else 0)

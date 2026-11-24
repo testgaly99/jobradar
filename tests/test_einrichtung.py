@@ -10,6 +10,12 @@ from scraper.ranglisten_holen import schreibe_firmen
 FIX = Path(__file__).parent / 'fixtures/quellen'
 
 
+@pytest.fixture(autouse=True)
+def ohne_live_db(monkeypatch):
+    from scraper import db
+    monkeypatch.setattr(db,'herkunft_da',lambda:False)
+
+
 def seite(name):
     return SimpleNamespace(text=(FIX / name).read_text(encoding='utf-8'))
 

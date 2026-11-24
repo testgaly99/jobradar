@@ -80,3 +80,17 @@ test("Browserfixture beantwortet nur markierten internen Redirect synthetisch, Ã
   `, fixture], { encoding: "utf8", cwd: mkdtempSync(join(tmpdir(), "jobradar-redirect-")) });
   assert.equal(r.status, 0, r.stderr);
 });
+
+test("Browserfixture beantwortet leere 4d-Kategorien und StÃ¶berlinks ohne Wiederholungsfehler", () => {
+  const fixture = fileURLToPath(new URL("../scripts/offline/antworten.cjs", import.meta.url));
+  const r = spawnSync(process.execPath, ["-e", `
+    const a = require('node:assert/strict'); require(process.argv[1]);
+    (async () => {
+      for (const p of ['/rest/v1/rpc/ranking_kategorien', '/rest/v1/stoebern_links', '/rest/v1/firmen_sichtbar', '/rest/v1/wunschfirmen', '/rest/v1/abgleich_stichwoerter']) {
+        const r = await fetch('https://offline.example.invalid' + p, {method:'POST', body:'{}'});
+        a.equal(r.status, 200); a.deepEqual(await r.json(), []);
+      }
+    })().catch(() => { process.exitCode = 1; });
+  `, fixture], { encoding: "utf8", cwd: mkdtempSync(join(tmpdir(), "jobradar-kategorien-")) });
+  assert.equal(r.status, 0, r.stderr);
+});

@@ -1,6 +1,7 @@
 """Supabase per PostgREST (Service-Key). Jeder HTTP-Aufruf geht durch _req, damit Tests ihn ersetzen koennen."""
 import hashlib
 import os
+from datetime import date, timedelta
 from pathlib import Path
 
 import requests
@@ -232,6 +233,74 @@ def firmen_quellen_da():
     return _firmen_quellen
 
 
+_herkunft = None
+
+
+def herkunft_da():
+    global _herkunft
+    if _herkunft is None:
+        try:
+            _req('GET','companies',params={'select':'herkunft','limit':0})
+            _herkunft = True
+        except RuntimeError as e:
+            if ': 400 ' not in str(e):
+                raise
+            _herkunft = False
+    return _herkunft
+
+
+_zusatzfirmen = None
+
+
+def zusatzfirmen_da():
+    global _zusatzfirmen
+    if _zusatzfirmen is None:
+        try:
+            _req('GET', 'companies', params={'select': 'fuer_alle', 'limit': 0})
+            _zusatzfirmen = True
+        except RuntimeError as e:
+            if ': 400 ' not in str(e):
+                raise
+            _zusatzfirmen = False
+    return _zusatzfirmen
+
+
+def privatisiere_bestand(namen):
+    return _req('POST', 'rpc/bestand_privatisieren', json={'p_firmen': namen}) is True
+
+
+def db_firmen(status=None):
+    if not herkunft_da():
+        return []
+    if zusatzfirmen_da():
+        rows = _objektliste(_req('POST', 'rpc/firmen_fuer_nachtlauf', json={}), 'DB-Firmenantwort')
+        result = []
+        for f in rows:
+            if type(f.get('fuer_alle')) is not bool or type(f.get('nutzer')) is not int or f['nutzer'] < 0:
+                raise ValueError('Ungültige DB-Firmensichtbarkeit')
+            if status is None or f.get('status') == status:
+                result.append(dict(f, aktiv='ja' if f.get('aktiv') is True else 'nein'))
+        return result
+    result=[]
+    while True:
+        params={'select':'name,careers_url,ats_typ,ats_id,mitarbeitende_ca,groesse_klasse,kategorie,hauptsitz,aktiv,website,wikidata_id,quellen,status,status_grund,herkunft',
+                'herkunft':'neq.datei','order':'name','offset':len(result),'limit':SEITE}
+        if status is not None:
+            params['status']='eq.'+status
+        teil=_objektliste(_req('GET','companies',params=params),'DB-Firmenantwort')
+        result.extend(dict(f,aktiv='ja' if f.get('aktiv') is True else 'nein') for f in teil)
+        if len(teil)<SEITE:
+            return result
+
+
+def setze_einrichtung(name, felder):
+    erlaubt={'careers_url','ats_typ','ats_id','status','status_grund','aktiv'}
+    patch={k:v for k,v in felder.items() if k in erlaubt}
+    if 'aktiv' in patch:
+        patch['aktiv']=patch['aktiv'] in ('ja',True)
+    _req('PATCH','companies',params={'name':'eq.'+name,'herkunft':'neq.datei'},json=patch)
+
+
 def sync_companies(firmen):
     def zahl(x):
         try:
@@ -239,18 +308,44 @@ def sync_companies(firmen):
         except ValueError:
             return None
     erweitert = firmen_quellen_da()
-    _upsert("companies", [{
+    mit_herkunft = herkunft_da()
+    mit_sichtbarkeit = mit_herkunft and zusatzfirmen_da()
+    konflikt = []
+    if mit_herkunft:
+        # Gleicher Name wie eine DB-Firma, aber anderes oder fehlendes Portal: nur diese Dateizeile
+        # überspringen. Ein Abbruch würde jede Nacht alle Firmen stoppen.
+        privat={f['name']: f for f in db_firmen()}
+        for firma in firmen:
+            alt=privat.get(firma['name'])
+            if alt and not (mit_sichtbarkeit and firma.get('ats_typ') and firma.get('ats_id')
+                            and firma['ats_typ']==alt.get('ats_typ') and firma['ats_id']==alt.get('ats_id')):
+                konflikt.append(firma['name'])
+        firmen = [f for f in firmen if f['name'] not in konflikt]
+    zeilen = [{
         "name": f["name"], "careers_url": f["careers_url"], "ats_typ": f["ats_typ"], "ats_id": f["ats_id"],
         "mitarbeitende_ca": zahl(f["mitarbeitende_ca"]), "groesse_klasse": f["groesse_klasse"],
         "kategorie": f["kategorie"], "hauptsitz": f["hauptsitz"],
         "aktiv": f["aktiv"] == "ja" and f.get('status', 'aktiv') == 'aktiv',
+        **({'herkunft':'datei'} if mit_herkunft else {}),
+        **({'fuer_alle':True} if mit_sichtbarkeit else {}),
         **({k: f.get(k) or (list() if k == 'quellen' else 'aktiv' if k == 'status' else None)
             for k in ('website', 'wikidata_id', 'quellen', 'status', 'status_grund')} if erweitert else {}),
-    } for f in firmen], "name")
+    } for f in firmen]
+    if mit_herkunft:
+        if zeilen:
+            _req('POST','rpc/sync_dateifirmen',json={'p_firmen':zeilen})
+    else:
+        _upsert('companies',zeilen,'name')
+    return konflikt
 
 
 def importiere_ausgabe(daten):
     from scraper.rankings import pruefe_ausgabe
+    if isinstance(daten,dict) and isinstance(daten.get('liste'),dict) and daten['liste'].get('id')=='epa-patente':
+        if 'sichtbarkeit' not in daten.get('ausgabe',{}):
+            daten={**daten,'ausgabe':{**daten['ausgabe'],'sichtbarkeit':'admin','freigegeben':True}}
+        elif daten['ausgabe']['sichtbarkeit']!='admin':
+            raise ValueError('Eingeschränkte Quelle darf nur für Admins importiert werden')
     bekannte, offset = set(), 0
     while True:
         teil = _objektliste(_req('GET', 'companies', params={'select': 'name', 'order': 'name',
@@ -260,6 +355,13 @@ def importiere_ausgabe(daten):
         if len(teil) < SEITE:
             break
     zeilen = pruefe_ausgabe(daten, bekannte)
+    if not herkunft_da():
+        # Migration 014 kennt keine Sichtbarkeit: eingeschränkte Ausgaben nie freigeben.
+        for a in zeilen['ranking_ausgaben']:
+            if a.pop('sichtbarkeit','angemeldet') == 'admin':
+                a['freigegeben'] = False
+        for l in zeilen['ranking_listen']:
+            l.pop('kategorie',None)
     # Ein REST-Aufruf, eine Datenbanktransaktion: nie halbe Ausgaben sichtbar.
     _req('POST', 'rpc/importiere_ranking_ausgabe', json={'p_daten': zeilen})
 
@@ -345,8 +447,133 @@ def setze_nachgeruestet(app_id, patch):
     _req("PATCH", "applications", params={"id": f"eq.{app_id}"}, json={**patch, "nachruesten": False})
 
 
+_ORIGINAL_FELDER = ('id,owner_id,geaendert_am,firma,titel,standort,link,portal_link,job_id,'
+                    'original_suche,original_wahl,original_vorschlaege')
+
+
+def bewerbungen_original_offen(limit=20):
+    try:
+        return _req('GET', 'applications', params={'select': _ORIGINAL_FELDER,
+                    'original_suche': 'eq.offen', 'job_id': 'is.null', 'order': 'erstellt_am,id', 'limit': min(20, max(0, limit))})
+    except RuntimeError as exc:
+        if ': 400 ' not in str(exc) or not any(code in str(exc) for code in ('42703', 'PGRST204')):
+            raise
+        print('Hinweis: Migration 020 offen, Original-Suche übersprungen.')
+        return []
+
+
+def bewerbung_original(app_id, owner):
+    rows = _req('GET', 'applications', params={'select': _ORIGINAL_FELDER, 'id': 'eq.'+app_id,
+                    'owner_id': 'eq.'+owner, 'limit': 1})
+    return rows[0] if rows else None
+
+
+def setze_original(app_id, patch, owner, stand):
+    return _req('POST', 'rpc/setze_original', json={'p_id': app_id, 'p_owner': owner,
+                'p_stand': stand, 'p_patch': patch})
+
+
 def speichere_lauf(bericht):
     _req("POST", "laeufe", json={"datum": bericht["stand"], "bericht": bericht})
+
+
+def letzte_laeufe(n=7):
+    if type(n) is not int or not 1 <= n <= 100:
+        raise ValueError('Ungültige Laufanzahl')
+    rows = _objektliste(_req('GET', 'laeufe', params={'select':'datum,bericht', 'order':'datum.desc', 'limit':n}), 'Laufantwort')
+    result=[]
+    for r in rows:
+        if not isinstance(r.get('bericht'),dict):
+            raise ValueError('Ungültiger Laufbericht')
+        result.append({**r['bericht'],'stand':r['datum']})
+    return result
+
+
+def ergaenze_lauf(datum, felder):
+    date.fromisoformat(datum)
+    if not isinstance(felder,dict) or 'stand' in felder or 'firmen' in felder:
+        raise ValueError('Ungültige Ergänzung')
+    rows = _objektliste(_req('GET','laeufe',params={'select':'datum,bericht','datum':'eq.'+datum,'limit':1}), 'Laufantwort')
+    if not rows or not isinstance(rows[0].get('bericht'),dict):
+        raise ValueError('Lauf zum Ergänzen fehlt')
+    _req('PATCH','laeufe',params={'datum':'eq.'+datum},json={'bericht':{**rows[0]['bericht'],**felder}})
+
+
+def _alle_zeilen(tabelle, params):
+    result=[]
+    while True:
+        teil=_objektliste(_req('GET',tabelle,params={**params,'offset':len(result),'limit':SEITE}), 'Datenantwort')
+        result.extend(teil)
+        if len(teil)<SEITE:
+            return result
+
+
+def admin_ids():
+    return _alle_zeilen('admins',{'select':'user_id,telegram_chat_id','order':'user_id'})
+
+
+def digest_fenster(owner, initial):
+    date.fromisoformat(initial)
+    result=_req('POST','rpc/digest_fenster',json={'p_owner':owner,'p_initial':initial})
+    if not isinstance(result,dict) or not isinstance(result.get('gesendet_ids'),list) or not all(isinstance(i,str) for i in result['gesendet_ids']):
+        raise ValueError('Ungültiges Digest-Fenster')
+    date.fromisoformat(result['ab'])
+    return result
+
+
+def digest_erfolg(owner, ids, ab):
+    date.fromisoformat(ab)
+    if not isinstance(ids,list) or not all(isinstance(i,str) and i for i in ids):
+        raise ValueError('Ungültige Digest-Zuordnung')
+    if _req('POST','rpc/digest_erfolg',json={'p_owner':owner,'p_ids':ids,'p_ab':ab}) is not True:
+        raise ValueError('Digest-Versand wurde nicht gespeichert')
+
+
+def neue_stellen_seit(datum):
+    date.fromisoformat(datum)
+    return _alle_zeilen('jobs',{'select':'id,unternehmen,titel','status':'eq.offen','sichtbar':'eq.true',
+                               'erstmals_gesehen':'gt.'+datum,'order':'id'})
+
+
+def wunsch_und_stichwoerter(owner):
+    wunsch=_alle_zeilen('wunschfirmen',{'select':'unternehmen','owner_id':'eq.'+owner,'order':'unternehmen'})
+    woerter=_alle_zeilen('abgleich_stichwoerter',{'select':'begriff','owner_id':'eq.'+owner,'order':'id'})
+    return {z['unternehmen'] for z in wunsch},[z['begriff'] for z in woerter]
+
+
+def sichtbare_firmen(owner):
+    firmen=_alle_zeilen('companies',{'select':'name','fuer_alle':'eq.true','aktiv':'eq.true','order':'name'})
+    eigene=_alle_zeilen('firmen_sichtbar',{'select':'unternehmen','owner_id':'eq.'+owner,'order':'unternehmen'})
+    return {z['name'] for z in firmen}|{z['unternehmen'] for z in eigene}
+
+
+def speichere_firmen_gesundheit(datum, rows):
+    date.fromisoformat(datum)
+    berichte=[]
+    for r in rows:
+        if not isinstance(r,dict) or not isinstance(r.get('name'),str) or not r['name'].strip():
+            raise ValueError('Ungültiger Firmenbericht')
+        z={'name':r['name'], 'fehler':str(r.get('fehler') or '')[:1000]}
+        for k in ('gefunden','gefiltert','neu','geschlossen'):
+            wert=r.get(k,0)
+            if type(wert) is not int or wert<0:
+                raise ValueError('Ungültige Firmenzahl')
+            z[k]=wert
+        z['uebersprungen']={k:v for k,v in (r.get('uebersprungen') or {}).items()
+                           if k in {'ohne Titel','ohne URL','ungültige ID','doppelte ID','kein Objekt','ungültige Markierung','unbekannte ID'}
+                           and type(v) is int and v>=0}
+        berichte.append(z)
+    _req('POST','rpc/speichere_firmen_gesundheit',json={'p_datum':datum,'p_berichte':berichte})
+
+
+def lade_firmen_gesundheit(datum=None):
+    params={'select':'datum,bericht','order':'datum.desc,unternehmen'}
+    if datum is not None:
+        date.fromisoformat(datum)
+        params['datum']='eq.'+datum
+    else:
+        params['datum']='gte.'+(date.today()-timedelta(days=7)).isoformat()
+    return _alle_zeilen('firmen_gesundheit',params)
 
 
 def snapshot_nachruesten():

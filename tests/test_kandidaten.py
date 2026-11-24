@@ -47,10 +47,10 @@ def test_branche_und_ausgaben_gueltig():
         assert pruefe_ausgabe(ausgabe, {'Siemens'})['ranking_firmen'][0]['rang'] == 2
 
 
-def test_epa_keine_freigabe_und_schaltjahr():
+def test_epa_nur_admin_und_schaltjahr():
     a = kandidaten.ausgaben([k(liste='epa-patente')], '2024-02-29')[0]
     assert a['ausgabe']['gueltig_bis'] == '2025-02-28'
-    assert not a['ausgabe']['freigegeben']
+    assert a['ausgabe']['freigegeben'] and a['ausgabe']['sichtbarkeit']=='admin'
     pruefe_ausgabe(a, {'Siemens'})
 
 

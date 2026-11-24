@@ -15,7 +15,7 @@ from scraper.fehler import kurzfehler
 from scraper.steckbrief import steckbrief
 
 # Gleich wie PORTALE in web/lib/stellen-import.ts (ein Test prüft das); "name.*" steht für beliebige Endungen.
-PORTALE = ["linkedin.com", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com"]
+PORTALE = ["linkedin.com", "lnkd.in", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com"]
 
 
 def ist_portal(host):
@@ -90,6 +90,20 @@ def _lies(link, hole, browser, pruefe):
     return daten
 
 
+def snapshot_felder(gliederung, text, frage=None):
+    """Gemeinsame reine Aufbereitung; Schreiben erfolgt erst atomar beim Aufrufer."""
+    patch = {"snapshot_steckbrief": steckbrief(gliederung, text)}
+    if gliederung:
+        patch["snapshot_abschnitte"] = gliederung
+    if frage:
+        try:
+            e = frage(ki.kuerze_fuer_ki(gliederung, text), ki.GROSS)
+            patch["snapshot_ki"] = {k: v for k, v in e.items() if k not in ("studium", "taetigkeit")}
+        except ki.Ungueltig:
+            pass  # Gliederung und Steckbrief trotzdem speichern
+    return patch
+
+
 def lauf(frage=_STANDARD, hole=http.hole, aufloesen=_aufloesen, browser=_STANDARD, frage_ft=_STANDARD):
     """frage/frage_ft=None: ohne Groq (Gliederung, Steckbrief und Text trotzdem). browser=None: nur einfacher Abruf.
     Groq weg oder Tageslimit: Rest bleibt markiert. Eingetragenes des Nutzers wird nie überschrieben."""
@@ -108,9 +122,6 @@ def lauf(frage=_STANDARD, hole=http.hole, aufloesen=_aufloesen, browser=_STANDAR
             pruefe(a["link"] or "")
             d = _lies(a["link"], hole, browser, pruefe)
             gliederung, text = d["gliederung"], d["text"]
-            patch = {"snapshot_steckbrief": steckbrief(gliederung, text)}
-            if gliederung:
-                patch["snapshot_abschnitte"] = gliederung
             firma, titel = d["firma"], d["titel"]
             if frage_ft and not (a.get("firma") or firma):
                 try:
@@ -118,12 +129,7 @@ def lauf(frage=_STANDARD, hole=http.hole, aufloesen=_aufloesen, browser=_STANDAR
                     firma, titel = firma or f2, titel or t2
                 except ki.Ungueltig:
                     pass
-            if frage:
-                try:
-                    e = frage(ki.kuerze_fuer_ki(gliederung, text), ki.GROSS)
-                    patch["snapshot_ki"] = {k: v for k, v in e.items() if k not in ("studium", "taetigkeit")}
-                except ki.Ungueltig:
-                    pass  # Gliederung und Steckbrief trotzdem speichern
+            patch = snapshot_felder(gliederung, text, frage)
             leer = {"firma": firma, "titel": titel, "standort": d["ort"], "snapshot_text": text}
         except (ki.Erschoepft, ki.GroqWeg) as e:
             print(f"Hinweis: Nachrüsten beendet ({kurzfehler(e)}), Rest folgt beim nächsten Lauf.")

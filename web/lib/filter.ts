@@ -1,7 +1,8 @@
 import { stufenRang } from "./sprachniveau.ts";
 
 // Reine Funktionen: URL <-> Filter. Mehrfachwerte stehen als wiederholte Parameter (?stadt=A&stadt=B).
-export const GRUPPEN = ["liste", "groesse", "kategorie", "level", "modell", "vertrag", "bereich", "firma", "stadt", "land"] as const;
+export const GRUPPEN = ["liste", "rangkategorie", "groesse", "kategorie", "level", "modell", "vertrag", "bereich", "firma", "stadt", "land"] as const;
+export const RANKING_KATEGORIEN = ["Top-Arbeitgeber", "Beliebt bei Studierenden", "Große Unternehmen", "Börsennotiert", "Innovation", "Wachstum & Startups", "Top-Gehalt Tech"] as const;
 export type Gruppe = (typeof GRUPPEN)[number];
 export const SEIT_WERTE = ["heute", "3", "7", "30"] as const;
 export type Seit = (typeof SEIT_WERTE)[number];

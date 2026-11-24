@@ -4,8 +4,8 @@ const PREFIX = "stellen-import:";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 // Jobportale: Nur Adresse und Titel aus dem Tab-Objekt, kein Skript in der Seite (Nutzungsbedingungen verbieten das Auslesen per Erweiterung).
-// "name.*" steht für beliebige Endungen. Die Liste steht je einmal in der Erweiterung (kern.mjs) und in der Website (web/lib/stellen-import.ts); ein Test prüft Gleichheit.
-export const PORTALE = ["linkedin.com", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com"];
+// "name.*" steht für beliebige Endungen. Ein Test prüft die Gleichheit mit web/lib/jobportale.ts.
+export const PORTALE = ["linkedin.com", "lnkd.in", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com"];
 export const istPortal = (host) => passt(host, PORTALE);
 function passt(host, liste) {
   const l = String(host).toLowerCase().split(".");
@@ -18,7 +18,7 @@ function passt(host, liste) {
 }
 
 // Hier übernimmt die Erweiterung gar nichts, auch nicht Adresse oder Titel (Nutzer 2026-11-19, Q135/Q137): LinkedIn verbietet solche Erweiterungen, StepStone und XING werden nie ausgelesen.
-export const GESPERRT = ["linkedin.com", "stepstone.*", "xing.com"];
+export const GESPERRT = ["linkedin.com", "lnkd.in", "stepstone.*", "xing.com"];
 export const istGesperrt = (host) => passt(host, GESPERRT);
 
 export function appOrigin(wert) {

@@ -31,6 +31,113 @@ def pruefe_persoenlich(browser, width, context, session, base, log):
             "name": "fiktiv.pdf", "mimeType": "application/pdf", "buffer": b"%PDF-1.4\n% nur synthetisch\n%%EOF"})
         page.get_by_role("button", name="Hochladen", exact=True).click()
 
+    bewerbung = "/bewerbung/00000000-0000-4000-8000-000000000031"
+    portal_link = "https://www.indeed.de/viewjob?jk=offline"
+    original_link = "https://karriere.example.invalid/stellen/offline"
+    offen_meldung = "Original wird heute Nacht auf der Karriereseite der Firma gesucht."
+
+    ctx, p = starten("original-formular", "/bewerbungen/neu")
+    link = p.get_by_label("Link zur Anzeige", exact=True)
+    firma = p.get_by_label("Firma", exact=True)
+    titel = p.get_by_label("Titel", exact=True)
+    text = p.locator(".linkform textarea")
+    linkedin = "https://www.linkedin.com/jobs/view/456789/"
+    link.fill(linkedin)
+    text.fill("Künstlicher Anzeigentext aus Formular.")
+    p.get_by_role("button", name="Anlegen", exact=True).click()
+    dialog = p.get_by_role("dialog")
+    p.wait_for_function("""() => !document.querySelector('.linkform input[type=url]').value ||
+      Boolean(document.querySelector('.linkform .meldung.info'))""")
+    expect(dialog).not_to_be_visible()
+    expect(link).to_have_value(linkedin)
+    expect(text).to_have_value("Künstlicher Anzeigentext aus Formular.")
+    expect(p.get_by_text("Aus diesem Link kann jobradar die Firma nicht lesen.", exact=False)).to_be_visible()
+    expect(firma).to_have_attribute("required", "")
+    expect(titel).to_have_attribute("required", "")
+    assert not any(r.get("ereignis") == "original-formular-anlegen" for r in lesen())
+    linkedin = "https://www.linkedin.com/jobs/view/456790/"
+    link.fill(linkedin)
+    firma.fill("Prüffirma aus Formular")
+    p.get_by_role("button", name="Anlegen", exact=True).click()
+    expect(p.get_by_text("Aus diesem Link kann jobradar die Firma nicht lesen.", exact=False)).to_be_visible()
+    expect(dialog).not_to_be_visible()
+    expect(link).to_have_value(linkedin)
+    expect(firma).to_have_value("Prüffirma aus Formular")
+    expect(text).to_have_value("Künstlicher Anzeigentext aus Formular.")
+    expect(titel).to_have_attribute("required", "")
+    assert not any(r.get("ereignis") == "original-formular-anlegen" for r in lesen())
+    titel.fill("Prüftitel aus Formular")
+    p.get_by_role("button", name="Anlegen", exact=True).click()
+    expect(dialog.get_by_role("heading", name="Bewerbung angelegt", exact=True)).to_be_visible()
+    dialog.get_by_role("link", name="Zur Bewerbung", exact=True).click()
+    expect(p.get_by_role("heading", name="Prüffirma aus Formular: Prüftitel aus Formular", exact=True)).to_be_visible()
+    expect(p.get_by_role("link", name="Anzeige öffnen", exact=True)).to_have_attribute("href", linkedin)
+    p.get_by_text("Snapshot der Anzeige", exact=True).click()
+    expect(p.get_by_text("Künstlicher Anzeigentext aus Formular.", exact=True)).to_be_visible()
+    anlagen = [r["patch"] for r in lesen() if r.get("ereignis") == "original-formular-anlegen"]
+    assert len(anlagen) == 1 and anlagen[0]["portal_link"] == linkedin and anlagen[0]["original_suche"] == "offen", anlagen
+    ctx.close()
+    print(f"OK {width}px: Portal-Rückfrage erhält Formulareingaben und legt nach Ergänzung genau eine Bewerbung an")
+
+    ctx, p = starten("original-offen", bewerbung)
+    expect(p.get_by_text(offen_meldung, exact=True)).to_be_visible()
+    expect(p.get_by_role("link", name="Anzeige öffnen", exact=True)).to_have_attribute("href", portal_link)
+    ctx.close()
+
+    for fall in ["original-lokal", "original-keine", "original-extern"]:
+        ctx, p = starten(fall, bewerbung)
+        auswahl = p.get_by_role("region", name="Welche dieser Stellen ist es?", exact=True)
+        expect(auswahl).to_be_visible()
+        expect(auswahl.get_by_role("listitem")).to_have_count(2)
+        anzeige = p.get_by_role("link", name="Anzeige öffnen", exact=True)
+        expect(anzeige).to_have_attribute("href", portal_link)
+        if fall == "original-lokal":
+            zeile = auswahl.get_by_role("listitem").filter(has_text="Prüf-Original vor Ort")
+            expect(zeile).to_contain_text("Teststadt")
+            zeile.get_by_role("button", name="Diese Stelle wählen", exact=True).click()
+            expect(anzeige).to_have_attribute("href", original_link)
+        elif fall == "original-keine":
+            auswahl.get_by_role("button", name="Keine davon", exact=True).click()
+            expect(p.get_by_text("Original nicht gefunden.", exact=True)).to_be_visible()
+        else:
+            zeile = auswahl.get_by_role("listitem").filter(has_text="Prüf-Original im Nachtlauf")
+            zeile.get_by_role("button", name="Diese Stelle wählen", exact=True).click()
+            expect(p.get_by_text(offen_meldung, exact=True)).to_be_visible()
+        expect(auswahl).to_have_count(0)
+        p.reload()
+        expect(p.get_by_role("heading", name="Prüffirma Kanban: Fiktive Datenanalyse", exact=True)).to_be_visible()
+        expect(anzeige).to_have_attribute("href", original_link if fall == "original-lokal" else portal_link)
+        if fall == "original-lokal":
+            p.get_by_text("Snapshot der Anzeige", exact=True).click()
+            expect(p.get_by_text("Künstlicher Text von der Originalstelle.", exact=True)).to_be_visible()
+        ctx.close()
+
+    ctx, p = starten("original-dublette", bewerbung)
+    doppelt = p.get_by_role("link", name="Diese Stelle hast du schon", exact=True)
+    expect(doppelt).to_have_attribute("href", "/bewerbung/00000000-0000-4000-8000-000000000035")
+    doppelt.click()
+    expect(p.get_by_role("heading", name="Prüffirma Kanban: Schon gespeichertes Original", exact=True)).to_be_visible()
+    ctx.close()
+
+    ctx, p = starten("original-beobachten", bewerbung)
+    beobachten = p.get_by_role("button", name="Firma dauerhaft beobachten", exact=True)
+    expect(beobachten).to_be_visible()
+    beobachten.click()
+    expect(warnung(p)).to_contain_text("Der Firmenname muss 2 bis 80 Zeichen lang sein.")
+    ctx.close()
+
+    patches = {r["mode"].removesuffix(f"-{width}"): r["patch"] for r in lesen() if r.get("ereignis") == "original-schreiben"}
+    assert set(patches) == {"original-formular", "original-lokal", "original-keine", "original-extern"}, patches
+    assert patches["original-formular"] == {"original_suche": "offen", "original_vorschlaege": None,
+                                          "original_wahl": None, "original_dublette": None}, patches
+    assert patches["original-lokal"]["job_id"] == "Prüffirma Kanban:offline", patches
+    assert patches["original-lokal"]["snapshot_text"] == "Künstlicher Text von der Originalstelle.", patches
+    assert patches["original-lokal"]["portal_link"] == portal_link, patches
+    assert patches["original-keine"]["original_vorschlaege"] is None, patches
+    assert patches["original-extern"] == {"original_wahl": 1, "original_suche": "offen"}, patches
+    assert not {"firma", "titel", "status", "beworben_am"}.intersection(patches["original-keine"]), patches
+    print(f"OK {width}px: Originalsuche offen, lokale/externe Auswahl, Ablehnung, Dublettenlink, Beobachten-Fehler")
+
     # Der Gast kommt an keine privaten Seiten oder Exportdaten.
     guest = context(browser, width)
     p = guest.new_page()
@@ -184,7 +291,7 @@ def pruefe_persoenlich(browser, width, context, session, base, log):
     print(f"OK {width}px: Admin-/Bestätigungsschutz, Konto-Löschreihenfolge, Abbruch vor Dateien/Auth, Abmeldung")
 
     # Der neue Browserknopf benutzt dieselbe authentifizierte HTTP-Route wie dieser echte Fetch.
-    import_daten = {"link": "https://www.linkedin.com/jobs/search/?currentJobId=123", "firma": "Importierte Prüffirma", "titel": "Importierte Anzeige", "text": "Nur künstlicher Anzeigentext"}
+    import_daten = {"link": "https://karriere.example.invalid/stellen/123", "firma": "Importierte Prüffirma", "titel": "Importierte Anzeige", "text": "Nur künstlicher Anzeigentext"}
     posten = """async (daten) => {
         const r = await fetch('/api/stellen-import', {method: 'POST', credentials: 'same-origin', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(daten)});
         return {status: r.status, body: await r.json()};
@@ -193,6 +300,8 @@ def pruefe_persoenlich(browser, width, context, session, base, log):
     expect(p.locator("#stellen-import-status")).to_have_attribute("data-import-status", "bereit")
     vor_import = lesen()
     assert not any(r.get("mode") == f"import-neu-{width}" and r.get("methode") in ["POST", "PATCH", "DELETE"] for r in vor_import)
+    gesperrt = p.evaluate(posten, {**import_daten, "link": "https://www.linkedin.com/jobs/view/123/"})
+    assert gesperrt["status"] == 400, gesperrt
     neu = p.evaluate(posten, import_daten)
     assert neu["status"] == 201 and neu["body"]["vorhanden"] is False, neu
     nochmal = p.evaluate(posten, import_daten)

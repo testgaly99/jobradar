@@ -11,10 +11,10 @@ export const SPALTEN =
 
 // Eine Abfrage aus dem Filter. companies!inner + aktiv=true blendet Stellen inaktiver Firmen aus.
 export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
-  const mitListe = f.liste.length > 0;
+  const mitListe = f.liste.length > 0 || f.rangkategorie.length > 0;
   // Die Funktion liefert eine Zeile je Stelle. PostgREST filtert, zählt und sortiert global, erst dann folgt range().
   let q = mitListe
-    ? sb.rpc("ranking_stellen", { p_listen: f.liste }, { count: "exact" })
+    ? sb.rpc("ranking_stellen", { p_listen: f.liste, ...(f.rangkategorie.length ? { p_kategorien: f.rangkategorie } : {}) }, { count: "exact" })
       .select(SPALTEN.replace("companies!inner(groesse_klasse,groesse_rang,kategorie,aktiv)", "companies"))
     : sb.from("jobs").select(SPALTEN, { count: "exact" })
       .eq("status", "offen").eq("sichtbar", true).eq("companies.aktiv", true);

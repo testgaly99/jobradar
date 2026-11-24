@@ -11,6 +11,55 @@ import { selbstLoeschenErlaubt, begriffPruefen } from "@/lib/nutzerliste";
 import { FELDER } from "@/lib/steckbrief";
 import { spracheEingabe } from "@/lib/sprachniveau";
 import { loescheNutzer } from "@/lib/nutzer-loeschen";
+import { fuegeZusatzfirmaHinzu } from '@/lib/zusatzfirma';
+import { darfAbrufen } from '@/lib/seiten-abruf';
+import { stichwortEingabe } from '@/lib/wunschfirmen';
+
+export async function stichwortHinzufuegen(form:FormData){
+  const n=await aktuellerNutzer();if(!n)redirect('/login');
+  const begriff=stichwortEingabe(form.get('begriff'));if(!begriff)zurueck('Der Begriff muss 2 bis 60 Zeichen lang sein.');
+  const r=await (await createClient()).from('abgleich_stichwoerter').insert({owner_id:n.id,begriff});
+  if(r.error?.code==='23505')zurueck('Diesen Begriff hast du schon.');
+  if(r.error?.message.includes('abgleich_stichwoerter_limit'))zurueck('Du kannst höchstens 50 Stichwörter speichern.');
+  if(r.error)zurueck('Stichwörter sind nach Migration 017 verfügbar oder konnten nicht gespeichert werden.');
+  revalidatePath('/konto');
+}
+export async function stichwortEntfernen(form:FormData){
+  const n=await aktuellerNutzer();if(!n)redirect('/login');
+  const id=String(form.get('id')??'');if(!/^[1-9][0-9]{0,18}$/.test(id))zurueck('Ungültige Stichwort-ID.');
+  const r=await (await createClient()).from('abgleich_stichwoerter').delete().eq('id',id).eq('owner_id',n.id);
+  if(r.error)zurueck('Stichwort konnte nicht entfernt werden.');
+  revalidatePath('/konto');
+}
+
+export async function zusatzfirmaHinzufuegen(formData: FormData) {
+  const result=await speichereEigeneFirma(String(formData.get('name')??''),String(formData.get('link')??''));
+  if(result.fehler)zurueck(result.fehler);
+  redirect('/konto?hinweis=Eigene%20Firma%20hinzugef%C3%BCgt.');
+}
+
+export async function speichereEigeneFirma(name:string,link:string) {
+  const n=await aktuellerNutzer();if(!n)redirect('/login');
+  if(!darfAbrufen(n.id))return {fehler:'Bitte warte eine Minute, bevor du weitere Firmen prüfst.'};
+  const result=await fuegeZusatzfirmaHinzu(n.id,name,link,{
+    speichern:async daten=>{
+      const {data,error}=await createAdminClient().rpc('zusatzfirma_hinzufuegen',daten);
+      if(error)throw new Error('Speichern fehlgeschlagen');
+      return data as {status:string};
+    },
+  });
+  if(!result.fehler){revalidatePath('/konto');revalidatePath('/stellen');}
+  return result;
+}
+
+export async function zusatzfirmaEntfernen(formData:FormData) {
+  const n=await aktuellerNutzer();if(!n)redirect('/login');
+  const name=String(formData.get('unternehmen')??'');
+  if(!name.trim()||name.length>200)zurueck('Ungültige Firma.');
+  const {error}=await (await createClient()).from('firmen_sichtbar').delete().eq('unternehmen',name).eq('owner_id',n.id);
+  if(error)zurueck('Die Firma konnte nicht entfernt werden.');
+  revalidatePath('/konto');revalidatePath('/stellen');
+}
 
 function zurueck(m: string): never {
   redirect(`/konto?fehler=${encodeURIComponent(m)}`);

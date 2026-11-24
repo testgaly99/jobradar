@@ -5,6 +5,13 @@ const AID = '00000000-0000-4000-8000-000000000031';
 const DOK_A = '00000000-0000-4000-8000-000000000032';
 const DOK_B = '00000000-0000-4000-8000-000000000033';
 const DOK_NEU = '00000000-0000-4000-8000-000000000034';
+const VORHANDEN = '00000000-0000-4000-8000-000000000035';
+const PORTAL_URL = 'https://www.indeed.de/viewjob?jk=offline';
+const ORIGINAL_JOB = {
+  id: 'Prüffirma Kanban:offline', unternehmen: 'Prüffirma Kanban', titel: 'Prüf-Original vor Ort',
+  ort: 'Teststadt', url: 'https://karriere.example.invalid/stellen/offline', sichtbar: true, status: 'offen',
+  text: 'Künstlicher Text von der Originalstelle.', arbeitsmodell: 'Hybrid', abschnitte: null,
+};
 
 function antwort(daten, status = 200, headers = {}) {
   return new Response(status === 204 ? null : JSON.stringify(daten), {
@@ -12,7 +19,7 @@ function antwort(daten, status = 200, headers = {}) {
   });
 }
 const fehler = () => antwort({ code: 'XX000', message: 'künstlicher Prüffehler' }, 500);
-const gehoert = mode => /^(tracker|dokument|export|konto|import)-/.test(mode);
+const gehoert = mode => /^(tracker|dokument|export|konto|import|original)-/.test(mode);
 
 function bearbeiten({ url, init, headers, claims, mode, body, methode, loggen }) {
   const admin = headers.get('authorization') === 'Bearer synthetischer-offline-service-schluessel';
@@ -36,8 +43,31 @@ function bearbeiten({ url, init, headers, claims, mode, body, methode, loggen })
       cv_dokument_id: DOK_A,
     };
     if (mode.startsWith('import-fortgeschritten-')) Object.assign(a, { firma: 'Vorhandene Prüffirma', titel: 'Vorhandene Bewerbung',
-      link: 'https://www.linkedin.com/jobs/view/123/', status: 'im_gespraech', snapshot_text: 'Bestehender künstlicher Text' });
-    STAENDE.set(mode, { uid, vorlage: a, applications: mode.startsWith('import-neu-') ? [] : [a], documents: [
+      link: 'https://karriere.example.invalid/stellen/123', status: 'im_gespraech', snapshot_text: 'Bestehender künstlicher Text' });
+    const applications = /^(import-neu|original-formular)-/.test(mode) ? [] : [a];
+    if (mode.startsWith('original-')) {
+      Object.assign(a, {
+        job_id: null, portal_link: PORTAL_URL, link: PORTAL_URL, quelle: 'indeed.de',
+        original_suche: 'offen', original_wahl: null, original_dublette: null, original_portal: null, original_vorschlaege: null,
+        snapshot_text: null, snapshot_abschnitte: null,
+      });
+      if (/^original-(lokal|keine|extern)-/.test(mode)) Object.assign(a, {
+        original_suche: 'auswahl',
+        original_vorschlaege: [
+          { job_id: ORIGINAL_JOB.id, titel: ORIGINAL_JOB.titel, ort: ORIGINAL_JOB.ort },
+          { titel: 'Prüf-Original im Nachtlauf', ort: 'Andere Teststadt', ats_typ: 'ashby', ats_id: 'offline', ext_id: 'synthetisch',
+            url: 'https://jobs.ashbyhq.com/offline/synthetisch' },
+        ],
+      });
+      if (mode.startsWith('original-dublette-')) {
+        Object.assign(a, { original_suche: 'nicht_gefunden', original_dublette: VORHANDEN });
+        applications.push({ ...a, id: VORHANDEN, titel: 'Schon gespeichertes Original', link: ORIGINAL_JOB.url,
+          original_suche: null, original_dublette: null, portal_link: null, job_id: ORIGINAL_JOB.id });
+      }
+      if (mode.startsWith('original-beobachten-')) Object.assign(a, { firma: 'X', link: 'https://jobs.ashbyhq.com/offline/synthetisch',
+        original_suche: 'gefunden', original_portal: { typ: 'ashby', id: 'offline' } });
+    }
+    STAENDE.set(mode, { uid, vorlage: a, applications, documents: [
       { id: DOK_A, art: 'cv', name: 'CV Offline verwendet', version_datum: heute, storage_pfad: `${uid}/verwendet.pdf` },
       { id: DOK_B, art: 'anlage', name: 'Anlage Offline', version_datum: heute, storage_pfad: `${uid}/anlage.pdf` },
     ], events: [], geloescht: false });
@@ -54,6 +84,12 @@ function bearbeiten({ url, init, headers, claims, mode, body, methode, loggen })
     if (methode === 'DELETE') { s.geloescht = true; return antwort({}); }
   }
   if (p === '/rest/v1/applications') {
+    if (methode === 'POST' && mode.startsWith('original-formular-')) {
+      const a = { ...s.vorlage, ...body, id: AID, owner_id: s.uid };
+      s.applications.push(a);
+      loggen({ mode, ereignis: 'original-formular-anlegen', patch: body });
+      return antwort({ id: a.id }, 201);
+    }
     if (methode === 'POST' && mode.startsWith('import-')) {
       if (body.owner_id !== s.uid || body.status !== 'gemerkt' || body.beworben_am !== null) throw new Error('Unzulässige Importdaten in der Browserprobe');
       const a = { ...s.vorlage, ...body, id: AID };
@@ -66,6 +102,14 @@ function bearbeiten({ url, init, headers, claims, mode, body, methode, loggen })
       if (mode.startsWith('tracker-schreibfehler-')) return fehler();
       const a = s.applications.find(a => url.searchParams.get('id') === `eq.${a.id}`);
       if (!a || (url.searchParams.has('status') && url.searchParams.get('status') !== `eq.${a.status}`)) return antwort([]);
+      if (mode.startsWith('original-')) {
+        const q = url.searchParams;
+        if (q.get('owner_id') !== `eq.${a.owner_id}` || q.get('geaendert_am') !== `eq.${a.geaendert_am}` ||
+            q.get('job_id') !== 'is.null' || a.job_id !== null) throw new Error('Fehlender Eigentümer- oder Versionsschutz in der Originalsuche');
+        Object.assign(a, body, { geaendert_am: new Date(Date.parse(a.geaendert_am) + 1000).toISOString() });
+        loggen({ mode, ereignis: 'original-schreiben', patch: body });
+        return antwort([{ id: a.id }]);
+      }
       if (body.status && a.status !== body.status) s.events.push({ id: `00000000-0000-4000-8000-${String(s.events.length + 40).padStart(12, '0')}`,
         application_id: a.id, neuer_status: body.status, datum: new Date().toISOString() });
       Object.assign(a, body);
@@ -78,13 +122,23 @@ function bearbeiten({ url, init, headers, claims, mode, body, methode, loggen })
     }
     let daten = s.applications;
     if (mode.startsWith('export-viele-')) daten = Array.from({ length: 1001 }, (_, i) => ({ ...s.applications[0], id: String(i).padStart(5, '0'), titel: `Exportzeile ${i + 1}` }));
-    if (url.searchParams.has('id')) daten = daten.filter(a => url.searchParams.get('id') === `eq.${a.id}`);
-    if (url.searchParams.has('link')) daten = daten.filter(a => url.searchParams.get('link') === `eq.${a.link}`);
-    if (url.searchParams.has('owner_id')) daten = daten.filter(a => url.searchParams.get('owner_id') === `eq.${a.owner_id}`);
+    for (const feld of ['id', 'link', 'owner_id', 'job_id', 'portal_link', 'original_suche']) {
+      const filter = url.searchParams.get(feld);
+      if (filter?.startsWith('eq.')) daten = daten.filter(a => a[feld] === filter.slice(3));
+      if (filter?.startsWith('neq.')) daten = daten.filter(a => a[feld] !== filter.slice(4));
+    }
     const offset = Number(url.searchParams.get('offset') ?? 0);
     const limit = Number(url.searchParams.get('limit') ?? daten.length);
     return antwort(daten.slice(offset, offset + limit));
   }
+  if (mode.startsWith('original-') && p === '/rest/v1/jobs') {
+    const q = url.searchParams;
+    if (q.get('id') === `eq.${ORIGINAL_JOB.id}` && q.get('sichtbar') === 'eq.true' && q.get('status') === 'eq.offen') {
+      return antwort([ORIGINAL_JOB]);
+    }
+    return antwort([]);
+  }
+  if (mode.startsWith('original-') && p === '/rest/v1/companies') return antwort([]);
   if (p === '/rest/v1/documents') {
     if (methode === 'POST') {
       if (mode.startsWith('dokument-metadatenfehler-')) return fehler();

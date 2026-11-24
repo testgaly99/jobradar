@@ -1,0 +1,13 @@
+[
+  {"host":"de.indeed.com","tab_titel":"Data Analyst | bei Muster AG | Indeed","firma":"Muster AG","titel":"Data Analyst"},
+  {"host":"www.indeed.de","tab_titel":"Data Analyst - bei Muster AG - Indeed","firma":"Muster AG","titel":"Data Analyst"},
+  {"host":"indeed.com","tab_titel":"Data Analyst – bei Muster AG – Indeed","firma":"Muster AG","titel":"Data Analyst"},
+  {"host":"de.indeed.com","tab_titel":"Data Analyst - Berlin - Indeed","firma":null,"titel":null},
+  {"host":"de.indeed.com","tab_titel":"Data Analyst - bei Muster AG - Berlin - Indeed","firma":null,"titel":null},
+  {"host":"de.indeed.com","tab_titel":"Data Analyst | bei Muster AG | andere Seite","firma":null,"titel":null},
+  {"host":"de.indeed.com","tab_titel":"Data Analyst | bei  | Indeed","firma":null,"titel":null},
+  {"host":"de.indeed.com","tab_titel":"bei Muster AG | Data Analyst | Indeed","firma":null,"titel":null},
+  {"host":"de.indeed.com","tab_titel":"Data Analyst | bei Muster AG – Indeed","firma":null,"titel":null},
+  {"host":"indeed.com.example.invalid","tab_titel":"Data Analyst | bei Muster AG | Indeed","firma":null,"titel":null},
+  {"host":"linkedin.com","tab_titel":"Data Analyst | bei Muster AG | Indeed","firma":null,"titel":null}
+]
