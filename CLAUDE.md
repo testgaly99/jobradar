@@ -164,6 +164,7 @@ Wichtigste Filter, in dieser Reihenfolge:
 - **Reparieren:**
   - Das Label `scraper-defekt` startet die Claude Code Action mit dem Abo-Token. Claude passt den Adapter an, testet gegen die echte Seite und öffnet einen Pull Request mit der Trefferzahl vorher und nachher.
   - **Ich merge selbst.** Kein Auto-Merge.
+  - **Zweite Prüfung Pflicht (Q298, 2026-11-25):** Ein Vorschlag, der Code ändert (`scraper/`, `.github/`, `web/`, `requirements.txt`, `package.json`), wird erst übernommen, nachdem Claude ihn in einer eigenen Prüfung gezielt auf versteckten oder fremden Code untersucht hat (eine präparierte Karriereseite könnte den Reparatur-Lauf sonst zu schädlichem Code verleiten, der danach mit dem Datenbank-Generalschlüssel läuft).
 - **Firmendaten:**
   - Das Label `firmendaten-pruefen` startet eine Recherche durch Claude. Der Admin setzt es per Knopf „Firmendaten prüfen lassen“ auf der Stellenseite (Q112, kommt mit 4f; nur Firmen aus der öffentlichen Firmenliste). Das Ergebnis ist ein Wert mit Quelle (Impressum, Geschäftsbericht oder Handelsregister).
   - Der Vorschlag kommt als Pull Request auf `firmen_korrekturen.csv`. Diese Datei hat **immer Vorrang** vor automatischen Werten. Ich kann dort auch selbst Werte eintragen.
@@ -250,7 +251,7 @@ Eine Bewerbung entsteht auf einem dieser Wege:
   - Bewerbungen lassen sich als eine CSV-Tabelle mit klickbaren Links exportieren (Dokumente nur mit Namen).
   - **Konto löschen** kann jeder selbst, außer dem Admin: Mein Konto lässt sich nie löschen. Es endet erst, wenn Website und Datenbank entfernt werden. Die Seite empfiehlt dabei ausdrücklich den Export und bietet ihn direkt daneben an.
   - Zum Bestätigen wird „LÖSCHEN“ eingetippt. Danach sind alle Daten und Dateien sofort und endgültig entfernt.
-- **Datenschutzerklärung:** eine kurze Seite. Kontakt: Mark Galysh, markgaly99@gmail.com.
+- **Datenschutzerklärung:** eine kurze Seite. Kontakt: [Name und E-Mail stehen nur in den Vercel-Einstellungen IMPRESSUM_NAME/IMPRESSUM_EMAIL, entfernt 2026-11-25, Q297].
 - **Domain-Wechsel:** Die Adresse der Website steht nie im Code, nur in den Einstellungen von Vercel, Supabase und Google.
 
 ### 4.7 Gmail und Google Kalender

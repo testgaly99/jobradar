@@ -22,7 +22,7 @@
 - Die Adresse der Website steht nirgends im Code (Domain-Wechsel nur über Einstellungen).
 - Oberfläche komplett deutsch, „Modern & farbig“, Hell/Dunkel, Handy und Laptop, WCAG AA. Daten werden nie als HTML eingesetzt.
 - Bestätigungswort zum Löschen: genau `LÖSCHEN`.
-- Datenschutz-Kontakt: `Mark Galysh`, `markgaly99@gmail.com`.
+- Datenschutz-Kontakt: [Name und E-Mail stehen nur in den Vercel-Einstellungen IMPRESSUM_NAME/IMPRESSUM_EMAIL, entfernt 2026-11-25, Q297].
 - Commits auf Deutsch mit Co-Authored-By-Zeile. Push nur nach Zustimmung des Nutzers.
 
 ## Review Focus
@@ -186,7 +186,7 @@
   - `README.md`, `docs/STATUS.md`
 
 **Inhalt `/datenschutz`** (kurz, deutsch, als normaler Text, kein HTML aus Daten):
-- **Verantwortlich:** Mark Galysh, markgaly99@gmail.com. Privates, nicht-kommerzielles Projekt für Freunde.
+- **Verantwortlich:** [Name und E-Mail stehen nur in den Vercel-Einstellungen IMPRESSUM_NAME/IMPRESSUM_EMAIL, entfernt 2026-11-25, Q297]. Privates, nicht-kommerzielles Projekt für Freunde.
 - **Was gespeichert wird:**
   - Google-Name und E-Mail für die Anmeldung
   - deine Bewerbungen, Kontakte, Interviews, Notizen und hochgeladenen Dokumente

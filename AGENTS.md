@@ -25,6 +25,7 @@ Der Nutzer kopiert dir keine Aufträge. Stattdessen gilt zu Beginn **jeder** Sit
 - **Keine neuen Dienste, Konten, kostenpflichtigen APIs oder Pakete** ohne Zustimmung (`CLAUDE.md` 3 und 10).
 - **Das Repo ist öffentlich:** keine Namen, E-Mails, Adressen, Vercel-Adresse oder sonstige persönliche Daten in Code oder Doku.
 - **Den Nutzer nie persönlich gefährden (`CLAUDE.md` 3.8):** Keine Abrufe echter Firmenseiten, keine Abnahmen, Proben oder Massenabfragen von seinem Computer aus; nichts, was seine Konten, sein Kontingent oder seine IP-Adresse riskiert. Live-Läufe nur auf GitHub Actions und nur nach seiner Zustimmung.
+- **Vorschläge des Reparatur-Laufs** (Pull Requests von Claude) nie ohne zweite, unabhängige Prüfung auf versteckten Code übernehmen oder darauf aufbauen (`CLAUDE.md` 4.3, Q298).
 - **Kanban-Animationen** nicht verändern. Scraping nur legal und fair (`CLAUDE.md` 3.5, 9).
 - **Ranglisten:** Im Repo (Code, Doku, Commits, Tests) nur Quellen mit offener Lizenz namentlich nennen (`CLAUDE.md` 4.8). Keine Listennamen anderer Herausgeber in Beispielen, Fixtures oder Testdaten.
 - Halte-Punkte in `docs/STATUS.md` („Halte vor dem Weitermachen“) sind verbindlich: dort anhalten und den Nutzer fragen.
