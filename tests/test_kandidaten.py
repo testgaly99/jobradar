@@ -72,7 +72,8 @@ def test_ausgaben_behalten_quelljahr():
 def test_bestandsfirmen_mit_listenplatz_und_inaktiver_bestand():
     from pathlib import Path
     from scraper.companies import lade_unternehmen
-    bestand = lade_unternehmen(Path(__file__).parents[1] / 'data/companies.csv')
+    # Eingefrorener Stand der 13 Bestandsfirmen (2026-11-24): data/companies.csv ändert sich mit Ranglisten und Bestandsumzug.
+    bestand = lade_unternehmen(Path(__file__).parent / 'fixtures/bestand_13.csv')
     neue = [k('dm', 'top200-arbeitgeber', None, 'https://www.dm.de/'),
             k('Porsche AG', 'scoreboard-world', None, 'https://www.porsche.com/'),
             k('Deutsche Bundesbank', 'top200-arbeitgeber', 'Q162222', 'https://www.bundesbank.de/')]
