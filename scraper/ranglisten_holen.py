@@ -122,7 +122,7 @@ def _anreichern(kandidaten, holen, bericht, warte=None):
 
 def _websites_ergaenzen(kandidaten, holen, bericht, warte):
     """Plan 2026-11-24: Kandidaten ohne Website (Scoreboard/EPA liefern nur Namen) über Wikidata, nur wenn eindeutig."""
-    ohne = [k for k in kandidaten if not k.get('website')]
+    ohne = [k for k in kandidaten if not k.get('website') and not k.get('wikidata_id')]
     if not ohne:
         return
     try:

@@ -179,9 +179,21 @@ _SUCHSEITE = re.compile(r'jobsuche|job-?search|search-?jobs|jobs?/search|stellen
                         r'|offene-stellen|jobboerse|vacancies|openings|jobangebote|alle-jobs|all-jobs|/jobs/?$|/suche', re.I)
 
 
-def _marke(host):
-    """„bertelsmann“ aus bertelsmann.de und bertelsmann.com: gleiche Marke, andere Endung = dieselbe Firma."""
-    return _regdom(host).split('.')[0]
+_GENERISCH = {'global', 'gruppe', 'group', 'jobs', 'job', 'karriere', 'careers', 'career', 'the', 'my', 'www', 'home',
+              'corporate', 'company', 'de', 'en', 'abc', 'go', 'app', 'web', 'info', 'online', 'service', 'portal'}
+
+
+def _gleiche_firma(a, b):
+    """Gleiche Firma: gleiche registrierbare Domain, oder gleiche Marke mit Länderendung bzw. .com/.net/.org
+    (bertelsmann.de ~ bertelsmann.com). Nie bei eigenen Endungen (global.honda) oder generischen Wörtern (abc, global)."""
+    da, db = _regdom(a), _regdom(b)
+    if not da or not db:
+        return False
+    if da == db:
+        return True
+    (ma, _, ta), (mb, _, tb) = da.partition('.'), db.partition('.')
+    normal = lambda t: len(t) == 2 or t in ('com', 'net', 'org') or (t.count('.') == 1 and len(t.split('.')[-1]) == 2)
+    return ma == mb and ma not in _GENERISCH and len(ma) >= 4 and normal(ta) and normal(tb)
 
 
 def _vorrang(link):
@@ -194,8 +206,8 @@ def _suche(url, holen, robots):
     """Breitensuche ab der Website: Unteradressen, übliche Pfade, Karriere-Links (auch fremde Hosts der Firma)."""
     start = urlsplit(url)
     basis, dom = f'https://{start.netloc}', _regdom(start.hostname)
-    doms = list(dict.fromkeys([dom, _marke(dom) + '.com']))  # mercedes-benz.de -> auch jobs.mercedes-benz.com
-    ziele = [(url, 0)] + [(f'https://{s}.{d}/', 1) for d in doms for s in UNTERADRESSEN if f'{s}.{d}' != start.hostname]
+    # Unteradressen nur auf der eigenen Domain: geratene Adressen auf <marke>.com gehören oft Fremden (abc.xyz -> careers.abc.com)
+    ziele = [(url, 0)] + [(f'https://{s}.{dom}/', 1) for s in UNTERADRESSEN if f'{s}.{dom}' != start.hostname]
     ziele += [(basis + p, 1) for p in PFADE if basis + p != url]
     besucht, geprueft, sitemap_hosts, gesperrt = set(), set(), set(), set()
     e = dict(kandidaten={}, unbekannt=[], verboten=False, abgelehnt=False, erreicht=0)
@@ -206,6 +218,8 @@ def _suche(url, holen, robots):
         besucht.add(ziel)
         try:
             antwort = holen(ziel)
+        except http.Jobportal:  # Weiterleitung auf ein Portal: kein robots-Verbot der Firma
+            continue
         except http.VerbotenDurchRobots:
             e['verboten'] = True
             continue
@@ -214,7 +228,7 @@ def _suche(url, holen, robots):
                 h = urlsplit(ziel).hostname or ''
                 gesperrt.add(h)
                 # Ausnahme, wenn die Hauptadresse oder eine Karriere-Adresse der Firma ablehnt (Telekom: careers.telekom.com)
-                e['abgelehnt'] |= h == start.hostname or (h.split('.')[0] in UNTERADRESSEN and _marke(h) == _marke(dom))
+                e['abgelehnt'] |= h == start.hostname or (h.split('.')[0] in UNTERADRESSEN and _gleiche_firma(h, dom))
             continue
         except Exception:
             continue  # ein üblicher Pfad oder eine Unteradresse kann fehlen
@@ -239,7 +253,7 @@ def _suche(url, holen, robots):
             elif (tiefe < MAX_TIEFE and link not in besucht and not NICHT_FOLGEN.search(link)
                   and not ist_portal(t.hostname or '') and KARRIERE.search((t.hostname or '') + t.path)
                   # fremde Adressen nur von Seiten der Firma aus; innerhalb einer erreichten Gruppen-Domain weiter
-                  and _marke(dom) in (_marke(urlsplit(seiten_url).hostname), _marke(t.hostname))
+                  and (_gleiche_firma(dom, urlsplit(seiten_url).hostname) or _gleiche_firma(dom, t.hostname))
                   or (tiefe < MAX_TIEFE and link not in besucht and not ist_portal(t.hostname or '')
                       and _regdom(t.hostname) == _regdom(urlsplit(seiten_url).hostname)
                       and KARRIERE.search((t.hostname or '') + t.path) and not NICHT_FOLGEN.search(link))):
@@ -438,7 +452,8 @@ def portal_statistik(firmen, raenge):
 
 def websites_ergaenzen(firmen, finden=None):
     """Firmen ohne Website (Scoreboard/EPA) bekommen sie über Wikidata, nur wenn eindeutig; Fehler kosten nur diesen Schritt."""
-    ohne = [f for f in firmen if f.get('status') != 'aktiv' and not f.get('website') and not f.get('careers_url')]
+    ohne = [f for f in firmen if f.get('status') != 'aktiv' and not f.get('website') and not f.get('careers_url')
+            and not f.get('wikidata_id')]  # eigener Eintrag ohne Website: sonst träfe der Name einen fremden Eintrag
     if not ohne:
         return 0
     try:
@@ -475,7 +490,8 @@ def lauf(datenordner='data', budget_s=17100, mit_db=True, finden=None):  # 285 m
         firmen[i] = richte_ein(f)
         firmen = wende_korrekturen_an(firmen, d / 'firmen_korrekturen.csv')
         schreibe_firmen(d / 'companies.csv', firmen)
-        if firmen[i].get('status_grund') != 'Ratenbegrenzung, später erneut':  # 429: beim nächsten Lauf gleich wieder
+        # 429 oder noch keine Website: beim nächsten Lauf gleich wieder (Website kann über Korrekturen nachkommen)
+        if firmen[i].get('status_grund') not in ('Ratenbegrenzung, später erneut', 'keine Website bekannt'):
             stand[f['name']] = {'datum': date.today().isoformat(), 'suche': SUCHVERSION}
         schreibe_json(d / 'einrichtung_stand.json', stand)
         bearbeitet += 1

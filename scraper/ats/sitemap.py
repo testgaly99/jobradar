@@ -25,6 +25,8 @@ _LD = re.compile(r"<script[^>]*application/ld\+json[^>]*>(.*?)</script>", re.S |
 _DM_TEXT = re.compile(r'data-testid="job-detail-description"[^>]*>(.*?)<[^>]*\bdata-testid=', re.S)
 _TEXTFELDER = ("description", "responsibilities", "qualifications", "skills", "jobBenefits")
 _MAX_FEHLSERIE = 5  # so viele Ausfälle in Folge (siehe _ausfall): Firma abbrechen statt je bis zu 30 s warten
+# shortcut: nie gespeicherte Seiten (Ausland, abgelaufen) werden täglich neu geladen, bis zu MAX_NEU je Firma;
+# Upgrade, wenn der Tägliche Lauf zu lang wird: verworfene ext_ids in der Datenbank merken und als „bekannt“ übergeben.
 MAX_NEU = 300  # neue Stellenseiten je Firma und Lauf (Plan 2026-11-24 Task 2); schont Lauf und Server
 _DE = re.compile(r"/de(?:[/_-]|$)|de[_-]de|germany|deutschland", re.I)
 _META = re.compile(r"<meta\b[^>]*>", re.I)
@@ -57,10 +59,14 @@ def xml_aus(inhalt):
         return ET.fromstring(re.sub(rb"&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)", b"&amp;", inhalt))
     except ET.ParseError:  # z. B. thyssenkrupp: Anführungszeichen mitten in einer Adresse; nur die <loc>-Einträge zählen
         pass
+    # Nur eine vollständige Sitemap: eine abgeschnittene Datei würde sonst als ganze Liste gelten und offene Stellen schließen
+    ende = re.search(rb"</(urlset|sitemapindex)>\s*$", inhalt)
+    if not ende or b"<" + ende.group(1) not in inhalt:
+        raise ValueError("Sitemap ungültig oder unvollständig")
     locs = re.findall(rb"<loc>\s*(.*?)\s*</loc>", inhalt, re.S)
     if not locs:
         raise ValueError("Sitemap nicht lesbar")
-    index = b"<sitemapindex" in inhalt[:2000]
+    index = ende.group(1) == b"sitemapindex"
     wurzel = ET.Element("sitemapindex" if index else "urlset")
     for loc in locs:
         ET.SubElement(ET.SubElement(wurzel, "sitemap" if index else "url"), "loc").text = unescape(loc.decode("utf-8", "replace"))

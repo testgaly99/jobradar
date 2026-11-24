@@ -39,7 +39,9 @@ def zielschutz(pruefe, *, gepinnt=False):
 # Jobportale: nie abrufen, auch nicht über Weiterleitungen oder robots.txt (CLAUDE.md 4.4; Review 2026-11-24).
 # Gleich wie PORTALE in web/lib/jobportale.ts und browser-erweiterung/chrome/kern.mjs (Tests prüfen das);
 # "name.*" steht für beliebige Endungen.
-PORTALE = ["linkedin.com", "lnkd.in", "stepstone.*", "indeed.*", "xing.com", "glassdoor.*", "monster.*", "kununu.com",
+PORTALE = ["linkedin.com", "lnkd.in", "stepstone.*", "indeed.*", "xing.*", "glassdoor.*", "monster.*", "kununu.*",
+           "jobs.zeit.de", "jobs.faz.net", "stellenmarkt.sueddeutsche.de", "welcometothejungle.com", "jobup.ch",
+           "azubiyo.de", "kleinanzeigen.de", "willhaben.at", "talent.com", "careerbuilder.*", "jobstairs.de",
            "karriere.at", "stellenanzeigen.de", "jobware.de", "meinestadt.de", "absolventa.de", "ausbildung.de",
            "arbeitsagentur.de", "jobs.ch", "jobscout24.ch", "stellenwerk.de", "yourfirm.de", "experteer.*",
            "get-in-it.de", "staufenbiel.de", "jobvector.de", "academics.de", "hokify.*", "heyjobs.*", "jobrapido.*",

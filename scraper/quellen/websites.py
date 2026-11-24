@@ -59,25 +59,38 @@ def _bezeichnungen(werte, eigenschaft, groesse, holen, schlafen):
     for i in range(0, len(werte), groesse):
         schlafen(PAUSE_S)
         liste = ', '.join(json.dumps(v, ensure_ascii=False) for v in werte[i:i + groesse])
-        zeilen += _abfrage(f'''SELECT ?firma ?lc ?web WHERE {{
+        try:
+            zeilen += _paket(liste, eigenschaft, holen, schlafen)
+        except Exception:  # ein schlechtes Paket kostet nur seine Namen, nicht alle Treffer
+            continue
+    return zeilen
+
+
+def _paket(liste, eigenschaft, holen, schlafen):
+    return _abfrage(f'''SELECT ?firma ?lc ?web WHERE {{
           ?firma wdt:P856 ?web .
           ?firma {eigenschaft} ?lab . FILTER(LANG(?lab) = "en")
           BIND(LCASE(STR(?lab)) AS ?lc)
           FILTER(?lc IN ({liste}))
           ?firma wdt:P31/wdt:P279? ?typ . VALUES ?typ {{ {TYPEN} }}
         }}''', holen, schlafen)
-    return zeilen
+
+
+def _bevorzugt(urls):
+    """Mehrere Websites eines Eintrags: erst .de, dann .com, sonst die erste (nicht rossmann.es, cewe.fr …)."""
+    rang = lambda u: (0 if (urlsplit(u).hostname or '').endswith('.de') else 1 if (urlsplit(u).hostname or '').endswith('.com') else 2)
+    return sorted(urls, key=rang)[0]
 
 
 def _treffer(namen, zeilen):
     """name -> {qid: website}"""
-    aus = {}
+    alle = {}
     for n in namen:
         vs = set(varianten(n))
         for z in zeilen:
             if z.get('lc') in vs and z.get('firma') and z.get('web'):
-                aus.setdefault(n, {}).setdefault(z['firma'].rsplit('/', 1)[-1], z['web'])
-    return aus
+                alle.setdefault(n, {}).setdefault(z['firma'].rsplit('/', 1)[-1], []).append(z['web'])
+    return {n: {q: _bevorzugt(u) for q, u in t.items()} for n, t in alle.items()}
 
 
 def websites_zu_namen(namen, holen=None, schlafen=time.sleep):

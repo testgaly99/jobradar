@@ -330,3 +330,21 @@ def test_sitemap_mit_anfuehrungszeichen_in_adresse(monkeypatch):
     kaputt = _sitemap(DM).replace("</url>", '<xhtml:link href="https://www.dm-jobs.de/job/x-"y"/1/"/></url>')
     _fake(monkeypatch, {SITEMAP: kaputt, DM: _lies("sitemap_dm.html")})
     assert [s["url"] for s in sitemap.hole_stellen(ATS_ID)] == [DM]
+
+
+def test_abgeschnittene_sitemap_kippt_die_firma_statt_zu_schliessen(monkeypatch):
+    # Review 2 Befund 2: halbe Datei darf nie als ganze Liste gelten (sonst würden offene Stellen geschlossen)
+    kaputt = _sitemap(DM, LEITUNGSRECHT).replace('&', '"').split("</url>")[0] + "</url><url><loc>https://www.dm-jobs.de/job/x\"y"
+    _fake(monkeypatch, {SITEMAP: kaputt})
+    with pytest.raises(ValueError):
+        sitemap.hole_stellen(ATS_ID)
+    _fake(monkeypatch, {SITEMAP: '<html><body><loc>https://www.dm-jobs.de/job/a/1/</loc> "kaputt</body></html>'})
+    with pytest.raises(Exception):
+        sitemap.hole_stellen(ATS_ID)  # HTML mit <loc> ist keine Sitemap
+
+
+def test_neue_jobportale_gesperrt():
+    from scraper import http
+    for h in ('jobs.zeit.de', 'jobs.faz.net', 'stellenmarkt.sueddeutsche.de', 'www.xing.de', 'www.kununu.at', 'de.talent.com'):
+        assert http.ist_portal(h), h
+    assert not http.ist_portal('www.zeit.de') and not http.ist_portal('www.faz.net')

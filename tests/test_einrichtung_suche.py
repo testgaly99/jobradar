@@ -256,3 +256,33 @@ def test_websites_werden_vor_der_suche_ergaenzt(tmp_path, monkeypatch):
 def test_ohne_website_eigener_grund():
     r = e.richte_ein(dict(name='X', website='', status='offen'), holen=lambda _: None, adapter={})
     assert r['status_grund'] == 'keine Website bekannt'
+
+
+def test_gleiche_firma_nur_bei_echter_marke():
+    # Review 2 Befund 1: geratene oder ähnlich klingende Adressen gehören oft Fremden
+    assert e._gleiche_firma('www.bertelsmann.de', 'createyourowncareer.bertelsmann.com') or e._gleiche_firma('bertelsmann.de', 'bertelsmann.com')
+    assert e._gleiche_firma('jobs.firma.de', 'www.firma.de')
+    for a, b in [('abc.xyz', 'careers.abc.com'), ('global.honda', 'jobs.global.com'), ('global.honda', 'global.canon'),
+                 ('gruppe.schwarz', 'jobs.gruppe.com'), ('tk.de', 'jobs.tk.com'), ('deutsche-bank.de', 'deutsche-post.de')]:
+        assert not e._gleiche_firma(a, b), (a, b)
+
+
+def test_403_nur_auf_eigener_karriereadresse_ist_ausnahme():
+    seiten = {'https://www.firma.example': '<a href="https://careers.fremd.example/">Karriere bei Partnern</a>',
+              'https://careers.firma.example/': _fehler(403), 'https://careers.fremd.example/': _fehler(403)}
+    r = e.richte_ein(firma(), holen=_web(seiten), adapter=PROBE)
+    assert r['status_grund'] == 'lehnt Abruf ab (403)'  # careers.firma.example lehnt ab
+    seiten['https://careers.firma.example/'] = '<p>x</p>'
+    r = e.richte_ein(firma(), holen=_web(seiten), adapter=PROBE)
+    assert r['status_grund'] != 'lehnt Abruf ab (403)'  # nur der fremde Host lehnt ab
+
+
+def test_keine_geratenen_unteradressen_auf_fremder_endung():
+    aufrufe = []
+    e.richte_ein(firma('https://www.firma.de'), holen=_web({'https://www.firma.de': '<p>x</p>'}, aufrufe), adapter=PROBE)
+    assert not any('firma.com' in u for u in aufrufe)
+
+
+def test_firma_mit_eigenem_wikidata_eintrag_bekommt_keine_fremde_website():
+    f = dict(name='Deutsche Ausrüstungswerke', website='', status='offen', wikidata_id='Q123')
+    assert e.websites_ergaenzen([f], lambda namen: {n: {'website': 'https://fremd.example', 'wikidata_id': 'Q9'} for n in namen}) == 0
