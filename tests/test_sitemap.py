@@ -315,3 +315,10 @@ def test_mikrodaten_ignorieren_firmenadresse_im_kopf(monkeypatch):
     seite = _lies("sitemap_successfactors.html").replace("<head>", "<head>" + kopf)
     _fake(monkeypatch, {SITEMAP: _sitemap(url), url: seite})
     assert sitemap.hole_stellen(SITEMAP + "#/job/")[0]["ort"] == "München, DE"
+
+
+def test_sitemap_mit_unkodiertem_und_zeichen(monkeypatch):
+    # Abnahme thyssenkrupp: „&“ in einer Adresse macht die Sitemap formal ungültig
+    kaputt = _sitemap(DM, "https://www.dm-jobs.de/job/a&b/1/").replace("&amp;", "&")
+    _fake(monkeypatch, {SITEMAP: kaputt, DM: _lies("sitemap_dm.html")})
+    assert DM in [s["url"] for s in sitemap.hole_stellen(ATS_ID)]

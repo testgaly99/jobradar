@@ -196,3 +196,38 @@ def test_ratenbegrenzung_wird_beim_naechsten_lauf_wiederholt(tmp_path, monkeypat
     monkeypatch.setattr(e, 'richte_ein', lambda f: dict(f, status='offen', aktiv='nein', status_grund='Ratenbegrenzung, später erneut'))
     e.lauf(tmp_path, mit_db=False)
     assert not (tmp_path / 'einrichtung_stand.json').exists() or 'Beispiel' not in (tmp_path / 'einrichtung_stand.json').read_text(encoding='utf-8')
+
+
+def test_einzelne_suchseite_unter_den_proben_kippt_die_quelle_nicht():
+    # Abnahme REWE Group: „…/jobs/suchen“ steht in der Sitemap zwischen echten Stellen
+    jobs = [f'https://jobs.firma.example/jobs/marke/{i}/Stelle-{i}.html' for i in range(6)]
+    alle = jobs[:3] + ['https://jobs.firma.example/jobs/suchen'] + jobs[3:]
+    seiten = {'https://www.firma.example': '<p>x</p>', 'https://jobs.firma.example/': '<p>Jobs</p>',
+              'https://jobs.firma.example/robots.txt': 'Sitemap: https://jobs.firma.example/sitemap.xml\n',
+              'https://jobs.firma.example/sitemap.xml': _karte(*alle), 'https://jobs.firma.example/jobs/suchen': '<p>Suche</p>',
+              **{u: _jp() for u in jobs}}
+    r = e.richte_ein(firma(), holen=_web(seiten), adapter=PROBE)
+    assert (r['ats_typ'], r['status']) == ('sitemap', 'aktiv')
+
+
+def test_portal_link_bricht_suche_nicht_ab_eigene_quelle_gewinnt():
+    # Abnahme Lidl/Schwarz: Link auf einen SuccessFactors-Server, Stellen aber auf jobs.<firma> mit Sitemap
+    jobs = [f'https://jobs.firma.example/de/job/Berlin-Analyst/{i}' for i in range(3)]
+    seiten = {'https://www.firma.example': '<a href="https://career5.successfactors.eu/career?company=firma">Bewerben</a>',
+              'https://jobs.firma.example/': '<p>Jobs</p>',
+              'https://jobs.firma.example/robots.txt': 'Sitemap: https://jobs.firma.example/sitemap.xml\n',
+              'https://jobs.firma.example/sitemap.xml': _karte(*jobs), **{u: _jp() for u in jobs}}
+    r = e.richte_ein(firma(), holen=_web(seiten), adapter=PROBE)
+    assert (r['ats_typ'], r['status']) == ('sitemap', 'aktiv')
+
+
+def test_ausschnitt_ohne_de_treffer_ist_nicht_keine_stellen_de():
+    # Abnahme VW/Siemens: 20 Proben aus Tausenden Stellen beweisen nicht „keine Stellen in Deutschland“
+    html = (FIX / 'karriere_ein_portal.html').read_text(encoding='utf-8')
+    ausland = [dict(titel='Engineer', ort='New York, USA', remote=False)]
+    r = e.richte_ein(firma('https://beispiel.example'), holen=lambda _: SimpleNamespace(text=html),
+                    adapter={'greenhouse': lambda _: ausland + [{'uebersprungen': 'vertagt'}]})
+    assert r['status'] == 'aktiv'
+    r = e.richte_ein(firma('https://beispiel.example'), holen=lambda _: SimpleNamespace(text=html),
+                    adapter={'greenhouse': lambda _: ausland})
+    assert r['status'] == 'keine_stellen_de'  # vollständig gesehen: dann stimmt das Urteil

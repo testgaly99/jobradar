@@ -49,7 +49,10 @@ def xml_aus(inhalt):
         inhalt = gzip.GzipFile(fileobj=io.BytesIO(inhalt)).read(http.MAX_ANTWORT_BYTES + 1)
         if len(inhalt) > http.MAX_ANTWORT_BYTES:
             raise ValueError("Entpackte Sitemap zu groß")
-    return ET.fromstring(inhalt)
+    try:
+        return ET.fromstring(inhalt)
+    except ET.ParseError:  # häufigster Formfehler echter Sitemaps: „&“ in Adressen nicht als &amp; geschrieben
+        return ET.fromstring(re.sub(rb"&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)", b"&amp;", inhalt))
 
 
 def _urls(sitemap, index_aufloesen=True):

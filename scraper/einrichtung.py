@@ -117,8 +117,18 @@ def _stellenadressen(locs):
 
 
 def _bestaetigt(holen, adressen):
-    proben = list(dict.fromkeys([adressen[len(adressen) // 2], adressen[0]]))
-    return all(_stellenseite(holen, u) for u in proben)
+    """Bis zu 4 Proben verteilt über die Liste; mindestens 2 (bei nur einer Adresse: 1) tragen eine Stelle.
+    Einzelne Nicht-Stellen wie „…/jobs/suchen“ kippen so nicht die ganze Quelle."""
+    n = len(adressen)
+    proben = list(dict.fromkeys(adressen[i] for i in (n // 2, n // 3, (2 * n) // 3, n - 1)))
+    noetig, treffer = min(2, len(proben)), 0
+    for i, u in enumerate(proben):
+        treffer += _stellenseite(holen, u)
+        if treffer >= noetig:
+            return True
+        if treffer + len(proben) - i - 1 < noetig:
+            return False
+    return False
 
 
 def _sitemap_quelle(basis, holen, robots):
@@ -212,8 +222,8 @@ def _suche(url, holen, robots):
                       and _regdom(t.hostname) == _regdom(urlsplit(seiten_url).hostname)
                       and KARRIERE.search((t.hostname or '') + t.path) and not NICHT_FOLGEN.search(link))):
                 ziele.append((urldefrag(link)[0], tiefe + 1))
-        if e['kandidaten'] or e['unbekannt']:
-            break
+        if e['kandidaten']:
+            break  # nicht unterstützte Portal-Links (SuccessFactors-Server …): weitersuchen, z. B. nach jobs.lidl.de
         host = f'https://{urlsplit(seiten_url).hostname}'
         if host not in geprueft:
             geprueft.add(host)
@@ -274,7 +284,9 @@ def _finde_portal(firma, holen=None):
         else:
             e = _suche(url, holen, robots)
             kandidaten.update(e['kandidaten'])
-            unbekannt += e['unbekannt']
+            # Eine bestätigte eigene Quelle (Stellenseiten mit JobPosting) schlägt bloße Links auf fremde Portale
+            if not any(k[0] in ('sitemap', 'liste') for k in e['kandidaten']):
+                unbekannt += e['unbekannt']
             verboten, abgelehnt, erreicht = e['verboten'], e['abgelehnt'], e['erreicht']
         ungeklaert = {}
         for link in dict.fromkeys(unbekannt):
@@ -338,6 +350,9 @@ def richte_ein(firma, holen=None, adapter=None):
         if not stellen and len(antwort) > len(stellen):
             return dict(result, status='offen', aktiv='nein', status_grund='Ratenbegrenzung, später erneut')
         relevant = any(ist_relevant(s['titel'], s.get('ort', ''), s.get('remote', False))[0] for s in stellen)
+        # Probe nur ein Ausschnitt (Grenze erreicht)? Dann ist „keine Stellen in DE“ nicht bewiesen: aktiv, der
+        # Tägliche Lauf filtert jede Stelle ohnehin nach Ort und Titel.
+        relevant = relevant or (bool(stellen) and len(antwort) > len(stellen))
         result.update(status='aktiv' if relevant else 'keine_stellen_de', aktiv='ja' if relevant else 'nein',
                       status_grund='' if relevant else 'keine passenden Stellen in DE/remote')
     except http.VerbotenDurchRobots:
