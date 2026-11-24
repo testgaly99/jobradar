@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { ANLAGE_ARTEN, loeschMeldung, pruefeDokument } from "@/lib/dokumente";
 import { pruefeBriefkopf, pruefeVorlage } from "@/lib/unterlagen";
+import { cvTextBereinigen } from "@/lib/cv-ergebnis";
+import { createHash } from "node:crypto";
+
+const MAX_CV_TEXT = 100000;
 
 async function nutzer() {
   const sb = await createClient();
@@ -89,4 +93,34 @@ export async function anlageArtAendern(id: string, f: FormData) {
   if (!Object.hasOwn(ANLAGE_ARTEN, art)) return;
   await sb.from("documents").update({ anlage_art: art }).eq("id", id).eq("art", "anlage");
   revalidatePath("/unterlagen");
+}
+
+// Phase 6a: Einwilligung (Art. 9 DSGVO) vor dem ersten CV-Upload; ein Eintrag je Konto.
+export async function einwilligen(): Promise<{ fehler?: string }> {
+  const { sb, uid } = await nutzer();
+  if (!uid) return { fehler: "Bitte melde dich an." };
+  const { error } = await sb.from("cv_einwilligung").upsert({ owner_id: uid }, { onConflict: "owner_id", ignoreDuplicates: true });
+  return error ? { fehler: "Einwilligung konnte nicht gespeichert werden." } : {};
+}
+
+// Höchstens eine Standard-CV (eindeutiger Index): erst alle zurücksetzen, dann die gewählte setzen.
+export async function standardSetzen(id: string) {
+  const { sb, uid } = await nutzer();
+  if (!uid) redirect("/login");
+  await sb.from("documents").update({ standard: false }).eq("standard", true);
+  await sb.from("documents").update({ standard: true }).eq("id", id).eq("art", "cv");
+  revalidatePath("/unterlagen");
+}
+
+// Korrigierter Text bekommt einen neuen Hash; der Datenbank-Trigger löscht dadurch veraltete Ergebnisse.
+export async function cvTextSpeichern(id: string, f: FormData): Promise<{ fehler?: string }> {
+  const { sb, uid } = await nutzer();
+  if (!uid) return { fehler: "Bitte melde dich an." };
+  const text = cvTextBereinigen(String(f.get("text") ?? ""));
+  if (text.length > MAX_CV_TEXT) return { fehler: "Der Text ist zu lang (höchstens 100 000 Zeichen)." };
+  const hash = createHash("sha256").update(text, "utf8").digest("hex");
+  const { error } = await sb.from("cv_texte").upsert({ dokument_id: id, text, herkunft: text ? "korrigiert" : "leer", hash, geaendert: new Date().toISOString() });
+  if (error) return { fehler: "Text konnte nicht gespeichert werden." };
+  revalidatePath("/unterlagen");
+  return {};
 }

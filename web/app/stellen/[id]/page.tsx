@@ -18,6 +18,7 @@ import { SendeKnopf } from "../../bewerbungen/knoepfe";
 import Abschnitte from "../../abschnitte";
 import Ranglisten from "../../ranglisten";
 import { ladeRankingZuordnungen } from "@/lib/rankings";
+import { AbgleichKopf, ladeAbgleich } from "../../cv-abgleich";
 
 const sicher = (u: string | null) => (u && /^https?:\/\//i.test(u) ? u : null);
 
@@ -41,7 +42,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   const wunsch=nutzer?await sb.from('wunschfirmen').select('unternehmen').eq('owner_id',nutzer.id).eq('unternehmen',firma).maybeSingle():{data:null,error:null};
   const ranglisten = await ladeRankingZuordnungen(sb, !!nutzer, [firma]);
   const leer = { data: null, error: null };
-  const [tx, ab, sbr, wp, app, lf, schonBeworben, kr, se] = await Promise.all([
+  const [tx, ab, sbr, wp, app, lf, schonBeworben, kr, se, al] = await Promise.all([
     nutzer ? sb.from("jobs").select("text").eq("id", id).maybeSingle() : leer,
     nutzer ? sb.from("jobs").select("abschnitte").eq("id", id).maybeSingle() : leer,
     sb.from("jobs").select("steckbrief").eq("id", id).maybeSingle(),
@@ -53,7 +54,10 @@ export default async function Seite({ params, searchParams }: { params: Promise<
     nutzer ? sb.from("jobs").select("ki,ki_modell").eq("id", id).maybeSingle() : leer,
     // Fehlt die Tabelle (Migration 013), gilt der Standard: Admin aus, alle anderen an.
     nutzer ? sb.from("sprach_einstellung").select("zeigen").maybeSingle() : leer,
+    // Fehlt Migration 018, scheitert nur diese Abfrage: dann kein CV-Abgleich.
+    nutzer ? sb.from("jobs").select("anforderungsliste,anforderungs_hash").eq("id", id).maybeSingle() : leer,
   ]);
+  const cv = nutzer && al.data ? await ladeAbgleich(sb, { job_id: id }, al.data.anforderungsliste, al.data.anforderungs_hash) : null;
   const text: string | null = tx.data?.text ?? null;
   const heute = heuteLokal();
   const trend = firmenTrend(lf.data ?? [], firma, heute);
@@ -145,10 +149,13 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       </div>
       {begriffe.length > 0 && <p className="meldung hinweis">{n} deiner wichtigen Punkte kommen vor</p>}
       {nutzer ? (
-        <details className="karte">
-          <summary>Ganze Anzeige lesen</summary>
-          <Abschnitte abschnitte={abschnitte} text={text} begriffe={begriffe} ebene={2} />
-        </details>
+        <div className="cv-abgleich">
+          {cv && <AbgleichKopf a={cv} />}
+          <details className="karte" open={cv?.zustand === "fertig"}>
+            <summary>Ganze Anzeige lesen</summary>
+            <Abschnitte abschnitte={abschnitte} text={text} begriffe={begriffe} ebene={2} spalten={cv?.zustand === "fertig" ? cv.spalten : []} />
+          </details>
+        </div>
       ) : (
         <p className="gedaempft">Melde dich an, um die ganze Anzeige hier zu lesen.</p>
       )}

@@ -136,3 +136,23 @@
 .whitelist { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 0.25rem; }
 .whitelist .knopf { width: 100%; justify-content: flex-start; text-align: left; overflow-wrap: anywhere; }
 .ranglisten { margin-block: var(--space-xs); padding-left: 1.25em; overflow-wrap: anywhere; }
+
+/* CV-Abgleich (Phase 6a): Farbe immer mit Label; Token leiten sich aus den Meldungsfarben ab, dunkel inklusive */
+:root {
+  --cv-gruen-bg: var(--color-info-bg); --cv-gruen-ink: var(--color-info-ink);
+  --cv-gelb-bg: var(--color-hinweis-bg); --cv-gelb-ink: var(--color-hinweis-ink);
+  --cv-rot-bg: var(--color-error-bg); --cv-rot-ink: var(--color-error-ink);
+}
+.cv-marke-feld { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2xs); margin-left: var(--space-2xs); }
+.cv-marke { font: inherit; font-size: var(--text-xs); border: 0; border-radius: var(--radius-chip); padding: 1px var(--space-xs); cursor: pointer; }
+.cv-marke:focus-visible { outline: var(--fokus-ring); outline-offset: 2px; }
+.cv-gruen { background: var(--cv-gruen-bg); color: var(--cv-gruen-ink); }
+.cv-gelb { background: var(--cv-gelb-bg); color: var(--cv-gelb-ink); }
+.cv-rot { background: var(--cv-rot-bg); color: var(--cv-rot-ink); }
+.cv-beleg { font-size: var(--text-sm); color: var(--color-muted); }
+.cv-umschalter { display: flex; flex-wrap: wrap; gap: var(--space-sm); border: 0; }
+.cv-umschalter legend { padding: 0; margin-bottom: var(--space-2xs); }
+/* Zwei gleich gute CVs: Radio im .cv-abgleich-Rahmen wählt die sichtbare Spalte */
+.cvm-1 { display: none; }
+.cv-abgleich:has(#cv-spalte-1:checked) .cvm-1 { display: inline-flex; }
+.cv-abgleich:has(#cv-spalte-1:checked) .cvm-0 { display: none; }

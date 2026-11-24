@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { gueltig, markierung, LABEL, type Ergebnis } from "../lib/cv-ergebnis.ts";
+import { abgleich, cvTextBereinigen, gueltig, markierung, LABEL, type Ergebnis } from "../lib/cv-ergebnis.ts";
 
 const liste = [{ id: "a1", text: "Erfahrung mit SQL", muss: true }, { id: "a2", text: "Englisch C1", muss: true },
   { id: "a3", text: "Power BI", muss: false }, { id: "a4", text: "Führerschein", muss: true }, { id: "a5", text: "Ungeprüft", muss: true }];
@@ -45,4 +45,29 @@ test("Punkt ohne passende Anforderung oder fremde CV-Version ergibt null", () =>
 test("Label-Texte wie im Plan", () => {
   assert.deepEqual(LABEL, { gruen: "belegt", teilweise: "teilweise", nicht_belegt: "noch nicht belegt",
     nicht_pruefbar: "konnte nicht geprüft werden", rot: "nicht erfüllt" });
+});
+
+const cvs = [{ id: "cv2", name: "CV B", standard: true, hash: "c2" }, { id: "cv1", name: "CV A", standard: false, hash: "c1" }];
+const zwei: Ergebnis = { ...ergebnis, empfohlen: ["cv1", "cv2"], cv_hashes: { cv1: "c1", cv2: "c2" },
+  anforderungen: [{ id: "a1", je_cv: { cv1: ergebnis.anforderungen[0].je_cv.cv1, cv2: ergebnis.anforderungen[1].je_cv.cv1 } }] };
+
+test("abgleich: Zustände ohne CV, ohne Abschnitt, ohne gültiges Ergebnis", () => {
+  assert.equal(abgleich(liste, "h1", ergebnis, []), null);
+  assert.deepEqual(abgleich([], "h1", ergebnis, cvs), { zustand: "kein_abschnitt" });
+  assert.deepEqual(abgleich(liste, "h1", null, cvs), { zustand: "offen" });
+  assert.deepEqual(abgleich(null, null, null, cvs), { zustand: "offen" });
+  assert.deepEqual(abgleich(liste, "h1", zwei, [{ ...cvs[0], hash: null }, cvs[1]]), { zustand: "offen" });
+});
+
+test("abgleich: Standard-CV zuerst, je empfohlener CV eine Spalte mit Markierungen", () => {
+  const a = abgleich(liste, "h1", zwei, cvs);
+  assert.ok(a && a.zustand === "fertig");
+  assert.deepEqual(a.spalten.map((s) => s.cv.name), ["CV B", "CV A"]);
+  assert.equal(a.spalten[0].markierungen["Erfahrung mit SQL"].label, LABEL.teilweise);
+  assert.equal(a.spalten[1].markierungen["Erfahrung mit SQL"].label, LABEL.gruen);
+  assert.equal(a.spalten[1].markierungen["Englisch C1"], undefined);
+});
+
+test("cvTextBereinigen vereinheitlicht Zeilenenden und Ränder", () => {
+  assert.equal(cvTextBereinigen("  SQL\r\nPython \r\n"), "SQL\nPython");
 });

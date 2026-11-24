@@ -42,3 +42,27 @@ export function markierung(punkt: string, liste: Anforderung[] | null | undefine
   if (!e || !["gruen", "gelb", "rot"].includes(e.farbe)) return null;
   return { farbe: e.farbe, label: label(e), beleg: e.beleg ?? null, begruendung: e.begruendung ?? "", cvName };
 }
+
+export type Cv = { id: string; name: string; standard: boolean; hash: string | null };
+export type Spalte = { cv: Cv; markierungen: Record<string, Markierung> };
+export type Abgleich = { zustand: "kein_abschnitt" } | { zustand: "offen" } | { zustand: "fertig"; spalten: Spalte[] };
+
+// Was Stellen- und Bewerbungsseite zeigen; null = keine CV, dann kein Abgleich-Block.
+// Je empfohlener CV eine vollständige Spalte (A7), Standard-CV zuerst.
+export function abgleich(liste: Anforderung[] | null | undefined, anforderungsHash: string | null | undefined,
+  ergebnis: Ergebnis | null | undefined, cvs: Cv[]): Abgleich | null {
+  if (!cvs.length) return null;
+  if (Array.isArray(liste) && !liste.length) return { zustand: "kein_abschnitt" };
+  const hashes = Object.fromEntries(cvs.filter((c) => c.hash).map((c) => [c.id, c.hash as string]));
+  if (!liste || cvs.some((c) => !c.hash) || !gueltig(ergebnis, anforderungsHash, hashes)) return { zustand: "offen" };
+  const empfohlen = cvs.filter((c) => ergebnis!.empfohlen.includes(c.id))
+    .sort((x, y) => Number(y.standard) - Number(x.standard) || ergebnis!.empfohlen.indexOf(x.id) - ergebnis!.empfohlen.indexOf(y.id));
+  if (!empfohlen.length) return { zustand: "offen" };
+  return { zustand: "fertig", spalten: empfohlen.map((cv) => ({ cv, markierungen: Object.fromEntries(liste.flatMap((a) => {
+    const m = markierung(a.text, liste, ergebnis, cv.id, cv.name);
+    return m ? [[a.text, m]] : [];
+  })) })) };
+}
+
+// Korrigierter CV-Text: Formulare senden \r\n; gespeichert und gehasht wird die bereinigte Fassung.
+export const cvTextBereinigen = (t: string) => t.replace(/\r\n?/g, "\n").trim();
