@@ -1,0 +1,294 @@
+{
+  "liste": {
+    "id": "sdax",
+    "name": "SDAX",
+    "herausgeber": "Wikidata",
+    "aktiv": true,
+    "kategorie": "Börsennotiert"
+  },
+  "ausgabe": {
+    "id": "sdax-2026-11-24",
+    "jahr": 2026,
+    "veroeffentlicht_am": "2026-11-24",
+    "geprueft_am": "2026-11-24",
+    "quelle_url": "https://www.wikidata.org/wiki/Q448445",
+    "lizenz": "CC0",
+    "gueltig_bis": "2027-11-24",
+    "freigegeben": true,
+    "sichtbarkeit": "angemeldet"
+  },
+  "firmen": [
+    {
+      "unternehmen": "Cancom SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "CEWE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Befesa",
+      "rang": null
+    },
+    {
+      "unternehmen": "Friedrich Vorwerk Group",
+      "rang": null
+    },
+    {
+      "unternehmen": "Deutsche Beteiligungs AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Schott Pharma AG & Co. KGaA",
+      "rang": null
+    },
+    {
+      "unternehmen": "Tonies",
+      "rang": null
+    },
+    {
+      "unternehmen": "1&1 AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Dürr AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Eckert & Ziegler",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hamborner",
+      "rang": null
+    },
+    {
+      "unternehmen": "Einhell Germany",
+      "rang": null
+    },
+    {
+      "unternehmen": "Energiekontor",
+      "rang": null
+    },
+    {
+      "unternehmen": "Evotec",
+      "rang": null
+    },
+    {
+      "unternehmen": "Vincorion",
+      "rang": null
+    },
+    {
+      "unternehmen": "Asta Energy Solutions",
+      "rang": null
+    },
+    {
+      "unternehmen": "GFT Technologies",
+      "rang": null
+    },
+    {
+      "unternehmen": "Grenke AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Indus Holding",
+      "rang": null
+    },
+    {
+      "unternehmen": "Deutsche Pfandbriefbank",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hypoport",
+      "rang": null
+    },
+    {
+      "unternehmen": "PNE AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "INIT Innovation in Traffic Systems",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hornbach Holding",
+      "rang": null
+    },
+    {
+      "unternehmen": "Mutares",
+      "rang": null
+    },
+    {
+      "unternehmen": "SFC Energy",
+      "rang": null
+    },
+    {
+      "unternehmen": "LPKF Laser & Electronics",
+      "rang": null
+    },
+    {
+      "unternehmen": "SAF-Holland",
+      "rang": null
+    },
+    {
+      "unternehmen": "MBB SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "NORMA Group SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "PVA TePla",
+      "rang": null
+    },
+    {
+      "unternehmen": "Douglas Holding",
+      "rang": null
+    },
+    {
+      "unternehmen": "Patrizia Immobilien",
+      "rang": null
+    },
+    {
+      "unternehmen": "Springer Nature",
+      "rang": null
+    },
+    {
+      "unternehmen": "secunet Security Networks",
+      "rang": null
+    },
+    {
+      "unternehmen": "STRATEC",
+      "rang": null
+    },
+    {
+      "unternehmen": "Stabilus SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Redcare Pharmacy",
+      "rang": null
+    },
+    {
+      "unternehmen": "ADVA Optical Networking",
+      "rang": null
+    },
+    {
+      "unternehmen": "Kontron",
+      "rang": null
+    },
+    {
+      "unternehmen": "Grand City Properties",
+      "rang": null
+    },
+    {
+      "unternehmen": "SGL Carbon SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Wacker Neuson SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "AlzChem",
+      "rang": null
+    },
+    {
+      "unternehmen": "Fielmann",
+      "rang": null
+    },
+    {
+      "unternehmen": "SMA Solar Technology",
+      "rang": null
+    },
+    {
+      "unternehmen": "OHB SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Südzucker AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hugo Boss",
+      "rang": null
+    },
+    {
+      "unternehmen": "Jost Werke",
+      "rang": null
+    },
+    {
+      "unternehmen": "MLP SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Jungheinrich AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "ProCredit Holding",
+      "rang": null
+    },
+    {
+      "unternehmen": "Drägerwerk",
+      "rang": null
+    },
+    {
+      "unternehmen": "Deutsche EuroShop AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Vossloh",
+      "rang": null
+    },
+    {
+      "unternehmen": "Heidelberger Druckmaschinen",
+      "rang": null
+    },
+    {
+      "unternehmen": "SIXT SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Atoss",
+      "rang": null
+    },
+    {
+      "unternehmen": "Basler AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Verbio",
+      "rang": null
+    },
+    {
+      "unternehmen": "Sto",
+      "rang": null
+    },
+    {
+      "unternehmen": "Ottobock",
+      "rang": null
+    },
+    {
+      "unternehmen": "KWS Saat",
+      "rang": null
+    },
+    {
+      "unternehmen": "Carl Zeiss Meditec",
+      "rang": null
+    },
+    {
+      "unternehmen": "Dermapharm",
+      "rang": null
+    },
+    {
+      "unternehmen": "KSB SE & Co. KGaA",
+      "rang": null
+    },
+    {
+      "unternehmen": "Medios AG",
+      "rang": null
+    }
+  ]
+}

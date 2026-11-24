@@ -1,0 +1,822 @@
+{
+  "liste": {
+    "id": "scoreboard-world",
+    "name": "EU R&D Scoreboard – Top 200 weltweit",
+    "herausgeber": "Europäische Kommission",
+    "aktiv": true,
+    "kategorie": "Innovation"
+  },
+  "ausgabe": {
+    "id": "scoreboard-world-2026-11-24",
+    "jahr": 2025,
+    "veroeffentlicht_am": "2026-11-24",
+    "geprueft_am": "2026-11-24",
+    "quelle_url": "https://knowledge-for-policy.ec.europa.eu/sites/default/files/World2000%282004-2025%29.zip",
+    "lizenz": "CC BY 4.0",
+    "gueltig_bis": "2027-11-24",
+    "freigegeben": true,
+    "sichtbarkeit": "angemeldet"
+  },
+  "firmen": [
+    {
+      "unternehmen": "AMAZON.COM, INC.",
+      "rang": 1
+    },
+    {
+      "unternehmen": "Alphabet Inc.",
+      "rang": 2
+    },
+    {
+      "unternehmen": "META PLATFORMS, INC.",
+      "rang": 3
+    },
+    {
+      "unternehmen": "MICROSOFT CORPORATION",
+      "rang": 4
+    },
+    {
+      "unternehmen": "APPLE INC.",
+      "rang": 5
+    },
+    {
+      "unternehmen": "HUAWEI INVESTMENT & HOLDING CO., LTD.",
+      "rang": 6
+    },
+    {
+      "unternehmen": "Samsung Electronics",
+      "rang": 7
+    },
+    {
+      "unternehmen": "Volkswagen AG",
+      "rang": 8
+    },
+    {
+      "unternehmen": "Johnson & Johnson",
+      "rang": 9
+    },
+    {
+      "unternehmen": "Intel",
+      "rang": 10
+    },
+    {
+      "unternehmen": "MSD Sharp & Dohme",
+      "rang": 11
+    },
+    {
+      "unternehmen": "ROCHE HOLDING AG",
+      "rang": 12
+    },
+    {
+      "unternehmen": "NVIDIA CORP",
+      "rang": 13
+    },
+    {
+      "unternehmen": "ASTRAZENECA PLC",
+      "rang": 14
+    },
+    {
+      "unternehmen": "ELI LILLY AND COMPANY",
+      "rang": 15
+    },
+    {
+      "unternehmen": "Pfizer",
+      "rang": 16
+    },
+    {
+      "unternehmen": "Mercedes-Benz Group",
+      "rang": 17
+    },
+    {
+      "unternehmen": "Oracle",
+      "rang": 18
+    },
+    {
+      "unternehmen": "BRISTOL-MYERS SQUIBB COMPANY",
+      "rang": 19
+    },
+    {
+      "unternehmen": "Tencent",
+      "rang": 20
+    },
+    {
+      "unternehmen": "Bayerische Motoren Werke Aktiengesellschaft",
+      "rang": 21
+    },
+    {
+      "unternehmen": "BROADCOM INC.",
+      "rang": 22
+    },
+    {
+      "unternehmen": "NOVARTIS AG",
+      "rang": 23
+    },
+    {
+      "unternehmen": "GENERAL MOTORS COMPANY",
+      "rang": 24
+    },
+    {
+      "unternehmen": "Qualcomm",
+      "rang": 25
+    },
+    {
+      "unternehmen": "TOYOTA MOTOR CORPORATION",
+      "rang": 26
+    },
+    {
+      "unternehmen": "ABBVIE INC.",
+      "rang": 27
+    },
+    {
+      "unternehmen": "ROBERT BOSCH GESELLSCHAFT MIT BESCHRAENKTER HAFTUNG",
+      "rang": 28
+    },
+    {
+      "unternehmen": "FORD MOTOR CO",
+      "rang": 29
+    },
+    {
+      "unternehmen": "Cisco",
+      "rang": 30
+    },
+    {
+      "unternehmen": "Alibaba Group",
+      "rang": 31
+    },
+    {
+      "unternehmen": "Honda",
+      "rang": 32
+    },
+    {
+      "unternehmen": "Sanofi",
+      "rang": 33
+    },
+    {
+      "unternehmen": "GSK PLC",
+      "rang": 34
+    },
+    {
+      "unternehmen": "STELLANTIS N.V.",
+      "rang": 35
+    },
+    {
+      "unternehmen": "Bayer AG",
+      "rang": 36
+    },
+    {
+      "unternehmen": "BYD COMPANY LIMITED",
+      "rang": 37
+    },
+    {
+      "unternehmen": "INTERNATIONAL BUSINESS MACHINES CORP",
+      "rang": 38
+    },
+    {
+      "unternehmen": "Siemens",
+      "rang": 39
+    },
+    {
+      "unternehmen": "AMD",
+      "rang": 40
+    },
+    {
+      "unternehmen": "TAIWAN SEMICONDUCTOR MANUFACTURING CO., LTD.",
+      "rang": 41
+    },
+    {
+      "unternehmen": "CHINA STATE CONSTRUCTION ENGINEERING CORPORATION LIMITED",
+      "rang": 42
+    },
+    {
+      "unternehmen": "C.B. BOEHRINGER SOHN AG & CO. KG",
+      "rang": 43
+    },
+    {
+      "unternehmen": "AMGEN INCORPORATED",
+      "rang": 44
+    },
+    {
+      "unternehmen": "Gilead Sciences",
+      "rang": 45
+    },
+    {
+      "unternehmen": "SAP",
+      "rang": 46
+    },
+    {
+      "unternehmen": "Salesforce",
+      "rang": 47
+    },
+    {
+      "unternehmen": "Novo",
+      "rang": 48
+    },
+    {
+      "unternehmen": "NIPPON TELEGRAPH AND TELEPHONE CORPORATION",
+      "rang": 49
+    },
+    {
+      "unternehmen": "Regeneron Pharmaceuticals",
+      "rang": 50
+    },
+    {
+      "unternehmen": "SONY GROUP CORPORATION",
+      "rang": 51
+    },
+    {
+      "unternehmen": "TAKEDA PHARMACEUTICAL COMPANY LIMITED",
+      "rang": 52
+    },
+    {
+      "unternehmen": "TELEFONAKTIEBOLAGET LM ERICSSON AB",
+      "rang": 53
+    },
+    {
+      "unternehmen": "NOKIA OYJ",
+      "rang": 54
+    },
+    {
+      "unternehmen": "TESLA, INC.",
+      "rang": 55
+    },
+    {
+      "unternehmen": "Moderna",
+      "rang": 56
+    },
+    {
+      "unternehmen": "ASML HOLDING N.V.",
+      "rang": 57
+    },
+    {
+      "unternehmen": "CHINA MOBILE LIMITED",
+      "rang": 58
+    },
+    {
+      "unternehmen": "MEDIATEK INC.",
+      "rang": 59
+    },
+    {
+      "unternehmen": "Denso",
+      "rang": 60
+    },
+    {
+      "unternehmen": "Adobe",
+      "rang": 61
+    },
+    {
+      "unternehmen": "Nissan",
+      "rang": 62
+    },
+    {
+      "unternehmen": "Tata Motors",
+      "rang": 63
+    },
+    {
+      "unternehmen": "AIRBUS SE",
+      "rang": 64
+    },
+    {
+      "unternehmen": "BOEING COMPANY (THE)",
+      "rang": 65
+    },
+    {
+      "unternehmen": "VERTEX PHARMACEUTICALS INCORPORATED",
+      "rang": 66
+    },
+    {
+      "unternehmen": "China Railway Group",
+      "rang": 67
+    },
+    {
+      "unternehmen": "CHINA COMMUNICATIONS CONSTRUCTION COMPANY LIMITED",
+      "rang": 68
+    },
+    {
+      "unternehmen": "HON HAI PRECISION IND. CO., LTD.",
+      "rang": 69
+    },
+    {
+      "unternehmen": "China Railway Construction",
+      "rang": 70
+    },
+    {
+      "unternehmen": "Micron Technology",
+      "rang": 71
+    },
+    {
+      "unternehmen": "BAOSHAN IRON & STEEL COMPANY LIMITED",
+      "rang": 72
+    },
+    {
+      "unternehmen": "POWER CONSTRUCTION CORPORATION OF CHINA ,LTD",
+      "rang": 73
+    },
+    {
+      "unternehmen": "SK HYNIX INC.",
+      "rang": 74
+    },
+    {
+      "unternehmen": "SOFTBANK GROUP CORP",
+      "rang": 75
+    },
+    {
+      "unternehmen": "Applied Materials",
+      "rang": 76
+    },
+    {
+      "unternehmen": "XIAOMI CORPORATION",
+      "rang": 77
+    },
+    {
+      "unternehmen": "Hyundai",
+      "rang": 78
+    },
+    {
+      "unternehmen": "UBER TECHNOLOGIES, INC.",
+      "rang": 79
+    },
+    {
+      "unternehmen": "ZTE CORPORATION",
+      "rang": 80
+    },
+    {
+      "unternehmen": "Panasonic",
+      "rang": 81
+    },
+    {
+      "unternehmen": "BAIDU, INC.",
+      "rang": 82
+    },
+    {
+      "unternehmen": "CONTINENTAL AG",
+      "rang": 83
+    },
+    {
+      "unternehmen": "PETROCHINA COMPANY LIMITED",
+      "rang": 84
+    },
+    {
+      "unternehmen": "DELL TECHNOLOGIES INC.",
+      "rang": 85
+    },
+    {
+      "unternehmen": "RTX CORP",
+      "rang": 86
+    },
+    {
+      "unternehmen": "NETFLIX, INC.",
+      "rang": 87
+    },
+    {
+      "unternehmen": "ZF FRIEDRICHSHAFEN AG",
+      "rang": 88
+    },
+    {
+      "unternehmen": "BLOCK INC",
+      "rang": 89
+    },
+    {
+      "unternehmen": "AB VOLVO",
+      "rang": 90
+    },
+    {
+      "unternehmen": "INTUIT INC",
+      "rang": 91
+    },
+    {
+      "unternehmen": "MEITUAN",
+      "rang": 92
+    },
+    {
+      "unternehmen": "ABBOTT LABORATORIES",
+      "rang": 93
+    },
+    {
+      "unternehmen": "DAIICHI SANKYO COMPANY LIMITED",
+      "rang": 94
+    },
+    {
+      "unternehmen": "RENAULT",
+      "rang": 95
+    },
+    {
+      "unternehmen": "LG ELECTRONICS INC.",
+      "rang": 96
+    },
+    {
+      "unternehmen": "MEDTRONIC PUBLIC LIMITED COMPANY",
+      "rang": 97
+    },
+    {
+      "unternehmen": "ATLASSIAN CORPORATION",
+      "rang": 98
+    },
+    {
+      "unternehmen": "WORKDAY, INC.",
+      "rang": 99
+    },
+    {
+      "unternehmen": "INCYTE CORPORATION",
+      "rang": 100
+    },
+    {
+      "unternehmen": "ELECTRONIC ARTS INC",
+      "rang": 101
+    },
+    {
+      "unternehmen": "GEELY SWEDEN HOLDINGS AB",
+      "rang": 102
+    },
+    {
+      "unternehmen": "CONTEMPORARY AMPEREX TECHNOLOGY CO., LTD.",
+      "rang": 103
+    },
+    {
+      "unternehmen": "SERVICENOW, INC.",
+      "rang": 104
+    },
+    {
+      "unternehmen": "LEONARDO S.P.A.",
+      "rang": 105
+    },
+    {
+      "unternehmen": "SAIC MOTOR CORPORATION LIMITED",
+      "rang": 106
+    },
+    {
+      "unternehmen": "HSBC HOLDINGS PLC",
+      "rang": 107
+    },
+    {
+      "unternehmen": "NETEASE, INC.",
+      "rang": 108
+    },
+    {
+      "unternehmen": "MERCK KGAA",
+      "rang": 109
+    },
+    {
+      "unternehmen": "SCHNEIDER ELECTRIC SE",
+      "rang": 110
+    },
+    {
+      "unternehmen": "NXP SEMICONDUCTORS N.V",
+      "rang": 111
+    },
+    {
+      "unternehmen": "BIONTECH SE",
+      "rang": 112
+    },
+    {
+      "unternehmen": "INFINEON TECHNOLOGIES AG",
+      "rang": 113
+    },
+    {
+      "unternehmen": "DEERE & CO",
+      "rang": 114
+    },
+    {
+      "unternehmen": "HEWLETT PACKARD ENTERPRISE COMPANY",
+      "rang": 115
+    },
+    {
+      "unternehmen": "FORVIA SE",
+      "rang": 116
+    },
+    {
+      "unternehmen": "METALLURGICAL CORPORATION OF CHINA LTD.",
+      "rang": 117
+    },
+    {
+      "unternehmen": "LENOVO GROUP LIMITED",
+      "rang": 118
+    },
+    {
+      "unternehmen": "MIDEA GROUP CO.,LTD.",
+      "rang": 119
+    },
+    {
+      "unternehmen": "GEELY AUTOMOBILE HOLDINGS LIMITED",
+      "rang": 120
+    },
+    {
+      "unternehmen": "BASF SE",
+      "rang": 121
+    },
+    {
+      "unternehmen": "BANCO SANTANDER SA",
+      "rang": 122
+    },
+    {
+      "unternehmen": "NESTLE S.A.",
+      "rang": 123
+    },
+    {
+      "unternehmen": "CRRC CORPORATION LIMITED",
+      "rang": 124
+    },
+    {
+      "unternehmen": "CANON INCORPORATED",
+      "rang": 125
+    },
+    {
+      "unternehmen": "DAIMLER TRUCK HOLDING AG",
+      "rang": 126
+    },
+    {
+      "unternehmen": "CATERPILLAR INC",
+      "rang": 127
+    },
+    {
+      "unternehmen": "THE PROCTER & GAMBLE COMPANY",
+      "rang": 128
+    },
+    {
+      "unternehmen": "LAM RESEARCH CORP",
+      "rang": 129
+    },
+    {
+      "unternehmen": "ASTELLAS PHARMA INC",
+      "rang": 130
+    },
+    {
+      "unternehmen": "CHINA PETROLEUM & CHEMICAL CORPORATION",
+      "rang": 131
+    },
+    {
+      "unternehmen": "SYNOPSYS INC",
+      "rang": 132
+    },
+    {
+      "unternehmen": "AIRBNB, INC.",
+      "rang": 133
+    },
+    {
+      "unternehmen": "BIOGEN INC.",
+      "rang": 134
+    },
+    {
+      "unternehmen": "PAYPAL HOLDINGS, INC.",
+      "rang": 135
+    },
+    {
+      "unternehmen": "OTSUKA HOLDINGS CO LTD",
+      "rang": 136
+    },
+    {
+      "unternehmen": "PALO ALTO NETWORKS, INC.",
+      "rang": 137
+    },
+    {
+      "unternehmen": "CHINA TELECOM CORPORATION LIMITED",
+      "rang": 138
+    },
+    {
+      "unternehmen": "TEXAS INSTRUMENTS INC",
+      "rang": 139
+    },
+    {
+      "unternehmen": "BEIGENE, LTD",
+      "rang": 140
+    },
+    {
+      "unternehmen": "MARVELL TECHNOLOGY, INC.",
+      "rang": 141
+    },
+    {
+      "unternehmen": "VALEO",
+      "rang": 142
+    },
+    {
+      "unternehmen": "CHINA ENERGY ENGINEERING CORPORATION LIMITED",
+      "rang": 143
+    },
+    {
+      "unternehmen": "ELECTRICITE DE FRANCE",
+      "rang": 144
+    },
+    {
+      "unternehmen": "KONINKLIJKE PHILIPS N.V.",
+      "rang": 145
+    },
+    {
+      "unternehmen": "STMICROELECTRONICS N.V.",
+      "rang": 146
+    },
+    {
+      "unternehmen": "SNOWFLAKE, INC.",
+      "rang": 147
+    },
+    {
+      "unternehmen": "TRIP.COM GROUP LIMITED",
+      "rang": 148
+    },
+    {
+      "unternehmen": "SYNGENTA AG",
+      "rang": 149
+    },
+    {
+      "unternehmen": "UCB S.A",
+      "rang": 150
+    },
+    {
+      "unternehmen": "HITACHI LTD",
+      "rang": 151
+    },
+    {
+      "unternehmen": "PDD HOLDINGS INC.",
+      "rang": 152
+    },
+    {
+      "unternehmen": "CARL ZEISS AG",
+      "rang": 153
+    },
+    {
+      "unternehmen": "WESTERN DIGITAL CORP",
+      "rang": 154
+    },
+    {
+      "unternehmen": "SUZUKI MOTOR CORPORATION",
+      "rang": 155
+    },
+    {
+      "unternehmen": "MERCADOLIBRE, INC.",
+      "rang": 156
+    },
+    {
+      "unternehmen": "NIO INC.",
+      "rang": 157
+    },
+    {
+      "unternehmen": "RENESAS ELECTRONICS CORPORATION",
+      "rang": 158
+    },
+    {
+      "unternehmen": "CUMMINS INC.",
+      "rang": 159
+    },
+    {
+      "unternehmen": "HP INC.",
+      "rang": 160
+    },
+    {
+      "unternehmen": "KUAISHOU TECHNOLOGY",
+      "rang": 161
+    },
+    {
+      "unternehmen": "TDK CORPORATION",
+      "rang": 162
+    },
+    {
+      "unternehmen": "BOSTON SCIENTIFIC CORP",
+      "rang": 163
+    },
+    {
+      "unternehmen": "LOCKHEED MARTIN CORP",
+      "rang": 164
+    },
+    {
+      "unternehmen": "TOKYO ELECTRON LIMITED",
+      "rang": 165
+    },
+    {
+      "unternehmen": "EBAY INC",
+      "rang": 166
+    },
+    {
+      "unternehmen": "DANAHER CORP",
+      "rang": 167
+    },
+    {
+      "unternehmen": "LLOYDS BANKING GROUP PLC",
+      "rang": 168
+    },
+    {
+      "unternehmen": "HANGZHOU HIKVISION DIGITAL TECHNOLOGY CO., LTD.",
+      "rang": 169
+    },
+    {
+      "unternehmen": "SNAP INC.",
+      "rang": 170
+    },
+    {
+      "unternehmen": "SAUDI ARABIAN OIL COMPANY SAUDI JOINT STOCK COMPANY",
+      "rang": 171
+    },
+    {
+      "unternehmen": "CADENCE DESIGN SYSTEMS INC",
+      "rang": 172
+    },
+    {
+      "unternehmen": "HAIER SMART HOME CO., LTD.",
+      "rang": 173
+    },
+    {
+      "unternehmen": "RIVIAN AUTOMOTIVE, INC.",
+      "rang": 174
+    },
+    {
+      "unternehmen": "HONEYWELL INTERNATIONAL INC",
+      "rang": 175
+    },
+    {
+      "unternehmen": "BARCLAYS PLC",
+      "rang": 176
+    },
+    {
+      "unternehmen": "LI AUTO INC.",
+      "rang": 177
+    },
+    {
+      "unternehmen": "SHANGHAI CONSTRUCTION GROUP CO., LTD.",
+      "rang": 178
+    },
+    {
+      "unternehmen": "CHINA UNITED NETWORK COMMUNICATIONS LIMITED",
+      "rang": 179
+    },
+    {
+      "unternehmen": "AISIN CORPORATION",
+      "rang": 180
+    },
+    {
+      "unternehmen": "BOE TECHNOLOGY GROUP CO.,LTD.",
+      "rang": 181
+    },
+    {
+      "unternehmen": "SPOTIFY TECHNOLOGY S.A.",
+      "rang": 182
+    },
+    {
+      "unternehmen": "CONSTELLATION SOFTWARE INC.",
+      "rang": 183
+    },
+    {
+      "unternehmen": "ANALOG DEVICES INC",
+      "rang": 184
+    },
+    {
+      "unternehmen": "AUTODESK INC",
+      "rang": 185
+    },
+    {
+      "unternehmen": "LG CHEM LTD.",
+      "rang": 186
+    },
+    {
+      "unternehmen": "DEUTSCHE BANK AG",
+      "rang": 187
+    },
+    {
+      "unternehmen": "MITSUBISHI ELECTRIC CORPORATION",
+      "rang": 188
+    },
+    {
+      "unternehmen": "ABB LTD",
+      "rang": 189
+    },
+    {
+      "unternehmen": "ROBLOX CORPORATION",
+      "rang": 190
+    },
+    {
+      "unternehmen": "SIEMENS ENERGY AG",
+      "rang": 191
+    },
+    {
+      "unternehmen": "STRYKER CORPORATION",
+      "rang": 192
+    },
+    {
+      "unternehmen": "L'OREAL",
+      "rang": 193
+    },
+    {
+      "unternehmen": "CORTEVA, INC",
+      "rang": 194
+    },
+    {
+      "unternehmen": "THERMO FISHER SCIENTIFIC INC.",
+      "rang": 195
+    },
+    {
+      "unternehmen": "AMADEUS IT GROUP, S.A.",
+      "rang": 196
+    },
+    {
+      "unternehmen": "DONGFENG MOTOR GROUP COMPANY LIMITED",
+      "rang": 197
+    },
+    {
+      "unternehmen": "GREAT WALL MOTOR COMPANY LIMITED",
+      "rang": 198
+    },
+    {
+      "unternehmen": "KLA CORPORATION",
+      "rang": 199
+    },
+    {
+      "unternehmen": "CSL LIMITED",
+      "rang": 200
+    }
+  ]
+}

@@ -1,0 +1,822 @@
+{
+  "liste": {
+    "id": "top200-arbeitgeber",
+    "name": "Top 200 Arbeitgeber nach Mitarbeitenden",
+    "herausgeber": "Wikidata",
+    "aktiv": true,
+    "kategorie": "Große Unternehmen"
+  },
+  "ausgabe": {
+    "id": "top200-arbeitgeber-2026-11-24",
+    "jahr": 2026,
+    "veroeffentlicht_am": "2026-11-24",
+    "geprueft_am": "2026-11-24",
+    "quelle_url": "https://www.wikidata.org/",
+    "lizenz": "CC0",
+    "gueltig_bis": "2027-11-24",
+    "freigegeben": true,
+    "sichtbarkeit": "angemeldet"
+  },
+  "firmen": [
+    {
+      "unternehmen": "Volkswagen AG",
+      "rang": 1
+    },
+    {
+      "unternehmen": "DHL",
+      "rang": 2
+    },
+    {
+      "unternehmen": "DHL AG",
+      "rang": 3
+    },
+    {
+      "unternehmen": "Schwarz-Gruppe",
+      "rang": 4
+    },
+    {
+      "unternehmen": "EDEKA",
+      "rang": 5
+    },
+    {
+      "unternehmen": "Robert Bosch",
+      "rang": 6
+    },
+    {
+      "unternehmen": "Deutsche Bahn",
+      "rang": 7
+    },
+    {
+      "unternehmen": "Siemens",
+      "rang": 8
+    },
+    {
+      "unternehmen": "Fresenius",
+      "rang": 9
+    },
+    {
+      "unternehmen": "Sparkassen-Finanzgruppe",
+      "rang": 10
+    },
+    {
+      "unternehmen": "REWE Group",
+      "rang": 11
+    },
+    {
+      "unternehmen": "Continental AG",
+      "rang": 12
+    },
+    {
+      "unternehmen": "Aldi Süd",
+      "rang": 13
+    },
+    {
+      "unternehmen": "Deutsche Telekom",
+      "rang": 14
+    },
+    {
+      "unternehmen": "Lidl",
+      "rang": 15
+    },
+    {
+      "unternehmen": "Prosegur",
+      "rang": 16
+    },
+    {
+      "unternehmen": "REWE",
+      "rang": 17
+    },
+    {
+      "unternehmen": "Mercedes-Benz Group",
+      "rang": 18
+    },
+    {
+      "unternehmen": "thyssenkrupp AG",
+      "rang": 19
+    },
+    {
+      "unternehmen": "Bertelsmann",
+      "rang": 20
+    },
+    {
+      "unternehmen": "Mercedes-Benz AG",
+      "rang": 21
+    },
+    {
+      "unternehmen": "Allianz SE",
+      "rang": 22
+    },
+    {
+      "unternehmen": "Bayerische Motoren Werke Aktiengesellschaft",
+      "rang": 23
+    },
+    {
+      "unternehmen": "Lufthansa Group",
+      "rang": 24
+    },
+    {
+      "unternehmen": "Fresenius Medical Care",
+      "rang": 25
+    },
+    {
+      "unternehmen": "BASF",
+      "rang": 26
+    },
+    {
+      "unternehmen": "DHL Supply Chain",
+      "rang": 27
+    },
+    {
+      "unternehmen": "SAP",
+      "rang": 28
+    },
+    {
+      "unternehmen": "Traton",
+      "rang": 29
+    },
+    {
+      "unternehmen": "Daimler Truck",
+      "rang": 30
+    },
+    {
+      "unternehmen": "Lufthansa",
+      "rang": 31
+    },
+    {
+      "unternehmen": "Siemens Energy",
+      "rang": 32
+    },
+    {
+      "unternehmen": "METRO Group",
+      "rang": 33
+    },
+    {
+      "unternehmen": "Bayer AG",
+      "rang": 34
+    },
+    {
+      "unternehmen": "Deutsche Bank",
+      "rang": 35
+    },
+    {
+      "unternehmen": "dm-drogerie markt",
+      "rang": 36
+    },
+    {
+      "unternehmen": "Aldi Nord",
+      "rang": 37
+    },
+    {
+      "unternehmen": "Würth",
+      "rang": 38
+    },
+    {
+      "unternehmen": "Audi",
+      "rang": 39
+    },
+    {
+      "unternehmen": "DB Schenker",
+      "rang": 40
+    },
+    {
+      "unternehmen": "Arvato",
+      "rang": 41
+    },
+    {
+      "unternehmen": "Mahle GmbH",
+      "rang": 42
+    },
+    {
+      "unternehmen": "MediaMarktSaturn Retail Group",
+      "rang": 43
+    },
+    {
+      "unternehmen": "Dussmann",
+      "rang": 44
+    },
+    {
+      "unternehmen": "Linde AG",
+      "rang": 45
+    },
+    {
+      "unternehmen": "Rossmann",
+      "rang": 46
+    },
+    {
+      "unternehmen": "Merck",
+      "rang": 47
+    },
+    {
+      "unternehmen": "Adidas",
+      "rang": 48
+    },
+    {
+      "unternehmen": "Heidelberg Materials",
+      "rang": 49
+    },
+    {
+      "unternehmen": "TK Elevator",
+      "rang": 50
+    },
+    {
+      "unternehmen": "Otto Group",
+      "rang": 51
+    },
+    {
+      "unternehmen": "Delivery Hero",
+      "rang": 52
+    },
+    {
+      "unternehmen": "Infineon",
+      "rang": 53
+    },
+    {
+      "unternehmen": "Ceconomy",
+      "rang": 54
+    },
+    {
+      "unternehmen": "T-Mobile Deutschland",
+      "rang": 55
+    },
+    {
+      "unternehmen": "E.ON SE",
+      "rang": 56
+    },
+    {
+      "unternehmen": "DB Regio",
+      "rang": 57
+    },
+    {
+      "unternehmen": "Ford of Europe",
+      "rang": 58
+    },
+    {
+      "unternehmen": "OBI",
+      "rang": 59
+    },
+    {
+      "unternehmen": "Hochtief",
+      "rang": 60
+    },
+    {
+      "unternehmen": "Munich Re",
+      "rang": 61
+    },
+    {
+      "unternehmen": "Verbund BASF-Ludwigshafen",
+      "rang": 62
+    },
+    {
+      "unternehmen": "Carl Zeiss",
+      "rang": 63
+    },
+    {
+      "unternehmen": "Commerzbank",
+      "rang": 64
+    },
+    {
+      "unternehmen": "Siemens Mobility",
+      "rang": 65
+    },
+    {
+      "unternehmen": "DHL Global Forwarding",
+      "rang": 66
+    },
+    {
+      "unternehmen": "Hella",
+      "rang": 67
+    },
+    {
+      "unternehmen": "Porsche",
+      "rang": 68
+    },
+    {
+      "unternehmen": "C&A",
+      "rang": 69
+    },
+    {
+      "unternehmen": "Deutsche Vermögensberatung",
+      "rang": 70
+    },
+    {
+      "unternehmen": "Dr. August Oetker KG",
+      "rang": 71
+    },
+    {
+      "unternehmen": "Globus Holding",
+      "rang": 72
+    },
+    {
+      "unternehmen": "Bombardier Transportation",
+      "rang": 73
+    },
+    {
+      "unternehmen": "Müller",
+      "rang": 74
+    },
+    {
+      "unternehmen": "Knorr-Bremse",
+      "rang": 75
+    },
+    {
+      "unternehmen": "Randstad Deutschland",
+      "rang": 76
+    },
+    {
+      "unternehmen": "Remondis",
+      "rang": 77
+    },
+    {
+      "unternehmen": "DB Cargo",
+      "rang": 78
+    },
+    {
+      "unternehmen": "Bosch Rexroth",
+      "rang": 79
+    },
+    {
+      "unternehmen": "Evonik Industries",
+      "rang": 80
+    },
+    {
+      "unternehmen": "Kaefer Isoliertechnik",
+      "rang": 81
+    },
+    {
+      "unternehmen": "Rheinmetall",
+      "rang": 82
+    },
+    {
+      "unternehmen": "EnBW",
+      "rang": 83
+    },
+    {
+      "unternehmen": "Synlab",
+      "rang": 84
+    },
+    {
+      "unternehmen": "TÜV Süd",
+      "rang": 85
+    },
+    {
+      "unternehmen": "Brose Fahrzeugteile",
+      "rang": 86
+    },
+    {
+      "unternehmen": "DZ Bank",
+      "rang": 87
+    },
+    {
+      "unternehmen": "Siemens Gamesa",
+      "rang": 88
+    },
+    {
+      "unternehmen": "Fielmann",
+      "rang": 89
+    },
+    {
+      "unternehmen": "Knauf Gips",
+      "rang": 90
+    },
+    {
+      "unternehmen": "Airbus Helicopters",
+      "rang": 91
+    },
+    {
+      "unternehmen": "Fraport",
+      "rang": 92
+    },
+    {
+      "unternehmen": "TÜV Rheinland",
+      "rang": 93
+    },
+    {
+      "unternehmen": "Talanx",
+      "rang": 94
+    },
+    {
+      "unternehmen": "Beiersdorf AG",
+      "rang": 95
+    },
+    {
+      "unternehmen": "Franz Haniel & Cie.",
+      "rang": 96
+    },
+    {
+      "unternehmen": "Apleona",
+      "rang": 97
+    },
+    {
+      "unternehmen": "Jungheinrich AG",
+      "rang": 98
+    },
+    {
+      "unternehmen": "Miele",
+      "rang": 99
+    },
+    {
+      "unternehmen": "Vattenfall",
+      "rang": 100
+    },
+    {
+      "unternehmen": "DB Cargo Deutschland",
+      "rang": 101
+    },
+    {
+      "unternehmen": "Phoenix Contact",
+      "rang": 102
+    },
+    {
+      "unternehmen": "Stihl",
+      "rang": 103
+    },
+    {
+      "unternehmen": "Douglas Holding",
+      "rang": 104
+    },
+    {
+      "unternehmen": "Kempinski",
+      "rang": 105
+    },
+    {
+      "unternehmen": "RWE",
+      "rang": 106
+    },
+    {
+      "unternehmen": "Tönnies Holding",
+      "rang": 107
+    },
+    {
+      "unternehmen": "Hornbach",
+      "rang": 108
+    },
+    {
+      "unternehmen": "Volkswagen Nutzfahrzeuge",
+      "rang": 109
+    },
+    {
+      "unternehmen": "Securitas Deutschland",
+      "rang": 110
+    },
+    {
+      "unternehmen": "Puma SE",
+      "rang": 111
+    },
+    {
+      "unternehmen": "Staples Advantage",
+      "rang": 112
+    },
+    {
+      "unternehmen": "Südzucker AG",
+      "rang": 113
+    },
+    {
+      "unternehmen": "Epcos",
+      "rang": 114
+    },
+    {
+      "unternehmen": "Hugo Boss",
+      "rang": 115
+    },
+    {
+      "unternehmen": "Covestro",
+      "rang": 116
+    },
+    {
+      "unternehmen": "Brenntag",
+      "rang": 117
+    },
+    {
+      "unternehmen": "Flughafen Düsseldorf GmbH",
+      "rang": 118
+    },
+    {
+      "unternehmen": "ETL-Gruppe",
+      "rang": 119
+    },
+    {
+      "unternehmen": "Heraeus",
+      "rang": 120
+    },
+    {
+      "unternehmen": "Berliner Verkehrsbetriebe",
+      "rang": 121
+    },
+    {
+      "unternehmen": "BLG Logistics Group",
+      "rang": 122
+    },
+    {
+      "unternehmen": "Dormakaba",
+      "rang": 123
+    },
+    {
+      "unternehmen": "Vodafone Deutschland",
+      "rang": 124
+    },
+    {
+      "unternehmen": "Barmer Ersatzkasse",
+      "rang": 125
+    },
+    {
+      "unternehmen": "Züblin",
+      "rang": 126
+    },
+    {
+      "unternehmen": "Deutsche Ausrüstungswerke",
+      "rang": 127
+    },
+    {
+      "unternehmen": "Postbank",
+      "rang": 128
+    },
+    {
+      "unternehmen": "Norma",
+      "rang": 129
+    },
+    {
+      "unternehmen": "R+V Versicherung",
+      "rang": 130
+    },
+    {
+      "unternehmen": "RWE Power",
+      "rang": 131
+    },
+    {
+      "unternehmen": "SMS Group",
+      "rang": 132
+    },
+    {
+      "unternehmen": "IKEA Deutschland",
+      "rang": 133
+    },
+    {
+      "unternehmen": "Selgros",
+      "rang": 134
+    },
+    {
+      "unternehmen": "K+S",
+      "rang": 135
+    },
+    {
+      "unternehmen": "Zalando",
+      "rang": 136
+    },
+    {
+      "unternehmen": "Bausparkasse Schwäbisch Hall",
+      "rang": 137
+    },
+    {
+      "unternehmen": "Agfa",
+      "rang": 138
+    },
+    {
+      "unternehmen": "Axel Springer SE",
+      "rang": 139
+    },
+    {
+      "unternehmen": "Auswärtiges Amt",
+      "rang": 140
+    },
+    {
+      "unternehmen": "Kärcher",
+      "rang": 141
+    },
+    {
+      "unternehmen": "Webasto SE",
+      "rang": 142
+    },
+    {
+      "unternehmen": "Unicredit Bank",
+      "rang": 143
+    },
+    {
+      "unternehmen": "Lanxess",
+      "rang": 144
+    },
+    {
+      "unternehmen": "Fujitsu Technology Solutions",
+      "rang": 145
+    },
+    {
+      "unternehmen": "Linde Material Handling",
+      "rang": 146
+    },
+    {
+      "unternehmen": "REHAU",
+      "rang": 147
+    },
+    {
+      "unternehmen": "RTL Group",
+      "rang": 148
+    },
+    {
+      "unternehmen": "Eibia G.m.b.H. für chemische Produkte",
+      "rang": 149
+    },
+    {
+      "unternehmen": "Hermes Europe",
+      "rang": 150
+    },
+    {
+      "unternehmen": "Vonovia",
+      "rang": 151
+    },
+    {
+      "unternehmen": "Tchibo",
+      "rang": 152
+    },
+    {
+      "unternehmen": "Hubert Burda Media Holding",
+      "rang": 153
+    },
+    {
+      "unternehmen": "TÜV Nord",
+      "rang": 154
+    },
+    {
+      "unternehmen": "Dr. Oetker GmbH",
+      "rang": 155
+    },
+    {
+      "unternehmen": "Stadtwerke München",
+      "rang": 156
+    },
+    {
+      "unternehmen": "Bertrandt",
+      "rang": 157
+    },
+    {
+      "unternehmen": "Messer Group",
+      "rang": 158
+    },
+    {
+      "unternehmen": "Heidelberger Druckmaschinen",
+      "rang": 159
+    },
+    {
+      "unternehmen": "Uniper",
+      "rang": 160
+    },
+    {
+      "unternehmen": "Giesecke+Devrient",
+      "rang": 161
+    },
+    {
+      "unternehmen": "Friedhelm Loh Group",
+      "rang": 162
+    },
+    {
+      "unternehmen": "Deutsche Bundesbank",
+      "rang": 163
+    },
+    {
+      "unternehmen": "Landesbank Baden-Württemberg",
+      "rang": 164
+    },
+    {
+      "unternehmen": "Kraftverkehr Nagel",
+      "rang": 165
+    },
+    {
+      "unternehmen": "PricewaterhouseCoopers (Deutschland)",
+      "rang": 166
+    },
+    {
+      "unternehmen": "Hager SE",
+      "rang": 167
+    },
+    {
+      "unternehmen": "MTU Aero Engines",
+      "rang": 168
+    },
+    {
+      "unternehmen": "DERTOUR Group",
+      "rang": 169
+    },
+    {
+      "unternehmen": "DB Services",
+      "rang": 170
+    },
+    {
+      "unternehmen": "Gruner + Jahr",
+      "rang": 171
+    },
+    {
+      "unternehmen": "Hartmann Gruppe",
+      "rang": 172
+    },
+    {
+      "unternehmen": "HUK-Coburg",
+      "rang": 173
+    },
+    {
+      "unternehmen": "Bartels-Langness",
+      "rang": 174
+    },
+    {
+      "unternehmen": "LexisNexis",
+      "rang": 175
+    },
+    {
+      "unternehmen": "msg systems ag",
+      "rang": 176
+    },
+    {
+      "unternehmen": "Wilh. Werhahn KG",
+      "rang": 177
+    },
+    {
+      "unternehmen": "Generali Deutschland",
+      "rang": 178
+    },
+    {
+      "unternehmen": "EWE AG",
+      "rang": 179
+    },
+    {
+      "unternehmen": "Ifm electronic",
+      "rang": 180
+    },
+    {
+      "unternehmen": "TKMS",
+      "rang": 181
+    },
+    {
+      "unternehmen": "ASICS",
+      "rang": 182
+    },
+    {
+      "unternehmen": "Bain & Company",
+      "rang": 183
+    },
+    {
+      "unternehmen": "NKD",
+      "rang": 184
+    },
+    {
+      "unternehmen": "WAGO GmbH & Co. KG",
+      "rang": 185
+    },
+    {
+      "unternehmen": "Flughafen München GmbH",
+      "rang": 186
+    },
+    {
+      "unternehmen": "Kathrein-Werke",
+      "rang": 187
+    },
+    {
+      "unternehmen": "DB Fahrzeuginstandhaltung",
+      "rang": 188
+    },
+    {
+      "unternehmen": "Eaton Industries",
+      "rang": 189
+    },
+    {
+      "unternehmen": "Volkswagen Financial Services",
+      "rang": 190
+    },
+    {
+      "unternehmen": "Zeppelin (Konzern)",
+      "rang": 191
+    },
+    {
+      "unternehmen": "Neoplan",
+      "rang": 192
+    },
+    {
+      "unternehmen": "ZAG – Zeitarbeits-Gesellschaft",
+      "rang": 193
+    },
+    {
+      "unternehmen": "Kirchhoff Automotive",
+      "rang": 194
+    },
+    {
+      "unternehmen": "GfK",
+      "rang": 195
+    },
+    {
+      "unternehmen": "DATEV",
+      "rang": 196
+    },
+    {
+      "unternehmen": "ArianeGroup",
+      "rang": 197
+    },
+    {
+      "unternehmen": "CMS",
+      "rang": 198
+    },
+    {
+      "unternehmen": "CWS International",
+      "rang": 199
+    },
+    {
+      "unternehmen": "Deutsches Zentrum für Luft- und Raumfahrt",
+      "rang": 200
+    }
+  ]
+}

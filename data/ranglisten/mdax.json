@@ -1,0 +1,218 @@
+{
+  "liste": {
+    "id": "mdax",
+    "name": "MDAX",
+    "herausgeber": "Wikidata",
+    "aktiv": true,
+    "kategorie": "Börsennotiert"
+  },
+  "ausgabe": {
+    "id": "mdax-2026-11-24",
+    "jahr": 2026,
+    "veroeffentlicht_am": "2026-11-24",
+    "geprueft_am": "2026-11-24",
+    "quelle_url": "https://www.wikidata.org/wiki/Q595622",
+    "lizenz": "CC0",
+    "gueltig_bis": "2027-11-24",
+    "freigegeben": true,
+    "sichtbarkeit": "angemeldet"
+  },
+  "firmen": [
+    {
+      "unternehmen": "CTS Eventim",
+      "rang": null
+    },
+    {
+      "unternehmen": "DWS Group",
+      "rang": null
+    },
+    {
+      "unternehmen": "Elmos Semiconductor",
+      "rang": null
+    },
+    {
+      "unternehmen": "Aumovio SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "thyssenkrupp AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "flatexDEGIRO",
+      "rang": null
+    },
+    {
+      "unternehmen": "Puma SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Rational AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Sartorius AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "LEG Immobilien",
+      "rang": null
+    },
+    {
+      "unternehmen": "Porsche Automobil Holding SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hensoldt",
+      "rang": null
+    },
+    {
+      "unternehmen": "Renk",
+      "rang": null
+    },
+    {
+      "unternehmen": "Siltronic",
+      "rang": null
+    },
+    {
+      "unternehmen": "Delivery Hero",
+      "rang": null
+    },
+    {
+      "unternehmen": "Ströer",
+      "rang": null
+    },
+    {
+      "unternehmen": "Suss Microtec",
+      "rang": null
+    },
+    {
+      "unternehmen": "TAG Immobilien",
+      "rang": null
+    },
+    {
+      "unternehmen": "Talanx",
+      "rang": null
+    },
+    {
+      "unternehmen": "Knorr-Bremse",
+      "rang": null
+    },
+    {
+      "unternehmen": "Freenet AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Traton",
+      "rang": null
+    },
+    {
+      "unternehmen": "Bilfinger SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "United Internet",
+      "rang": null
+    },
+    {
+      "unternehmen": "Aroundtown SA",
+      "rang": null
+    },
+    {
+      "unternehmen": "Porsche",
+      "rang": null
+    },
+    {
+      "unternehmen": "Aixtron",
+      "rang": null
+    },
+    {
+      "unternehmen": "Jenoptik",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hella",
+      "rang": null
+    },
+    {
+      "unternehmen": "Schaeffler Gruppe",
+      "rang": null
+    },
+    {
+      "unternehmen": "Evonik Industries",
+      "rang": null
+    },
+    {
+      "unternehmen": "Auto1 Group",
+      "rang": null
+    },
+    {
+      "unternehmen": "Aurubis",
+      "rang": null
+    },
+    {
+      "unternehmen": "Deutz AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Wacker Chemie AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "TKMS",
+      "rang": null
+    },
+    {
+      "unternehmen": "Nordex SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "TUI",
+      "rang": null
+    },
+    {
+      "unternehmen": "Fraport",
+      "rang": null
+    },
+    {
+      "unternehmen": "Salzgitter AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "K+S",
+      "rang": null
+    },
+    {
+      "unternehmen": "Nemetschek SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Lanxess",
+      "rang": null
+    },
+    {
+      "unternehmen": "Krones AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Bechtle AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Fuchs Petrolub SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Ionos",
+      "rang": null
+    },
+    {
+      "unternehmen": "RTL Group",
+      "rang": null
+    },
+    {
+      "unternehmen": "Lufthansa",
+      "rang": null
+    }
+  ]
+}

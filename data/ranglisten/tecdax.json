@@ -1,0 +1,138 @@
+{
+  "liste": {
+    "id": "tecdax",
+    "name": "TecDAX",
+    "herausgeber": "Wikidata",
+    "aktiv": true,
+    "kategorie": "Börsennotiert"
+  },
+  "ausgabe": {
+    "id": "tecdax-2026-11-24",
+    "jahr": 2026,
+    "veroeffentlicht_am": "2026-11-24",
+    "geprueft_am": "2026-11-24",
+    "quelle_url": "https://www.wikidata.org/wiki/Q378967",
+    "lizenz": "CC0",
+    "gueltig_bis": "2027-11-24",
+    "freigegeben": true,
+    "sichtbarkeit": "angemeldet"
+  },
+  "firmen": [
+    {
+      "unternehmen": "CompuGroup Medical",
+      "rang": null
+    },
+    {
+      "unternehmen": "Eckert & Ziegler",
+      "rang": null
+    },
+    {
+      "unternehmen": "Elmos Semiconductor",
+      "rang": null
+    },
+    {
+      "unternehmen": "Evotec",
+      "rang": null
+    },
+    {
+      "unternehmen": "Sartorius AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "PVA TePla",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hensoldt",
+      "rang": null
+    },
+    {
+      "unternehmen": "Siltronic",
+      "rang": null
+    },
+    {
+      "unternehmen": "Suss Microtec",
+      "rang": null
+    },
+    {
+      "unternehmen": "Freenet AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "S&T",
+      "rang": null
+    },
+    {
+      "unternehmen": "Infineon",
+      "rang": null
+    },
+    {
+      "unternehmen": "Qiagen",
+      "rang": null
+    },
+    {
+      "unternehmen": "Kontron",
+      "rang": null
+    },
+    {
+      "unternehmen": "United Internet",
+      "rang": null
+    },
+    {
+      "unternehmen": "Aixtron",
+      "rang": null
+    },
+    {
+      "unternehmen": "Jenoptik",
+      "rang": null
+    },
+    {
+      "unternehmen": "OHB SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Siemens Healthineers",
+      "rang": null
+    },
+    {
+      "unternehmen": "SAP",
+      "rang": null
+    },
+    {
+      "unternehmen": "Nordex SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Nemetschek SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Bechtle AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Atoss",
+      "rang": null
+    },
+    {
+      "unternehmen": "Verbio",
+      "rang": null
+    },
+    {
+      "unternehmen": "Ottobock",
+      "rang": null
+    },
+    {
+      "unternehmen": "Carl Zeiss Meditec",
+      "rang": null
+    },
+    {
+      "unternehmen": "Ionos",
+      "rang": null
+    },
+    {
+      "unternehmen": "Deutsche Telekom",
+      "rang": null
+    }
+  ]
+}

@@ -1,0 +1,422 @@
+{
+  "liste": {
+    "id": "epa-patente",
+    "name": "Top 100 Patentanmelder",
+    "herausgeber": "EPA",
+    "aktiv": true,
+    "kategorie": "Innovation"
+  },
+  "ausgabe": {
+    "id": "epa-patente-2026-11-24",
+    "jahr": 2026,
+    "veroeffentlicht_am": "2026-11-24",
+    "geprueft_am": "2026-11-24",
+    "quelle_url": "https://link.epo.org/web/about-us/statistics/top-100-applicants-epo-technology-dashboard-2025.xlsx",
+    "lizenz": "Ränge nicht freigegeben; Prüfung ausstehend",
+    "gueltig_bis": "2027-11-24",
+    "freigegeben": true,
+    "sichtbarkeit": "admin"
+  },
+  "firmen": [
+    {
+      "unternehmen": "SAMSUNG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Huawei",
+      "rang": null
+    },
+    {
+      "unternehmen": "LG Electronics",
+      "rang": null
+    },
+    {
+      "unternehmen": "Qualcomm",
+      "rang": null
+    },
+    {
+      "unternehmen": "NOKIA",
+      "rang": null
+    },
+    {
+      "unternehmen": "Siemens",
+      "rang": null
+    },
+    {
+      "unternehmen": "Ericsson",
+      "rang": null
+    },
+    {
+      "unternehmen": "BASF",
+      "rang": null
+    },
+    {
+      "unternehmen": "MICROSOFT",
+      "rang": null
+    },
+    {
+      "unternehmen": "CATL",
+      "rang": null
+    },
+    {
+      "unternehmen": "ALPHABET",
+      "rang": null
+    },
+    {
+      "unternehmen": "Philips",
+      "rang": null
+    },
+    {
+      "unternehmen": "RTX",
+      "rang": null
+    },
+    {
+      "unternehmen": "Robert Bosch",
+      "rang": null
+    },
+    {
+      "unternehmen": "SONY",
+      "rang": null
+    },
+    {
+      "unternehmen": "INTERDIGITAL",
+      "rang": null
+    },
+    {
+      "unternehmen": "XIAOMI CORPORATION",
+      "rang": null
+    },
+    {
+      "unternehmen": "PANASONIC",
+      "rang": null
+    },
+    {
+      "unternehmen": "Canon",
+      "rang": null
+    },
+    {
+      "unternehmen": "ZTE",
+      "rang": null
+    },
+    {
+      "unternehmen": "APPLE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Signify",
+      "rang": null
+    },
+    {
+      "unternehmen": "Intel",
+      "rang": null
+    },
+    {
+      "unternehmen": "Fujifilm",
+      "rang": null
+    },
+    {
+      "unternehmen": "TOYOTA MOTOR",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hoffmann-La Roche",
+      "rang": null
+    },
+    {
+      "unternehmen": "Philip Morris International",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hitachi",
+      "rang": null
+    },
+    {
+      "unternehmen": "Johnson & Johnson",
+      "rang": null
+    },
+    {
+      "unternehmen": "VALEO",
+      "rang": null
+    },
+    {
+      "unternehmen": "Boston Scientific",
+      "rang": null
+    },
+    {
+      "unternehmen": "OPPO MOBILE",
+      "rang": null
+    },
+    {
+      "unternehmen": "FRAUNHOFER GES.",
+      "rang": null
+    },
+    {
+      "unternehmen": "Safran",
+      "rang": null
+    },
+    {
+      "unternehmen": "BECTON, DICKINSON",
+      "rang": null
+    },
+    {
+      "unternehmen": "Honeywell",
+      "rang": null
+    },
+    {
+      "unternehmen": "Volvo",
+      "rang": null
+    },
+    {
+      "unternehmen": "Kyocera",
+      "rang": null
+    },
+    {
+      "unternehmen": "Airbus SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "MEDTRONIC",
+      "rang": null
+    },
+    {
+      "unternehmen": "SK",
+      "rang": null
+    },
+    {
+      "unternehmen": "NXP Semiconductors",
+      "rang": null
+    },
+    {
+      "unternehmen": "SIEMENS ENERGY",
+      "rang": null
+    },
+    {
+      "unternehmen": "CEA",
+      "rang": null
+    },
+    {
+      "unternehmen": "ABB",
+      "rang": null
+    },
+    {
+      "unternehmen": "HYUNDAI MOTOR",
+      "rang": null
+    },
+    {
+      "unternehmen": "Stellantis",
+      "rang": null
+    },
+    {
+      "unternehmen": "Unilever",
+      "rang": null
+    },
+    {
+      "unternehmen": "Procter & Gamble",
+      "rang": null
+    },
+    {
+      "unternehmen": "TENCENT",
+      "rang": null
+    },
+    {
+      "unternehmen": "ARAMCO",
+      "rang": null
+    },
+    {
+      "unternehmen": "DOW",
+      "rang": null
+    },
+    {
+      "unternehmen": "BOEING",
+      "rang": null
+    },
+    {
+      "unternehmen": "British American Tobacco",
+      "rang": null
+    },
+    {
+      "unternehmen": "HONOR DEVICE",
+      "rang": null
+    },
+    {
+      "unternehmen": "ASML",
+      "rang": null
+    },
+    {
+      "unternehmen": "JFE",
+      "rang": null
+    },
+    {
+      "unternehmen": "LENOVO",
+      "rang": null
+    },
+    {
+      "unternehmen": "NTT, INC.",
+      "rang": null
+    },
+    {
+      "unternehmen": "Evonik Industries",
+      "rang": null
+    },
+    {
+      "unternehmen": "Tata-Gruppe",
+      "rang": null
+    },
+    {
+      "unternehmen": "BYD",
+      "rang": null
+    },
+    {
+      "unternehmen": "Snap Inc.",
+      "rang": null
+    },
+    {
+      "unternehmen": "Thales Group",
+      "rang": null
+    },
+    {
+      "unternehmen": "JT INTERNATIONAL",
+      "rang": null
+    },
+    {
+      "unternehmen": "DAIKIN",
+      "rang": null
+    },
+    {
+      "unternehmen": "GE AEROSPACE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Merck",
+      "rang": null
+    },
+    {
+      "unternehmen": "SAINT-GOBAIN",
+      "rang": null
+    },
+    {
+      "unternehmen": "ZITIAO NETWORK",
+      "rang": null
+    },
+    {
+      "unternehmen": "Nestlé",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hilti",
+      "rang": null
+    },
+    {
+      "unternehmen": "Illinois Tool Works",
+      "rang": null
+    },
+    {
+      "unternehmen": "STMICROELECTRONICS",
+      "rang": null
+    },
+    {
+      "unternehmen": "Fujitsu",
+      "rang": null
+    },
+    {
+      "unternehmen": "NIPPON STEEL",
+      "rang": null
+    },
+    {
+      "unternehmen": "DSM-FIRMENICH",
+      "rang": null
+    },
+    {
+      "unternehmen": "GE VERNOVA",
+      "rang": null
+    },
+    {
+      "unternehmen": "Sanofi",
+      "rang": null
+    },
+    {
+      "unternehmen": "SCHNEIDER",
+      "rang": null
+    },
+    {
+      "unternehmen": "Tetra Laval",
+      "rang": null
+    },
+    {
+      "unternehmen": "VOLKSWAGEN",
+      "rang": null
+    },
+    {
+      "unternehmen": "CISCO",
+      "rang": null
+    },
+    {
+      "unternehmen": "ZF Friedrichshafen AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "RENAULT GROUP",
+      "rang": null
+    },
+    {
+      "unternehmen": "Danaher Corporation",
+      "rang": null
+    },
+    {
+      "unternehmen": "EVE ENERGY",
+      "rang": null
+    },
+    {
+      "unternehmen": "Mitsubishi Heavy Industries",
+      "rang": null
+    },
+    {
+      "unternehmen": "SHIN-ETSU",
+      "rang": null
+    },
+    {
+      "unternehmen": "VIVO MOBILE",
+      "rang": null
+    },
+    {
+      "unternehmen": "ABBOTT",
+      "rang": null
+    },
+    {
+      "unternehmen": "CHINA NATIONAL CHEMICAL",
+      "rang": null
+    },
+    {
+      "unternehmen": "Edwards Lifesciences",
+      "rang": null
+    },
+    {
+      "unternehmen": "Kubota",
+      "rang": null
+    },
+    {
+      "unternehmen": "SLB LIMITED",
+      "rang": null
+    },
+    {
+      "unternehmen": "John Deere",
+      "rang": null
+    },
+    {
+      "unternehmen": "Mitsubishi Electric",
+      "rang": null
+    },
+    {
+      "unternehmen": "DATANG MOBILE",
+      "rang": null
+    },
+    {
+      "unternehmen": "BAYER",
+      "rang": null
+    },
+    {
+      "unternehmen": "AUMOVIO SE",
+      "rang": null
+    }
+  ]
+}

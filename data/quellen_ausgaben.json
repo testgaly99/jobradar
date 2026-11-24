@@ -1,0 +1,37 @@
+{
+  "top200-arbeitgeber": {
+    "fingerabdruck": "cf0af1c979ccfde7e5df9365419a9d6c5e0e1bac85bba7a5329a36a9edc71c62",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "dax": {
+    "fingerabdruck": "6d1028e0e099aa397cb46d7e44e4def1dbbd210a73069a3372a272c465c1173f",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "mdax": {
+    "fingerabdruck": "16b516a36e8ee72c4bdcdb93d91afbcfdf95b35d81354ca2d01f8f29405ccf71",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "sdax": {
+    "fingerabdruck": "dcb50af526d3317ddf394c406284f82fa89edbf7d8b8ed1402ce88c7014f5b6e",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "tecdax": {
+    "fingerabdruck": "b12cedbd3687d80acbaba27b9795c03663821f8b2353539101f258fca1685114",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "scoreboard-world": {
+    "fingerabdruck": "704186b9df1ffa4d1f03eddc117d95524660a9a5a59d08b1f1fe08658ca08fde",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "epa-patente": {
+    "fingerabdruck": "cbf75cfae6521ebe48064c77c3db56118ff9ab4e8eb656ac96089809ba55e3a0",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  }
+}
