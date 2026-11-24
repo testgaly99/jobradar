@@ -424,6 +424,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q280 | Wie weiter (Nachtlauf 03:00 vor Täglichem Lauf 05:00; 6b-Sofortfarben und Listenwünsche fehlen)? | Nutzer: „Alles drei angehen (Empfohlen)“; dazu Wunsch: „Ich möchte innerhalb der gemerkten Anzeigen auch 2 Kategorien haben, einmal gemerkt für später und einmal gemerkt. Damit ich direkt sehe, was ich neu gespeichert habe“ | 1) Zeitplan verlegen, 2) Probelauf am Folgetag, 3) Design 6b + Listenansicht + zwei Merk-Kategorien klären. | entschieden |
 | Q281 | Uhrzeit CV-Abgleich: 08:00 mit angepasstem Einwilligungstext oder nachts bleiben (Täglicher Lauf auf 02:00)? | Nutzer: „08:00, Text anpassen (Empfohlen)“ | Workflow 06/07 UTC; Einwilligung „einmal täglich“, Fassung `admin-2026-11-24b`; Datenschutz „einmal täglich (morgens)“. | entschieden |
 | Q282 | Änderung Q281 (08:00, Einwilligung „einmal täglich“) hochladen und in main übernehmen? | Nutzer: „Hochladen und in main (Empfohlen)“ | Push entwurf-ui und privates Repo, Merge in main. | entschieden |
+| Q283 | Zwei Doku-Commits (STATUS-Abgleich, To-do 49 „Anzeige offline“) auf entwurf-ui hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Push nur entwurf-ui; main mit der nächsten Übernahme. | entschieden |
 | Q275 | 6a Einwilligung: speichern, welcher Fassung des Textes zugestimmt wurde (Nachweis nach DSGVO; bei Textänderung neu zustimmen)? | Nutzer: „Fassung speichern (Empfohlen)“ | Spalte `fassung` in `cv_einwilligung` (Migration 024); Website und Nachtlauf gelten nur bei aktueller Fassung. | entschieden |
 | Q274 | 6a Einwilligung: Anlass Nutzer 2026-11-24 „Es ist wichtig, dass es vollständig compliant ist, dass die Leute also zustimmen, dass ihre CVs von einer AI ausgelesen werden. Das muss allen beim Upload klar sein“. Text je Konto passend oder ein Text für alle? | Nutzer: „Je Konto passend (Empfohlen)“ | Admin: KI Claude von Anthropic (USA), nachts; alle anderen: KI nur im eigenen Browser, an keinen KI-Dienst. | entschieden |
 | Q273 | 6a Task 0b: verkleinertes Modell (36 MB) erreicht 199/200 Prüfsätze exakt, ein Satz mit unbekanntem Firmennamen nur 0,984 statt ≥ 0,99. Wie weiter? | Nutzer: „So akzeptieren (Empfohlen)“ | 36-MB-Modell; Testgrenze: mindestens 199/200 Prüfsätze ≥ 0,99, keiner unter 0,98. | entschieden |
@@ -598,6 +599,7 @@ Fragetexte Q279 (Claude, 2026-11-24, Auswahl, zweimal gestellt): Jetzt nachholen
 Fragetexte Q280 (Claude, 2026-11-24, Auswahl): Alles drei angehen (Empfohlen) / Nur Zeitplan und Probelauf / Erst Listenansicht klären.
 Fragetexte Q281 (Claude, 2026-11-24, Auswahl): 08:00, Text anpassen (Empfohlen) / Nachts bleiben.
 Fragetexte Q282 (Claude, 2026-11-24, Auswahl): Hochladen und in main (Empfohlen) / Nur hochladen / Noch nicht.
+Fragetexte Q283 (Claude, 2026-11-24, Auswahl): Ja, hochladen (Empfohlen) / Hochladen und in main / Später.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
