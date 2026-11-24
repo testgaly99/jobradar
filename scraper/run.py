@@ -34,7 +34,7 @@ def _schreibe_text(pfad, text):
         raise
 
 
-_MELDUNGEN = {"kein Objekt", "doppelte ID", "isListed ungültig", "Status ungültig"}  # feste Adapter-Gründe
+_MELDUNGEN = {"kein Objekt", "doppelte ID", "isListed ungültig", "Status ungültig", "vertagt"}  # feste Adapter-Gründe
 
 
 def _grund(s, bekannte, gesehen):
@@ -91,7 +91,8 @@ def _firma(f, heute):
         stellen = adapter(f["ats_id"], bekannte=bekannte)
         schritt = "Antwortprüfung"
         gueltig, uebersprungen = _pruefe_stellen(stellen, bekannte)
-        if stellen and not gueltig:  # alles kaputt: eher Formatwechsel beim ATS als Einzelfehler
+        # alles kaputt: eher Formatwechsel beim ATS als Einzelfehler; nur „vertagt“ (Tagesgrenze, 429) ist keiner
+        if stellen and not gueltig and set(uebersprungen) != {"vertagt"}:
             zeile.update(gefunden=len(stellen), uebersprungen=dict(uebersprungen),
                          fehler=f"{schritt}: alle {len(stellen)} Stellen übersprungen (Format geändert?)")
             return zeile

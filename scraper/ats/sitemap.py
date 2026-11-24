@@ -1,8 +1,11 @@
-"""Sitemap + JSON-LD `JobPosting` (Stufe 2): eine Anfrage pro Stelle, bekannte Stellen werden nicht neu geladen.
+"""Sitemap + `JobPosting` als JSON-LD oder Microdata (Stufe 2): eine Anfrage pro Stelle, bekannte Stellen werden nicht
+neu geladen. Höchstens MAX_NEU neue Stellenseiten je Firma und Lauf; der Rest folgt an den nächsten Tagen.
 
 ats_id = Sitemap-URL, optional mit Fragment als Filter für Stellen-URLs, z. B. ".../sitemap.xml#/offer/".
 """
+import gzip
 import hashlib
+import io
 import json
 import re
 import xml.etree.ElementTree as ET
@@ -22,6 +25,10 @@ _LD = re.compile(r"<script[^>]*application/ld\+json[^>]*>(.*?)</script>", re.S |
 _DM_TEXT = re.compile(r'data-testid="job-detail-description"[^>]*>(.*?)<[^>]*\bdata-testid=', re.S)
 _TEXTFELDER = ("description", "responsibilities", "qualifications", "skills", "jobBenefits")
 _MAX_FEHLSERIE = 5  # so viele Ausfälle in Folge (siehe _ausfall): Firma abbrechen statt je bis zu 30 s warten
+MAX_NEU = 300  # neue Stellenseiten je Firma und Lauf (Plan 2026-11-24 Task 2); schont Lauf und Server
+_DE = re.compile(r"/de(?:[/_-]|$)|de[_-]de|germany|deutschland", re.I)
+_META = re.compile(r"<meta\b[^>]*>", re.I)
+_ATTR = re.compile(r'([\w:-]+)\s*=\s*"([^"]*)"')
 _VERTRAG = (("TEMPORARY", "Befristet"), ("CONTRACTOR", "Befristet"), ("FULL_TIME", "Vollzeit"), ("PART_TIME", "Teilzeit"))
 
 
@@ -32,8 +39,21 @@ def _ext_id(url):
     return id_ if 0 < len(id_) <= 200 else hashlib.sha256(url.encode()).hexdigest()[:32]
 
 
+def _xml(url):
+    return xml_aus(http.hole(url).content)
+
+
+def xml_aus(inhalt):
+    """Sitemap-XML aus Bytes; .xml.gz wird entpackt (auch für die Suche in scraper/einrichtung.py)."""
+    if inhalt[:2] == b"\x1f\x8b":  # .xml.gz (z. B. db.jobs); entpackt höchstens so groß wie eine Antwort
+        inhalt = gzip.GzipFile(fileobj=io.BytesIO(inhalt)).read(http.MAX_ANTWORT_BYTES + 1)
+        if len(inhalt) > http.MAX_ANTWORT_BYTES:
+            raise ValueError("Entpackte Sitemap zu groß")
+    return ET.fromstring(inhalt)
+
+
 def _urls(sitemap, index_aufloesen=True):
-    wurzel = ET.fromstring(http.hole(sitemap).content)
+    wurzel = _xml(sitemap)
     if wurzel.tag.rsplit("}", 1)[-1] not in ("urlset", "sitemapindex"):
         raise ValueError("Unerwartete Sitemap-XML-Wurzel")
     # nur <url>/<sitemap>-Einträge, nicht image:loc/video:loc der Erweiterungen
@@ -76,6 +96,42 @@ def _objekte(x):
         yield from _objekte(x.get("@graph"))
 
 
+def _inneres(seite, start):
+    """HTML im Element, das bei `start` beginnt (gleichnamige Tags gezählt)."""
+    tag = re.match(r"<([a-zA-Z0-9]+)", seite[start:]).group(1)
+    tiefe, ende = 0, seite.index(">", start) + 1
+    for m in re.compile(rf"<(/?){tag}\b[^>]*>", re.I).finditer(seite, start):
+        tiefe += -1 if m.group(1) else 1
+        if tiefe == 0:
+            return seite[ende:m.start()]
+    return seite[ende:]
+
+
+def _mikrodaten(seite):
+    """schema.org-JobPosting als Microdata (SuccessFactors-Karriereseiten) in dieselbe Form wie JSON-LD bringen."""
+    if not re.search(r'itemtype="https?://schema\.org/JobPosting"', seite, re.I):
+        return None
+    werte = {}
+    for m in _META.finditer(seite):
+        a = dict((k.lower(), unescape(v)) for k, v in _ATTR.findall(m.group(0)))
+        if a.get("itemprop") and "content" in a:
+            werte.setdefault(a["itemprop"], a["content"])
+    for m in re.finditer(r'<(?!meta\b)[a-zA-Z0-9]+\b[^>]*\bitemprop="(title|description|employmentType|validThrough)"', seite):
+        werte.setdefault(m.group(1), _inneres(seite, m.start()))
+    if "description" in werte:  # SuccessFactors hängt Schlagwörter an die Beschreibung
+        werte["description"] = re.sub(r'<span class="jobsegments">.*', "", werte["description"], flags=re.S)
+    if "title" not in werte:
+        og = next((dict(_ATTR.findall(m.group(0))) for m in _META.finditer(seite) if 'property="og:title"' in m.group(0)), {})
+        werte["title"] = og.get("content") or ""
+    titel = text_aus_html(werte["title"]).strip()
+    if not titel:
+        return None
+    ort = {k: werte[k] for k in ("addressLocality", "addressCountry") if werte.get(k)}
+    return {"@type": "JobPosting", "title": titel, "description": werte.get("description", ""),
+            "validThrough": werte.get("validThrough", ""), "employmentType": werte.get("employmentType", ""),
+            "jobLocation": [{"address": ort}] if ort else []}
+
+
 def _jobposting(seite):
     for m in _LD.finditer(seite):
         start = re.search(r"[\[{]", m.group(1))  # Porsche/Bundesbank: Text vor dem JSON
@@ -86,6 +142,8 @@ def _jobposting(seite):
         for o in _objekte(daten):
             if o.get("@type") == "JobPosting":
                 return o
+    if jp := _mikrodaten(seite):
+        return jp
     raise ValueError("kein JobPosting")
 
 
@@ -94,6 +152,17 @@ jobposting = _jobposting  # auch für scraper/nachruesten.py
 
 def _liste(x):
     return x if isinstance(x, list) else [x] if x else []
+
+
+def _deutsch_zuerst(url):
+    """Sortierschlüssel: Adressen mit deutschem Sprach-/Länderteil oder deutscher Stadt zuerst (Tagesgrenze)."""
+    pfad = unquote(urlsplit(url).path)
+    return 0 if _DE.search(pfad) or deutsche_staedte(re.sub(r"[-_/]", " ", pfad)) else 1
+
+
+def _ratenbegrenzt(e):
+    antwort = e.response if isinstance(e, requests.HTTPError) else None
+    return antwort is not None and antwort.status_code == 429
 
 
 def _ausfall(e):
@@ -169,8 +238,8 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
             stellen.append({"uebersprungen": "doppelte ID"})
             continue
         urls[ext_id] = url
-    zaehler, fehlserie = Counter(), 0
-    for ext_id, url in urls.items():
+    zaehler, fehlserie, neu, vertagt = Counter(), 0, 0, False
+    for ext_id, url in sorted(urls.items(), key=lambda x: _deutsch_zuerst(x[1])):
         if _vorgefiltert(url):
             zaehler["vorgefiltert"] += 1
             continue
@@ -180,11 +249,20 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
             zaehler["unverändert"] += 1
             stellen.append({"ext_id": ext_id, "unveraendert": True})
             continue
+        if vertagt or neu >= MAX_NEU:  # Rest morgen; der Lauf schließt dann nichts
+            vertagt = True
+            zaehler["vertagt"] += 1
+            continue
+        neu += 1
         try:
             seite = _seitentext(http.hole(url))
             fehlserie = 0  # Seite geladen: der Host lebt
             s = _stelle(seite, url, ext_id, heute)
         except Exception as e:  # eine Anzeige darf nie die ganze Firma kippen
+            if _ratenbegrenzt(e):  # 429: der Host will heute nicht mehr; kein Defekt
+                vertagt = True
+                zaehler["vertagt"] += 1
+                continue
             zaehler[f"übersprungen ({type(e).__name__})"] += 1
             if _ausfall(e):
                 fehlserie += 1
@@ -197,5 +275,7 @@ def hole_stellen(ats_id: str, bekannte: frozenset[str] = frozenset()) -> list[di
         else:
             zaehler["geladen"] += 1
             stellen.append(s)
+    if vertagt:
+        stellen.append({"uebersprungen": "vertagt"})
     print(f"Hinweis: {sitemap}: {len(urls)} Stellen-URLs, " + ", ".join(f"{k}: {v}" for k, v in zaehler.items()))
     return stellen

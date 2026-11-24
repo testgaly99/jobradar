@@ -348,3 +348,14 @@ def test_eine_kaputte_stelle_stoppt_das_nachruesten_nicht(aufbau, monkeypatch):
     monkeypatch.setattr(run, "deutsch_nachtragen", lambda alt, ab, text: (_ for _ in ()).throw(ValueError("x")) if text == "kaputt" else echt(alt, ab, text))
     t["jobs"]["A:1"]["text"] = "kaputt"
     assert run._deutsch_nachruesten() == 2 and t["jobs"]["A:3"]["deutsch_stufe"] == 5
+
+
+@pytest.mark.parametrize("antwort", [[{"uebersprungen": "vertagt"}], [stelle("2"), {"uebersprungen": "vertagt"}]])
+def test_vertagt_ist_kein_fehler_und_schliesst_nichts(aufbau, antwort):
+    # Tagesgrenze oder 429 im Sitemap-Adapter: Rest morgen; bis dahin bleibt alles Bekannte offen
+    d, t = aufbau([firma("A", "a")], {"a": lambda _, **k: [stelle("1")]})
+    run.lauf("2026-11-06", d)
+    run.ADAPTER["a"] = lambda _, **k: antwort
+    bericht = run.lauf("2026-11-07", d)["firmen"][0]
+    assert bericht["fehler"] == "" and bericht["geschlossen"] == 0
+    assert t["jobs"]["A:1"]["status"] == "offen"

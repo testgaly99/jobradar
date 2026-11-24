@@ -217,7 +217,7 @@ def test_ext_id_form(monkeypatch):
 
 def test_abbruch_nach_5_ausfaellen_in_folge(monkeypatch):
     urls = [_job(i) for i in range(6)]
-    ausfaelle = [requests.Timeout("t"), requests.ConnectionError("c"), _http_fehler(503), _http_fehler(429),
+    ausfaelle = [requests.Timeout("t"), requests.ConnectionError("c"), _http_fehler(503), _http_fehler(502),  # 429: eigener Test
                  requests.Timeout("t")]
     abgerufen = _fake(monkeypatch, {SITEMAP: _sitemap(*urls), **dict(zip(urls, ausfaelle)),
                                     urls[5]: _lies("sitemap_porsche.html")})
@@ -243,3 +243,54 @@ def test_geladene_seite_setzt_serie_zurueck(monkeypatch):
         urls[4]: _lies("sitemap_porsche.html"), urls[9]: _lies("sitemap_ohne_jsonld.html"), urls[14]: _lies("sitemap_dm.html")}
     _fake(monkeypatch, {SITEMAP: _sitemap(*urls), **seiten})
     assert [s["url"] for s in sitemap.hole_stellen(ATS_ID)] == [urls[4], urls[14]]
+
+
+class Bytes(Antwort):
+    def __init__(self, inhalt):
+        self.content, self.headers, self.text = inhalt, {"content-type": "application/gzip"}, ""
+
+
+def test_gezippte_sitemap(monkeypatch):
+    import gzip
+    abgerufen = _fake(monkeypatch, {SITEMAP + ".gz": Bytes(gzip.compress(_lies("sitemap_jobs.xml").encode())),
+                                    DM: _lies("sitemap_dm.html"), LEITUNGSRECHT: _lies("sitemap_porsche.html")})
+    assert len(sitemap.hole_stellen(SITEMAP + ".gz#/job/")) == 2
+    assert abgerufen[0] == SITEMAP + ".gz"
+
+
+def test_mikrodaten_successfactors(monkeypatch):
+    # SuccessFactors-Karriereseiten (VW, Aldi, BASF …): JobPosting als Microdata, Titel nur in og:title
+    url = "https://jobs.beispiel.de/Karriere/job/Muenchen-Data-Analyst-%28mwd%29-BY-80331/1234/"
+    _fake(monkeypatch, {SITEMAP: _sitemap(url), url: _lies("sitemap_successfactors.html")})
+    s = sitemap.hole_stellen(SITEMAP + "#/job/")[0]
+    assert s["titel"] == "Data Analyst (m/w/d)"
+    assert s["ort"] == "München, DE"
+    assert "SQL-Abfragen" in s["text"] and "<" not in s["text"] and "Jobsegment" not in s["text"]
+    assert [a["titel"] for a in s["abschnitte"]] == ["Ihre Aufgaben", "Ihr Profil"]
+
+
+def test_tagesgrenze_vertagt_rest(monkeypatch):
+    urls = [_job(i) for i in range(4)]
+    abgerufen = _fake(monkeypatch, {SITEMAP: _sitemap(*urls), **{u: _seite() for u in urls}})
+    monkeypatch.setattr(sitemap, "MAX_NEU", 2)
+    bekannt = sitemap._ext_id(urls[3])
+    stellen = sitemap.hole_stellen(ATS_ID, bekannte=frozenset({bekannt}))
+    assert abgerufen == [SITEMAP] + urls[:2]
+    assert {"ext_id": bekannt, "unveraendert": True} in stellen  # Bekannte zählen nie gegen die Grenze
+    assert stellen.count({"uebersprungen": "vertagt"}) == 1
+
+
+def test_429_beendet_neue_abrufe_fuer_heute(monkeypatch):
+    urls = [_job(i) for i in range(3)]
+    abgerufen = _fake(monkeypatch, {SITEMAP: _sitemap(*urls), urls[0]: _http_fehler(429),
+                                    urls[1]: _seite(), urls[2]: _seite()})
+    assert sitemap.hole_stellen(ATS_ID) == [{"uebersprungen": "vertagt"}]
+    assert abgerufen == [SITEMAP, urls[0]]
+
+
+def test_deutsche_stellen_zuerst(monkeypatch):
+    en = "https://careers.beispiel.com/global/en/job/ID1/Engineer"
+    de = "https://careers.beispiel.com/de/de/job/ID2/Ingenieur"
+    abgerufen = _fake(monkeypatch, {SITEMAP: _sitemap(en, de), en: _seite(), de: _seite()})
+    sitemap.hole_stellen(SITEMAP + "#/job/")
+    assert abgerufen == [SITEMAP, de, en]
