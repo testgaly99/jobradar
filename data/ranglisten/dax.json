@@ -1,0 +1,178 @@
+{
+  "liste": {
+    "id": "dax",
+    "name": "DAX",
+    "herausgeber": "Wikidata",
+    "aktiv": true,
+    "kategorie": "Börsennotiert"
+  },
+  "ausgabe": {
+    "id": "dax-2026-11-24",
+    "jahr": 2026,
+    "veroeffentlicht_am": "2026-11-24",
+    "geprueft_am": "2026-11-24",
+    "quelle_url": "https://www.wikidata.org/wiki/Q155718",
+    "lizenz": "CC0",
+    "gueltig_bis": "2027-11-24",
+    "freigegeben": true,
+    "sichtbarkeit": "angemeldet"
+  },
+  "firmen": [
+    {
+      "unternehmen": "Daimler Truck",
+      "rang": null
+    },
+    {
+      "unternehmen": "Vonovia",
+      "rang": null
+    },
+    {
+      "unternehmen": "MTU Aero Engines",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hochtief",
+      "rang": null
+    },
+    {
+      "unternehmen": "Zalando",
+      "rang": null
+    },
+    {
+      "unternehmen": "RWE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Bayer AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Volkswagen AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Merck",
+      "rang": null
+    },
+    {
+      "unternehmen": "Commerzbank",
+      "rang": null
+    },
+    {
+      "unternehmen": "DHL AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Deutsche Börse",
+      "rang": null
+    },
+    {
+      "unternehmen": "Rheinmetall",
+      "rang": null
+    },
+    {
+      "unternehmen": "Continental AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Munich Re",
+      "rang": null
+    },
+    {
+      "unternehmen": "Beiersdorf AG",
+      "rang": null
+    },
+    {
+      "unternehmen": "Scout24",
+      "rang": null
+    },
+    {
+      "unternehmen": "Airbus SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Bayerische Motoren Werke Aktiengesellschaft",
+      "rang": null
+    },
+    {
+      "unternehmen": "E.ON SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Mercedes-Benz Group",
+      "rang": null
+    },
+    {
+      "unternehmen": "Infineon",
+      "rang": null
+    },
+    {
+      "unternehmen": "Qiagen",
+      "rang": null
+    },
+    {
+      "unternehmen": "Adidas",
+      "rang": null
+    },
+    {
+      "unternehmen": "GEA Group",
+      "rang": null
+    },
+    {
+      "unternehmen": "Siemens Healthineers",
+      "rang": null
+    },
+    {
+      "unternehmen": "Allianz SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "SAP",
+      "rang": null
+    },
+    {
+      "unternehmen": "Heidelberg Materials",
+      "rang": null
+    },
+    {
+      "unternehmen": "Fresenius Medical Care",
+      "rang": null
+    },
+    {
+      "unternehmen": "Hannover Rück SE",
+      "rang": null
+    },
+    {
+      "unternehmen": "Deutsche Bank",
+      "rang": null
+    },
+    {
+      "unternehmen": "Fresenius",
+      "rang": null
+    },
+    {
+      "unternehmen": "Symrise",
+      "rang": null
+    },
+    {
+      "unternehmen": "Siemens",
+      "rang": null
+    },
+    {
+      "unternehmen": "Brenntag",
+      "rang": null
+    },
+    {
+      "unternehmen": "Siemens Energy",
+      "rang": null
+    },
+    {
+      "unternehmen": "Deutsche Telekom",
+      "rang": null
+    },
+    {
+      "unternehmen": "BASF",
+      "rang": null
+    }
+  ]
+}

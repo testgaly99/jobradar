@@ -1,0 +1,27 @@
+{
+  "top200-arbeitgeber": {
+    "fingerabdruck": "11ae88017e35a27a82d00f8ae4434bf55c92c847dbbc41079f12c8181d5eefd3",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "dax": {
+    "fingerabdruck": "6d1028e0e099aa397cb46d7e44e4def1dbbd210a73069a3372a272c465c1173f",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "mdax": {
+    "fingerabdruck": "16b516a36e8ee72c4bdcdb93d91afbcfdf95b35d81354ca2d01f8f29405ccf71",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "sdax": {
+    "fingerabdruck": "dcb50af526d3317ddf394c406284f82fa89edbf7d8b8ed1402ce88c7014f5b6e",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "tecdax": {
+    "fingerabdruck": "b12cedbd3687d80acbaba27b9795c03663821f8b2353539101f258fca1685114",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  }
+}
