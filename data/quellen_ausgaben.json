@@ -1,6 +1,6 @@
 {
   "top200-arbeitgeber": {
-    "fingerabdruck": "11ae88017e35a27a82d00f8ae4434bf55c92c847dbbc41079f12c8181d5eefd3",
+    "fingerabdruck": "cf0af1c979ccfde7e5df9365419a9d6c5e0e1bac85bba7a5329a36a9edc71c62",
     "veroeffentlicht_am": "2026-11-24",
     "gueltig_bis": "2027-11-24"
   },
@@ -21,6 +21,16 @@
   },
   "tecdax": {
     "fingerabdruck": "b12cedbd3687d80acbaba27b9795c03663821f8b2353539101f258fca1685114",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "scoreboard-world": {
+    "fingerabdruck": "704186b9df1ffa4d1f03eddc117d95524660a9a5a59d08b1f1fe08658ca08fde",
+    "veroeffentlicht_am": "2026-11-24",
+    "gueltig_bis": "2027-11-24"
+  },
+  "epa-patente": {
+    "fingerabdruck": "cbf75cfae6521ebe48064c77c3db56118ff9ab4e8eb656ac96089809ba55e3a0",
     "veroeffentlicht_am": "2026-11-24",
     "gueltig_bis": "2027-11-24"
   }

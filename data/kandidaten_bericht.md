@@ -1,7 +1,7 @@
 # Ranglisten-Abruf 2026-11-24
 
-- scoreboard-world: HTTPError: HTTP 500
-- epa-patente: HTTPError: HTTP 429
+Zusammengeführt aus drei Läufen: GitHub-Lauf (Indizes, Top 200), lokale Wiederholung mit Ausschluss Korian/Volkswagenwerk (Top 200) und lokale Wiederholung Scoreboard/EPA nach Behebung der Wikidata-Drosselung.
+
 - Wikidata nicht eindeutig: AMAZON.COM, INC.
 - Wikidata nicht eindeutig: MICROSOFT CORPORATION
 - Wikidata nicht eindeutig: HUAWEI INVESTMENT & HOLDING CO., LTD.
@@ -125,3 +125,316 @@
 - Branche ohne Zuordnung: unbekannt (Medios AG)
 - Branche ohne Zuordnung: unbekannt (CompuGroup Medical)
 - Branche ohne Zuordnung: unbekannt (S&T)
+- Branche ohne Zuordnung: unbekannt (CWS International)
+- Wikidata nicht erreichbar: ROCHE HOLDING AG (ReadTimeout)
+- Wikidata nicht erreichbar: NVIDIA CORP (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: NOVARTIS AG (ReadTimeout)
+- Wikidata nicht eindeutig: GENERAL MOTORS COMPANY
+- Wikidata nicht eindeutig: TOYOTA MOTOR CORPORATION
+- Wikidata nicht eindeutig: ABBVIE INC.
+- Wikidata nicht eindeutig: ROBERT BOSCH GESELLSCHAFT MIT BESCHRAENKTER HAFTUNG
+- Wikidata nicht eindeutig: FORD MOTOR CO
+- Wikidata nicht erreichbar: GSK PLC (HTTPError: HTTP 429)
+- Wikidata nicht eindeutig: STELLANTIS N.V.
+- Wikidata nicht eindeutig: BYD COMPANY LIMITED
+- Wikidata nicht eindeutig: INTERNATIONAL BUSINESS MACHINES CORP
+- Wikidata nicht eindeutig: TAIWAN SEMICONDUCTOR MANUFACTURING CO., LTD.
+- Wikidata nicht eindeutig: C.B. BOEHRINGER SOHN AG & CO. KG
+- Wikidata nicht eindeutig: AMGEN INCORPORATED
+- Wikidata nicht eindeutig: NIPPON TELEGRAPH AND TELEPHONE CORPORATION
+- Wikidata nicht eindeutig: SONY GROUP CORPORATION
+- Wikidata nicht eindeutig: TAKEDA PHARMACEUTICAL COMPANY LIMITED
+- Wikidata nicht eindeutig: TELEFONAKTIEBOLAGET LM ERICSSON AB
+- Wikidata nicht eindeutig: NOKIA OYJ
+- Wikidata nicht eindeutig: TESLA, INC.
+- Wikidata nicht eindeutig: ASML HOLDING N.V.
+- Wikidata nicht eindeutig: MEDIATEK INC.
+- Wikidata nicht eindeutig: AIRBUS SE
+- Wikidata nicht eindeutig: BOEING COMPANY (THE)
+- Wikidata nicht eindeutig: VERTEX PHARMACEUTICALS INCORPORATED
+- Wikidata nicht eindeutig: CHINA COMMUNICATIONS CONSTRUCTION COMPANY LIMITED
+- Wikidata nicht eindeutig: HON HAI PRECISION IND. CO., LTD.
+- Wikidata nicht eindeutig: BAOSHAN IRON & STEEL COMPANY LIMITED
+- Wikidata nicht eindeutig: POWER CONSTRUCTION CORPORATION OF CHINA ,LTD
+- Wikidata nicht eindeutig: SK HYNIX INC.
+- Wikidata nicht eindeutig: SOFTBANK GROUP CORP
+- Wikidata nicht eindeutig: UBER TECHNOLOGIES, INC.
+- Wikidata nicht eindeutig: ZTE CORPORATION
+- Wikidata nicht erreichbar: BAIDU, INC. (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: CONTINENTAL AG (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: PETROCHINA COMPANY LIMITED (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: DELL TECHNOLOGIES INC. (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: RTX CORP (HTTPError: HTTP 429)
+- Wikidata-Abgleich nach 5 Fehlern in Folge abgebrochen; übrige Firmen ohne Abgleich
+- Wikidata nicht erreichbar: SAMSUNG (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: CATL (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: ALPHABET (HTTPError: HTTP 429)
+- Wikidata nicht eindeutig: RTX
+- Wikidata nicht eindeutig: SONY
+- Wikidata nicht eindeutig: INTERDIGITAL
+- Wikidata nicht eindeutig: PANASONIC
+- Wikidata nicht eindeutig: APPLE
+- Wikidata nicht eindeutig: TOYOTA MOTOR
+- Wikidata nicht eindeutig: VALEO
+- Wikidata nicht eindeutig: OPPO MOBILE
+- Wikidata nicht eindeutig: FRAUNHOFER GES.
+- Wikidata nicht eindeutig: BECTON, DICKINSON
+- Wikidata nicht eindeutig: MEDTRONIC
+- Wikidata nicht erreichbar: SIEMENS ENERGY (HTTPError: HTTP 429)
+- Wikidata nicht eindeutig: CEA
+- Wikidata nicht eindeutig: HYUNDAI MOTOR
+- Wikidata nicht erreichbar: TENCENT (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: ARAMCO (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: DOW (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: BOEING (HTTPError: HTTP 429)
+- Wikidata nicht eindeutig: HONOR DEVICE
+- Wikidata nicht eindeutig: JFE
+- Wikidata nicht erreichbar: LENOVO (HTTPError: HTTP 500)
+- Wikidata nicht eindeutig: NTT, INC.
+- Wikidata nicht eindeutig: JT INTERNATIONAL
+- Wikidata nicht eindeutig: DAIKIN
+- Wikidata nicht eindeutig: GE AEROSPACE
+- Wikidata nicht eindeutig: ZITIAO NETWORK
+- Wikidata nicht eindeutig: STMICROELECTRONICS
+- Wikidata nicht eindeutig: NIPPON STEEL
+- Wikidata nicht eindeutig: DSM-FIRMENICH
+- Wikidata nicht eindeutig: GE VERNOVA
+- Wikidata nicht eindeutig: SCHNEIDER
+- Wikidata nicht eindeutig: VOLKSWAGEN
+- Wikidata nicht eindeutig: CISCO
+- Wikidata nicht eindeutig: RENAULT GROUP
+- Wikidata nicht erreichbar: EVE ENERGY (HTTPError: HTTP 429)
+- Wikidata nicht erreichbar: SHIN-ETSU (HTTPError: HTTP 429)
+- Wikidata nicht eindeutig: VIVO MOBILE
+- Wikidata nicht eindeutig: ABBOTT
+- Wikidata nicht eindeutig: CHINA NATIONAL CHEMICAL
+- Wikidata nicht erreichbar: SLB LIMITED (HTTPError: HTTP 429)
+- Wikidata nicht eindeutig: DATANG MOBILE
+- Wikidata nicht erreichbar: BAYER (HTTPError: HTTP 429)
+- Wikidata nicht eindeutig: AUMOVIO SE
+- Branche ohne Zuordnung: unbekannt (AMAZON.COM, INC.)
+- Branche ohne Zuordnung: unbekannt (MICROSOFT CORPORATION)
+- Branche ohne Zuordnung: unbekannt (HUAWEI INVESTMENT & HOLDING CO., LTD.)
+- Branche ohne Zuordnung: unbekannt (ROCHE HOLDING AG)
+- Branche ohne Zuordnung: unbekannt (NVIDIA CORP)
+- Branche ohne Zuordnung: unbekannt (ASTRAZENECA PLC)
+- Branche ohne Zuordnung: unbekannt (ELI LILLY AND COMPANY)
+- Branche ohne Zuordnung: unbekannt (BRISTOL-MYERS SQUIBB COMPANY)
+- Branche ohne Zuordnung: unbekannt (BROADCOM INC.)
+- Branche ohne Zuordnung: unbekannt (NOVARTIS AG)
+- Branche ohne Zuordnung: unbekannt (GENERAL MOTORS COMPANY)
+- Branche ohne Zuordnung: unbekannt (TOYOTA MOTOR CORPORATION)
+- Branche ohne Zuordnung: unbekannt (ABBVIE INC.)
+- Branche ohne Zuordnung: unbekannt (ROBERT BOSCH GESELLSCHAFT MIT BESCHRAENKTER HAFTUNG)
+- Branche ohne Zuordnung: unbekannt (FORD MOTOR CO)
+- Branche ohne Zuordnung: unbekannt (GSK PLC)
+- Branche ohne Zuordnung: unbekannt (STELLANTIS N.V.)
+- Branche ohne Zuordnung: unbekannt (BYD COMPANY LIMITED)
+- Branche ohne Zuordnung: unbekannt (INTERNATIONAL BUSINESS MACHINES CORP)
+- Branche ohne Zuordnung: unbekannt (TAIWAN SEMICONDUCTOR MANUFACTURING CO., LTD.)
+- Branche ohne Zuordnung: unbekannt (CHINA STATE CONSTRUCTION ENGINEERING CORPORATION LIMITED)
+- Branche ohne Zuordnung: unbekannt (C.B. BOEHRINGER SOHN AG & CO. KG)
+- Branche ohne Zuordnung: unbekannt (AMGEN INCORPORATED)
+- Branche ohne Zuordnung: unbekannt (NIPPON TELEGRAPH AND TELEPHONE CORPORATION)
+- Branche ohne Zuordnung: unbekannt (SONY GROUP CORPORATION)
+- Branche ohne Zuordnung: unbekannt (TAKEDA PHARMACEUTICAL COMPANY LIMITED)
+- Branche ohne Zuordnung: unbekannt (TELEFONAKTIEBOLAGET LM ERICSSON AB)
+- Branche ohne Zuordnung: unbekannt (NOKIA OYJ)
+- Branche ohne Zuordnung: unbekannt (TESLA, INC.)
+- Branche ohne Zuordnung: unbekannt (ASML HOLDING N.V.)
+- Branche ohne Zuordnung: unbekannt (CHINA MOBILE LIMITED)
+- Branche ohne Zuordnung: unbekannt (MEDIATEK INC.)
+- Branche ohne Zuordnung: unbekannt (AIRBUS SE)
+- Branche ohne Zuordnung: unbekannt (BOEING COMPANY (THE))
+- Branche ohne Zuordnung: unbekannt (VERTEX PHARMACEUTICALS INCORPORATED)
+- Branche ohne Zuordnung: Q385378 (China Railway Group)
+- Branche ohne Zuordnung: unbekannt (CHINA COMMUNICATIONS CONSTRUCTION COMPANY LIMITED)
+- Branche ohne Zuordnung: unbekannt (HON HAI PRECISION IND. CO., LTD.)
+- Branche ohne Zuordnung: Q385378 (China Railway Construction)
+- Branche ohne Zuordnung: unbekannt (Micron Technology)
+- Branche ohne Zuordnung: unbekannt (BAOSHAN IRON & STEEL COMPANY LIMITED)
+- Branche ohne Zuordnung: unbekannt (POWER CONSTRUCTION CORPORATION OF CHINA ,LTD)
+- Branche ohne Zuordnung: unbekannt (SK HYNIX INC.)
+- Branche ohne Zuordnung: unbekannt (SOFTBANK GROUP CORP)
+- Branche ohne Zuordnung: unbekannt (Applied Materials)
+- Branche ohne Zuordnung: unbekannt (UBER TECHNOLOGIES, INC.)
+- Branche ohne Zuordnung: unbekannt (ZTE CORPORATION)
+- Branche ohne Zuordnung: unbekannt (BAIDU, INC.)
+- Branche ohne Zuordnung: unbekannt (CONTINENTAL AG)
+- Branche ohne Zuordnung: unbekannt (PETROCHINA COMPANY LIMITED)
+- Branche ohne Zuordnung: unbekannt (DELL TECHNOLOGIES INC.)
+- Branche ohne Zuordnung: unbekannt (RTX CORP)
+- Branche ohne Zuordnung: unbekannt (NETFLIX, INC.)
+- Branche ohne Zuordnung: unbekannt (ZF FRIEDRICHSHAFEN AG)
+- Branche ohne Zuordnung: unbekannt (BLOCK INC)
+- Branche ohne Zuordnung: unbekannt (AB VOLVO)
+- Branche ohne Zuordnung: unbekannt (INTUIT INC)
+- Branche ohne Zuordnung: unbekannt (MEITUAN)
+- Branche ohne Zuordnung: unbekannt (ABBOTT LABORATORIES)
+- Branche ohne Zuordnung: unbekannt (DAIICHI SANKYO COMPANY LIMITED)
+- Branche ohne Zuordnung: unbekannt (RENAULT)
+- Branche ohne Zuordnung: unbekannt (LG ELECTRONICS INC.)
+- Branche ohne Zuordnung: unbekannt (MEDTRONIC PUBLIC LIMITED COMPANY)
+- Branche ohne Zuordnung: unbekannt (ATLASSIAN CORPORATION)
+- Branche ohne Zuordnung: unbekannt (WORKDAY, INC.)
+- Branche ohne Zuordnung: unbekannt (INCYTE CORPORATION)
+- Branche ohne Zuordnung: unbekannt (ELECTRONIC ARTS INC)
+- Branche ohne Zuordnung: unbekannt (GEELY SWEDEN HOLDINGS AB)
+- Branche ohne Zuordnung: unbekannt (CONTEMPORARY AMPEREX TECHNOLOGY CO., LTD.)
+- Branche ohne Zuordnung: unbekannt (SERVICENOW, INC.)
+- Branche ohne Zuordnung: unbekannt (LEONARDO S.P.A.)
+- Branche ohne Zuordnung: unbekannt (SAIC MOTOR CORPORATION LIMITED)
+- Branche ohne Zuordnung: unbekannt (HSBC HOLDINGS PLC)
+- Branche ohne Zuordnung: unbekannt (NETEASE, INC.)
+- Branche ohne Zuordnung: unbekannt (MERCK KGAA)
+- Branche ohne Zuordnung: unbekannt (SCHNEIDER ELECTRIC SE)
+- Branche ohne Zuordnung: unbekannt (NXP SEMICONDUCTORS N.V)
+- Branche ohne Zuordnung: unbekannt (BIONTECH SE)
+- Branche ohne Zuordnung: unbekannt (INFINEON TECHNOLOGIES AG)
+- Branche ohne Zuordnung: unbekannt (DEERE & CO)
+- Branche ohne Zuordnung: unbekannt (HEWLETT PACKARD ENTERPRISE COMPANY)
+- Branche ohne Zuordnung: unbekannt (FORVIA SE)
+- Branche ohne Zuordnung: unbekannt (METALLURGICAL CORPORATION OF CHINA LTD.)
+- Branche ohne Zuordnung: unbekannt (LENOVO GROUP LIMITED)
+- Branche ohne Zuordnung: unbekannt (MIDEA GROUP CO.,LTD.)
+- Branche ohne Zuordnung: unbekannt (GEELY AUTOMOBILE HOLDINGS LIMITED)
+- Branche ohne Zuordnung: unbekannt (BASF SE)
+- Branche ohne Zuordnung: unbekannt (BANCO SANTANDER SA)
+- Branche ohne Zuordnung: unbekannt (NESTLE S.A.)
+- Branche ohne Zuordnung: unbekannt (CRRC CORPORATION LIMITED)
+- Branche ohne Zuordnung: unbekannt (CANON INCORPORATED)
+- Branche ohne Zuordnung: unbekannt (DAIMLER TRUCK HOLDING AG)
+- Branche ohne Zuordnung: unbekannt (CATERPILLAR INC)
+- Branche ohne Zuordnung: unbekannt (THE PROCTER & GAMBLE COMPANY)
+- Branche ohne Zuordnung: unbekannt (LAM RESEARCH CORP)
+- Branche ohne Zuordnung: unbekannt (ASTELLAS PHARMA INC)
+- Branche ohne Zuordnung: unbekannt (CHINA PETROLEUM & CHEMICAL CORPORATION)
+- Branche ohne Zuordnung: unbekannt (SYNOPSYS INC)
+- Branche ohne Zuordnung: unbekannt (AIRBNB, INC.)
+- Branche ohne Zuordnung: unbekannt (BIOGEN INC.)
+- Branche ohne Zuordnung: unbekannt (PAYPAL HOLDINGS, INC.)
+- Branche ohne Zuordnung: unbekannt (OTSUKA HOLDINGS CO LTD)
+- Branche ohne Zuordnung: unbekannt (PALO ALTO NETWORKS, INC.)
+- Branche ohne Zuordnung: unbekannt (CHINA TELECOM CORPORATION LIMITED)
+- Branche ohne Zuordnung: unbekannt (TEXAS INSTRUMENTS INC)
+- Branche ohne Zuordnung: unbekannt (BEIGENE, LTD)
+- Branche ohne Zuordnung: unbekannt (MARVELL TECHNOLOGY, INC.)
+- Branche ohne Zuordnung: unbekannt (VALEO)
+- Branche ohne Zuordnung: unbekannt (CHINA ENERGY ENGINEERING CORPORATION LIMITED)
+- Branche ohne Zuordnung: unbekannt (ELECTRICITE DE FRANCE)
+- Branche ohne Zuordnung: unbekannt (KONINKLIJKE PHILIPS N.V.)
+- Branche ohne Zuordnung: unbekannt (STMICROELECTRONICS N.V.)
+- Branche ohne Zuordnung: unbekannt (SNOWFLAKE, INC.)
+- Branche ohne Zuordnung: unbekannt (TRIP.COM GROUP LIMITED)
+- Branche ohne Zuordnung: unbekannt (SYNGENTA AG)
+- Branche ohne Zuordnung: unbekannt (UCB S.A)
+- Branche ohne Zuordnung: unbekannt (HITACHI LTD)
+- Branche ohne Zuordnung: unbekannt (PDD HOLDINGS INC.)
+- Branche ohne Zuordnung: unbekannt (CARL ZEISS AG)
+- Branche ohne Zuordnung: unbekannt (WESTERN DIGITAL CORP)
+- Branche ohne Zuordnung: unbekannt (SUZUKI MOTOR CORPORATION)
+- Branche ohne Zuordnung: unbekannt (MERCADOLIBRE, INC.)
+- Branche ohne Zuordnung: unbekannt (NIO INC.)
+- Branche ohne Zuordnung: unbekannt (RENESAS ELECTRONICS CORPORATION)
+- Branche ohne Zuordnung: unbekannt (CUMMINS INC.)
+- Branche ohne Zuordnung: unbekannt (HP INC.)
+- Branche ohne Zuordnung: unbekannt (KUAISHOU TECHNOLOGY)
+- Branche ohne Zuordnung: unbekannt (TDK CORPORATION)
+- Branche ohne Zuordnung: unbekannt (BOSTON SCIENTIFIC CORP)
+- Branche ohne Zuordnung: unbekannt (LOCKHEED MARTIN CORP)
+- Branche ohne Zuordnung: unbekannt (TOKYO ELECTRON LIMITED)
+- Branche ohne Zuordnung: unbekannt (EBAY INC)
+- Branche ohne Zuordnung: unbekannt (DANAHER CORP)
+- Branche ohne Zuordnung: unbekannt (LLOYDS BANKING GROUP PLC)
+- Branche ohne Zuordnung: unbekannt (HANGZHOU HIKVISION DIGITAL TECHNOLOGY CO., LTD.)
+- Branche ohne Zuordnung: unbekannt (SNAP INC.)
+- Branche ohne Zuordnung: unbekannt (SAUDI ARABIAN OIL COMPANY SAUDI JOINT STOCK COMPANY)
+- Branche ohne Zuordnung: unbekannt (CADENCE DESIGN SYSTEMS INC)
+- Branche ohne Zuordnung: unbekannt (HAIER SMART HOME CO., LTD.)
+- Branche ohne Zuordnung: unbekannt (RIVIAN AUTOMOTIVE, INC.)
+- Branche ohne Zuordnung: unbekannt (HONEYWELL INTERNATIONAL INC)
+- Branche ohne Zuordnung: unbekannt (BARCLAYS PLC)
+- Branche ohne Zuordnung: unbekannt (LI AUTO INC.)
+- Branche ohne Zuordnung: unbekannt (SHANGHAI CONSTRUCTION GROUP CO., LTD.)
+- Branche ohne Zuordnung: unbekannt (CHINA UNITED NETWORK COMMUNICATIONS LIMITED)
+- Branche ohne Zuordnung: unbekannt (AISIN CORPORATION)
+- Branche ohne Zuordnung: unbekannt (BOE TECHNOLOGY GROUP CO.,LTD.)
+- Branche ohne Zuordnung: unbekannt (SPOTIFY TECHNOLOGY S.A.)
+- Branche ohne Zuordnung: unbekannt (CONSTELLATION SOFTWARE INC.)
+- Branche ohne Zuordnung: unbekannt (ANALOG DEVICES INC)
+- Branche ohne Zuordnung: unbekannt (AUTODESK INC)
+- Branche ohne Zuordnung: unbekannt (LG CHEM LTD.)
+- Branche ohne Zuordnung: unbekannt (DEUTSCHE BANK AG)
+- Branche ohne Zuordnung: unbekannt (MITSUBISHI ELECTRIC CORPORATION)
+- Branche ohne Zuordnung: unbekannt (ABB LTD)
+- Branche ohne Zuordnung: unbekannt (ROBLOX CORPORATION)
+- Branche ohne Zuordnung: unbekannt (SIEMENS ENERGY AG)
+- Branche ohne Zuordnung: unbekannt (STRYKER CORPORATION)
+- Branche ohne Zuordnung: unbekannt (L'OREAL)
+- Branche ohne Zuordnung: unbekannt (CORTEVA, INC)
+- Branche ohne Zuordnung: unbekannt (THERMO FISHER SCIENTIFIC INC.)
+- Branche ohne Zuordnung: unbekannt (AMADEUS IT GROUP, S.A.)
+- Branche ohne Zuordnung: unbekannt (DONGFENG MOTOR GROUP COMPANY LIMITED)
+- Branche ohne Zuordnung: unbekannt (GREAT WALL MOTOR COMPANY LIMITED)
+- Branche ohne Zuordnung: unbekannt (KLA CORPORATION)
+- Branche ohne Zuordnung: unbekannt (CSL LIMITED)
+- Branche ohne Zuordnung: unbekannt (SAMSUNG)
+- Branche ohne Zuordnung: Q112165696 (LG Electronics)
+- Branche ohne Zuordnung: Q5268834 (Ericsson)
+- Branche ohne Zuordnung: unbekannt (CATL)
+- Branche ohne Zuordnung: unbekannt (ALPHABET)
+- Branche ohne Zuordnung: unbekannt (RTX)
+- Branche ohne Zuordnung: unbekannt (SONY)
+- Branche ohne Zuordnung: unbekannt (INTERDIGITAL)
+- Branche ohne Zuordnung: unbekannt (PANASONIC)
+- Branche ohne Zuordnung: unbekannt (APPLE)
+- Branche ohne Zuordnung: Q210064 (Signify)
+- Branche ohne Zuordnung: Q1061415 (Fujifilm)
+- Branche ohne Zuordnung: unbekannt (TOYOTA MOTOR)
+- Branche ohne Zuordnung: Q1187656 (Philip Morris International)
+- Name mehrfach: VALEO; getrennte Prüfung erforderlich
+- Branche ohne Zuordnung: unbekannt (VALEO (Zuordnung offen))
+- Branche ohne Zuordnung: Q1154774 (Boston Scientific)
+- Branche ohne Zuordnung: unbekannt (OPPO MOBILE)
+- Branche ohne Zuordnung: unbekannt (FRAUNHOFER GES.)
+- Branche ohne Zuordnung: unbekannt (BECTON, DICKINSON)
+- Branche ohne Zuordnung: unbekannt (MEDTRONIC)
+- Branche ohne Zuordnung: Q778575 (SK)
+- Branche ohne Zuordnung: unbekannt (SIEMENS ENERGY)
+- Branche ohne Zuordnung: unbekannt (CEA)
+- Branche ohne Zuordnung: unbekannt (HYUNDAI MOTOR)
+- Branche ohne Zuordnung: unbekannt (TENCENT)
+- Branche ohne Zuordnung: unbekannt (ARAMCO)
+- Branche ohne Zuordnung: unbekannt (DOW)
+- Branche ohne Zuordnung: unbekannt (BOEING)
+- Branche ohne Zuordnung: unbekannt (HONOR DEVICE)
+- Branche ohne Zuordnung: unbekannt (JFE)
+- Branche ohne Zuordnung: unbekannt (LENOVO)
+- Branche ohne Zuordnung: unbekannt (NTT, INC.)
+- Branche ohne Zuordnung: Q778575 (Tata-Gruppe)
+- Branche ohne Zuordnung: Q11016 (Snap Inc.)
+- Branche ohne Zuordnung: unbekannt (JT INTERNATIONAL)
+- Branche ohne Zuordnung: unbekannt (DAIKIN)
+- Branche ohne Zuordnung: unbekannt (GE AEROSPACE)
+- Branche ohne Zuordnung: unbekannt (ZITIAO NETWORK)
+- Branche ohne Zuordnung: unbekannt (STMICROELECTRONICS)
+- Branche ohne Zuordnung: unbekannt (NIPPON STEEL)
+- Branche ohne Zuordnung: unbekannt (DSM-FIRMENICH)
+- Branche ohne Zuordnung: unbekannt (GE VERNOVA)
+- Branche ohne Zuordnung: unbekannt (SCHNEIDER)
+- Branche ohne Zuordnung: unbekannt (Tetra Laval)
+- Branche ohne Zuordnung: unbekannt (VOLKSWAGEN)
+- Branche ohne Zuordnung: unbekannt (CISCO)
+- Branche ohne Zuordnung: unbekannt (RENAULT GROUP)
+- Branche ohne Zuordnung: Q778575 (Danaher Corporation)
+- Branche ohne Zuordnung: unbekannt (EVE ENERGY)
+- Branche ohne Zuordnung: Q622662 (Mitsubishi Heavy Industries)
+- Branche ohne Zuordnung: unbekannt (SHIN-ETSU)
+- Branche ohne Zuordnung: unbekannt (VIVO MOBILE)
+- Branche ohne Zuordnung: unbekannt (ABBOTT)
+- Branche ohne Zuordnung: unbekannt (CHINA NATIONAL CHEMICAL)
+- Branche ohne Zuordnung: Q6554101 (Edwards Lifesciences)
+- Branche ohne Zuordnung: unbekannt (SLB LIMITED)
+- Branche ohne Zuordnung: unbekannt (DATANG MOBILE)
+- Branche ohne Zuordnung: unbekannt (BAYER)
+- Branche ohne Zuordnung: unbekannt (AUMOVIO SE)
