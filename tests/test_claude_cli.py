@@ -56,6 +56,6 @@ def test_limit_wird_als_limit_erkannt():
 
 
 def test_kein_json_ist_fehler_ohne_antworttext():
-    with pytest.raises(claude_cli.ClaudeFehler) as e:
+    with pytest.raises(claude_cli.UngueltigeAntwort) as e:
         claude_cli.frage('x', run=_run(_huelle('Hier ist dein ' + GEHEIM)))
     assert GEHEIM not in str(e.value)

@@ -14,7 +14,11 @@ class AboLimit(Exception):
 
 
 class ClaudeFehler(Exception):
-    """Sonstiger Fehler von Claude Code oder unbrauchbare Antwort: ebenfalls aufhören."""
+    """Sonstiger Fehler von Claude Code: ebenfalls aufhören."""
+
+
+class UngueltigeAntwort(Exception):
+    """Claude Code lief, die Antwort ist aber kein JSON: nur diesen Aufruf als ungeprüft werten (Review Focus 3)."""
 
 
 _LIMIT = re.compile(r'limit|rate|usage|quota|overloaded|429', re.I)
@@ -43,4 +47,4 @@ def frage(prompt, bilder=(), run=subprocess.run, timeout=900):
     try:
         return json.loads(text)
     except ValueError:
-        raise ClaudeFehler('Antwort ist kein JSON') from None
+        raise UngueltigeAntwort('Antwort ist kein JSON') from None
