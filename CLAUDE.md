@@ -74,6 +74,9 @@ Wichtigste Filter, in dieser Reihenfolge:
    - Schlüssel und Tokens gehören in `.env` (steht in `.gitignore`) oder in GitHub Secrets.
    - Prüfe vor jedem Commit, dass keine Geheimnisse im Commit landen.
    - Sag mir, wo ich einen Schlüssel eintragen muss.
+8. **Mich persönlich nie gefährden** (Nutzer 2026-11-25, Q293: „In Zukunft musst du jegliche derartige Risiken extra untersuchen und nie wieder übersehen.“).
+   - Vor jeder Handlung, die etwas nach außen schickt (Abrufe, Abfragen, Mails, Anmeldungen, KI-Aufrufe, Uploads), prüfst und nennst du ausdrücklich, ob sie mich persönlich treffen kann: meine eigene Internetverbindung (IP-Adresse), meine Konten (LinkedIn, XING, StepStone, Google, GitHub, Claude), mein Kontingent und Kosten, was unter meinem Namen oder meiner Adresse sichtbar wird. Bei einem Risiko: erst fragen, dann handeln.
+   - **Nie Live-Abrufe von meinem Computer:** Scraping, Abnahmen, Diagnosen, Proben gegen echte Firmenseiten und Massenabfragen an öffentliche Dienste laufen nur auf GitHub Actions. Sperren gelten meist je IP-Adresse und würden sonst mich selbst aussperren (Anlass: 2026-11-24 antworteten nach vielen lokalen Erkundungen mehrere Firmen mit 403).
 
 ---
 
