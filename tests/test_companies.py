@@ -20,7 +20,8 @@ def test_companies_gueltig():
     assert len(firmen) >= 1
     for f in firmen:
         assert all(s in f for s in SPALTEN)
-        assert f["groesse_klasse"] in GROESSEN
+        # Listenfirmen ohne Mitarbeiterzahl in Wikidata haben noch keine Größe (4c: unbekannt bleibt unbekannt).
+        assert f["groesse_klasse"] in GROESSEN | {""}
         assert f["kategorie"] and all(k in erlaubt for k in f["kategorie"])
         assert f["aktiv"] in ("ja", "nein")
 
