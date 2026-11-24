@@ -139,8 +139,8 @@ def setze_anforderungen(tabelle, zeilen_id, liste, pruefsumme):
     _req('PATCH', tabelle, params={'id': f'eq.{zeilen_id}'}, json={'anforderungsliste': liste, 'anforderungs_hash': pruefsumme})
 
 
-def hat_cv_einwilligung(owner):
-    return bool(_req('GET', 'cv_einwilligung', params={'select': 'owner_id', 'owner_id': f'eq.{owner}', 'limit': 1}))
+def hat_cv_einwilligung(owner, fassung):
+    return bool(_req('GET', 'cv_einwilligung', params={'select': 'owner_id', 'owner_id': f'eq.{owner}', 'fassung': f'eq.{fassung}', 'limit': 1}))
 
 
 def cv_dokumente(owner):

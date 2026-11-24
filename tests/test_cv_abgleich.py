@@ -10,7 +10,7 @@ GEHEIM_ANZ = 'Erfahrung mit SQL bei der Firma Geheimfirma'
 
 
 class FakeDB:
-    def __init__(self, stellen=1, einwilligung=True, cvs=('cv1',), text=GEHEIM_CV):
+    def __init__(self, stellen=1, einwilligung=cv_abgleich.EINWILLIGUNG_FASSUNG, cvs=('cv1',), text=GEHEIM_CV):
         self.einwilligung, self.ergebnisse, self.texte, self.profile = einwilligung, [], {}, {}
         self.docs = [{'id': c, 'name': c, 'storage_pfad': f'u/{c}.pdf', 'standard': False,
                       'cv_text': {'text': text, 'hash': 'h-' + c, 'herkunft': 'ausgelesen'}, 'profil': None} for c in cvs]
@@ -22,8 +22,8 @@ class FakeDB:
     def admin_ids(self):
         return [{'user_id': 'admin-1'}]
 
-    def hat_cv_einwilligung(self, owner):
-        return self.einwilligung
+    def hat_cv_einwilligung(self, owner, fassung):
+        return self.einwilligung == fassung
 
     def cv_dokumente(self, owner):
         return self.docs
@@ -101,7 +101,8 @@ def test_limit_in_buendel_drei_behaelt_buendel_eins_und_zwei(capsys):
     assert 'Abbruch: Limit' in capsys.readouterr().out
 
 
-@pytest.mark.parametrize('db,grund', [(FakeDB(einwilligung=False), 'keine Einwilligung'), (FakeDB(cvs=()), 'kein CV')])
+@pytest.mark.parametrize('db,grund', [(FakeDB(einwilligung=None), 'keine Einwilligung'), (FakeDB(einwilligung='admin-alt'), 'keine Einwilligung'),
+                                     (FakeDB(cvs=()), 'kein CV')])
 def test_ohne_einwilligung_oder_cv_kein_aufruf(db, grund, capsys):
     c = Claude()
     assert _lauf(db, c) == 0 and c.aufrufe == 0 and not db.ergebnisse

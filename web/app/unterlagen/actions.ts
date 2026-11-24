@@ -6,6 +6,8 @@ import { ANLAGE_ARTEN, loeschMeldung, pruefeDokument } from "@/lib/dokumente";
 import { pruefeBriefkopf, pruefeVorlage } from "@/lib/unterlagen";
 import { cvTextBereinigen } from "@/lib/cv-ergebnis";
 import { createHash } from "node:crypto";
+import { aktuellerNutzer } from "@/lib/nutzer";
+import einwilligungen from "@/lib/cv-einwilligung.json";
 
 const MAX_CV_TEXT = 100000;
 
@@ -95,11 +97,14 @@ export async function anlageArtAendern(id: string, f: FormData) {
   revalidatePath("/unterlagen");
 }
 
-// Phase 6a: Einwilligung (Art. 9 DSGVO) vor dem ersten CV-Upload; ein Eintrag je Konto.
+// Phase 6a: Einwilligung (Art. 9 DSGVO, KI-Abgleich) vor dem ersten CV-Upload; ein Eintrag je Konto mit der
+// Fassung des Textes, die das Konto gesehen hat (Q274/Q275). Die Rolle bestimmt der Server, nicht der Browser.
 export async function einwilligen(): Promise<{ fehler?: string }> {
-  const { sb, uid } = await nutzer();
-  if (!uid) return { fehler: "Bitte melde dich an." };
-  const { error } = await sb.from("cv_einwilligung").upsert({ owner_id: uid }, { onConflict: "owner_id", ignoreDuplicates: true });
+  const { sb } = await nutzer();
+  const n = await aktuellerNutzer();
+  if (!n) return { fehler: "Bitte melde dich an." };
+  const { fassung } = einwilligungen[n.admin ? "admin" : "browser"];
+  const { error } = await sb.from("cv_einwilligung").upsert({ owner_id: n.id, fassung, erteilt_am: new Date().toISOString() }, { onConflict: "owner_id" });
   return error ? { fehler: "Einwilligung konnte nicht gespeichert werden." } : {};
 }
 

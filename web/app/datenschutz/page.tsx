@@ -25,11 +25,11 @@ export default function Seite() {
         <li>Ein tägliches Backup der Datenbank in einem privaten GitHub-Repo. Es enthält auch die Liste der Konten mit Name und E-Mail. Dateien sind darin nicht enthalten.</li>
       </ul>
       <h2>Lebenslauf</h2>
-      <p>Lebensläufe speichert Jobradar nur mit deiner Einwilligung, die du vor dem ersten Hochladen erteilst. Ein Lebenslauf kann besondere Kategorien personenbezogener Daten enthalten (z. B. Gesundheit oder Religion, Art. 9 DSGVO).</p>
+      <p>Lebensläufe speichert Jobradar nur mit deiner Einwilligung, die du vor dem ersten Hochladen erteilst. Dabei liest eine KI deinen Lebenslauf aus und gleicht ihn mit Stellenanzeigen ab. Gespeichert wird, wann du welcher Fassung des Einwilligungstexts zugestimmt hast. Ein Lebenslauf kann besondere Kategorien personenbezogener Daten enthalten (z. B. Gesundheit oder Religion, Art. 9 DSGVO).</p>
       <ul>
         <li>Speicherort: Supabase in Frankfurt (EU), Datei und daraus ausgelesener Text.</li>
         <li>Zweck: Abgleich deines Lebenslaufs mit den Anforderungen einer Stelle und Empfehlung der passenden CV-Version.</li>
-        <li>Beim Betreiber (Admin) läuft der Abgleich nachts über Claude von Anthropic, mit seinem eigenen Abo. Bei allen anderen Konten findet der Abgleich nur in deinem Browser statt; dein Lebenslauf geht an keinen KI-Dienst.</li>
+        <li>Beim Betreiber (Admin) liest nachts die KI Claude von Anthropic (USA) den Lebenslauf, über sein eigenes Abo. Bei allen anderen Konten läuft die KI nur in deinem Browser auf deinem Gerät (das Sprachmodell unten und, wenn du es in Chrome einschaltest, Chromes eingebaute KI); dein Lebenslauf geht an keinen KI-Dienst.</li>
         <li>Für den Vergleich nach Bedeutung nutzt Jobradar das offene Sprachmodell „multilingual-e5-small“ (MIT-Lizenz). Jobradar liefert es selbst aus; dafür wird nichts an Dritte geschickt.</li>
         <li>Löschen: Löschst du einen Lebenslauf unter „Unterlagen“, sind Datei, Text und alle Abgleich-Ergebnisse dazu sofort entfernt. Das ist zugleich der Widerruf deiner Einwilligung. Lebenslauf-Daten sind nicht im täglichen Backup.</li>
         <li>Export: unter „Konto“ mit „CV-Daten exportieren“.</li>

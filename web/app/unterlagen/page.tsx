@@ -2,7 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { datumDe } from "@/lib/bewerbung";
 import { ANLAGE_ARTEN } from "@/lib/dokumente";
 import { anlageArtAendern, dokumentHerunterladen, standardSetzen } from "./actions";
-import { CvText, DokumentLoeschen, UploadFormular } from "./upload";
+import { CvText, DokumentLoeschen, EinwilligungFormular, UploadFormular } from "./upload";
+import { aktuellerNutzer } from "@/lib/nutzer";
+import einwilligungen from "@/lib/cv-einwilligung.json";
 import { BriefkopfFormular } from "./briefkopf";
 import { Vorlagen } from "./vorlagen";
 
@@ -56,9 +58,12 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
     sb.from("briefkopf").select("name,strasse,plz_ort,telefon,email,linkedin").maybeSingle(),
     sb.from("anschreiben_vorlagen").select("id,name,betreff,text").order("name"),
     sb.from("cv_texte").select("dokument_id,text,herkunft"),
-    sb.from("cv_einwilligung").select("owner_id").maybeSingle(),
+    sb.from("cv_einwilligung").select("fassung,erteilt_am").maybeSingle(),
   ]);
-  // Fehlt Migration 018, entfallen CV-Text und Standard; die Einwilligung wird dann nicht abgefragt.
+  // Fehlt Migration 018, entfallen CV-Text und Standard. Einwilligung gilt nur mit der aktuellen Fassung des Textes,
+  // der für dieses Konto gilt (Q274/Q275); fehlt Migration 024, gilt sie als nicht erteilt und der CV-Upload bleibt gesperrt.
+  const einw = einwilligungen[(await aktuellerNutzer())?.admin ? "admin" : "browser"];
+  const erteilt = !ew.error && ew.data?.fassung === einw.fassung ? (ew.data.erteilt_am as string) : null;
   const texte: CvTexte = ct.error ? null : new Map((ct.data ?? []).map((t) => [t.dokument_id as string, { text: t.text as string, herkunft: t.herkunft as string }]));
   const alle = (docs ?? []) as Dok[];
   const weitere = alle.filter((d) => d.art !== "cv" && d.art !== "anlage");
@@ -71,12 +76,14 @@ export default async function Seite({ searchParams }: { searchParams: Promise<{ 
       <h2>Anschreiben-Vorlagen</h2>
       <Vorlagen vorlagen={vorlagen.data ?? []} />
       <h2>CV-Versionen</h2>
+      {erteilt ? <p className="klein gedaempft">KI-Abgleich: Einwilligung erteilt am {datumDe(erteilt.slice(0, 10))}. Widerruf jederzeit durch Löschen des CV.</p>
+        : alle.some((d) => d.art === "cv") && <EinwilligungFormular text={einw.text} />}
       <Liste docs={alle.filter((d) => d.art === "cv")} leer="Noch keine CV-Versionen." texte={texte} />
       <h2>Anlagen</h2>
       <Liste docs={alle.filter((d) => d.art === "anlage")} leer="Noch keine Anlagen." />
       {weitere.length > 0 && <><h2>Gespeicherte Anschreiben</h2><Liste docs={weitere} leer="" /></>}
       <h2>Hochladen</h2>
-      <UploadFormular einwilligung={!!ew.data || !!ew.error} />
+      <UploadFormular einwilligung={erteilt ? null : einw.text} />
     </div>
   );
 }

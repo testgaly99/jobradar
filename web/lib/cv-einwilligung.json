@@ -1,0 +1,11 @@
+{
+  "hinweis": "Einwilligungstexte für den CV-Abgleich (Q274/Q275). Website und Nachtlauf lesen diese Datei. Wird ein Text geändert, MUSS die Fassung neu benannt werden: dann gilt die alte Einwilligung nicht mehr und alle stimmen neu zu. Kein Rechtsrat; Prüfung vor öffentlichem Start (Q40).",
+  "admin": {
+    "fassung": "admin-2026-11-24",
+    "text": "Ich willige ein, dass jobradar meinen Lebenslauf speichert und ihn von einer KI auslesen und mit Stellenanzeigen abgleichen lässt. Dafür geht der Lebenslauf nachts an die KI Claude von Anthropic (USA). Er kann Angaben über Gesundheit, Religion o. Ä. enthalten (besondere Kategorien, Art. 9 DSGVO). Widerruf jederzeit durch Löschen des CV."
+  },
+  "browser": {
+    "fassung": "browser-2026-11-24",
+    "text": "Ich willige ein, dass jobradar meinen Lebenslauf speichert und ihn von einer KI auslesen und mit Stellenanzeigen abgleichen lässt. Die KI läuft nur in meinem Browser auf meinem Gerät; der Lebenslauf geht an keinen KI-Dienst. Er kann Angaben über Gesundheit, Religion o. Ä. enthalten (besondere Kategorien, Art. 9 DSGVO). Widerruf jederzeit durch Löschen des CV."
+  }
+}

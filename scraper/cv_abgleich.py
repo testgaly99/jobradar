@@ -22,6 +22,9 @@ PROMPT = Path(__file__).with_name('cv_prompt.md').read_text(encoding='utf-8')
 FARBEN = {'gruen': {'belegt'}, 'gelb': {'teilweise', 'nicht_belegt', 'nicht_pruefbar'}, 'rot': {'nicht_erfuellt'}}
 GELB_NICHT_PRUEFBAR = {'farbe': 'gelb', 'grund': 'nicht_pruefbar', 'beleg': None, 'begruendung': 'konnte nicht geprüft werden'}
 
+# Nur die aktuelle Fassung des Admin-Einwilligungstexts zählt (Q275); ändert sich der Text, wird übersprungen.
+EINWILLIGUNG_FASSUNG = json.loads((cv_stufe1.ROOT / 'web/lib/cv-einwilligung.json').read_text(encoding='utf-8'))['admin']['fassung']
+
 
 def _text(x):
     return x if isinstance(x, str) else ''
@@ -167,7 +170,7 @@ def _speichere(db, owner, stelle, bewertungen, empfohlen, claude, docs, cvs):
 
 
 def _konto(owner, db, frage, einbetten, z):
-    if not db.hat_cv_einwilligung(owner):
+    if not db.hat_cv_einwilligung(owner, EINWILLIGUNG_FASSUNG):
         z['hinweise'].append('übersprungen: keine Einwilligung')
         return
     docs = db.cv_dokumente(owner)

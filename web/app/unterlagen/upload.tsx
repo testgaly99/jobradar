@@ -8,10 +8,8 @@ import { cvTextSpeichern, dokumentAnlegen, dokumentLoeschen, einwilligen } from 
 import { LoeschForm } from "../bewerbungen/knoepfe";
 
 const MAX = 50 * 1024 * 1024;
-// Wortlaut aus dem Design (Phase 6, Abschnitt „Einwilligung“); kein Rechtsrat, Prüfung vor öffentlichem Start (Q40).
-export const EINWILLIGUNG = "Ich willige ein, dass jobradar meinen Lebenslauf speichert und mit Stellenanzeigen abgleicht. Er kann Angaben über Gesundheit, Religion o. Ä. enthalten (besondere Kategorien, Art. 9 DSGVO). Widerruf jederzeit durch Löschen des CV.";
-
-export function UploadFormular({ einwilligung }: { einwilligung: boolean }) {
+// einwilligung: null = gültige Einwilligung liegt vor; sonst der Text (je Konto, web/lib/cv-einwilligung.json).
+export function UploadFormular({ einwilligung }: { einwilligung: string | null }) {
   const router = useRouter();
   const [fehler, setFehler] = useState("");
   const [laeuft, setLaeuft] = useState(false);
@@ -26,7 +24,7 @@ export function UploadFormular({ einwilligung }: { einwilligung: boolean }) {
     if (datei.size > MAX) return setFehler("Die Datei ist größer als 50 MB.");
     setFehler(""); setLaeuft(true);
     try {
-      if (art === "cv" && !einwilligung) {
+      if (art === "cv" && einwilligung) {
         const e = await einwilligen();
         if (e.fehler) return setFehler(e.fehler);
       }
@@ -66,8 +64,8 @@ export function UploadFormular({ einwilligung }: { einwilligung: boolean }) {
           </select>
         </label>
       )}
-      {art === "cv" && !einwilligung && (
-        <label className="meldung hinweis"><span><input type="checkbox" name="einwilligung" required /> {EINWILLIGUNG}</span></label>
+      {art === "cv" && einwilligung && (
+        <label className="meldung hinweis"><span><input type="checkbox" name="einwilligung" required /> {einwilligung}</span></label>
       )}
       <label>Versionsname
         <input name="name" required maxLength={120} placeholder="z. B. CV Produktmanagement v3…" />
@@ -120,5 +118,22 @@ export function CvText({ id, text, herkunft }: { id: string; text: string | null
         <button className="knopf knopf-rand knopf-schmal" type="submit">Korrigieren</button>
       </form>
     </details>
+  );
+}
+
+// Für schon hochgeladene CVs ohne (aktuelle) Einwilligung: ohne Häkchen kein Abgleich.
+export function EinwilligungFormular({ text }: { text: string }) {
+  const router = useRouter();
+  const [fehler, setFehler] = useState("");
+  return (
+    <form className="meldung hinweis formular" action={async () => {
+      const r = await einwilligen();
+      if (r.fehler) setFehler(r.fehler); else router.refresh();
+    }}>
+      <p>Deine Lebensläufe werden erst abgeglichen, wenn du einwilligst.</p>
+      <label><span><input type="checkbox" required /> {text}</span></label>
+      {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+      <button className="knopf knopf-schmal" type="submit">Einwilligen</button>
+    </form>
   );
 }
