@@ -309,3 +309,35 @@ def test_handlisten_firmen_zuerst_nur_neue_werktags(tmp_path, monkeypatch):
     e.lauf(tmp_path, finden=finden, privat_alle=True)
     assert reihenfolge == ['Neu GmbH', 'Alt GmbH']  # sonntags alle offenen erneut; Datei AG ist heute schon versucht
     assert 'Neu GmbH' not in (tmp_path / 'companies.csv').read_text(encoding='utf-8')  # nie in die öffentliche Liste
+
+
+
+def test_defekte_quelle_nach_7_tagen_neu_suchen():
+    # Q300: Karriereseite geändert -> 7 Tagesläufe Fehler/0 Stellen -> zurück auf „offen“, die Suche findet die neue Seite
+    def tag(i, **firmen):
+        return {'stand': f'2026-12-{i:02d}', 'firmen': [dict(name=n, **w) for n, w in firmen.items()]}
+    kaputt = [tag(i, A={'gefunden': 0, 'fehler': ''}, B={'gefunden': 5, 'fehler': ''}, C={'gefunden': 3, 'fehler': 'Abruf: HTTP 404'})
+              for i in range(1, 8)]
+    assert e.defekte_quellen(kaputt) == {'A', 'C'}
+    assert e.defekte_quellen(kaputt[:6]) == set()  # erst nach 7 Tagen
+    kaputt[3] = tag(4, A={'gefunden': 2, 'fehler': ''}, C={'gefunden': 0, 'fehler': 'x'})
+    assert e.defekte_quellen(kaputt) == {'C'}  # ein guter Tag dazwischen: A ist nicht dauerhaft defekt
+
+
+def test_selbstheilung_setzt_firma_zurueck(tmp_path, monkeypatch):
+    from scraper import db
+    from scraper.companies import lade_unternehmen
+    from scraper.ranglisten_holen import schreibe_firmen
+    schreibe_firmen(tmp_path / 'companies.csv', [dict(name='Kaputt AG', website='https://kaputt.example', status='aktiv', aktiv='ja',
+                                                    careers_url='https://alt.example/jobs', ats_typ='sitemap', ats_id='https://alt.example/s.xml#/job/')])
+    berichte = [{'stand': f'2026-12-{i:02d}', 'firmen': [{'name': 'Kaputt AG', 'gefunden': 0, 'fehler': 'Abruf: HTTP 404'}]} for i in range(1, 8)]
+    monkeypatch.setattr(db, 'letzte_laeufe', lambda n=7: berichte)
+    monkeypatch.setattr(db, 'db_firmen', lambda status=None: [])
+    monkeypatch.setattr(db, 'lade_firmen_gesundheit', lambda datum=None: [])
+    gesucht = []
+    monkeypatch.setattr(e, 'richte_ein', lambda f: gesucht.append(dict(f)) or dict(f, status='aktiv', aktiv='ja', status_grund='',
+                                                                                  ats_typ='sitemap', ats_id='https://neu.example/s.xml#/job/'))
+    e.lauf(tmp_path, finden=lambda namen: {})
+    assert gesucht and gesucht[0]['careers_url'] == '' and gesucht[0]['status_grund'] == 'Quelle defekt, neue Suche'
+    f = lade_unternehmen(tmp_path / 'companies.csv')[0]
+    assert f['ats_id'] == 'https://neu.example/s.xml#/job/'  # neue Quelle steht im Vorschlag

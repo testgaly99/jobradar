@@ -471,6 +471,53 @@ def websites_ergaenzen(firmen, finden=None):
     return n
 
 
+TAGE_DEFEKT = 7  # Q300: so viele Tagesläufe in Folge Fehler oder 0 Stellen -> Karriereseite neu suchen
+_ZURUECK = dict(status='offen', aktiv='nein', careers_url='', ats_typ='', ats_id='')
+
+
+def defekte_quellen(berichte, tage=TAGE_DEFEKT):
+    """Namen, deren Quelle in jedem der letzten `tage` Laufberichte Fehler oder 0 Stellen lieferte (sonst leer)."""
+    letzte = sorted(berichte, key=lambda b: b.get('stand', ''), reverse=True)[:tage]
+    if len(letzte) < tage:
+        return set()
+    je_tag = [{z.get('name'): z for z in b.get('firmen', []) if isinstance(z, dict)} for b in letzte]
+    namen = set.intersection(*(set(m) for m in je_tag))
+    return {n for n in namen if n and all(m[n].get('fehler') or not (m[n].get('gefunden') or 0) for m in je_tag)}
+
+
+def _selbstheilung(firmen, stand):
+    """Öffentliche Firmen mit defekter Quelle zurück auf „offen“; die Suche findet die neue Karriereseite (Vorschlag)."""
+    from scraper import db
+    try:
+        kaputt = defekte_quellen(db.letzte_laeufe(TAGE_DEFEKT))
+    except Exception as e:
+        print(f'Hinweis: Selbstheilung übersprungen ({kurzfehler(e)})')
+        return 0
+    n = 0
+    for f in firmen:
+        if f['name'] in kaputt and f.get('status') == 'aktiv':
+            f.update(_ZURUECK, status_grund='Quelle defekt, neue Suche')
+            stand.pop(f['name'], None)
+            n += 1
+    return n
+
+
+def _db_selbstheilung():
+    """Dasselbe für Datenbank-Firmen; leerer Grund = beim nächsten Nachtlauf als neue Firma zuerst dran."""
+    from scraper import db
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        try:
+            tage = {}
+            for z in db.lade_firmen_gesundheit():
+                tage.setdefault(z['datum'], []).append(z['bericht'])
+            kaputt = defekte_quellen([{'stand': d, 'firmen': rows} for d, rows in tage.items()])
+            for f in db.db_firmen('aktiv'):
+                if f['name'] in kaputt:
+                    db.setze_einrichtung(f['name'], dict(_ZURUECK, status_grund=''))
+        except Exception:
+            pass  # private Namen nie in Logs; Selbstheilung darf die Einrichtung nie kippen
+
+
 def _db_firmen(start, budget_s, nur_neue, finden=None):
     """Firmen aus der Datenbank (eigene Firmen, Handlisten des Admins): nie in öffentliche Dateien oder Logs.
     nur_neue: nur noch nie versuchte (leerer Grund) – jede Nacht; sonst alle offenen (sonntags, von Hand)."""
@@ -503,10 +550,16 @@ def lauf(datenordner='data', budget_s=17100, mit_db=True, finden=None, privat_al
     """Eine Nacht der Einrichtung. Reihenfolge: neue eigene Firmen und Handlisten (wenige, vom Nutzer gewollt) zuerst,
     dann die öffentliche Firmenliste nach Rang, sonntags/von Hand zuletzt alle offenen Datenbank-Firmen erneut."""
     start, d = time.monotonic(), Path(datenordner)
+    if mit_db:
+        _db_selbstheilung()
     privat = _db_firmen(start, budget_s, nur_neue=True, finden=finden) if mit_db else []
     firmen = lade_unternehmen(d / 'companies.csv')
     stand = lies_json(d / 'einrichtung_stand.json', {})
     heute = date.today()
+    if mit_db and _selbstheilung(firmen, stand):
+        firmen = wende_korrekturen_an(firmen, d / 'firmen_korrekturen.csv')  # eingetragene Karriereseiten gelten weiter
+        schreibe_firmen(d / 'companies.csv', firmen)
+        schreibe_json(d / 'einrichtung_stand.json', stand)
     # Websites nur für fällige Firmen suchen: sonst fragt jede Nacht dieselbe Liste bei Wikidata an
     if websites_ergaenzen([f for f in firmen if faellig(f, stand.get(f['name']), heute)], finden):
         firmen = wende_korrekturen_an(firmen, d / 'firmen_korrekturen.csv')  # Korrekturen haben immer Vorrang
