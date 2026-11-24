@@ -61,9 +61,12 @@ class _Links(HTMLParser):
         if tag == 'a':
             for k, v in attrs:
                 if k == 'href' and v:
-                    url = urljoin(self.basis, v)
-                    if urlsplit(url).scheme == 'https':
-                        self.links.append(url)
+                    try:
+                        url = urljoin(self.basis, v)
+                        if urlsplit(url).scheme == 'https':
+                            self.links.append(url)
+                    except ValueError:  # z. B. „https://[5f29bb9e]/…“ (TK Elevator): Link überspringen
+                        pass
 
 
 def portal_links(html, basis):
@@ -149,7 +152,7 @@ def _sitemap_quelle(basis, holen, robots):
                 raise
             except Exception:
                 continue
-            locs = [e.text.strip() for e in w.iter() if e.tag.endswith('loc') and e.text]
+            locs = [urljoin(z, e.text.strip()) for e in w.iter() if e.tag.endswith('loc') and e.text]
             if w.tag.endswith('sitemapindex'):
                 vorne = [x for x in locs if re.search(r'job|stelle|position|career|vacanc', x, re.I)]
                 ziele = vorne[:6] + ziele + [x for x in locs if x not in vorne][:3]
@@ -172,11 +175,27 @@ def _listen_quelle(seiten_url, links, holen):
     return dict(ats_typ='liste', ats_id=urldefrag(seiten_url)[0] + '#' + _merkmal(stellen[0]), careers_url=seiten_url)
 
 
+_SUCHSEITE = re.compile(r'jobsuche|job-?search|search-?jobs|jobs?/search|stellenangebote|stellenboerse|stellenbörse'
+                        r'|offene-stellen|jobboerse|vacancies|openings|jobangebote|alle-jobs|all-jobs|/jobs/?$|/suche', re.I)
+
+
+def _marke(host):
+    """„bertelsmann“ aus bertelsmann.de und bertelsmann.com: gleiche Marke, andere Endung = dieselbe Firma."""
+    return _regdom(host).split('.')[0]
+
+
+def _vorrang(link):
+    """Erst Links, die nach Stellensuche aussehen, dann Karriere-Hosts, dann der Rest (Grenze MAX_SEITEN)."""
+    t = urlsplit(link)
+    return 0 if _SUCHSEITE.search(t.path + '?' + t.query) else 1 if (t.hostname or '').split('.')[0] in UNTERADRESSEN else 2
+
+
 def _suche(url, holen, robots):
     """Breitensuche ab der Website: Unteradressen, übliche Pfade, Karriere-Links (auch fremde Hosts der Firma)."""
     start = urlsplit(url)
     basis, dom = f'https://{start.netloc}', _regdom(start.hostname)
-    ziele = [(url, 0)] + [(f'https://{s}.{dom}/', 1) for s in UNTERADRESSEN if f'{s}.{dom}' != start.hostname]
+    doms = list(dict.fromkeys([dom, _marke(dom) + '.com']))  # mercedes-benz.de -> auch jobs.mercedes-benz.com
+    ziele = [(url, 0)] + [(f'https://{s}.{d}/', 1) for d in doms for s in UNTERADRESSEN if f'{s}.{d}' != start.hostname]
     ziele += [(basis + p, 1) for p in PFADE if basis + p != url]
     besucht, geprueft, sitemap_hosts, gesperrt = set(), set(), set(), set()
     e = dict(kandidaten={}, unbekannt=[], verboten=False, abgelehnt=False, erreicht=0)
@@ -192,8 +211,10 @@ def _suche(url, holen, robots):
             continue
         except requests.HTTPError as exc:
             if getattr(exc.response, 'status_code', 0) == 403:  # Q288: Absage gilt für den ganzen Host, nie umgehen
-                gesperrt.add(urlsplit(ziel).hostname)
-                e['abgelehnt'] |= urlsplit(ziel).hostname == start.hostname
+                h = urlsplit(ziel).hostname or ''
+                gesperrt.add(h)
+                # Ausnahme, wenn die Hauptadresse oder eine Karriere-Adresse der Firma ablehnt (Telekom: careers.telekom.com)
+                e['abgelehnt'] |= h == start.hostname or (h.split('.')[0] in UNTERADRESSEN and _marke(h) == _marke(dom))
             continue
         except Exception:
             continue  # ein üblicher Pfad oder eine Unteradresse kann fehlen
@@ -218,11 +239,12 @@ def _suche(url, holen, robots):
             elif (tiefe < MAX_TIEFE and link not in besucht and not NICHT_FOLGEN.search(link)
                   and not ist_portal(t.hostname or '') and KARRIERE.search((t.hostname or '') + t.path)
                   # fremde Adressen nur von Seiten der Firma aus; innerhalb einer erreichten Gruppen-Domain weiter
-                  and dom in (_regdom(urlsplit(seiten_url).hostname), _regdom(t.hostname))
+                  and _marke(dom) in (_marke(urlsplit(seiten_url).hostname), _marke(t.hostname))
                   or (tiefe < MAX_TIEFE and link not in besucht and not ist_portal(t.hostname or '')
                       and _regdom(t.hostname) == _regdom(urlsplit(seiten_url).hostname)
                       and KARRIERE.search((t.hostname or '') + t.path) and not NICHT_FOLGEN.search(link))):
                 ziele.append((urldefrag(link)[0], tiefe + 1))
+        ziele.sort(key=lambda z: (z[1], _vorrang(z[0])))  # stabil: gleiche Tiefe, Stellensuche zuerst
         if e['kandidaten']:
             break  # nicht unterstützte Portal-Links (SuccessFactors-Server …): weitersuchen, z. B. nach jobs.lidl.de
         host = f'https://{urlsplit(seiten_url).hostname}'

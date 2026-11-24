@@ -23,7 +23,13 @@ _AV_ORT = re.compile(r"^(?:standort|standorte|standort\(e\)|location|locations|l
 
 
 def _links(seite, basis):
-    return [urldefrag(urljoin(basis, unescape(h)))[0] for h in _HREF.findall(seite)]
+    aus = []
+    for h in _HREF.findall(seite):
+        try:
+            aus.append(urldefrag(urljoin(basis, unescape(h)))[0])
+        except ValueError:  # kaputter Link (TK Elevator): überspringen
+            pass
+    return aus
 
 
 def _blaetterseite(link, start):

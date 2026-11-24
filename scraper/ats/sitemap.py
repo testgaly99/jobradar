@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 from collections import Counter
 from datetime import date
 from html import unescape
-from urllib.parse import unquote, urlsplit
+from urllib.parse import unquote, urljoin, urlsplit
 
 import requests
 
@@ -76,7 +76,7 @@ def _urls(sitemap, index_aufloesen=True):
     locs = [eintrag.find("{*}loc") for eintrag in eintraege]
     if any(loc is None or not loc.text or not loc.text.strip() for loc in locs):
         raise ValueError("Sitemap-Eintrag ohne Link")
-    urls = [loc.text.strip() for loc in locs]
+    urls = [urljoin(sitemap, loc.text.strip()) for loc in locs]  # Lidl: „sitemap-jobs.xml“ statt voller Adresse
     if index_aufloesen and wurzel.tag.endswith("sitemapindex"):
         return [u for teil in urls for u in _urls(teil, False)]
     return urls
@@ -152,7 +152,7 @@ def _jobposting(seite):
     for m in _LD.finditer(seite):
         start = re.search(r"[\[{]", m.group(1))  # Porsche/Bundesbank: Text vor dem JSON
         try:
-            daten = json.JSONDecoder().raw_decode(m.group(1), start.start())[0] if start else None
+            daten = json.JSONDecoder(strict=False).raw_decode(m.group(1), start.start())[0] if start else None
         except ValueError:
             continue
         for o in _objekte(daten):
