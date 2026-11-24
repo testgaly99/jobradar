@@ -1,7 +1,7 @@
 {
-  "hinweis": "Stufe-1-Regeln des CV-Abgleichs (Plan 6a/6b). Python und Browser lesen diese Datei; Schwellen kalibriert Task 3.",
-  "oben": 0.9,
-  "unten": 0.8,
+  "hinweis": "Stufe-1-Regeln des CV-Abgleichs (Plan 6a/6b), von Python und Browser gelesen. Schwellen am Abnahmefall kalibriert (2026-11-24): oben 0,88 / unten 0,86; Verneinung im Beleg verhindert „sicher“.",
+  "oben": 0.88,
+  "unten": 0.86,
   "fachbegriff": "\\b(?:[A-Z][A-Za-z0-9]*[0-9+#/][A-Za-z0-9+#/.-]*|[A-Z]{2,}[A-Za-z0-9]*)|\\b[A-Za-z]+\\+\\+|\\bC#|\\.NET\\b",
   "soll_woerter": [
     "wünschenswert",
@@ -20,5 +20,17 @@
     "your profile",
     "what you bring",
     "qualifications"
+  ],
+  "verneinung": [
+    "nicht",
+    "kein",
+    "keine",
+    "keinen",
+    "keinerlei",
+    "ohne",
+    "not",
+    "no",
+    "none",
+    "without"
   ]
 }
