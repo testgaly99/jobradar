@@ -1,3 +1,6 @@
 requests>=2.32
 pytest>=8.0
 playwright>=1.49  # nur für Karriereseiten, die die Anzeige per JavaScript laden (scraper/browser_seite.py)
+numpy>=2.0  # CV-Abgleich Stufe 1 (Plan 6a)
+onnxruntime>=1.32  # e5-small im Nachtlauf (Plan 6a), MIT
+tokenizers>=0.23  # Zerlegung für e5-small (Plan 6a), Apache-2.0

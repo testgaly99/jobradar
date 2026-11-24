@@ -10,6 +10,10 @@
 
 **Spec:** `docs/superpowers/specs/2026-11-19-phase6-cv-abgleich-design.md` (Gemeinsamer Kern, 6a, Einwilligung); Anforderungen A1–A13 und Abschnitt „Kontingent und Abo-Bedingungen“ in `docs/plans/2026-11-16-cv-abgleich.md`; Abnahmefall `docs/beispiele/cv-abgleich.json`.
 
+## Baufortschritt (Claude)
+
+- 2026-11-24: Task 0 erledigt (Agentenprotokoll: Claude-CLI-Schalter, `is_error` als Abbruchgrund, Pakete gepflegt). Task 0b erledigt: 36,1 MB, Wortschatz 35.925, 199/200 Prüfsätze exakt, Minimum 0,9842 (Nutzer Q273: akzeptiert; Testgrenze ≥ 199 Sätze ≥ 0,99, keiner < 0,98). `numpy`, `onnxruntime`, `tokenizers` in `requirements.txt`.
+
 ## Global Constraints
 
 - **Zwei Admin-Konten (Q236/Q237, 2026-11-19):** der Nachtlauf läuft je Konto aus `db.admin_ids()` mit dessen CVs und gemerkten Stellen; Ergebnisse nur für dieses Konto. Das Abo-Kontingent wird dadurch bis zu doppelt beansprucht; Reihenfolge der Konten wechselt täglich, damit bei knappem Kontingent nicht immer dasselbe zu kurz kommt.
