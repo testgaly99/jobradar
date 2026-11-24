@@ -7,6 +7,7 @@ import hashlib
 from pathlib import Path
 from zipfile import ZipFile
 import re
+import time
 
 from scraper import http
 from scraper.companies import SPALTEN, lade_unternehmen, wende_korrekturen_an
@@ -76,11 +77,40 @@ def bereinige_dateien(d, heute):
             p.unlink()
 
 
-def _anreichern(kandidaten, holen, bericht):
+def _wikidata_suche(name, holen, warte):
+    """Ein Namensabgleich; bei Drosselung (429) oder Serverfehler einmal warten und neu versuchen."""
+    try:
+        return wikidata.suche_name(name, holen)
+    except Exception as e:
+        antwort = getattr(e, 'response', None)
+        status = getattr(antwort, 'status_code', None)
+        if status != 429 and not (isinstance(status, int) and status >= 500):
+            raise
+        try:
+            pause = int(antwort.headers.get('Retry-After', 30))
+        except (TypeError, ValueError):
+            pause = 30
+        warte(min(max(pause, 1), 120))
+        return wikidata.suche_name(name, holen)
+
+
+def _anreichern(kandidaten, holen, bericht, warte=None):
+    # Ein QLever-Fehler kostet nur diese Firma, nie die ganze Liste (live 2026-11-24: 429/500 verwarf Scoreboard/EPA).
+    warte = warte or time.sleep
+    folge = 0
     for k in kandidaten:
         if k.get('wikidata_id') or k.get('website'):
             continue
-        antwort = wikidata.suche_name(k['name'], holen)
+        if folge >= 5:
+            bericht.append('Wikidata-Abgleich nach 5 Fehlern in Folge abgebrochen; übrige Firmen ohne Abgleich')
+            break
+        try:
+            antwort = _wikidata_suche(k['name'], holen, warte)
+        except Exception as e:
+            folge += 1
+            bericht.append(f"Wikidata nicht erreichbar: {k['name']} ({kurzfehler(e)})")
+            continue
+        folge = 0
         q = wikidata.name_zu_id(k['name'], k.get('land', ''), suche=lambda _: antwort)
         if q:
             k['wikidata_id'] = q
