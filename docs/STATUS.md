@@ -53,6 +53,28 @@ Erledigt (Kurzfassung): Abgleich mit Checkliste 2026-11-24, als erledigt nachget
 | Pendelzeit, Nr.12a (vor dem Bau) | **Transitous prüfen** (freier Routenplaner auf MOTIS-Basis mit Programmschnittstelle): Nutzungsbedingungen, Anfragegrenzen, Quellenangabe, Abdeckung München/Deutschland, Verfügbarkeit; Probeabfragen für drei Strecken mit Ankunft Dienstag 9:00 gegen DELFI/DB-Auskunft vergleichen. Wenn tauglich: Plan 12a auf Transitous statt eigener DELFI-Berechnung umstellen (Nutzerfrage, ändert Q203–Q211). | Nutzer 2026-11-24; Google Maps scheidet aus (Kreditkarte nötig). Kein Bau von 12a vor dieser Prüfung. **Teil 1 erledigt 2026-11-24 (transitous.org/api gelesen):** erlaubt nur, wenn das Projekt Open Source, nicht kommerziell und ressourcenschonend ist; ab >720 Routenabfragen/24 h und bei automatisierten Abfragen vorher im Matrix-Kanal abstimmen; User-Agent mit Name, Version, Kontakt; sichtbarer Link auf transitous.org/sources und OSM-Hinweis; „best effort“, Dienst kann jederzeit enden. **Hürde:** Repo hat keine Lizenzdatei (öffentlich ≠ Open Source) → vor Nutzung Nutzerfrage zu einer Open-Source-Lizenz. **Teil 2 (Probe 2026-11-24, `/api/v5/plan`, Ankunft Di 1.12. 9:00, 3 Anfragen):** Marienplatz→Garching Forschungszentrum 28 Min (U6), Hbf→Unterföhring 34 Min (S8), Pasing→Ottobrunn 49 Min (S20/U5/Bus 210); plausibel. Hinweis: Python-urllib scheitert unter Windows am Zertifikat, `requests` geht. Offen: genauer MVV-Abgleich, Abstimmung mit dem Team, Lizenzfrage, DELFI als Rückfall. |
 | Originalsuche, Nr.9 / To-do44 | Fünf echte Portal-Links sowie zwei bis drei Indeed-Tabtitel abnehmen, einschließlich TLS/Weiterleitungen, Auswahl, Dubletten und Erhalt manueller Eingaben. | **Erledigt 2026-11-24:** Codeprüfung (keine Fehler), 020 in Wegwerf-PostgreSQL (×2, Probe grün) und live 12/12 mit Wegwerf-Konten. Echte Links brauchen Upload und Nutzer. |
 
+### Offene Prüfpunkte („Nicht geprüft“), Stand 2026-11-25
+
+Regel (Nutzer 2026-11-25: „Do I have to remind you to check these things? I feel like you could forget them“): Jedes „Nicht geprüft“ aus Claudes Antworten wird entweder im selben Schritt erledigt oder hier eingetragen; Claude geht diese Liste zu Beginn jeder Sitzung und vor jedem Abschluss durch und streicht nur mit Nachweis.
+
+| Nr. | Offener Punkt | Wann / wie prüfen |
+|---|---|---|
+| P1 | Einrichtungslauf 2026-11-25 (GitHub): wie viele Firmen in 5 Std., Trefferquote der neuen Suche (Ziel ≥ 90 % der erlaubten) | nach Lauf-Ende: Vorschlag prüfen (zweite Prüfung, CLAUDE.md 4.3) |
+| P2 | Qualität der neuen Stellenquellen (Ort, Text, Abschnitte) bei Sitemap-JSON-LD, Microdata und Liste | nach dem ersten Täglichen Lauf mit neuen Firmen: je Weg 1 Firma, 3 Beispielstellen |
+| P3 | Täglicher Lauf bleibt unter 180 Min. trotz bis zu 300 neuen Seiten je Firma | Laufzeit der ersten 3 Täglichen Läufe nach Übernahme; sonst parallele Jobs (Plan Task 4) |
+| P4 | 403-Ausnahmen (u. a. METRO, Würth, Adidas) evtl. nur durch die vielen lokalen Erkundungen ausgelöst | Ergebnis des Einrichtungslaufs von GitHub vergleichen |
+| P5 | Ob der Nutzer selbst auf einer Firmenseite gesperrt ist | Nutzer gab Karriere-Links von Continental, Adidas, METRO, Würth, Lufthansa (2026-11-25); ausdrücklich fragen, ob alle Seiten im Browser normal luden |
+| P6 | Restliste Karriereseiten: Claudes Websuche, danach Anweisung + Liste für ChatGPT Agent Mode (Q295) | nach dem letzten Einrichtungslauf; vorher prüfen, dass die Websuche nicht über den Anschluss des Nutzers läuft (CLAUDE.md 3.8) |
+| P7 | Websites-Paket Task 3: Liste für den Nutzer (offene Websites, historische Firmen, Dubletten wie Continental/CONTINENTAL, Lufthansa/Lufthansa Group, Toyota, Medtronic, Panasonic; falsche Website rossmann.es) | zusammen mit P6 |
+| P8 | Unterfirmen statt Hauptseite (Otto Group → Witt-Gruppe) und Firmen ohne Fund nach Wegfall des Ratens auf <marke>.com (Mercedes-Benz AG) | im Vorschlag von P1 ansehen; ggf. Korrekturen |
+| P9 | Commit-Autoradresse: künftig GitHub-noreply-Adresse statt echter E-Mail (584 alte Commits tragen sie) | Vorschlag an den Nutzer (Klickfrage) |
+| P10 | Monatliche Claude-Sicherheitsprüfung (Q294) | eigenes kleines Paket planen; Bericht nur ins private Repo |
+| P11 | Sicherheitsbefunde mittel (Bericht im privaten Repo, docs-privat): Versionen festschreiben, Nachtläufe je Konto gerecht verteilen, Rechte der Vercel-Tokens, Speichergrenzen | als Paket planen |
+| P12 | Nur in den Live-Systemen prüfbar: Supabase (E-Mail-Bestätigung, Zwei-Faktor, Migrationen 019/021/022 fehlen im Repo?), Vercel (Vorschau-Versionen mit Service-Schlüssel? Vorschauschutz), GitHub (Schutz von main, privates Repo wirklich privat), `.env.example` nur Platzhalter | mit dem Nutzer Schritt für Schritt (Klickanleitung) |
+| P13 | Abhängigkeiten auf bekannte Lücken (npm/pip) | sobald Dependabot an ist (To-do 51), sonst `npm audit`/`pip-audit` auf GitHub |
+| P14 | Review-Befund 12: robots.txt je Host doppelt geladen (nur Zeit) | bei nächster Änderung an `einrichtung.py` |
+| P15 | Datenbanktest CV-Abgleich lief zuletzt 2026-11-24 live | beim nächsten Migrationspaket erneut |
+
 Allgemeine Nutzer-Klicktests4/14 bleiben in ihrer bisherigen Liste. Keine der zurückgestellten Prüfungen gilt durch das Aufschieben als bestanden. Neue Codebefunde werden später beim jeweiligen Paket ergänzt. Keine Live-Aktion oder Veröffentlichung aus dieser Entscheidung abgeleitet.
 
 ## Nächster Schritt
