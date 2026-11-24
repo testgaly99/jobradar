@@ -417,6 +417,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q261 | Prüfung 4d/4e: Wer behebt den Befund „Nachtlauf bricht bei Namensgleichheit von Datei- und Privatfirma komplett ab“? | Nutzer: „Claude behebt sofort (Empfohlen)“ | Überspringen statt abbrechen, Hinweis nur als Anzahl, Test auf Laufebene. | entschieden |
 | Q262 | Prüfung 4d/4e: Wie werden Migration 015/016 vor dem Einspielen in einer echten Datenbank geprüft? | Nutzer: „Lokale Wegwerf-Datenbank (Empfohlen)“ | Lokale Wegwerf-Datenbank im Scratchpad (pgserver, nicht im Projekt), Migrationen 001–016 zweimal plus Codex' SQL-Proben. | entschieden |
 | Q263 | 4d/4e (geprüft, 015/016 live 31/31) und Statusnachträge auf `entwurf-ui` hochladen? | Nutzer: „Ja, hochladen (Empfohlen)“ | Nur `entwurf-ui`; Merge in main erst nach Klicktest. | entschieden |
+| Q276 | Phase 6a (Klicktest 32/32, Live-Tests 4/4) hochladen (entwurf-ui und Nachtlauf-Ablauf im privaten Repo) und in main übernehmen? | Nutzer: „Hochladen und in main (Empfohlen)“ | Push beider Repos, Merge entwurf-ui → main; Nachtlauf startet erst mit den drei Secrets (To-do 48). | entschieden |
 | Q275 | 6a Einwilligung: speichern, welcher Fassung des Textes zugestimmt wurde (Nachweis nach DSGVO; bei Textänderung neu zustimmen)? | Nutzer: „Fassung speichern (Empfohlen)“ | Spalte `fassung` in `cv_einwilligung` (Migration 024); Website und Nachtlauf gelten nur bei aktueller Fassung. | entschieden |
 | Q274 | 6a Einwilligung: Anlass Nutzer 2026-11-24 „Es ist wichtig, dass es vollständig compliant ist, dass die Leute also zustimmen, dass ihre CVs von einer AI ausgelesen werden. Das muss allen beim Upload klar sein“. Text je Konto passend oder ein Text für alle? | Nutzer: „Je Konto passend (Empfohlen)“ | Admin: KI Claude von Anthropic (USA), nachts; alle anderen: KI nur im eigenen Browser, an keinen KI-Dienst. | entschieden |
 | Q273 | 6a Task 0b: verkleinertes Modell (36 MB) erreicht 199/200 Prüfsätze exakt, ein Satz mit unbekanntem Firmennamen nur 0,984 statt ≥ 0,99. Wie weiter? | Nutzer: „So akzeptieren (Empfohlen)“ | 36-MB-Modell; Testgrenze: mindestens 199/200 Prüfsätze ≥ 0,99, keiner unter 0,98. | entschieden |
@@ -584,6 +585,7 @@ Fragetexte Q267 (Claude, 2026-11-24, Auswahl): Jetzt übernehmen (Empfohlen) / E
 Fragetexte Q266 (Claude, 2026-11-24, Auswahl): Wegwerf-Konto vorübergehend Admin (Empfohlen) / Du klickst die Admin-Seiten selbst / Admin-Seiten auslassen.
 Fragetexte Q264 (Claude, 2026-11-21, Auswahl): So akzeptieren, Claude misst vor dem Merge (Empfohlen) / Automatisch messen lassen (Modellcode mit Netz) / Später entscheiden.
 Fragetexte Q274/Q275 (Claude, 2026-11-24, Auswahl): Q274 Je Konto passend (Empfohlen) / Ein Text für alle. Q275 Fassung speichern (Empfohlen) / Nur Datum.
+Fragetexte Q276 (Claude, 2026-11-24, Auswahl): Hochladen und in main (Empfohlen) / Nur hochladen / Noch nicht.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
