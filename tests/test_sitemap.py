@@ -323,3 +323,10 @@ def test_sitemap_mit_unkodiertem_und_zeichen(monkeypatch):
     kaputt = _sitemap(DM, "https://www.dm-jobs.de/job/a&b/1/").replace("&amp;", "&")
     _fake(monkeypatch, {SITEMAP: kaputt, DM: _lies("sitemap_dm.html")})
     assert DM in [s["url"] for s in sitemap.hole_stellen(ATS_ID)]
+
+
+def test_sitemap_mit_anfuehrungszeichen_in_adresse(monkeypatch):
+    # Abnahme 2 thyssenkrupp: unmaskiertes " in einem xhtml:link – XML ungültig, die <loc>-Einträge sind trotzdem lesbar
+    kaputt = _sitemap(DM).replace("</url>", '<xhtml:link href="https://www.dm-jobs.de/job/x-"y"/1/"/></url>')
+    _fake(monkeypatch, {SITEMAP: kaputt, DM: _lies("sitemap_dm.html")})
+    assert [s["url"] for s in sitemap.hole_stellen(ATS_ID)] == [DM]

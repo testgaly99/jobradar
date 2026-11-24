@@ -52,7 +52,19 @@ def xml_aus(inhalt):
     try:
         return ET.fromstring(inhalt)
     except ET.ParseError:  # häufigster Formfehler echter Sitemaps: „&“ in Adressen nicht als &amp; geschrieben
+        pass
+    try:
         return ET.fromstring(re.sub(rb"&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)", b"&amp;", inhalt))
+    except ET.ParseError:  # z. B. thyssenkrupp: Anführungszeichen mitten in einer Adresse; nur die <loc>-Einträge zählen
+        pass
+    locs = re.findall(rb"<loc>\s*(.*?)\s*</loc>", inhalt, re.S)
+    if not locs:
+        raise ValueError("Sitemap nicht lesbar")
+    index = b"<sitemapindex" in inhalt[:2000]
+    wurzel = ET.Element("sitemapindex" if index else "urlset")
+    for loc in locs:
+        ET.SubElement(ET.SubElement(wurzel, "sitemap" if index else "url"), "loc").text = unescape(loc.decode("utf-8", "replace"))
+    return wurzel
 
 
 def _urls(sitemap, index_aufloesen=True):
