@@ -118,6 +118,14 @@ def test_buendel_zu_fuenf_und_grenze_fuenfzig():
     assert db.grenze == 50 and len(db.ergebnisse) == 50
 
 
+@pytest.mark.parametrize('wert,erwartet', [('5', 5), ('500', 50), ('0', 50), ('abc', 50)])
+def test_grenze_fuer_probelauf_nur_nach_unten(monkeypatch, wert, erwartet):
+    monkeypatch.setenv('CV_MAX_STELLEN', wert)
+    db = FakeDB(stellen=60)
+    _lauf(db, Claude())
+    assert db.grenze == erwartet and len(db.ergebnisse) == erwartet
+
+
 def test_leerer_cv_nie_rot():
     db = FakeDB(text='')
     db.docs[0]['cv_text']['herkunft'] = 'leer'

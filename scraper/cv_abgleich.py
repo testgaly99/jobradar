@@ -6,6 +6,7 @@ leerer CV oder unbrauchbare Antwort ergeben Gelb. Log nur Zahlen, nie CV-, Anzei
 """
 import hashlib
 import json
+import os
 import re
 import shutil
 import tempfile
@@ -179,7 +180,7 @@ def _konto(owner, db, frage, einbetten, z):
         return
     cvs = {d['id']: _cv_text(d, owner, db, frage) for d in docs}
     profile = {d['id']: _profil(d, cvs[d['id']], owner, db, frage) for d in docs}
-    stellen = db.stellen_fuer_abgleich(owner, MAX_STELLEN)[:MAX_STELLEN]
+    stellen = db.stellen_fuer_abgleich(owner, z['grenze'])[:z['grenze']]
     cache, warteschlange = {}, []
     for i, s in enumerate(stellen):
         bewertungen, empfohlen = _stufe1(s, profile, docs, einbetten, cache)
@@ -211,6 +212,12 @@ def _konto(owner, db, frage, einbetten, z):
             z['stellen'] += 1
 
 
+def _grenze():
+    """Probelauf von Hand (Haltepunkt b): CV_MAX_STELLEN darf die Grenze nur senken, nie erhöhen."""
+    wert = os.environ.get('CV_MAX_STELLEN', '')
+    return min(int(wert), MAX_STELLEN) if wert.isdigit() and int(wert) > 0 else MAX_STELLEN
+
+
 def main(db=None, frage=None, einbetten=None, heute=None):
     """Immer Exitcode 0; Abbruch am Abo-Limit oder bei Fehlern von Claude Code, Rest in der nächsten Nacht."""
     if db is None:
@@ -218,7 +225,7 @@ def main(db=None, frage=None, einbetten=None, heute=None):
     frage = frage or claude_cli.frage
     einbetten = einbetten or cv_stufe1.einbetten
     tag = date.fromisoformat(heute) if heute else date.today()
-    z = {'stellen': 0, 'aufrufe': 0, 'ungueltig': 0, 'hinweise': []}
+    z = {'stellen': 0, 'aufrufe': 0, 'ungueltig': 0, 'hinweise': [], 'grenze': _grenze()}
     admins = db.admin_ids()
     if admins:  # Reihenfolge wechselt täglich, damit bei knappem Kontingent nicht immer dasselbe Konto zu kurz kommt
         k = tag.toordinal() % len(admins)
