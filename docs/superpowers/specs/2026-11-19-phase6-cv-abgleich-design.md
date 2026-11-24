@@ -10,7 +10,7 @@ Der Nutzer will bei jeder interessanten Stelle auf einen Blick sehen, welche Anf
 
 - Farben direkt im unveränderten Anzeigentext: ganze Anforderung markiert; Grün = belegt, Gelb = teilweise oder noch nicht belegt (beide Gründe unterscheidbar), Rot = nachweislich nicht erfüllt; Klick zeigt CV-Beleg bzw. Begründung (Q3, A6, Q28: ähnliche statt geforderter Fähigkeit = Gelb mit Begründung).
 - Empfehlung der besten CV-Version nach „Muss vor Soll“; Gleichstand offen zeigen mit Umschalter, zuerst der Standard-CV (A10, Q27). Kein Prozentwert (A2).
-- Admin: automatisch nachts 03:00 deutscher Zeit über das Claude-Abo (Q29, Q32, Q37); dazu sofort vorläufige Farben aus Stufe 1 im Browser, die der Nachtlauf ersetzt (Q103).
+- Admin: automatisch täglich 08:00 deutscher Zeit (bis 2026-11-24: 03:00; geändert mit Q281, damit neue Stellen am selben Tag dran sind) über das Claude-Abo (Q29, Q32, Q37); dazu sofort vorläufige Farben aus Stufe 1 im Browser, die der Nachtlauf ersetzt (Q103).
 - Alle anderen Angemeldeten: kostenlos im eigenen Browser, ausgelöst beim Merken, beim CV-Upload und beim Öffnen einer Stelle (Q34, Q37).
 - „Wichtige Punkte“ (Konto-Seite) treffen auch nach Bedeutung, nicht nur nach Wortanfang – kostenlos im Browser mit demselben Bedeutungsmodell, für alle Angemeldeten (CLAUDE.md 6, Q106; kommt mit 6b).
 - Umfang: eigene gemerkte Stellen (auch Bewerbungen ohne Stelle in jobradar, deren gespeicherte Anzeige gegliedert ist – Anforderungen dann aus der Bewerbung, Q111), dazu offene Stellen mit einem Stichwort aus „Automatisch abgleichen bei“ im Titel; gemerkte zuerst (A9, Q35, Q36).
@@ -66,7 +66,7 @@ Der Nutzer will bei jeder interessanten Stelle auf einen Blick sehen, welche Anf
 
 ### 6a: Nachtlauf für den Admin
 
-1. Workflow „CV-Abgleich“ im privaten Repo, täglich 03:00 deutscher Zeit (Sommer-/Winterzeit beachten). Secrets: Supabase-Zugang und `CLAUDE_CODE_OAUTH_TOKEN`.
+1. Workflow „CV-Abgleich“ im privaten Repo, täglich 08:00 deutscher Zeit (Q281; Sommer-/Winterzeit beachten). Secrets: Supabase-Zugang und `CLAUDE_CODE_OAUTH_TOKEN`.
 2. Admin bestimmen (`admins`, Phase 4d). Ohne Admin oder ohne Einwilligung: nichts tun.
 3. Neue oder geänderte CV-Versionen: Text auslesen (PDF-Textebene, Word-Text); ist er leer, liest Claude die PDF-Seiten als Bild (Q24). Dann Profil durch Claude. Beides speichern.
 4. Stellen wählen: gemerkte zuerst, dann Titel-Treffer aus „Automatisch abgleichen bei“; nur ohne aktuelles Ergebnis; höchstens 50.
