@@ -286,3 +286,26 @@ def test_keine_geratenen_unteradressen_auf_fremder_endung():
 def test_firma_mit_eigenem_wikidata_eintrag_bekommt_keine_fremde_website():
     f = dict(name='Deutsche Ausrüstungswerke', website='', status='offen', wikidata_id='Q123')
     assert e.websites_ergaenzen([f], lambda namen: {n: {'website': 'https://fremd.example', 'wikidata_id': 'Q9'} for n in namen}) == 0
+
+
+def test_handlisten_firmen_zuerst_nur_neue_werktags(tmp_path, monkeypatch):
+    # Nutzer 2026-11-25: manuell eingefügte Listen (Datenbank, nur Namen) müssen eingerichtet werden, vor der Firmenliste
+    from scraper import db
+    from scraper.ranglisten_holen import schreibe_firmen
+    schreibe_firmen(tmp_path / 'companies.csv', [dict(name='Datei AG', website='https://datei.example', status='offen')])
+    datenbank = [dict(name='Neu GmbH', website='', status='offen', status_grund=''),
+                 dict(name='Alt GmbH', website='https://alt.example', status='offen', status_grund='Karriereseite nicht gefunden')]
+    monkeypatch.setattr(db, 'db_firmen', lambda status=None: [dict(f) for f in datenbank])
+    gesetzt, reihenfolge = [], []
+    monkeypatch.setattr(db, 'setze_einrichtung', lambda name, felder: gesetzt.append((name, dict(felder))))
+    monkeypatch.setattr(e, 'richte_ein', lambda f: reihenfolge.append(f['name']) or dict(f, status='aktiv', aktiv='ja', status_grund=''))
+    finden = lambda namen: {n: {'website': 'https://neu.example', 'wikidata_id': 'Q1'} for n in namen if n == 'Neu GmbH'}
+    erg = e.lauf(tmp_path, finden=finden)
+    assert reihenfolge == ['Neu GmbH', 'Datei AG']  # neue Datenbank-Firma zuerst, die alte erst sonntags
+    assert ('Neu GmbH', {'website': 'https://neu.example', 'wikidata_id': 'Q1'}) in gesetzt
+    assert erg['offen'] == 0 and erg['bearbeitet'] == 1
+    reihenfolge.clear()
+    datenbank[0]['status_grund'] = 'Karriereseite nicht gefunden'
+    e.lauf(tmp_path, finden=finden, privat_alle=True)
+    assert reihenfolge == ['Neu GmbH', 'Alt GmbH']  # sonntags alle offenen erneut; Datei AG ist heute schon versucht
+    assert 'Neu GmbH' not in (tmp_path / 'companies.csv').read_text(encoding='utf-8')  # nie in die öffentliche Liste

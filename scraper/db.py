@@ -415,7 +415,7 @@ def db_firmen(status=None):
 
 
 def setze_einrichtung(name, felder):
-    erlaubt={'careers_url','ats_typ','ats_id','status','status_grund','aktiv'}
+    erlaubt={'careers_url','ats_typ','ats_id','status','status_grund','aktiv','website','wikidata_id'}
     patch={k:v for k,v in felder.items() if k in erlaubt}
     if 'aktiv' in patch:
         patch['aktiv']=patch['aktiv'] in ('ja',True)

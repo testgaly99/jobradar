@@ -1,6 +1,12 @@
 name: Einrichtung
 
+# Jede Nacht automatisch (Q299): setzt denselben Vorschlag (Zweig einrichtung-laufend) fort, bis alle Firmen versucht
+# sind; danach dauert ein Lauf nur Sekunden, bis neue Firmen kommen oder Fehlschläge nach 30 Tagen wieder fällig sind.
+# Übernommen wird nie automatisch: der Nutzer prüft und übernimmt den Vorschlag (CLAUDE.md 4.3).
 on:
+  schedule:
+    - cron: "0 21 * * 1-6"   # 22:00 Winter- bzw. 23:00 Sommerzeit, vor dem Täglichen Lauf
+    - cron: "0 21 * * 0"     # sonntags zusätzlich die privaten Firmen der Nutzer (Datenbank)
   workflow_dispatch:
 
 permissions:
@@ -19,36 +25,71 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: main
+          fetch-depth: 0
+      - name: Laufenden Vorschlag fortsetzen
+        id: zweig
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          zweig=einrichtung-laufend
+          if git ls-remote --exit-code --heads origin "$zweig" > /dev/null; then
+            git fetch origin "$zweig"
+            git switch -c "$zweig" "origin/$zweig"
+            if ! git merge --no-edit origin/main; then
+              # Konflikt mit main (z. B. neue Ranglisten-Firmen): nichts erzwingen, eigener neuer Vorschlag ab main
+              git merge --abort
+              git switch main
+              zweig="einrichtung-laufend-${GITHUB_RUN_ID}"
+              git switch -c "$zweig"
+              echo "Hinweis: laufender Vorschlag ließ sich nicht mit main zusammenführen; neuer Vorschlag ab main."
+            fi
+          else
+            git switch -c "$zweig"
+          fi
+          echo "name=$zweig" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: python -m pip install -r requirements.txt
-      - name: Neue Firmen einmalig einrichten
+      - name: Firmen einrichten
         # Endet vor dem Jobabbruch (350 min); der Fortschritt steht nach jeder Firma in den Dateien
         timeout-minutes: 300
         run: python -m scraper.einrichtung
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-      - name: Ergebnisse zur Prüfung vorschlagen
+          EINRICHTUNG_PRIVAT: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '0 21 * * 0' }}
+          EINRICHTUNG_BERICHT: ${{ runner.temp }}/einrichtung-stand.json
+      - name: Vorschlag aktualisieren
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          ZWEIG: ${{ steps.zweig.outputs.name }}
+          BERICHT: ${{ runner.temp }}/einrichtung-stand.json
         shell: bash
         run: |
           set -euo pipefail
-          zweig="einrichtung-$(date -u +%F)-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git switch -c "$zweig"
           git add data/companies.csv
           for f in data/karriereseite_nicht_gefunden.md data/einrichtung_stand.json; do if test -f "$f"; then git add "$f"; fi; done
-          if git diff --cached --quiet; then exit 0; fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Neue Firmen einrichten und offene Portale melden'
-          git push origin "$zweig"
-          cat > "$RUNNER_TEMP/einrichtung-pr.md" <<'TEXT'
-          Die einmalige Firmeneinrichtung hat ihren Fortschritt gespeichert. Bitte die Firmendatei und Karriereseite nicht gefunden prüfen.
+          if git diff --cached --quiet; then
+            echo "Keine neuen Ergebnisse (alle Firmen versucht oder nichts fällig)."
+            exit 0
+          fi
+          git commit -m 'Firmeneinrichtung: Fortschritt der Nacht'
+          git push origin "$ZWEIG"
+          stand="Stand unbekannt"
+          if test -f "$BERICHT"; then
+            stand=$(python -c "import json,sys; d=json.load(open(sys.argv[1])); print(f\"Diese Nacht {d['bearbeitet']} Firmen versucht, noch {d['offen']} offen.\" + (' Alle Firmen sind versucht: bitte prüfen und übernehmen.' if d['offen'] == 0 else ''))" "$BERICHT")
+          fi
+          offen=$(gh pr list --head "$ZWEIG" --state open --json number --jq 'length')
+          if [ "$offen" = "0" ]; then
+            cat > "$RUNNER_TEMP/einrichtung-pr.md" <<'TEXT'
+          Die Firmeneinrichtung läuft jede Nacht automatisch weiter und ergänzt diesen Vorschlag, bis alle Firmen versucht sind. Den aktuellen Stand nennt der letzte Kommentar.
 
-          Nach Übernahme kann der nächste manuelle Lauf beim gespeicherten Stand fortsetzen. Die Tabelle Portal-Arten zeigt die noch fehlenden Adapter.
+          Bitte vor dem Übernehmen von Claude prüfen lassen (CLAUDE.md 4.3). Übernommen wird nie automatisch.
           TEXT
-          gh pr create --base main --head "$zweig" --title 'Firmeneinrichtung prüfen' --body-file "$RUNNER_TEMP/einrichtung-pr.md"
+            gh pr create --base main --head "$ZWEIG" --title 'Firmeneinrichtung (läuft jede Nacht weiter)' --body-file "$RUNNER_TEMP/einrichtung-pr.md"
+          fi
+          gh pr comment "$ZWEIG" --body "$stand"

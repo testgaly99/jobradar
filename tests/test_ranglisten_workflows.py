@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def test_workflows_nur_vorschlagszweige_und_einrichtung_manuell():
+def test_workflows_nur_vorschlagszweige_einrichtung_naechtlich():
     root = Path(__file__).parents[1] / '.github/workflows'
     for name, modul in [('ranglisten', 'ranglisten_holen'), ('einrichtung', 'einrichtung')]:
         text = (root / (name + '.yml')).read_text(encoding='utf-8')
@@ -18,7 +18,10 @@ def test_workflows_nur_vorschlagszweige_und_einrichtung_manuell():
             assert 'upload-artifact' not in text  # Artefakte öffentlicher Repos sind nicht privat.
         assert 'git push origin main' not in text
     assert '0 3 1 * *' in (root / 'ranglisten.yml').read_text()
-    assert 'schedule:' not in (root / 'einrichtung.yml').read_text()
+    einrichtung = (root / 'einrichtung.yml').read_text(encoding='utf-8')
+    # Q299: jede Nacht automatisch, aber nur auf dem Vorschlagszweig; nie direkt nach main, nie Verlauf überschreiben
+    assert '0 21 * * 1-6' in einrichtung and '0 21 * * 0' in einrichtung
+    assert 'einrichtung-laufend' in einrichtung and '--force' not in einrichtung and 'gh pr merge' not in einrichtung
 
 
 def test_einrichtung_sichert_fortschritt_vor_dem_jobabbruch():

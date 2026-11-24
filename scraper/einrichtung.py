@@ -471,19 +471,52 @@ def websites_ergaenzen(firmen, finden=None):
     return n
 
 
-def lauf(datenordner='data', budget_s=17100, mit_db=True, finden=None):  # 285 min, vor dem 300-min-Limit des Schritts
+def _db_firmen(start, budget_s, nur_neue, finden=None):
+    """Firmen aus der Datenbank (eigene Firmen, Handlisten des Admins): nie in öffentliche Dateien oder Logs.
+    nur_neue: nur noch nie versuchte (leerer Grund) – jede Nacht; sonst alle offenen (sonntags, von Hand)."""
+    from scraper import db
+    privat = []
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        firmen = [f for f in db.db_firmen('offen')
+                  if not (f.get('fuer_alle', True) is False and f.get('nutzer', 0) <= 0)
+                  and (not nur_neue or not f.get('status_grund'))]
+        for f in firmen:  # Handlisten liefern nur Namen: Website über Wikidata, nur wenn eindeutig
+            f.setdefault('status', 'offen')
+        if websites_ergaenzen([f for f in firmen if not f.get('website')], finden):
+            for f in firmen:
+                if f.get('website'):
+                    db.setze_einrichtung(f['name'], {'website': f['website'], 'wikidata_id': f.get('wikidata_id') or ''})
+        for f in firmen:
+            if time.monotonic() - start >= max(0, budget_s - 60):
+                break
+            if not f.get('website') and not f.get('careers_url'):
+                ergebnis = dict(f, status='offen', aktiv='nein', status_grund='keine Website bekannt')
+            else:
+                ergebnis = richte_ein(f)
+            db.setze_einrichtung(f['name'], ergebnis)
+            if ergebnis.get('status') != 'aktiv':
+                privat.append((f['name'], ergebnis.get('status_grund', '')))
+    return privat
+
+
+def lauf(datenordner='data', budget_s=17100, mit_db=True, finden=None, privat_alle=False):  # 285 min, vor dem 300-min-Limit
+    """Eine Nacht der Einrichtung. Reihenfolge: neue eigene Firmen und Handlisten (wenige, vom Nutzer gewollt) zuerst,
+    dann die öffentliche Firmenliste nach Rang, sonntags/von Hand zuletzt alle offenen Datenbank-Firmen erneut."""
     start, d = time.monotonic(), Path(datenordner)
+    privat = _db_firmen(start, budget_s, nur_neue=True, finden=finden) if mit_db else []
     firmen = lade_unternehmen(d / 'companies.csv')
-    if websites_ergaenzen(firmen, finden):
+    stand = lies_json(d / 'einrichtung_stand.json', {})
+    heute = date.today()
+    # Websites nur für fällige Firmen suchen: sonst fragt jede Nacht dieselbe Liste bei Wikidata an
+    if websites_ergaenzen([f for f in firmen if faellig(f, stand.get(f['name']), heute)], finden):
         firmen = wende_korrekturen_an(firmen, d / 'firmen_korrekturen.csv')  # Korrekturen haben immer Vorrang
         schreibe_firmen(d / 'companies.csv', firmen)
-    stand = lies_json(d / 'einrichtung_stand.json', {})
     raenge = _raenge(d)
     reihenfolge = sorted(range(len(firmen)), key=lambda i: (raenge.get(firmen[i]['name'], 10**9), firmen[i]['name']))
     bearbeitet = 0
     for i in reihenfolge:
         f = firmen[i]
-        if not faellig(f, stand.get(f['name']), date.today()):
+        if not faellig(f, stand.get(f['name']), heute):
             continue
         if time.monotonic() - start >= max(0, budget_s - 60):
             break
@@ -492,9 +525,11 @@ def lauf(datenordner='data', budget_s=17100, mit_db=True, finden=None):  # 285 m
         schreibe_firmen(d / 'companies.csv', firmen)
         # 429 oder noch keine Website: beim nächsten Lauf gleich wieder (Website kann über Korrekturen nachkommen)
         if firmen[i].get('status_grund') not in ('Ratenbegrenzung, später erneut', 'keine Website bekannt'):
-            stand[f['name']] = {'datum': date.today().isoformat(), 'suche': SUCHVERSION}
+            stand[f['name']] = {'datum': heute.isoformat(), 'suche': SUCHVERSION}
         schreibe_json(d / 'einrichtung_stand.json', stand)
         bearbeitet += 1
+    noch_offen = sum(1 for f in firmen if faellig(f, stand.get(f['name']), heute)
+                     and f.get('status_grund') not in ('keine Website bekannt',))
     offen = sorted((f for f in firmen if f.get('status') != 'aktiv'), key=lambda f: raenge.get(f['name'], 10**9))
     def text(s):
         return str(s or '').replace('|', '/').replace('\n', ' ')
@@ -506,26 +541,17 @@ def lauf(datenordner='data', budget_s=17100, mit_db=True, finden=None):  # 285 m
     for art, z in sorted(statistik.items()):
         zeilen.append(f"| {art} | {z['anzahl']} | {z['bester_rang'] or ''} | {text(', '.join(z['beispiele']))} |")
     _schreibe_text(d / 'karriereseite_nicht_gefunden.md', '\n'.join(zeilen) + '\n')
+    if mit_db and privat_alle:
+        privat += _db_firmen(start, budget_s, nur_neue=False, finden=finden)
     if mit_db:
-        from scraper import db
-        privat=[]
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            for f in db.db_firmen('offen'):
-                if f.get('fuer_alle', True) is False and f.get('nutzer', 0) <= 0:
-                    continue
-                if time.monotonic()-start >= max(0,budget_s-60):
-                    break
-                if not f.get('website') and not f.get('careers_url'):
-                    ergebnis=dict(f,status='offen',aktiv='nein',status_grund='keine Website bekannt')
-                else:
-                    ergebnis=richte_ein(f)
-                db.setze_einrichtung(f['name'],ergebnis)
-                if ergebnis.get('status') != 'aktiv':
-                    privat.append((f['name'],ergebnis.get('status_grund','')))
         # Nur lokal; niemals in öffentliche Commits, Logs oder Artefakte hochladen.
-        _schreibe_text(d/'einrichtung_privat.md','# Private Einrichtung\n\n'+'\n'.join(text(n)+': '+text(g) for n,g in privat)+'\n')
-    return dict(bearbeitet=bearbeitet, portale=statistik)
+        _schreibe_text(d / 'einrichtung_privat.md', '# Private Einrichtung\n\n' + '\n'.join(text(n) + ': ' + text(g) for n, g in privat) + '\n')
+    return dict(bearbeitet=bearbeitet, offen=noch_offen, portale=statistik)
 
 
 if __name__ == '__main__':
-    lauf()
+    import json
+    import os
+    ergebnis = lauf(privat_alle=os.environ.get('EINRICHTUNG_PRIVAT', 'true') == 'true')
+    if os.environ.get('EINRICHTUNG_BERICHT'):  # nur Zahlen, für den Kommentar im Vorschlag
+        Path(os.environ['EINRICHTUNG_BERICHT']).write_text(json.dumps({'bearbeitet': ergebnis['bearbeitet'], 'offen': ergebnis['offen']}))
