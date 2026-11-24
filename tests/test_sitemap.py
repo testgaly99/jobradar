@@ -273,6 +273,7 @@ def test_tagesgrenze_vertagt_rest(monkeypatch):
     urls = [_job(i) for i in range(4)]
     abgerufen = _fake(monkeypatch, {SITEMAP: _sitemap(*urls), **{u: _seite() for u in urls}})
     monkeypatch.setattr(sitemap, "MAX_NEU", 2)
+    monkeypatch.setattr(sitemap, "_tag", lambda: 0)  # Startpunkt der Tagesgrenze fest
     bekannt = sitemap._ext_id(urls[3])
     stellen = sitemap.hole_stellen(ATS_ID, bekannte=frozenset({bekannt}))
     assert abgerufen == [SITEMAP] + urls[:2]

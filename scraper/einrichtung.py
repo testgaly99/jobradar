@@ -19,6 +19,7 @@ from scraper.companies import lade_unternehmen, wende_korrekturen_an
 from scraper.fehler import kurzfehler
 from scraper.filter import ist_relevant
 from scraper.http import ist_portal, registrierbare_domain as _regdom
+from scraper.quellen import websites as _websites
 from scraper.ranglisten_holen import lies_json, schreibe_json, schreibe_firmen
 from scraper.run import _schreibe_text
 
@@ -269,7 +270,7 @@ def _finde_portal(firma, holen=None):
     result.pop('ats_id', None)
     url = firma.get('careers_url') or firma.get('website')
     if not url:
-        return result
+        return dict(result, status_grund='keine Website bekannt')
     if ist_portal(urlsplit(url).hostname or ''):  # LinkedIn, StepStone, Indeed …: nie abrufen
         return dict(result, status_grund='Website ist ein Jobportal (nicht abgerufen)')
     kandidaten, unbekannt, verboten, abgelehnt, erreicht = {}, [], False, False, 1
@@ -413,9 +414,32 @@ def portal_statistik(firmen, raenge):
     return result
 
 
-def lauf(datenordner='data', budget_s=17100, mit_db=True):  # 285 min, vor dem 300-min-Limit des Workflow-Schritts
+def websites_ergaenzen(firmen, finden=None):
+    """Firmen ohne Website (Scoreboard/EPA) bekommen sie über Wikidata, nur wenn eindeutig; Fehler kosten nur diesen Schritt."""
+    ohne = [f for f in firmen if f.get('status') != 'aktiv' and not f.get('website') and not f.get('careers_url')]
+    if not ohne:
+        return 0
+    try:
+        gefunden = (finden or _websites.websites_zu_namen)([f['name'] for f in ohne])
+    except Exception as e:
+        print(f'Hinweis: Websites über Wikidata nicht ergänzt ({kurzfehler(e)})')
+        return 0
+    n = 0
+    for f in ohne:
+        g = gefunden.get(f['name'], {})
+        if g.get('website'):
+            f['website'] = g['website']
+            f['wikidata_id'] = f.get('wikidata_id') or g['wikidata_id']
+            n += 1
+    return n
+
+
+def lauf(datenordner='data', budget_s=17100, mit_db=True, finden=None):  # 285 min, vor dem 300-min-Limit des Schritts
     start, d = time.monotonic(), Path(datenordner)
     firmen = lade_unternehmen(d / 'companies.csv')
+    if websites_ergaenzen(firmen, finden):
+        firmen = wende_korrekturen_an(firmen, d / 'firmen_korrekturen.csv')  # Korrekturen haben immer Vorrang
+        schreibe_firmen(d / 'companies.csv', firmen)
     stand = lies_json(d / 'einrichtung_stand.json', {})
     raenge = _raenge(d)
     reihenfolge = sorted(range(len(firmen)), key=lambda i: (raenge.get(firmen[i]['name'], 10**9), firmen[i]['name']))

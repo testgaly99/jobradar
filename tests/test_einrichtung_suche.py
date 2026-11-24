@@ -231,3 +231,28 @@ def test_ausschnitt_ohne_de_treffer_ist_nicht_keine_stellen_de():
     r = e.richte_ein(firma('https://beispiel.example'), holen=lambda _: SimpleNamespace(text=html),
                     adapter={'greenhouse': lambda _: ausland})
     assert r['status'] == 'keine_stellen_de'  # vollständig gesehen: dann stimmt das Urteil
+
+
+def test_websites_werden_vor_der_suche_ergaenzt(tmp_path, monkeypatch):
+    # Plan „Websites ergänzen“: Firmen ohne Website bekommen sie über Wikidata, nur eindeutige; Fehler kosten nur den Schritt
+    from scraper.ranglisten_holen import schreibe_firmen
+    from scraper.companies import lade_unternehmen
+    ohne = dict(name='NVIDIA CORP', website='', status='offen', quellen=['scoreboard-world'])
+    unklar = dict(name='CEA', website='', status='offen', quellen=['epa-patente'])
+    schreibe_firmen(tmp_path / 'companies.csv', [ohne, unklar])
+    gesehen = []
+    monkeypatch.setattr(e, 'richte_ein', lambda f: gesehen.append(f.get('website')) or dict(f, status_grund='x'))
+    e.lauf(tmp_path, mit_db=False, finden=lambda namen: {'NVIDIA CORP': {'website': 'https://www.nvidia.com', 'wikidata_id': 'Q182477'},
+                                                         'CEA': {'grund': 'mehrdeutig'}})
+    firmen = {f['name']: f for f in lade_unternehmen(tmp_path / 'companies.csv')}
+    assert firmen['NVIDIA CORP']['website'] == 'https://www.nvidia.com' and firmen['CEA']['website'] == ''
+    assert 'https://www.nvidia.com' in gesehen
+
+    def kaputt(_):
+        raise RuntimeError('QLever weg')
+    assert e.websites_ergaenzen([dict(ohne)], kaputt) == 0
+
+
+def test_ohne_website_eigener_grund():
+    r = e.richte_ein(dict(name='X', website='', status='offen'), holen=lambda _: None, adapter={})
+    assert r['status_grund'] == 'keine Website bekannt'

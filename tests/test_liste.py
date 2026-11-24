@@ -93,6 +93,7 @@ def test_tagesgrenze_und_429(monkeypatch):
     assert _detail(2) not in abgerufen
     abgerufen = _fake(monkeypatch, {START: _liste([1, 2, 3]), **{_detail(i): _avature() for i in (1, 2, 3)}})
     monkeypatch.setattr(sitemap, "MAX_NEU", 1)
+    monkeypatch.setattr(sitemap, "_tag", lambda: 0)  # Startpunkt der Tagesgrenze fest
     stellen = liste.hole_stellen(ATS_ID, bekannte=frozenset({"JobDetail-3"}))
     assert [s.get("ext_id") for s in stellen] == ["JobDetail-1", "JobDetail-3", None]
 

@@ -13,6 +13,7 @@ from scraper import http
 from scraper.companies import SPALTEN, lade_unternehmen, wende_korrekturen_an
 from scraper.fehler import kurzfehler
 from scraper.kandidaten import LISTEN, ausgaben, zusammenfuehren, firmenname
+from scraper.quellen import websites
 from scraper.quellen import scoreboard, epa, wikidata
 from scraper.rankings import pruefe_ausgabe
 from scraper.run import _schreibe_text
@@ -116,6 +117,24 @@ def _anreichern(kandidaten, holen, bericht, warte=None):
         folge = 0
         for k in gruppe:
             _uebernehme(k, antwort, bericht)
+    _websites_ergaenzen(kandidaten, holen, bericht, warte)
+
+
+def _websites_ergaenzen(kandidaten, holen, bericht, warte):
+    """Plan 2026-11-24: Kandidaten ohne Website (Scoreboard/EPA liefern nur Namen) über Wikidata, nur wenn eindeutig."""
+    ohne = [k for k in kandidaten if not k.get('website')]
+    if not ohne:
+        return
+    try:
+        gefunden = websites.websites_zu_namen([k['name'] for k in ohne], holen, warte)
+    except Exception as e:
+        bericht.append(f'Websites über Wikidata nicht ergänzt ({kurzfehler(e)})')
+        return
+    for k in ohne:
+        g = gefunden.get(k['name'], {})
+        if g.get('website'):  # ohne Treffer: steht später mit „keine Website bekannt“ im Einrichtungsbericht
+            k['website'] = g['website']
+            k.setdefault('wikidata_id', g['wikidata_id'])
 
 
 def _uebernehme(k, antwort, bericht):
