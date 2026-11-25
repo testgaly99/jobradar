@@ -18,6 +18,7 @@ class FakeDB:
                          'anforderungen': [{'id': 'a1', 'text': GEHEIM_ANZ, 'muss': True},
                                            {'id': 'a2', 'text': 'Python', 'muss': True}]} for i in range(stellen)]
         self.grenze = None
+        self.schaetz, self.schaetz_fehler = [], False
 
     def admin_ids(self):
         return [{'user_id': 'admin-1'}]
@@ -37,6 +38,11 @@ class FakeDB:
     def stellen_fuer_abgleich(self, owner, grenze):
         self.grenze = grenze
         return self.stellen
+
+    def stellen_fuer_schaetzung(self, owner):
+        if self.schaetz_fehler:
+            raise RuntimeError('Geheimfirma kaputt')
+        return self.schaetz
 
     def speichere_ergebnis(self, owner, ziel, **daten):
         self.ergebnisse.append((ziel, daten))
@@ -185,3 +191,67 @@ def test_text_lesen_word(tmp_path):
     d.add_paragraph('Englisch C1')
     d.save(tmp_path / 'cv.docx')
     assert cv_abgleich.text_lesen(tmp_path / 'cv.docx') == 'Regelmäßig SQL-Abfragen erstellt.\nEnglisch C1'
+
+
+def _anf(n, muss=True):
+    return [{'id': f'a{i}', 'text': 't', 'muss': muss} for i in range(n)]
+
+
+def _je(anf, farben):
+    return {a['id']: {'cv1': {'farbe': f}} for a, f in zip(anf, farben)}
+
+
+def test_passung_sortwert():
+    sw = cv_abgleich.passung_sortwert
+    a = _anf(10)
+    assert sw(a, _je(a, ['gruen'] * 10), ['cv1']) == 0
+    assert sw(a, _je(a, ['rot'] + ['gruen'] * 9), ['cv1']) >= 1000
+    s = _anf(10, muss=False)
+    assert sw(s, _je(s, ['rot'] + ['gruen'] * 9), ['cv1']) == 15
+    assert sw(a, _je(a, ['gelb', 'gelb'] + ['gruen'] * 8), ['cv1']) == 20
+    assert sw([], {}, ['cv1']) is None
+
+
+def test_offen_schaetzung_darf_ueberschrieben_werden():
+    k = [{'job_id': 'J1', 'anforderungs_hash': 'x', 'anforderungen': [{'id': 'a'}]}]
+    assert cv_abgleich.offen(k, [{'job_id': 'J1', 'application_id': None, 'weg': 'schaetzung'}], 50) == k
+
+
+def test_claude_ergebnis_hat_sortwert():
+    db = FakeDB()
+    _lauf(db, Claude())
+    assert isinstance(db.ergebnisse[0][1]['passung_sortwert'], int)
+
+
+def _schaetz_stellen(n):
+    return [{'job_id': f'S:{i}', 'anforderungs_hash': f's{i}',
+             'anforderungen': [{'id': 'a1', 'text': GEHEIM_ANZ, 'muss': True}, {'id': 'a2', 'text': 'Python', 'muss': True}]}
+            for i in range(n)]
+
+
+def test_schaetzung_nur_gruen_gelb_und_ohne_claude():
+    db, c = FakeDB(stellen=0), Claude()
+    db.schaetz = _schaetz_stellen(3)
+    _lauf(db, c)
+    assert c.aufrufe == 0 and len(db.ergebnisse) == 3
+    for ziel, d in db.ergebnisse:
+        assert d['weg'] == 'schaetzung' and d['passung_sortwert'] is not None
+        assert {e['farbe'] for a in d['anforderungen'] for e in a['je_cv'].values()} <= {'gruen', 'gelb'}
+
+
+def test_schaetzung_haelt_zeitbudget(monkeypatch):
+    db = FakeDB(stellen=0)
+    db.schaetz = _schaetz_stellen(10)
+    t = iter(range(0, 10000, 400))  # jeder Aufruf +400 s
+    monkeypatch.setattr(cv_abgleich.time, 'monotonic', lambda: next(t))
+    _lauf(db, Claude())
+    assert 0 < len(db.ergebnisse) < 10
+
+
+def test_schaetzfehler_bricht_nicht_ab(capsys):
+    db = FakeDB()
+    db.schaetz_fehler = True
+    assert _lauf(db, Claude()) == 0
+    assert len(db.ergebnisse) == 1
+    log = capsys.readouterr().out
+    assert 'Schätzung' in log and 'Geheimfirma' not in log
