@@ -64,7 +64,7 @@ function zugAktionen(sb: unknown) {
   return ausfuehren(lade("../app/bewerbungen/zug-actions.ts"), {
     "next/cache": { revalidatePath: () => {} },
     "@/lib/supabase/server": { createClient: async () => sb },
-    "@/lib/bewerbung": bewerbung, "@/lib/filter": filter, "@/lib/tracker-daten": tracker, "@/lib/zug": zug, "@/lib/offline": offline,
+    "@/lib/bewerbung": bewerbung, "@/lib/filter": filter, "@/lib/tracker-daten": tracker, "@/lib/tracker-karte": karte, "@/lib/zug": zug, "@/lib/offline": offline,
   }) as unknown as { zugAusfuehren: (id: string, von: string, ziel: { status: string }, trotzdem?: boolean) => Promise<{ ok: boolean; fehler?: string }> };
 }
 
@@ -105,7 +105,7 @@ function formular(sb: unknown) {
     "next/navigation": { notFound: () => { throw new Error("404"); }, redirect: (p: string) => { throw new Error(p); }, RedirectType: { replace: "replace" } },
     "next/cache": { revalidatePath: () => {} },
     "@/lib/supabase/server": { createClient: async () => sb },
-    "@/lib/bewerbung": bewerbung, "@/lib/filter": filter, "@/lib/tracker-daten": tracker, "@/lib/zug": zug, "@/lib/offline": offline,
+    "@/lib/bewerbung": bewerbung, "@/lib/filter": filter, "@/lib/tracker-daten": tracker, "@/lib/tracker-karte": karte, "@/lib/zug": zug, "@/lib/offline": offline,
   }) as unknown as { abschnittSpeichern: (id: string, a: string, f: FormData) => Promise<void> };
 }
 const ablauf = (extra: Record<string, string> = {}) => {
