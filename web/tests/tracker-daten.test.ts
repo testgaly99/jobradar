@@ -30,3 +30,10 @@ test("baueKarte: offlineSeit nur bei geschlossener Stelle, Tag nach zuletzt_gese
   assert.equal(baueKarte({ ...a, jobs: { status: "aktiv", zuletzt_gesehen: "2026-11-24" } }, [], [], "2026-11-25").offlineSeit, null);
   assert.equal(baueKarte(a, [], [], "2026-11-25").offlineSeit, null);
 });
+
+test("baueKarte: merk_stufe wird übernommen, fehlt sie, gilt gemerkt", () => {
+  const a = { id: "a", firma: "X", titel: "Y", status: "gemerkt" as const, erstellt_am: "2026-11-01T10:00:00Z" };
+  assert.equal(baueKarte({ ...a, merk_stufe: "neu" }, [], [], "2026-11-25").merkStufe, "neu");
+  assert.equal(baueKarte({ ...a, merk_stufe: "spaeter" }, [], [], "2026-11-25").merkStufe, "spaeter");
+  assert.equal(baueKarte(a, [], [], "2026-11-25").merkStufe, "gemerkt");
+});

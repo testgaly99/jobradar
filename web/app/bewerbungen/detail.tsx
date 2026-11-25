@@ -4,7 +4,7 @@ import { istUmgerechnet, UMGERECHNET_HINWEIS } from "@/lib/steckbrief";
 import { BOARD_SPALTEN, type Karte } from "@/lib/tracker-karte";
 import type { Detail } from "@/lib/tracker-daten";
 import FirmenLogo from "../firmenlogo";
-import { TrotzdemForm } from "./knoepfe";
+import { MerkKnoepfe, TrotzdemForm } from "./knoepfe";
 import { zugAusfuehren } from "./zug-actions";
 
 const leer = <span className="gedaempft">–</span>;
@@ -25,6 +25,7 @@ export default function DetailAnsicht({ karte, detail }: { karte: Karte; detail:
       </div>
       {karte.offlineSeit && <p><span className="chip chip-offline">Offline seit {datumDe(karte.offlineSeit)}</span></p>}
       {karte.offlineSeit && karte.status === "gemerkt" && <TrotzdemForm action={zugAusfuehren.bind(null, karte.id, "gemerkt", { status: "beworben" }, true)} />}
+      {karte.status === "gemerkt" && <MerkKnoepfe id={karte.id} stufe={karte.merkStufe} />}
       {karte.status === "abgeschlossen" ? (
         <p className="chip" data-status="abgeschlossen">Archiv{karte.ergebnis ? ` · ${ERGEBNIS_LABEL[karte.ergebnis] ?? karte.ergebnis}` : ""}</p>
       ) : (

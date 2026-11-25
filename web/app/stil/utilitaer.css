@@ -159,3 +159,8 @@
 
 /* Anzeige offline: gleiche Bernsteinfarbe wie "neu" (Warnhinweis, kein Fehler) */
 .chip-offline { background: var(--color-neu); color: var(--color-neu-ink); }
+
+/* Merk-Stufe auf der Karte: gleiche Bernsteinfarbe wie "neu" */
+.chip-stufe { background: var(--color-neu); color: var(--color-neu-ink); }
+.meine-gruppe { margin: var(--space-3, 1rem) 0 0; font-weight: 600; }
+.meine-gruppe h3 { font-size: inherit; margin: 0; }

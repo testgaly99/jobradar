@@ -5,7 +5,7 @@ import { leseTabelle, mitArchiv, standardRichtung } from "../lib/bewerbung.ts";
 
 const k = (id: string, datum?: string, schritt?: string): Karte => ({
   id, firma: id, titel: null, status: "beworben", ergebnis: null, interesse: null, beworben_am: null, erstellt_am: "2026-11-01",
-  runde: null, kommentar: null, logo_url: null, gehalt: null, letzterSchritt: "", naechsterTermin: datum ? { datum, text: "x" } : null, schrittFaellig: schritt ?? null, offlineSeit: null,
+  runde: null, kommentar: null, logo_url: null, gehalt: null, letzterSchritt: "", naechsterTermin: datum ? { datum, text: "x" } : null, schrittFaellig: schritt ?? null, offlineSeit: null, merkStufe: "gemerkt",
 });
 
 test("vorauswahl: gewünschte id gewinnt, wenn sie in der Liste ist", () => {

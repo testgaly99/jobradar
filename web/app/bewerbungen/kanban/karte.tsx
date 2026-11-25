@@ -60,6 +60,7 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
       </div>
       {karte.titel && <p>{karte.titel}</p>}
       {karte.status === "abgeschlossen" && <p><span className="chip chip-ergebnis">{ERGEBNIS_LABEL[karte.ergebnis ?? ""] ?? "ohne Ergebnis"}</span></p>}
+      {karte.status === "gemerkt" && karte.merkStufe !== "gemerkt" && <p><span className="chip chip-stufe">{karte.merkStufe === "neu" ? "Neu" : "Später"}</span></p>}
       {karte.offlineSeit && <p><span className="chip chip-offline">Offline seit {datumDe(karte.offlineSeit)}</span></p>}
       {karte.gehalt && <p className="klein" title={istUmgerechnet(karte.gehalt) ? UMGERECHNET_HINWEIS : undefined}>{karte.gehalt}</p>}
       {karte.letzterSchritt && <p className="klein gedaempft">{karte.letzterSchritt}</p>}
