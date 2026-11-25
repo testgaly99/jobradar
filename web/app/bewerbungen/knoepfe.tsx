@@ -100,3 +100,22 @@ export function LinkFormular() {
     </form>
   );
 }
+
+// Weiche Ausnahme bei offener Sperre ("Anzeige offline"): erst Knopf, dann Rückfrage (kein confirm()), dann die Aktion mit trotzdem = true.
+// Aktionen, die statt zu springen {ok:false, fehler} liefern (Board-Züge), zeigen den Fehler hier an.
+export function TrotzdemForm({ action, felder }: { action: (f: FormData) => Promise<unknown>; felder?: Record<string, string> }) {
+  const [frage, setFrage] = useState(false);
+  const [fehler, setFehler] = useState("");
+  if (!frage) return <button type="button" className="knopf knopf-rand knopf-schmal" onClick={() => setFrage(true)}>Schon beworben? Trotzdem eintragen</button>;
+  return (
+    <form className="knopfreihe" action={async (f) => {
+      const r = await action(f);
+      if (r && typeof r === "object" && "fehler" in r) setFehler(String(r.fehler));
+    }}>
+      {Object.entries(felder ?? {}).map(([n, w]) => <input key={n} type="hidden" name={n} value={w} />)}
+      <SendeKnopf text="Ja, eintragen" klasse="knopf knopf-schmal" />
+      <button type="button" className="knopf knopf-rand knopf-schmal" onClick={() => setFrage(false)}>Abbrechen</button>
+      {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+    </form>
+  );
+}

@@ -11,8 +11,8 @@ export { spaltenFehlen };
 export type { Karte };
 
 const BASIS = "id,firma,titel,status,ergebnis,interesse,beworben_am,erstellt_am,naechster_schritt,naechster_schritt_faellig,geaendert_am,angebot_fix,gehalt_wunsch,gehalt_spanne_anzeige";
-const VOLL = `${BASIS},runde,kommentar,jobs(steckbrief,companies(logo_url))`;
-const OHNE = `${BASIS},jobs(steckbrief)`;
+const VOLL = `${BASIS},runde,kommentar,jobs(steckbrief,status,zuletzt_gesehen,companies(logo_url))`;
+const OHNE = `${BASIS},jobs(steckbrief,status,zuletzt_gesehen)`;
 
 const LADEFEHLER = "Bewerbungen konnten nicht geladen werden.";
 

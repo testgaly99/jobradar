@@ -156,3 +156,6 @@
 .cvm-1 { display: none; }
 .cv-abgleich:has(#cv-spalte-1:checked) .cvm-1 { display: inline-flex; }
 .cv-abgleich:has(#cv-spalte-1:checked) .cvm-0 { display: none; }
+
+/* Anzeige offline: gleiche Bernsteinfarbe wie "neu" (Warnhinweis, kein Fehler) */
+.chip-offline { background: var(--color-neu); color: var(--color-neu-ink); }

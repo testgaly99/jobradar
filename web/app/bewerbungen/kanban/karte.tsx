@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, type MouseEvent, type TouchEvent } from "react";
 import Link from "next/link";
 import { useDraggable } from "@dnd-kit/core";
-import { ERGEBNIS_LABEL, tagDe, type Status } from "@/lib/bewerbung";
+import { ERGEBNIS_LABEL, datumDe, tagDe, type Status } from "@/lib/bewerbung";
 import FirmenLogo from "../../firmenlogo";
 import { istUmgerechnet, UMGERECHNET_HINWEIS } from "@/lib/steckbrief";
 import { rundePatch } from "@/lib/zug";
@@ -60,6 +60,7 @@ export default function KarteAnsicht({ karte, ohneSpalten, neu, fokus, aktionen 
       </div>
       {karte.titel && <p>{karte.titel}</p>}
       {karte.status === "abgeschlossen" && <p><span className="chip chip-ergebnis">{ERGEBNIS_LABEL[karte.ergebnis ?? ""] ?? "ohne Ergebnis"}</span></p>}
+      {karte.offlineSeit && <p><span className="chip chip-offline">Offline seit {datumDe(karte.offlineSeit)}</span></p>}
       {karte.gehalt && <p className="klein" title={istUmgerechnet(karte.gehalt) ? UMGERECHNET_HINWEIS : undefined}>{karte.gehalt}</p>}
       {karte.letzterSchritt && <p className="klein gedaempft">{karte.letzterSchritt}</p>}
       {karte.naechsterTermin && <p className="klein">{karte.naechsterTermin.text}: {tagDe(karte.naechsterTermin.datum)}</p>}

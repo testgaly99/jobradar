@@ -10,9 +10,10 @@ import {
 import Abschnitte from "../../abschnitte";
 import { leseAbschnitte } from "@/lib/anzeige";
 import { AbgleichKopf, ladeAbgleich } from "../../cv-abgleich";
-import { zurueckZuGemerkt } from "@/lib/zug";
+import { STATUS_RANG, zurueckZuGemerkt } from "@/lib/zug";
+import { offlineSeit } from "@/lib/offline";
 import { bewerbungenBei, bewerbungenLink } from "@/lib/bewerbung-anlegen";
-import { DruckKnopf, LoeschForm, SendeKnopf } from "@/app/bewerbungen/knoepfe";
+import { DruckKnopf, LoeschForm, SendeKnopf, TrotzdemForm } from "@/app/bewerbungen/knoepfe";
 import Ungespeichert from "./ungespeichert";
 import { AnlagenHaken, AnschreibenBlock } from "./anschreiben";
 import { ANLAGE_ARTEN } from "@/lib/dokumente";
@@ -74,7 +75,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
   const sb = await createClient();
   const { data: a } = await sb.from("applications").select("*").eq("id", id).maybeSingle();
   if (!a) notFound();
-  const [ev, pe, iv, dok, weitere, vl, bk, ba] = await Promise.all([
+  const [ev, pe, iv, dok, weitere, vl, bk, ba, jb] = await Promise.all([
     sb.from("application_events").select("id,datum,alter_status,neuer_status,notiz").eq("application_id", id).order("datum", { ascending: false }),
     sb.from("contacts").select("*").eq("application_id", id).order("name"),
     sb.from("interviews").select("*").eq("application_id", id).order("datum", { ascending: false }),
@@ -83,8 +84,12 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
     sb.from("anschreiben_vorlagen").select("id,name,betreff,text").order("name"),
     sb.from("briefkopf").select("name,strasse,plz_ort,telefon,email,linkedin").maybeSingle(),
     sb.from("bewerbung_anlagen").select("document_id").eq("application_id", id),
+    // Verknüpfte Stelle: geschlossen = Anzeige offline (ohne Stelle nie offline).
+    a.job_id ? sb.from("jobs").select("status,zuletzt_gesehen").eq("id", a.job_id as string).maybeSingle() : null,
   ]);
   const row = a as Row;
+  const offline = offlineSeit(jb?.data);
+  const gesperrt = offline !== null && row.status === "gemerkt"; // Bewerben nur über „Trotzdem eintragen“
   // CV-Abgleich nur für Bewerbungen ohne Stelle (Q111); mit Stelle steht er auf der Stellenseite.
   const anf = a as { job_id?: string | null; anforderungsliste?: unknown; anforderungs_hash?: unknown };
   const cv = !anf.job_id && "anforderungsliste" in anf ? await ladeAbgleich(sb, { application_id: id }, anf.anforderungsliste, anf.anforderungs_hash) : null;
@@ -140,6 +145,7 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
       <h1 id="bewerbung-titel">{v(row.firma) || "(ohne Firma)"}: {v(row.titel)}</h1>
       <p className="chips kein-druck">
         <span className="chip" data-status={v(row.status)}>{STATUS_LABEL[row.status as Status]}</span>
+        {offline && <span className="chip chip-offline">Offline seit {datumDe(offline)}</span>}
         {row.ergebnis && <span className="chip">{ERGEBNIS_LABEL[row.ergebnis as string]}</span>}
         {link && <a href={link} target="_blank" rel="noopener noreferrer">Anzeige öffnen</a>}
       </p>
@@ -200,13 +206,14 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           <form action={speichern("ablauf")} className="formular">
           <label>Status
             <select name="status" defaultValue={v(row.status)}>
-              {STATUS.map((s) => <option key={s} value={s} disabled={zurueckZuGemerkt(row.status as Status, s)}>{STATUS_LABEL[s]}</option>)}
+              {STATUS.map((s) => <option key={s} value={s} disabled={zurueckZuGemerkt(row.status as Status, s) || (gesperrt && STATUS_RANG[s] >= STATUS_RANG.beworben)}>{STATUS_LABEL[s]}</option>)}
             </select>
           </label>
           <Text a={row} name="naechster_schritt" label="Nächster Schritt" />
           <Text a={row} name="naechster_schritt_faellig" label="Fällig am" type="date" />
           <SendeKnopf text="Ablauf speichern" />
         </form>
+        {gesperrt && <TrotzdemForm action={speichern("ablauf")} felder={{ status: "beworben", trotzdem: "1", naechster_schritt: v(row.naechster_schritt), naechster_schritt_faellig: v(row.naechster_schritt_faellig) }} />}
         </details>
 
         <details className="karte kein-druck" open={hat("beworben_am", "bewerbungsweg", "referenznummer", "portal_hinweis", "cv_dokument_id", "anschreiben_dokument_id")}>
