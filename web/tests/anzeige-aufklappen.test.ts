@@ -70,3 +70,8 @@ test("anzeigeLaden: fehlende Migration 018 (zweite Abfrage scheitert) liefert An
 test("anzeigeLaden: scheiternde Anzeigen-Abfrage ergibt Fehler", async () => {
   assert.ok("fehler" in await modul({ id: "u", admin: false }, undefined, "abschnitte").anzeigeLaden(jobId));
 });
+
+test("anzeigeLaden: Nachtschätzung (weg = schaetzung) setzt geschaetzt", async () => {
+  const r = await modul({ id: "u", admin: false }, { zustand: "fertig", spalten: ["S1"], geschaetzt: true }).anzeigeLaden(jobId);
+  assert.equal((r as { geschaetzt: boolean }).geschaetzt, true);
+});

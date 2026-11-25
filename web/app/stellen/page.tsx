@@ -7,6 +7,7 @@ import { datumDe } from "@/lib/bewerbung";
 import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, standardSortierung, stadtAnzeige, tagePlus, type Gruppe, type Sortierung } from "@/lib/filter";
 import { istUmgerechnet, UMGERECHNET_HINWEIS, kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
+import { passungVerfuegbar } from "@/lib/passung";
 import { merken, entmerken } from "./actions";
 import AnzeigeAufklappen from "./anzeige-aufklappen";
 import FilterBlock from "./filterblock";
@@ -20,6 +21,9 @@ import { STUFEN, deutschText, deutschWirksam, leseDeutsch } from "@/lib/sprachni
 
 // Spalte jobs.deutsch_stufe fehlt (Migration 013 offen): Postgres 42703, PostgREST PGRST204
 const OHNE_DEUTSCH_SPALTE = ["42703", "PGRST204"];
+
+// Postgres 42P01/42501, PostgREST PGRST200/201/205: View fehlt, nicht lesbar oder Einbettung nicht erkannt
+const PASSUNG_FEHLT = ["42P01", "42501", "PGRST200", "PGRST201", "PGRST205"];
 
 const TITEL: Record<Gruppe, string> = {
   liste: "Liste",
@@ -40,21 +44,25 @@ const bekannt = (s: string | null) => (s && s.toLowerCase() !== "unbekannt" ? s 
 export default async function Seite({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
   let roh = leseFilter(sp);
-  // Gemerkte Sortierung (Cookie) gilt nur ohne sort in der Adresse; Passung gibt es noch nicht (Paket 4).
+  const sb = await createClient();
+  const nutzer = await aktuellerNutzer();
+  const passung = await passungVerfuegbar(sb, nutzer);
+  // Gemerkte Sortierung (Cookie) gilt nur ohne sort in der Adresse.
   if (!sp.sort) {
     let c: { sort?: string; kat?: string } = {};
     try { c = JSON.parse((await cookies()).get("stellen_sort")?.value ?? "{}") ?? {}; } catch { /* kaputtes Cookie: Standard */ }
-    roh = { ...roh, sort: standardSortierung(false, typeof c.sort === "string" ? c.sort : undefined), ansicht_kategorie: roh.ansicht_kategorie || (typeof c.kat === "string" && c.kat.length < 100 ? c.kat : "") };
+    roh = { ...roh, sort: standardSortierung(passung, typeof c.sort === "string" ? c.sort : undefined), ansicht_kategorie: roh.ansicht_kategorie || (typeof c.kat === "string" && c.kat.length < 100 ? c.kat : "") };
   }
   const fehler = typeof sp.fehler === "string" ? sp.fehler : null;
-  const sb = await createClient();
   // Facetten zuerst: ohne Migration 005 fehlt "land", dann wird ein ?land= ignoriert statt die Abfrage zu sprengen.
   const fac = await sb.rpc("facetten"); // fehlt die Funktion noch (002_facetten.sql), gibt es Filter ohne Zahlen
   const fa: Facetten = fac.error ? {} : (fac.data ?? {});
-  const nutzer = await aktuellerNutzer();
   // Besucher ohne Konto dürfen den Anzeigentext nicht lesen (Migration 007): Suche und Ausschluss nur im Titel.
   const katalog = await ladeRankingKatalog(sb, !!nutzer);
   const f = rankingFilter(landNurMitFacette(roh, !!fa.land), !!nutzer);
+  // Nur angebotene Sortierungen gelten: ein nicht verfügbares ?sort=passung oder Cookie sortiert nie und zeigt kein falsches Feld.
+  const sortOptionen: Sortierung[] = [...(passung ? ["passung" as const] : []), "neu", "firma", "titel", "groesse", ...(nutzer && katalog.verfuegbar ? ["rangliste" as const] : [])];
+  if (!sortOptionen.includes(f.sort)) f.sort = "neu";
   const listenHinweis = rankingHinweis(f, katalog);
   const listeGesperrt = !!listenHinweis && f.liste.length > 0;
   // Gespeicherte Spracheinstellung (Konto); fehlt die Tabelle (Migration 013), gilt nur die Adresse.
@@ -65,6 +73,11 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
     sb.from("laeufe").select("datum").order("datum", { ascending: true }).limit(1).maybeSingle(), // fehlt die Tabelle: nur 3-Tage-Regel
   ]);
+  // View fehlt (Migration 027) oder nicht lesbar: Liste nach neu statt Fehlerseite.
+  if (f.sort === "passung" && ergebnis.error && PASSUNG_FEHLT.includes(ergebnis.error.code ?? "")) {
+    f.sort = "neu";
+    ergebnis = await stellenAbfrage(sb, { ...f, deutsch });
+  }
   const deutschFehlt = !!deutsch && OHNE_DEUTSCH_SPALTE.includes(ergebnis.error?.code ?? "");
   if (deutschFehlt) {
     deutsch = "";
@@ -102,8 +115,6 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
     for (const a of apps.data ?? []) status.set(a.job_id, { status: a.status, id: a.id });
     for (const s of sbr.error ? [] : (sbr.data ?? [])) steckbriefe.set(s.id, s.steckbrief);
   }
-
-  const sortOptionen: Sortierung[] = ["neu", "firma", "titel", "groesse", ...(nutzer && katalog.verfuegbar ? ["rangliste" as const] : [])];
 
   return (
     <>

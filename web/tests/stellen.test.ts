@@ -92,3 +92,35 @@ for (const mitListe of [false, true]) {
     }
   });
 }
+
+function sbMitAufrufen(aufrufe: URL[]) {
+  return createClient("https://datenbank.example.invalid", "test-ohne-zugangsdaten", {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    global: { fetch: async (input) => {
+      aufrufe.push(new URL(typeof input === "string" ? input : input instanceof URL ? input.href : input.url));
+      return new Response("[]", { headers: { "Content-Type": "application/json" } });
+    } },
+  });
+}
+
+test("sort=passung: View stellen_passung, kleinster Wert zuerst, ohne Ergebnis am Ende, dann neueste", async () => {
+  const aufrufe: URL[] = [];
+  await stellenAbfrage(sbMitAufrufen(aufrufe), { ...leseFilter({ sort: "passung" }) });
+  assert.equal(aufrufe[0].pathname, "/rest/v1/stellen_passung");
+  assert.equal(aufrufe[0].searchParams.get("order"), "passung_sortwert.asc.nullslast,erstmals_gesehen.desc,id.asc");
+});
+
+test("sort=passung mit Listenfilter: ranking_stellen, gleiche Sortierung", async () => {
+  const aufrufe: URL[] = [];
+  await stellenAbfrage(sbMitAufrufen(aufrufe), { ...leseFilter({ sort: "passung", liste: "test-a" }) });
+  assert.equal(aufrufe[0].pathname, "/rest/v1/rpc/ranking_stellen");
+  assert.equal(aufrufe[0].searchParams.get("order"), "passung_sortwert.asc.nullslast,erstmals_gesehen.desc,id.asc");
+});
+
+test("andere Sortierungen fassen die View nie an (Gäste dürfen sie nicht lesen)", async () => {
+  for (const sort of ["neu", "firma", "titel", "groesse", "rangliste"]) {
+    const aufrufe: URL[] = [];
+    await stellenAbfrage(sbMitAufrufen(aufrufe), { ...leseFilter({ sort }) });
+    assert.equal(aufrufe[0].pathname, "/rest/v1/jobs", sort);
+  }
+});

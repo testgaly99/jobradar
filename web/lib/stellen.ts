@@ -16,7 +16,8 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   let q = mitListe
     ? sb.rpc("ranking_stellen", { p_listen: f.liste, ...(f.rangkategorie.length ? { p_kategorien: f.rangkategorie } : {}) }, { count: "exact" })
       .select(SPALTEN.replace("companies!inner(groesse_klasse,groesse_rang,kategorie,aktiv)", "companies"))
-    : sb.from("jobs").select(SPALTEN, { count: "exact" })
+    // Die View gibt es nur für Angemeldete; die Seite lässt sort=passung nur für Konten mit Passung zu.
+    : sb.from(f.sort === "passung" ? "stellen_passung" : "jobs").select(SPALTEN, { count: "exact" })
       .eq("status", "offen").eq("sichtbar", true).eq("companies.aktiv", true);
   if (f.groesse.length) q = q.in(mitListe ? "groesse_klasse" : "companies.groesse_klasse", f.groesse);
   if (f.kategorie.length) q = q.overlaps(mitListe ? "kategorie" : "companies.kategorie", arr(f.kategorie));
@@ -39,8 +40,9 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   if (de !== null) q = q.or(`deutsch_stufe.is.null,deutsch_stufe.lte.${de}`);
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
   const { von, bis } = seitenBereich(f.seite);
-  // passung und rangliste sortieren bis Paket 4 wie neu
-  const o = f.sort === "groesse" ? q.order(mitListe ? "companies->groesse_rang" : "companies(groesse_rang)")
+  // rangliste sortiert bis Paket 5 wie neu; passung: kleinster Wert zuerst, ohne Ergebnis am Ende, dann neueste
+  const o = f.sort === "passung" ? q.order("passung_sortwert", { nullsFirst: false }).order("erstmals_gesehen", { ascending: false }).order("id")
+    : f.sort === "groesse" ? q.order(mitListe ? "companies->groesse_rang" : "companies(groesse_rang)")
     .order("erstmals_gesehen", { ascending: false }).order("id")
     : f.sort === "firma" ? q.order("unternehmen").order("id")
     : f.sort === "titel" ? q.order("titel").order("id")

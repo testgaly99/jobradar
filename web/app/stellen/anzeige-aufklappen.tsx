@@ -24,7 +24,7 @@ export default function AnzeigeAufklappen({ jobId }: { jobId: string }) {
       <summary>Anzeige lesen</summary>
       {laedt && <p className="gedaempft" role="status">Lädt …</p>}
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
-      {daten && <Abschnitte abschnitte={daten.abschnitte} text={daten.text} begriffe={daten.begriffe} ebene={3} spalten={daten.spalten} />}
+      {daten && <Abschnitte abschnitte={daten.abschnitte} text={daten.text} begriffe={daten.begriffe} ebene={3} spalten={daten.spalten} geschaetzt={daten.geschaetzt} />}
     </details>
   );
 }
