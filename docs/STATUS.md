@@ -75,6 +75,7 @@ Regel (Nutzer 2026-11-25: „Do I have to remind you to check these things? I fe
 | P14 | Review-Befund 12: robots.txt je Host doppelt geladen (nur Zeit) | bei nächster Änderung an `einrichtung.py` |
 | P15 | Datenbanktest CV-Abgleich lief zuletzt 2026-11-24 live | beim nächsten Migrationspaket erneut |
 | P16 | Laufender Einrichtungslauf 45512248525 (alter Ablauf) legt einen eigenen Vorschlag an; nach dem Hochladen des nächtlichen Ablaufs dessen Zweig als `einrichtung-laufend` übernehmen und den alten Vorschlag schließen, sonst wiederholt die erste Nacht dieselben Firmen | nach Lauf-Ende (ca. 05:40), vor dem ersten Nachtlauf |
+| P18 | Paket „Firmenauswahl erweitern“ (Q302–Q305) planen: Top 10 je Land der 30 größten Volkswirtschaften (Wikidata, nur mit Standort in DE oder Remote), Mittelstand (DPMA/Wikidata), Remote-Firmen (offen lizenzierte Listen), Prestige über Handlisten; Länder: China, Türkei, Israel dabei, Russland/Iran und Länder mit umfassenden EU-Sanktionen nicht; sanktionierte Einzelfirmen nie | nach P3 (Laufzeit messen); vorher aktuelle EU-Sanktionsliste prüfen |
 | P17 | Erster automatischer Nachtlauf: Zweig/Vorschlag/Kommentar korrekt, Handlisten-Firmen zuerst, keine privaten Namen im öffentlichen Log | Morgen nach der ersten Nacht |
 
 Allgemeine Nutzer-Klicktests4/14 bleiben in ihrer bisherigen Liste. Keine der zurückgestellten Prüfungen gilt durch das Aufschieben als bestanden. Neue Codebefunde werden später beim jeweiligen Paket ergänzt. Keine Live-Aktion oder Veröffentlichung aus dieser Entscheidung abgeleitet.
