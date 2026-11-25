@@ -211,6 +211,34 @@ test("Sperre nur für gemerkte, offline, ohne trotzdem", () => {
 
 ---
 
+## Nachträge 2026-11-26 (Q330–Q332), vor Paket 5 auszuführen
+
+### Task 13: Sortier-Menü neu (Empfohlen, Richtung, Ranglisten-Untermenü)
+
+**Files:**
+- Modify: `web/lib/filter.ts` (`SORTIERUNG = ["passung", "neu", "groesse", "rangliste"]` – `firma`/`titel` entfallen, alte Adressen mit `sort=firma|titel` → Standard; `Filter.richtung: "auf" | "ab"` aus Adressparameter `dir`; `Filter.rangliste: string` aus Adressparameter `rl` = `"alle"` oder eine Listen-ID, ersetzt `ansicht_kategorie`/`kat`; Cookie `stellen_sort` speichert `sort`, `dir`, `rl`)
+- Modify: `web/lib/stellen.ts` (Richtung je Sortierung umkehren; Standardrichtung: Empfohlen = beste zuerst, Online seit = neueste zuerst, Größe = größte zuerst, Rangliste = Platz 1 zuerst; `passung_sortwert` bleibt `nullsFirst: false` in beiden Richtungen)
+- Modify: `web/app/stellen/sortierung.tsx` (eigenes Aufklapp-Menü statt `<select>`: Einträge „Empfohlen“ (Anzeigename für `passung`), „Online seit“, „Größe“, „Nach Rangliste ▸“; Untermenü öffnet bei Mauszeiger darüber und per Antippen/Tastatur (Enter, Pfeiltasten, Esc), Einträge „Alle Ranglisten“ + jede für das Konto sichtbare Liste; daneben Knopf ↑/↓ mit `aria-label` „Richtung umkehren“)
+- Modify: `web/app/stellen/page.tsx`, `web/app/stil/utilitaer.css`
+- Test: `web/tests/filter.test.ts`, `web/tests/stellen.test.ts`
+
+- [ ] **Step 1: Failing tests:** `leseFilter({ sort: "firma" }).sort` ist der Standard, nicht `firma`; `leseFilter({ dir: "auf" }).richtung === "auf"`, ungültig → `"ab"`; `leseFilter({ rl: "dax" }).rangliste === "dax"`, leer → `"alle"`; Abfrage `sort=neu, dir=auf` ordnet `erstmals_gesehen` aufsteigend; `sort=passung, dir=auf` ordnet `passung_sortwert` absteigend mit `nullsFirst: false`.
+- [ ] **Step 2–4:** Implementieren, `npm test`, `npx tsc --noEmit` grün. Keine Zahlen zur Passung, Anzeigename „Empfohlen“ überall (auch Klickfragen-Texte in der Oberfläche).
+- [ ] **Step 5:** Klicktest (Controller, gebündelt): Menü per Maus, Tastatur und 390 px. Commit.
+
+### Task 14: Seitenbreite und Feinschliff Stellenliste (Q330, Nutzer-Bildschirmfoto)
+
+**Files:**
+- Modify: `web/app/stil/utilitaer.css` (`--container` auf `1600px`; Kopfzeile volle Breite bleibt; Fließtext `.anzeige`/`.prosa` bleibt bei `70ch`)
+- Modify: `web/app/globals.css` nur falls nötig
+- Test: kein Unit-Test (reines CSS); Prüfung im Klicktest
+
+- [ ] **Step 1:** Breite umsetzen; Stellenliste nutzt die Breite (Filterleiste links, Liste rechts).
+- [ ] **Step 2:** Feinschliff aus dem Bildschirmfoto (1.912 px): Beschriftung der Sortierung bricht nicht um; Filterleiste ohne eigenen inneren Scrollbalken (scrollt mit der Seite); Kategorie-Etikett (z. B. „Große Unternehmen“) als Etikett in Textbreite statt vollbreitem Balken.
+- [ ] **Step 3:** Klicktest (Controller) bei 1.920 px und 390 px mit Bildschirmfoto zum Vergleich. Commit.
+
+**Auswirkung auf Paket 5:** Statt „Kategorie“ (Q321) wählt Task 13 `rl` = „Alle Ranglisten“ oder eine einzelne Liste. Task 11/12 zeigen bei `alle` alle sichtbaren Listen untereinander in fester Reihenfolge (`LISTEN_REIHENFOLGE`, Kategorien nur noch als Ordnungshilfe), bei einer einzelnen Liste nur deren Firmen nach Platz; `kat`/`ansicht_kategorie` entfällt.
+
 ## Paket 5: Listen-Ansicht „Nach Rangliste“
 
 ### Task 11: Daten der Listen-Ansicht
