@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { dateiname } from "@/lib/export";
-import { ANLAGE_ARTEN } from "@/lib/dokumente";
+import { ANLAGE_ARTEN, DATEIARTEN, mimeTyp } from "@/lib/dokumente";
 import { cvTextSpeichern, dokumentAnlegen, dokumentLoeschen, einwilligen } from "./actions";
 import { LoeschForm } from "../bewerbungen/knoepfe";
 
@@ -22,6 +22,8 @@ export function UploadFormular({ einwilligung }: { einwilligung: string | null }
     const datei = f.get("datei") as File;
     if (!datei || datei.size === 0) return setFehler("Bitte wähle eine Datei.");
     if (datei.size > MAX) return setFehler("Die Datei ist größer als 50 MB.");
+    const typ = mimeTyp(datei.name);
+    if (!typ) return setFehler("Erlaubt sind PDF, Word, JPG und PNG.");
     setFehler(""); setLaeuft(true);
     try {
       if (art === "cv" && einwilligung) {
@@ -33,7 +35,7 @@ export function UploadFormular({ einwilligung }: { einwilligung: string | null }
       const uid = c?.claims?.sub;
       if (!uid) return setFehler("Bitte melde dich an.");
       const pfad = `${uid}/${crypto.randomUUID()}-${dateiname(datei.name)}`;
-      const { error } = await sb.storage.from("dokumente").upload(pfad, datei);
+      const { error } = await sb.storage.from("dokumente").upload(pfad, new Blob([datei], { type: typ }));
       if (error) return setFehler("Hochladen hat nicht geklappt.");
       const r = await dokumentAnlegen(String(f.get("art")), String(f.get("name")), String(f.get("version_datum")), pfad, art === "anlage" ? String(f.get("anlage_art") ?? "") : undefined);
       if (r.fehler) { await sb.storage.from("dokumente").remove([pfad]); return setFehler(r.fehler); }
@@ -73,8 +75,8 @@ export function UploadFormular({ einwilligung }: { einwilligung: string | null }
       <label>Versionsdatum
         <input name="version_datum" type="date" required defaultValue={new Date().toISOString().slice(0, 10)} />
       </label>
-      <label>Datei (höchstens 50 MB)
-        <input name="datei" type="file" required />
+      <label>Datei (PDF, Word, JPG oder PNG, höchstens 50 MB)
+        <input name="datei" type="file" accept={Object.keys(DATEIARTEN).join(",")} required />
       </label>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
       <button className="knopf" type="submit" disabled={laeuft}>{laeuft ? "Lade hoch …" : "Hochladen"}</button>

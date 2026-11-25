@@ -130,7 +130,9 @@ def anforderungen_stellen():
 
 def anforderungen_bewerbungen():
     """Bewerbungen ohne Stelle (Q111): Anforderungen aus dem gegliederten Snapshot."""
-    return _alle_zeilen('applications', {'select': 'id,snapshot_abschnitte,anforderungs_hash', 'job_id': 'is.null', 'order': 'id'})
+    admins = {a['user_id'] for a in admin_ids()}
+    zeilen = _alle_zeilen('applications', {'select': 'id,owner_id,snapshot_abschnitte,anforderungs_hash', 'job_id': 'is.null', 'order': 'id'})
+    return sorted(zeilen, key=lambda z: z.get('owner_id') not in admins)  # Admin-Konten zuerst (Q307)
 
 
 def setze_anforderungen(tabelle, zeilen_id, liste, pruefsumme):
@@ -546,10 +548,37 @@ def schreibe(firma, neue, heute, unveraendert=(), schliessen=True):
     return sum(1 for i in gesehen if i not in alt), len(fehlend)
 
 
+JE_KONTO = 5  # Q307: höchstens so viele Einträge je weiterem Konto und Nacht
+
+
+def _gerecht(params, limit):
+    """Admin-Konten zuerst, dann höchstens JE_KONTO je weiterem Konto: Markierungen setzt jedes Konto selbst,
+    deshalb darf keines die anderen verdrängen (Sicherheitsprüfung 2026-11-25, Befund 6)."""
+    admins = [a['user_id'] for a in admin_ids()]
+    eigene = _req('GET', 'applications', params={**params, 'owner_id': _in(admins), 'limit': limit}) if admins else []
+    aus, je, voll, gesehen = list(eigene)[:limit], {}, set(admins), set()
+    for _ in range(20):  # jede volle Runde macht mind. ein Konto „voll“; 20 Runden als harte Grenze
+        if len(aus) >= limit:
+            break
+        andere = _req('GET', 'applications', params={**params, **({'owner_id': 'not.' + _in(sorted(voll))} if voll else {}), 'limit': 500})
+        for z in andere:
+            o = z.get('owner_id')
+            if len(aus) >= limit or z['id'] in gesehen or o in voll:
+                continue
+            gesehen.add(z['id'])
+            aus.append(z)
+            je[o] = je.get(o, 0) + 1
+            if je[o] >= JE_KONTO:
+                voll.add(o)  # in der nächsten Abfrage ausgeschlossen: viele alte Einträge eines Kontos verdrängen niemanden
+        if len(andere) < 500:
+            break
+    return aus
+
+
 def bewerbungen_zum_nachruesten(limit=50):
     """Bewerbungen aus Firmenseiten (Link-Schnellstart). Ohne Migration 012 antwortet PostgREST mit 400: dann nichts."""
     try:
-        return _req("GET", "applications", params={"select": "id,link,firma", "nachruesten": "eq.true", "limit": limit})
+        return _gerecht({"select": "id,owner_id,link,firma", "nachruesten": "eq.true", "order": "erstellt_am,id"}, limit)
     except RuntimeError as e:
         if ": 400 " not in str(e):
             raise
@@ -574,8 +603,8 @@ _ORIGINAL_FELDER = ('id,owner_id,geaendert_am,firma,titel,standort,link,portal_l
 
 def bewerbungen_original_offen(limit=20):
     try:
-        return _req('GET', 'applications', params={'select': _ORIGINAL_FELDER,
-                    'original_suche': 'eq.offen', 'job_id': 'is.null', 'order': 'erstellt_am,id', 'limit': min(20, max(0, limit))})
+        return _gerecht({'select': _ORIGINAL_FELDER, 'original_suche': 'eq.offen', 'job_id': 'is.null',
+                         'order': 'erstellt_am,id'}, min(20, max(0, limit)))
     except RuntimeError as exc:
         if ': 400 ' not in str(exc) or not any(code in str(exc) for code in ('42703', 'PGRST204')):
             raise

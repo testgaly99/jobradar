@@ -117,9 +117,10 @@ def test_alte_ats_kennung_nach_erfolgloser_suche_nicht_als_neuen_treffer_nutzen(
 
 def test_original_queue_filtert_verknuepfte_zeilen_vor_limit(monkeypatch):
     calls=[]
-    monkeypatch.setattr(db,'_req',lambda *a,**kw:calls.append(kw['params']) or [])
+    monkeypatch.setattr(db,'_req',lambda m,pfad,**kw:calls.append((pfad,kw['params'])) or ([{'user_id':'admin'}] if pfad=='admins' and not kw['params'].get('offset') else []))
     assert db.bewerbungen_original_offen()==[]
-    assert calls[0]['job_id']=='is.null' and calls[0]['limit']==20
+    bewerbungen=[p for pfad,p in calls if pfad=='applications']
+    assert len(bewerbungen)==2 and all(p['job_id']=='is.null' for p in bewerbungen) and bewerbungen[0]['limit']==20
 
 
 def test_hoechstens_20_suchen(stand,monkeypatch):

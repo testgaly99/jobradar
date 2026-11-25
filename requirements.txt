@@ -1,8 +1,37 @@
-requests>=2.32
-pytest>=8.0
-playwright>=1.49  # nur für Karriereseiten, die die Anzeige per JavaScript laden (scraper/browser_seite.py)
-numpy>=2.0  # CV-Abgleich Stufe 1 (Plan 6a)
-onnxruntime>=1.32  # e5-small im Nachtlauf (Plan 6a), MIT
-tokenizers>=0.23  # Zerlegung für e5-small (Plan 6a), Apache-2.0
-pypdf>=7.1  # Text aus CV-PDFs (Plan 6a), BSD-3-Clause
-python-docx>=1.2  # Text aus Word-CVs (Plan 6a), MIT
+# Alle Versionen fest (Q307): ein neues, evtl. gekapertes Release zieht nie unbemerkt in einen Lauf mit Geheimnissen ein.
+# Updates kommen monatlich als Sammel-Vorschlag (.github/dependabot.yml) und werden vor dem Übernehmen geprüft.
+requests==2.34.2
+pytest==9.2.0
+playwright==1.65.2  # nur für Karriereseiten, die die Anzeige per JavaScript laden (scraper/browser_seite.py)
+numpy==2.5.5  # CV-Abgleich Stufe 1 (Plan 6a)
+onnxruntime==1.32.0  # e5-small im Nachtlauf (Plan 6a), MIT
+tokenizers==0.23.3  # Zerlegung für e5-small (Plan 6a), Apache-2.0
+pypdf==7.1.1  # Text aus CV-PDFs (Plan 6a), BSD-3-Clause
+python-docx==1.2.0  # Text aus Word-CVs (Plan 6a), MIT
+
+# Unterpakete der obigen (Stand: Täglicher Lauf 2026-11-25)
+anyio==4.16.0
+certifi==2026.11.20
+charset_normalizer==3.5.3
+click==8.5.1
+filelock==4.3.1
+flatbuffers==25.12.19
+fsspec==2026.9.0
+greenlet==3.5.6
+h11==0.16.0
+hf-xet==1.8.0
+httpcore2==2.16.2
+httpx2==2.16.2
+huggingface-hub==2.4.0
+idna==3.20
+iniconfig==2.3.1
+lxml==6.1.3
+packaging==26.4
+pluggy==1.7.0
+protobuf==7.36.2
+pygments==2.21.0
+pyyaml==6.0.4
+tqdm==4.70.1
+truststore==0.10.5
+typing-extensions==4.16.0
+urllib3==2.8.0

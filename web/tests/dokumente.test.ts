@@ -1,6 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { loeschMeldung, pruefeDokument } from "../lib/dokumente.ts";
+import { loeschMeldung, mimeTyp, pruefeDokument } from "../lib/dokumente.ts";
+
+test("Dateiart aus der Endung, nicht vom Browser (Q308, Zweitprüfung K7)", () => {
+  assert.equal(mimeTyp("Lebenslauf.DOC"), "application/msword");
+  assert.equal(mimeTyp("cv.docx"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+  assert.equal(mimeTyp("zeugnis.jpeg"), "image/jpeg");
+  assert.equal(mimeTyp("seite.html"), null);
+  assert.equal(mimeTyp("pdf"), null);
+});
 
 const uid = "00000000-0000-4000-8000-000000000001";
 const pfad = `${uid}/test-dokument.pdf`;

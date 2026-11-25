@@ -3,6 +3,19 @@ import { datumOk } from "./bewerbung.ts";
 
 const ARTEN = ["cv", "anschreiben", "anlage"];
 export const ANLAGE_ARTEN: Record<string, string> = { zeugnis: "Zeugnis", zertifikat: "Zertifikat", sonstiges: "Sonstiges" };
+
+// Q308: dieselben Arten erlaubt der Speicher (Migration 025). Der Typ kommt aus der Endung, nicht vom Browser:
+// ein Browser ohne Office meldet .doc sonst ohne Typ, und der Speicher lehnt ab.
+export const DATEIARTEN: Record<string, string> = {
+  ".pdf": "application/pdf", ".doc": "application/msword",
+  ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+};
+
+export function mimeTyp(name: string): string | null {
+  const e = Object.keys(DATEIARTEN).find((x) => name.toLowerCase().endsWith(x));
+  return e ? DATEIARTEN[e] : null;
+}
 type DokumentDaten = { art: string; name: string; version_datum: string; storage_pfad: string; anlage_art?: string };
 
 export function pruefeDokument(uid: string, art: unknown, name: unknown, versionDatum: unknown, pfad: unknown, anlageArt?: unknown):

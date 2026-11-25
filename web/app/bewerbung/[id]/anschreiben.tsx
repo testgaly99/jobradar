@@ -42,7 +42,7 @@ export function AnschreibenBlock({ applicationId, vorlagen, kopf, anzeige, app, 
     const uid = c?.claims?.sub;
     if (!uid) { setMeldung({ text: "Bitte melde dich an.", fehler: true }); return false; }
     const pfad = `${uid}/${crypto.randomUUID()}.${endung}`;
-    const { error } = await sb.storage.from("dokumente").upload(pfad, daten instanceof File ? daten : new Blob([daten as BlobPart], { type: typ }), { contentType: typ });
+    const { error } = await sb.storage.from("dokumente").upload(pfad, new Blob([daten as BlobPart], { type: typ }), { contentType: typ }); // Typ aus der Endung, nicht vom Browser (Migration 025)
     if (error) { setMeldung({ text: "Speichern hat nicht geklappt.", fehler: true }); return false; }
     const r = await anschreibenSpeichern(applicationId, pfad, `Anschreiben ${(app.firma ?? "").slice(0, 90)} ${tt(heute)}`.replace(/\s+/g, " "));
     if (r.fehler) {

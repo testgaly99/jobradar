@@ -1,0 +1,34 @@
+name: Sicherheitsprüfung erinnern
+
+# Q309: einmal im Monat eine Telegram-Nachricht. Die Prüfung ist freiwillig; wer sie auslässt, dem geht nichts kaputt.
+# Ohne Telegram-Secrets (To-do 42) wird still nichts gesendet; der Lauf schlägt nie fehl.
+on:
+  schedule:
+    - cron: "0 7 3 * *"   # am 3. jedes Monats, nach den Update-Vorschlägen vom Monatsanfang
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  erinnern:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - name: Erinnerung senden
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          offen=$(gh pr list --state open --author "app/dependabot" --json number --jq length 2>/dev/null || true)
+          python -m scraper.sicherheit_erinnerung "$offen" || true
