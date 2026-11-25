@@ -135,12 +135,25 @@ def _bestaetigt(holen, adressen):
     return False
 
 
+def _regionsrang(url):
+    p = urlsplit(url).path.lower()
+    if re.search(r'(?:^|[/_.-])(?:de[_-]de|de)(?:[/_.-]|$)|germany|deutschland', p):
+        return 0
+    if re.search(r'(?:^|[/_.-])(?:global|int|intl|www)(?:[/_.-]|$)', p) or p.count('/') <= 1:
+        return 1
+    if re.fullmatch(r'/(?:en[_-](?:us|gb)|en)/[^/]*', p):  # nur Sprache, kein Land davor (nicht „my/en“)
+        return 2
+    return 3
+
+
 def _sitemap_quelle(basis, holen, robots):
     """Stellen-Sitemap eines Hosts: aus robots.txt (gleiche Firma) oder /sitemap.xml, bestätigt durch zwei Stellenseiten."""
     text = robots.text(basis) or ''
     karten = [l.split(':', 1)[1].strip() for l in text.splitlines() if l.lower().startswith('sitemap:')]
     karten = [k for k in karten if urlsplit(k).scheme == 'https'
               and _regdom(urlsplit(k).hostname) == _regdom(urlsplit(basis).hostname)] or [basis + '/sitemap.xml']
+    # Eine Sitemap je Region (DHL: africa/ar, apac/en …): deutsche zuerst, dann global/englisch, sonst die erste
+    karten.sort(key=_regionsrang)
     for karte in karten[:3]:
         ziele, n, adressen, fund = [karte], 0, [], karte
         while ziele and n < MAX_SITEMAPS and not adressen:

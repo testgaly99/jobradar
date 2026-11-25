@@ -341,3 +341,21 @@ def test_selbstheilung_setzt_firma_zurueck(tmp_path, monkeypatch):
     assert gesucht and gesucht[0]['careers_url'] == '' and gesucht[0]['status_grund'] == 'Quelle defekt, neue Suche'
     f = lade_unternehmen(tmp_path / 'companies.csv')[0]
     assert f['ats_id'] == 'https://neu.example/s.xml#/job/'  # neue Quelle steht im Vorschlag
+
+
+def test_mehrere_regionale_sitemaps_deutsche_zuerst():
+    # Abnahme GitHub 2026-11-25: DHL bekam die Sitemap „africa/ar“, Allianz „my/en“ – die erste aus robots.txt
+    assert sorted(['https://careers.dhl.com/africa/ar/sitemap_index.xml', 'https://careers.dhl.com/global/en/sitemap_index.xml',
+                   'https://careers.dhl.com/de/de/sitemap_index.xml'], key=e._regionsrang)[0] == 'https://careers.dhl.com/de/de/sitemap_index.xml'
+    assert sorted(['https://careers.x.com/my/en/sitemap.xml', 'https://careers.x.com/global/en/sitemap.xml'],
+                  key=e._regionsrang)[0] == 'https://careers.x.com/global/en/sitemap.xml'
+    jobs = [f'https://careers.firma.example/de/de/job/ID{i}/Analyst' for i in range(3)]
+    robots = ('Sitemap: https://careers.firma.example/africa/ar/sitemap.xml\n'
+              'Sitemap: https://careers.firma.example/de/de/sitemap.xml\n')
+    seiten = {'https://www.firma.example': '<p>x</p>', 'https://careers.firma.example/': '<p>Karriere</p>',
+              'https://careers.firma.example/robots.txt': robots,
+              'https://careers.firma.example/africa/ar/sitemap.xml': _karte('https://careers.firma.example/africa/ar/job/X1/Mudir'),
+              'https://careers.firma.example/de/de/sitemap.xml': _karte(*jobs), **{u: _jp() for u in jobs},
+              'https://careers.firma.example/africa/ar/job/X1/Mudir': _jp()}
+    r = e.richte_ein(firma(), holen=_web(seiten), adapter=PROBE)
+    assert r['ats_id'].startswith('https://careers.firma.example/de/de/sitemap.xml')
