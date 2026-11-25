@@ -169,3 +169,8 @@
 .sortierleiste { display: flex; justify-content: flex-end; margin-bottom: 0.75rem; }
 .sortierleiste label { display: flex; align-items: center; gap: 0.5rem; max-width: 100%; }
 .sortierleiste select { min-width: 0; max-width: 100%; }
+
+/* Anzeige in der Stellenliste aufklappen */
+.stelle-anzeige { margin-top: 0.5rem; max-width: 100%; }
+.stelle-anzeige summary { cursor: pointer; }
+.stelle-anzeige .anzeige { overflow-wrap: anywhere; }

@@ -8,6 +8,7 @@ import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, facettenSortieren, f
 import { istUmgerechnet, UMGERECHNET_HINWEIS, kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { merken, entmerken } from "./actions";
+import AnzeigeAufklappen from "./anzeige-aufklappen";
 import FilterBlock from "./filterblock";
 import FilterClient from "./filter-client";
 import SortierAuswahl from "./sortierung";
@@ -270,6 +271,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       </ul>
                     )}
                     {deHinweis && <p className="gedaempft klein">{deHinweis}</p>}
+                    {nutzer && <AnzeigeAufklappen jobId={j.id} />}
                   </div>
                   {!nutzer ? (
                     <Link className="knopf knopf-rand knopf-schmal" href="/login">Anmelden zum Merken</Link>

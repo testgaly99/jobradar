@@ -183,7 +183,7 @@ function stellenAktionen({ vorhanden, kollidiert, migrationFehlt }: {
     "@/lib/fehler": { fehlerText: () => "Künstlicher allgemeiner Fehler" },
     "@/lib/filter": { heuteLokal: () => "2026-11-21" },
     "@/lib/tracker-daten": { ladeZugZeile: async () => ({ alt: { status: "gemerkt" }, offline: false, fehler: false }) }, "@/lib/offline": offline,
-    "@/lib/bewerbung-schutz": {}, "@/lib/nutzer": {}, "@/lib/supabase/admin": {}, "@/lib/firmendaten-issue": {}, "@/lib/wunschfirmen": {},
+    "@/lib/bewerbung-schutz": {}, "@/lib/nutzer": {}, "@/lib/supabase/admin": {}, "@/lib/firmendaten-issue": {}, "@/lib/wunschfirmen": {}, "@/lib/anzeige": {}, "../cv-abgleich": {},
   };
   const exports = {} as Record<"merken" | "beworben", (id: string) => Promise<void>>;
   runInNewContext(stellenActions, { exports, require: (name: string) => imports[name] ?? assert.fail(name) });

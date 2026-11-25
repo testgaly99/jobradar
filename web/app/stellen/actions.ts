@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { anlegenAusJob, aufBeworben } from "@/lib/bewerbung-anlegen";
 import { fehlerText } from "@/lib/fehler";
-import { heuteLokal } from "@/lib/filter";
+import { heuteLokal, ID_FORM } from "@/lib/filter";
+import { leseAbschnitte, type Anzeigenteil } from "@/lib/anzeige";
+import type { Spalte } from "@/lib/cv-ergebnis";
+import { ladeAbgleich } from "../cv-abgleich";
 import { ladeZugZeile } from "@/lib/tracker-daten";
 import { bewerbenGesperrt, OFFLINE_GESPERRT } from "@/lib/offline";
 import { entmerkenMit } from "@/lib/bewerbung-schutz";
@@ -103,3 +106,22 @@ export async function entmerken(jobId: string) {
   revalidatePath(`/stellen/${jobId}`);
 }
 
+
+// Lädt die gegliederte Anzeige für das Aufklappen in der Liste (nur Angemeldete; Gäste dürfen text/abschnitte nicht lesen).
+// geschaetzt ist bis Paket 4 immer false.
+export async function anzeigeLaden(jobId: string): Promise<{ abschnitte: Anzeigenteil[] | null; text: string | null; begriffe: string[]; spalten: Spalte[]; geschaetzt: boolean } | { fehler: string }> {
+  if (!(await aktuellerNutzer())) return { fehler: "Bitte anmelden." };
+  if (typeof jobId !== "string" || !ID_FORM.test(jobId)) return { fehler: "Ungültige Stelle." };
+  const sb = await createClient();
+  const [j, wp] = await Promise.all([
+    sb.from("jobs").select("abschnitte,text,anforderungsliste,anforderungs_hash").eq("id", jobId).maybeSingle(),
+    sb.from("wichtige_punkte").select("begriff"),
+  ]);
+  if (j.error || !j.data) return { fehler: "Anzeige konnte nicht geladen werden." };
+  const cv = await ladeAbgleich(sb, { job_id: jobId }, j.data.anforderungsliste, j.data.anforderungs_hash);
+  return {
+    abschnitte: leseAbschnitte(j.data.abschnitte), text: j.data.text ?? null,
+    begriffe: wp.error ? [] : (wp.data ?? []).map((p: { begriff: string }) => p.begriff),
+    spalten: cv?.zustand === "fertig" ? cv.spalten : [], geschaetzt: false,
+  };
+}

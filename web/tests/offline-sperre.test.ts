@@ -132,7 +132,7 @@ function stellen(sb: unknown) {
     "@/lib/fehler": { fehlerText: () => "Allgemeiner Fehler" },
     "@/lib/filter": { heuteLokal: () => "2026-11-25" },
     "@/lib/offline": offline, "@/lib/tracker-daten": trackerModul(),
-    "@/lib/bewerbung-schutz": { entmerkenMit }, "@/lib/nutzer": {}, "@/lib/supabase/admin": {}, "@/lib/firmendaten-issue": {}, "@/lib/wunschfirmen": {},
+    "@/lib/bewerbung-schutz": { entmerkenMit }, "@/lib/nutzer": {}, "@/lib/supabase/admin": {}, "@/lib/firmendaten-issue": {}, "@/lib/wunschfirmen": {}, "@/lib/anzeige": {}, "../cv-abgleich": {},
   };
   return ausfuehren(lade("../app/stellen/actions.ts"), imports) as unknown as { beworben: (id: string, trotzdem?: boolean) => Promise<void> };
 }
