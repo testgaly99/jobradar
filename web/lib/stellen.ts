@@ -40,12 +40,12 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   if (de !== null) q = q.or(`deutsch_stufe.is.null,deutsch_stufe.lte.${de}`);
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
   const { von, bis } = seitenBereich(f.seite);
-  // rangliste sortiert bis Paket 5 wie neu; passung: kleinster Wert zuerst, ohne Ergebnis am Ende, dann neueste
-  const o = f.sort === "passung" ? q.order("passung_sortwert", { nullsFirst: false }).order("erstmals_gesehen", { ascending: false }).order("id")
-    : f.sort === "groesse" ? q.order(mitListe ? "companies->groesse_rang" : "companies(groesse_rang)")
+  // Standardrichtung: passung kleinster Sortwert zuerst (ohne Ergebnis immer am Ende), neu/rangliste neueste zuerst
+  // (rangliste sortiert bis zur Listenansicht wie neu), groesse wie bisher nach groesse_rang aufsteigend; "auf" kehrt um.
+  const um = f.richtung === "auf";
+  const o = f.sort === "passung" ? q.order("passung_sortwert", { ascending: !um, nullsFirst: false }).order("erstmals_gesehen", { ascending: false }).order("id")
+    : f.sort === "groesse" ? q.order(mitListe ? "companies->groesse_rang" : "companies(groesse_rang)", { ascending: !um })
     .order("erstmals_gesehen", { ascending: false }).order("id")
-    : f.sort === "firma" ? q.order("unternehmen").order("id")
-    : f.sort === "titel" ? q.order("titel").order("id")
-    : q.order("erstmals_gesehen", { ascending: false }).order("id");
+    : q.order("erstmals_gesehen", { ascending: um }).order("id");
   return o.range(von, bis);
 }

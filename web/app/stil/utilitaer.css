@@ -169,9 +169,19 @@
 .meine-gruppe h3 { font-size: inherit; margin: 0; }
 
 /* Sortierung direkt über der Stellenliste (nicht im Filterkasten) */
-.sortierleiste { display: flex; justify-content: flex-end; margin-bottom: 0.75rem; }
-.sortierleiste label { display: flex; align-items: center; gap: 0.5rem; max-width: 100%; }
-.sortierleiste select { min-width: 0; max-width: 100%; }
+.sortierleiste { display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+.sortmenue { position: relative; max-width: 100%; }
+.sortknopf, .sortrichtung, .sortliste button { font: inherit; color: var(--color-ink); background: var(--color-surface); border: 1px solid var(--color-field-edge); border-radius: 4px; cursor: pointer; }
+.sortknopf { padding: 0.4rem 0.7rem; white-space: nowrap; max-width: 100%; }
+.sortrichtung { padding: 0.4rem 0.7rem; min-width: 2.5rem; }
+.sortliste { position: absolute; z-index: 20; right: 0; top: calc(100% + 2px); min-width: 12rem; background: var(--color-surface); border: 1px solid var(--color-field-edge); border-radius: 4px; padding: 0.25rem; box-shadow: 0 4px 12px rgb(0 0 0 / 0.12); }
+.sortliste button { display: block; width: 100%; text-align: left; white-space: nowrap; border: 0; padding: 0.45rem 0.7rem; }
+.sortliste button:hover, .sortliste button:focus-visible { background: var(--color-paper-2); }
+.sortliste button[aria-current="true"] { font-weight: 700; }
+.subwurzel { position: relative; }
+/* Untermenü: auf breiten Bildschirmen links neben dem Eintrag, auf schmalen darunter */
+.subliste { top: 0; right: 100%; max-height: 60vh; overflow-y: auto; }
+@media (max-width: 40rem) { .subliste { position: static; box-shadow: none; border: 0; border-left: 2px solid var(--color-rule); border-radius: 0; margin-left: 0.7rem; } }
 
 /* Anzeige in der Stellenliste aufklappen */
 .stelle-anzeige { margin-top: 0.5rem; max-width: 100%; }

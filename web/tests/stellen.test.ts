@@ -17,14 +17,14 @@ test("Standard- und Rankingabfrage behalten sichere Seitenbereiche und 50 Treffe
       } },
     });
     for (const [seite, offset] of [[1, "0"], [2, "50"], [3, "100"], [180143985094819, "9007199254740900"]] as const) {
-      const f = leseFilter({ liste: mitListe ? "test-a" : undefined, sort: "titel", q: "Data" });
+      const f = leseFilter({ liste: mitListe ? "test-a" : undefined, sort: "neu", q: "Data" });
       const ergebnis = await stellenAbfrage(sb, { ...f, seite });
       assert.equal(ergebnis.error, null);
       const url = aufrufe.at(-1)!;
       assert.equal(url.pathname, mitListe ? "/rest/v1/rpc/ranking_stellen" : "/rest/v1/jobs");
       assert.equal(url.searchParams.get("offset"), offset);
       assert.equal(url.searchParams.get("limit"), "50");
-      assert.equal(url.searchParams.get("order"), "titel.asc,id.asc");
+      assert.equal(url.searchParams.get("order"), "erstmals_gesehen.desc,id.asc");
       assert.ok(url.searchParams.get("or")?.includes("titel.ilike"));
     }
     assert.equal(aufrufe.length, 4);
@@ -118,9 +118,23 @@ test("sort=passung mit Listenfilter: ranking_stellen, gleiche Sortierung", async
 });
 
 test("andere Sortierungen fassen die View nie an (Gäste dürfen sie nicht lesen)", async () => {
-  for (const sort of ["neu", "firma", "titel", "groesse", "rangliste"]) {
+  for (const sort of ["neu", "groesse", "rangliste"]) {
     const aufrufe: URL[] = [];
     await stellenAbfrage(sbMitAufrufen(aufrufe), { ...leseFilter({ sort }) });
     assert.equal(aufrufe[0].pathname, "/rest/v1/jobs", sort);
+  }
+});
+
+test("dir=auf kehrt die Reihenfolge um; passung bleibt nullslast", async () => {
+  const fall: [string, string][] = [
+    ["neu", "erstmals_gesehen.asc,id.asc"],
+    ["rangliste", "erstmals_gesehen.asc,id.asc"],
+    ["passung", "passung_sortwert.desc.nullslast,erstmals_gesehen.desc,id.asc"],
+    ["groesse", "companies(groesse_rang).desc,erstmals_gesehen.desc,id.asc"],
+  ];
+  for (const [sort, order] of fall) {
+    const aufrufe: URL[] = [];
+    await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort, dir: "auf" }));
+    assert.equal(aufrufe[0].searchParams.get("order"), order, sort);
   }
 });

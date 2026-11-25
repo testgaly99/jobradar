@@ -74,8 +74,7 @@ for (const mitListe of [false, true]) {
 
 test("Alle Sortierungen und Rang-Fallbacks behalten stabile Reihenfolge und Pagination", async () => {
   for (const liste of [[], ["test-a"], ["test-a", "test-b"]]) {
-    for (const [sort, standard] of [["neu", "erstmals_gesehen.desc,id.asc"], ["firma", "unternehmen.asc,id.asc"],
-      ["titel", "titel.asc,id.asc"], ["groesse", "erstmals_gesehen.desc,id.asc"], ["rang", "erstmals_gesehen.desc,id.asc"]]) {
+    for (const [sort, standard] of [["neu", "erstmals_gesehen.desc,id.asc"], ["groesse", "erstmals_gesehen.desc,id.asc"], ["rang", "erstmals_gesehen.desc,id.asc"]]) {
       const f = rankingFilter(leseFilter({ liste, sort, seite: "2" }), true);
       const { url } = await abfrage(f);
       assert.equal(url.searchParams.get("order"), sort === "groesse"
@@ -115,7 +114,7 @@ test("Online-seit-Werte erreichen beide Abfragewege als Datumsuntergrenze", asyn
 });
 
 test("Filterwechsel und Entfernen einer Gruppe setzen Seite zurück und erhalten Suche sowie andere Gruppen", () => {
-  const aktuell = new URLSearchParams("liste=test-a&groesse=%3C50&level=Senior&level=Lead&stadt=Berlin&q=Data&ohne=Sales&volltext=1&sort=firma&seite=3");
+  const aktuell = new URLSearchParams("liste=test-a&groesse=%3C50&level=Senior&level=Lead&stadt=Berlin&q=Data&ohne=Sales&volltext=1&sort=groesse&seite=3");
   const form = new URLSearchParams(aktuell);
   form.delete("stadt");
   form.set("q", "ungesendet");
@@ -128,7 +127,7 @@ test("Filterwechsel und Entfernen einer Gruppe setzen Seite zurück und erhalten
   assert.equal(p.get("ohne"), "Sales");
   assert.equal(p.get("volltext"), "1");
   assert.equal(p.get("liste"), "test-a");
-  assert.equal(p.get("sort"), "firma");
+  assert.equal(p.get("sort"), "groesse");
   assert.equal(formZuUrl("/stellen", new URLSearchParams(), new URLSearchParams(), true), "/stellen");
   assert.equal(filterZuUrl(leseFilter({})), "/stellen");
 });

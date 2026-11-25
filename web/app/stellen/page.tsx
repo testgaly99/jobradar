@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { firmenFarbe } from "@/lib/farbe";
 import { datumDe } from "@/lib/bewerbung";
-import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, standardSortierung, stadtAnzeige, tagePlus, type Gruppe, type Sortierung } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, SORTIERUNG, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, sortCookie, standardSortierung, stadtAnzeige, tagePlus, type Gruppe, type Sortierung } from "@/lib/filter";
 import { istUmgerechnet, UMGERECHNET_HINWEIS, kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { passungVerfuegbar } from "@/lib/passung";
@@ -47,11 +47,11 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const sb = await createClient();
   const nutzer = await aktuellerNutzer();
   const passung = await passungVerfuegbar(sb, nutzer);
-  // Gemerkte Sortierung (Cookie) gilt nur ohne sort in der Adresse.
-  if (!sp.sort) {
-    let c: { sort?: string; kat?: string } = {};
-    try { c = JSON.parse((await cookies()).get("stellen_sort")?.value ?? "{}") ?? {}; } catch { /* kaputtes Cookie: Standard */ }
-    roh = { ...roh, sort: standardSortierung(passung, typeof c.sort === "string" ? c.sort : undefined), ansicht_kategorie: roh.ansicht_kategorie || (typeof c.kat === "string" && c.kat.length < 100 ? c.kat : "") };
+  // Gemerkte Sortierung (Cookie) gilt ohne gültiges sort in der Adresse (auch alte Adressen mit sort=firma/titel).
+  const s0 = [sp.sort].flat()[0];
+  if (!s0 || (s0 !== "rang" && !(SORTIERUNG as readonly string[]).includes(s0))) {
+    const c = sortCookie((await cookies()).get("stellen_sort")?.value);
+    roh = { ...roh, sort: standardSortierung(passung, c.sort), richtung: sp.dir ? roh.richtung : c.dir ?? "ab", rangliste: sp.rl ? roh.rangliste : c.rl ?? "alle" };
   }
   const fehler = typeof sp.fehler === "string" ? sp.fehler : null;
   // Facetten zuerst: ohne Migration 005 fehlt "land", dann wird ein ?land= ignoriert statt die Abfrage zu sprengen.
@@ -61,8 +61,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   const katalog = await ladeRankingKatalog(sb, !!nutzer);
   const f = rankingFilter(landNurMitFacette(roh, !!fa.land), !!nutzer);
   // Nur angebotene Sortierungen gelten: ein nicht verfügbares ?sort=passung oder Cookie sortiert nie und zeigt kein falsches Feld.
-  const sortOptionen: Sortierung[] = [...(passung ? ["passung" as const] : []), "neu", "firma", "titel", "groesse", ...(nutzer && katalog.verfuegbar ? ["rangliste" as const] : [])];
+  const sortOptionen: Sortierung[] = [...(passung ? ["passung" as const] : []), "neu", "groesse", ...(nutzer && katalog.verfuegbar ? ["rangliste" as const] : [])];
   if (!sortOptionen.includes(f.sort)) f.sort = "neu";
+  if (f.rangliste !== "alle" && !katalog.listen.some((l) => l.id === f.rangliste)) f.rangliste = "alle";
   const listenHinweis = rankingHinweis(f, katalog);
   const listeGesperrt = !!listenHinweis && f.liste.length > 0;
   // Gespeicherte Spracheinstellung (Konto); fehlt die Tabelle (Migration 013), gilt nur die Adresse.
@@ -157,7 +158,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 </label>
               )}
               <input type="hidden" name="sort" value={f.sort} />
-              {f.ansicht_kategorie && <input type="hidden" name="kat" value={f.ansicht_kategorie} />}
+              {f.richtung === "auf" && <input type="hidden" name="dir" value="auf" />}
+              {f.rangliste !== "alle" && <input type="hidden" name="rl" value={f.rangliste} />}
               {nutzer && (
                 <label>Mein Deutschniveau
                   {/* "egal" muss eine gespeicherte Wahl für diesen Aufruf überstimmen ("alle"), sonst entfällt der Parameter */}
@@ -247,7 +249,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
 
         <section aria-label="Stellen">
           {!listeGesperrt && (!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
-          <SortierAuswahl filter={f} optionen={sortOptionen} />
+          <SortierAuswahl filter={f} optionen={sortOptionen} listen={katalog.listen} />
           <ul className="stellenliste" id="stellenliste">
             {jobs.map((j) => {
               const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;
