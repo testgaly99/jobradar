@@ -447,6 +447,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q303 | Länderausschluss? | Nutzer: „Ich möchte jetzt schon mit dir klären, welche Länder dabei sind. Sanktionsliste ist gut, aber es gibt auch daraus Länder, die ich als Ausnahmen schon möchte“ | Nachfrage Q305. | geklärt |
 | Q304 | Umfang der internationalen Erweiterung? | Nutzer: „Top 10 je Land, 30 größte Volkswirtschaften (Empfohlen)“ | Bis ~300 Firmen, nur mit Standort in Deutschland oder Remote-Stellen. | entschieden |
 | Q305 | Welche Länder trotz EU-Sanktionen dabei (China, Türkei, Russland, Iran)? | Nutzer: „China, Türkei, Israel“ | Dabei: China, Türkei, Israel; ausgeschlossen: Russland, Iran (und weitere Länder mit umfassenden EU-Sanktionen). Einzelne Firmen auf der EU-Sanktionsliste immer ausgeschlossen. | entschieden |
+| Q306 | Vorschlag #3 (erster GitHub-Einrichtungslauf: 340 Firmen, 87 aktiv; falsche Regionen DHL/Allianz/Merck) wie weiter? | Nutzer: „Schließen, Fix hochladen (Empfohlen)“ | #3 geschlossen, Regionen-Fix in main; Nachtlauf ab 22:00 neu mit korrigiertem Code (~2 Nächte); P16 damit erledigt. | entschieden |
 | Q275 | 6a Einwilligung: speichern, welcher Fassung des Textes zugestimmt wurde (Nachweis nach DSGVO; bei Textänderung neu zustimmen)? | Nutzer: „Fassung speichern (Empfohlen)“ | Spalte `fassung` in `cv_einwilligung` (Migration 024); Website und Nachtlauf gelten nur bei aktueller Fassung. | entschieden |
 | Q274 | 6a Einwilligung: Anlass Nutzer 2026-11-24 „Es ist wichtig, dass es vollständig compliant ist, dass die Leute also zustimmen, dass ihre CVs von einer AI ausgelesen werden. Das muss allen beim Upload klar sein“. Text je Konto passend oder ein Text für alle? | Nutzer: „Je Konto passend (Empfohlen)“ | Admin: KI Claude von Anthropic (USA), nachts; alle anderen: KI nur im eigenen Browser, an keinen KI-Dienst. | entschieden |
 | Q273 | 6a Task 0b: verkleinertes Modell (36 MB) erreicht 199/200 Prüfsätze exakt, ein Satz mit unbekanntem Firmennamen nur 0,984 statt ≥ 0,99. Wie weiter? | Nutzer: „So akzeptieren (Empfohlen)“ | 36-MB-Modell; Testgrenze: mindestens 199/200 Prüfsätze ≥ 0,99, keiner unter 0,98. | entschieden |
@@ -644,6 +645,7 @@ Fragetexte Q302 (Claude, 2026-11-25, Mehrfachauswahl): Internationale Firmen in 
 Fragetexte Q303 (Claude, 2026-11-25, Auswahl): Offizielle EU-Sanktionsliste (Empfohlen) / Meine eigene Liste.
 Fragetexte Q304 (Claude, 2026-11-25, Auswahl): Top 10 je Land, 30 größte Volkswirtschaften (Empfohlen) / Top 20 je Land, 30 Volkswirtschaften / Top 10 je Land, alle Länder.
 Fragetexte Q305 (Claude, 2026-11-25, Mehrfachauswahl): China / Türkei / Russland / Iran.
+Fragetexte Q306 (Claude, 2026-11-25, Auswahl): Schließen, Fix hochladen (Empfohlen) / Übernehmen, falsche nachbessern / Noch warten.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
