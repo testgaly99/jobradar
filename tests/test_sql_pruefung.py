@@ -183,6 +183,9 @@ def test_migration_010_definiert_groesse_rang_vor_ranking_stellen_und_nur_dort()
     # 015 erhält die Größen-/Sprachfelder und ergänzt den Kategorienfilter.
     sql_015 = (ordner / '015_ranglisten_sichtbarkeit.sql').read_text(encoding='utf-8')
     assert "'groesse_rang',c.groesse_rang" in sql_015 and 'j.deutsch_stufe' in sql_015
+    # 027 ergänzt passung_sortwert und behält Größen-/Sprachfelder.
+    sql_027 = (ordner / '027_passung.sql').read_text(encoding='utf-8')
+    assert "'groesse_rang',c.groesse_rang" in sql_027 and 'j.deutsch_stufe' in sql_027
     for datei in ordner.glob("*.sql"):
-        if datei.name not in ("010_rankings.sql", "013_sprachniveau.sql", "015_ranglisten_sichtbarkeit.sql"):
+        if datei.name not in ("010_rankings.sql", "013_sprachniveau.sql", "015_ranglisten_sichtbarkeit.sql", "027_passung.sql"):
             assert "function public.ranking_stellen" not in datei.read_text(encoding="utf-8"), datei.name
