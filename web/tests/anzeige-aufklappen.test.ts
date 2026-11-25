@@ -14,14 +14,15 @@ const jobId = "Prüffirma:7";
 type Ergebnis = { abschnitte: unknown; text: string | null; begriffe: string[]; spalten: unknown[]; geschaetzt: boolean } | { fehler: string };
 
 // Attrappe: jobs liefert eine Zeile, wichtige_punkte zwei Begriffe; zählt die Abfragen.
-function modul(nutzer: object | null, abgleich: object | null = { zustand: "fertig", spalten: ["S1"] }) {
+function modul(nutzer: object | null, abgleich: object | null = { zustand: "fertig", spalten: ["S1"] }, kaputt: "abschnitte" | "anforderungsliste" | null = null) {
   const abfragen: string[] = [];
   const sb = { from: (t: string) => {
     abfragen.push(t);
     const antwort = t === "jobs"
       ? { data: { abschnitte: [{ titel: "Anforderungen", punkte: ["SQL"] }], text: "Volltext", anforderungsliste: [], anforderungs_hash: "h" }, error: null }
       : { data: [{ begriff: "SQL" }, { begriff: "Excel" }], error: null };
-    const k: Record<string, unknown> = { select: () => k, eq: () => k, maybeSingle: async () => antwort, then: (r: (x: unknown) => unknown) => r(antwort) };
+    let spalten = "";
+    const k: Record<string, unknown> = { select: (c: string) => { spalten = c; return k; }, eq: () => k, maybeSingle: async () => (kaputt && spalten.startsWith(kaputt) ? { data: null, error: { code: "42703" } } : t === "jobs" && spalten.startsWith("anforderungsliste") ? { data: { anforderungsliste: [], anforderungs_hash: "h" }, error: null } : antwort), then: (r: (x: unknown) => unknown) => r(antwort) };
     return k;
   } };
   const exports = {} as Record<string, unknown>;
@@ -59,4 +60,13 @@ test("anzeigeLaden: reicht Abschnitte, Begriffe und Spalten durch", async () => 
 test("anzeigeLaden: ohne fertigen Abgleich keine Spalten", async () => {
   const r = await modul({ id: "u", admin: false }, { zustand: "offen" }).anzeigeLaden(jobId);
   assert.deepEqual(JSON.parse(JSON.stringify((r as { spalten: unknown[] }).spalten)), []);
+});
+
+test("anzeigeLaden: fehlende Migration 018 (zweite Abfrage scheitert) liefert Anzeige ohne Spalten", async () => {
+  const r = await modul({ id: "u", admin: false }, undefined, "anforderungsliste").anzeigeLaden(jobId);
+  assert.deepEqual(JSON.parse(JSON.stringify(r)), { abschnitte: [{ titel: "Anforderungen", punkte: ["SQL"] }], text: "Volltext", begriffe: ["SQL", "Excel"], spalten: [], geschaetzt: false });
+});
+
+test("anzeigeLaden: scheiternde Anzeigen-Abfrage ergibt Fehler", async () => {
+  assert.ok("fehler" in await modul({ id: "u", admin: false }, undefined, "abschnitte").anzeigeLaden(jobId));
 });

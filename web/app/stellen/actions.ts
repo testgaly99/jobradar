@@ -113,12 +113,14 @@ export async function anzeigeLaden(jobId: string): Promise<{ abschnitte: Anzeige
   if (!(await aktuellerNutzer())) return { fehler: "Bitte anmelden." };
   if (typeof jobId !== "string" || !ID_FORM.test(jobId)) return { fehler: "Ungültige Stelle." };
   const sb = await createClient();
-  const [j, wp] = await Promise.all([
-    sb.from("jobs").select("abschnitte,text,anforderungsliste,anforderungs_hash").eq("id", jobId).maybeSingle(),
+  const [j, wp, al] = await Promise.all([
+    sb.from("jobs").select("abschnitte,text").eq("id", jobId).maybeSingle(),
     sb.from("wichtige_punkte").select("begriff"),
+    // Fehlt Migration 018, scheitert nur diese Abfrage: dann kein CV-Abgleich (wie auf der Detailseite).
+    sb.from("jobs").select("anforderungsliste,anforderungs_hash").eq("id", jobId).maybeSingle(),
   ]);
   if (j.error || !j.data) return { fehler: "Anzeige konnte nicht geladen werden." };
-  const cv = await ladeAbgleich(sb, { job_id: jobId }, j.data.anforderungsliste, j.data.anforderungs_hash);
+  const cv = al.error || !al.data ? null : await ladeAbgleich(sb, { job_id: jobId }, al.data.anforderungsliste, al.data.anforderungs_hash);
   return {
     abschnitte: leseAbschnitte(j.data.abschnitte), text: j.data.text ?? null,
     begriffe: wp.error ? [] : (wp.data ?? []).map((p: { begriff: string }) => p.begriff),
