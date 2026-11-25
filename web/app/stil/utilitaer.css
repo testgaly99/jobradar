@@ -164,3 +164,8 @@
 .chip-stufe { background: var(--color-neu); color: var(--color-neu-ink); }
 .meine-gruppe { margin: var(--space-3, 1rem) 0 0; font-weight: 600; }
 .meine-gruppe h3 { font-size: inherit; margin: 0; }
+
+/* Sortierung direkt über der Stellenliste (nicht im Filterkasten) */
+.sortierleiste { display: flex; justify-content: flex-end; margin-bottom: 0.75rem; }
+.sortierleiste label { display: flex; align-items: center; gap: 0.5rem; max-width: 100%; }
+.sortierleiste select { min-width: 0; max-width: 100%; }

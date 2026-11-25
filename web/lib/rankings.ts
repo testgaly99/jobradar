@@ -13,7 +13,7 @@ const fehlt = (code?: string) => ["PGRST202", "42883", "42P01"].includes(code ??
 export function rankingFilter(f: Filter, angemeldet: boolean): Filter {
   return {
     ...f, liste: angemeldet ? f.liste : [], rangkategorie: angemeldet ? f.rangkategorie : [], volltext: angemeldet && f.volltext,
-    sort: f.sort === "rang" && (!angemeldet || f.liste.length !== 1) ? "neu" : f.sort,
+    sort: f.sort === "rangliste" && !angemeldet ? "neu" : f.sort,
   };
 }
 

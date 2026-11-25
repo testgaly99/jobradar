@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, facettenSortieren, LEVEL_REIHENFOLGE, stadtAnzeige, suchBedingung, ausschlussWoerter, ausschlussBedingungen, formZuUrl, landNurMitFacette, ID_FORM } from "../lib/filter.ts";
+import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, facettenSortieren, LEVEL_REIHENFOLGE, stadtAnzeige, suchBedingung, ausschlussWoerter, ausschlussBedingungen, formZuUrl, landNurMitFacette, ID_FORM, standardSortierung } from "../lib/filter.ts";
 
 test("leerer Filter gibt /stellen", () => {
   const f = leseFilter({});
@@ -181,4 +181,19 @@ test("URL-Schreiber lässt ungültige programmatische Seiten weg und erhält gü
   }
   assert.equal(filterZuUrl({ ...f, seite: 2 }), basis + "&seite=2");
   assert.equal(filterZuUrl({ ...f, seite: 180143985094819 }), basis + "&seite=180143985094819");
+});
+
+test("sort: alter Wert rang wird rangliste, kat wird gelesen und nur gefuellt in die URL geschrieben", () => {
+  assert.equal(leseFilter({ sort: "rang" }).sort, "rangliste");
+  assert.equal(leseFilter({ kat: "Innovation" }).ansicht_kategorie, "Innovation");
+  assert.ok(filterZuUrl(leseFilter({ sort: "rangliste", kat: "Innovation" })).includes("kat=Innovation"));
+  assert.ok(!filterZuUrl(leseFilter({})).includes("kat"));
+});
+
+test("standardSortierung: Passung nur wenn verfuegbar, Cookie nur wenn gueltig", () => {
+  assert.equal(standardSortierung(true, undefined), "passung");
+  assert.equal(standardSortierung(false, undefined), "neu");
+  assert.equal(standardSortierung(false, "passung"), "neu");
+  assert.equal(standardSortierung(true, "firma"), "firma");
+  assert.equal(standardSortierung(true, "unsinn"), "passung");
 });

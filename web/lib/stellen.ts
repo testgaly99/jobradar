@@ -39,9 +39,9 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   if (de !== null) q = q.or(`deutsch_stufe.is.null,deutsch_stufe.lte.${de}`);
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
   const { von, bis } = seitenBereich(f.seite);
+  // passung und rangliste sortieren bis Paket 4 wie neu
   const o = f.sort === "groesse" ? q.order(mitListe ? "companies->groesse_rang" : "companies(groesse_rang)")
     .order("erstmals_gesehen", { ascending: false }).order("id")
-    : f.sort === "rang" && f.liste.length === 1 ? q.order("rang", { nullsFirst: false }).order("unternehmen").order("id")
     : f.sort === "firma" ? q.order("unternehmen").order("id")
     : f.sort === "titel" ? q.order("titel").order("id")
     : q.order("erstmals_gesehen", { ascending: false }).order("id");

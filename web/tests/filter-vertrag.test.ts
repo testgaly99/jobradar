@@ -80,7 +80,7 @@ test("Alle Sortierungen und Rang-Fallbacks behalten stabile Reihenfolge und Pagi
       const { url } = await abfrage(f);
       assert.equal(url.searchParams.get("order"), sort === "groesse"
         ? `${liste.length ? "companies->groesse_rang" : "companies(groesse_rang)"}.asc,erstmals_gesehen.desc,id.asc`
-        : sort === "rang" && liste.length === 1 ? "rang.asc.nullslast,unternehmen.asc,id.asc" : standard);
+        : standard);
       assert.equal(url.searchParams.get("offset"), "50");
       assert.equal(url.searchParams.get("limit"), "50");
     }
