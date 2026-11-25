@@ -265,7 +265,8 @@ def test_abo_limit_beide_admins_bekommen_schaetzung(capsys):
         def speichere_ergebnis(self, owner, ziel, **daten):
             self.ergebnisse.append((owner, daten))
 
-    db = ZweiAdmins(stellen=0)
+    db = ZweiAdmins(stellen=1)
+    _mit_profil(db, 'cv1')
     db.schaetz = _schaetz_stellen(2)
     aufrufe = []
 
@@ -278,3 +279,28 @@ def test_abo_limit_beide_admins_bekommen_schaetzung(capsys):
     assert len(aufrufe) == 1  # nur das erste Konto fragt Claude, das zweite läuft im Modus nur_schaetzen
     log = capsys.readouterr().out
     assert log.count('Abbruch: Limit') == 1 and '4 geschätzt' in log
+
+
+def _limit(prompt, bilder=()):
+    raise claude_cli.AboLimit('Limit')
+
+
+def _mit_profil(db, cv):
+    d = next(x for x in db.docs if x['id'] == cv)
+    d['profil'] = {'text_hash': d['cv_text']['hash'], 'aussagen': _profil_antwort()}
+
+
+def test_schaetzung_ohne_profil_wird_uebersprungen(capsys):
+    db = FakeDB(stellen=0)
+    db.schaetz = _schaetz_stellen(2)
+    assert cv_abgleich.main(db=db, frage=_limit, einbetten=_einbetten, heute='2026-11-24') == 0
+    assert not db.ergebnisse and 'Schätzung übersprungen: Profil fehlt' in capsys.readouterr().out
+
+
+def test_schaetzung_gemischt_nutzt_nur_cv_mit_profil():
+    db = FakeDB(stellen=0, cvs=('cv1', 'cv2'))
+    _mit_profil(db, 'cv1')
+    db.schaetz = _schaetz_stellen(1)
+    cv_abgleich.main(db=db, frage=_limit, einbetten=_einbetten, heute='2026-11-24')
+    (_, d), = db.ergebnisse
+    assert d['empfohlen'] == ['cv1'] and d['geprueft'] == ['cv1'] and list(d['cv_hashes']) == ['cv1']

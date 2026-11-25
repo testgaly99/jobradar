@@ -238,15 +238,18 @@ def _konto(owner, db, frage, einbetten, z, nur_schaetzen=False):
                     z['stellen'] += 1
         except (claude_cli.AboLimit, claude_cli.ClaudeFehler) as e:
             fehler = e  # Schätzung (ohne Claude) läuft trotzdem; Ausnahme wird danach erneut geworfen
-    if cvs is None or profile is None:  # Claude-Teil übersprungen oder früh gescheitert: nur gespeicherte Daten, nie frage
+    if cvs is None or profile is None:  # Claude-Teil übersprungen oder früh gescheitert: nur CVs mit gespeichertem Text und passendem Profil
         cache = {}
-        cvs = {d['id']: d['cv_text'] or {'text': '', 'hash': _hash('')} for d in docs}
-        profile = {d['id']: d['profil']['aussagen'] if d.get('profil') and d['profil'].get('text_hash') == cvs[d['id']]['hash'] else []
-                   for d in docs}
-    try:  # Schätzung darf den Lauf nie abbrechen; im Log nur der Fehlertyp
-        _schaetzen(owner, db, einbetten, docs, profile, cvs, cache, z)
-    except Exception as e:
-        z['hinweise'].append(f'Schätzung abgebrochen ({type(e).__name__})')
+        docs = [d for d in docs if d.get('cv_text') and d.get('profil') and d['profil'].get('text_hash') == d['cv_text']['hash']]
+        cvs = {d['id']: d['cv_text'] for d in docs}
+        profile = {d['id']: d['profil']['aussagen'] for d in docs}
+    if docs:
+        try:  # Schätzung darf den Lauf nie abbrechen; im Log nur der Fehlertyp
+            _schaetzen(owner, db, einbetten, docs, profile, cvs, cache, z)
+        except Exception as e:
+            z['hinweise'].append(f'Schätzung abgebrochen ({type(e).__name__})')
+    else:
+        z['hinweise'].append('Schätzung übersprungen: Profil fehlt')
     if fehler:
         raise fehler
 
