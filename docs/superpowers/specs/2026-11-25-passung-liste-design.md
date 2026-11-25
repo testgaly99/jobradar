@@ -12,23 +12,26 @@ Der Nutzer will im Alltag schnell sehen, welche Stelle zu ihm passt, ohne zwei K
 2. **Farben für alle Stellen (Q313, Q318).**
    - **Genau:** gemerkte Stellen und Stichwort-Treffer, wie heute über Claude, morgens 08:00, höchstens 50 je Tag und Konto.
    - **Geschätzt:** alle übrigen offenen, sichtbaren Stellen nachts über den kostenlosen Bedeutungsvergleich (Stufe 1, e5-small, `scraper/cv_abgleich.py` `_stufe1`). Nur grün/gelb, nie rot, blasser dargestellt. Dazu ein dezentes Wort „geschätzt“ beim Anforderungsabschnitt, keine eigene Zeile.
-   - Ein genaues Ergebnis ersetzt das geschätzte.
+   - Ein genaues Ergebnis ersetzt das geschätzte. **Eine Schätzung überschreibt nie ein genaues Ergebnis und blockiert den Claude-Abgleich nicht.** Heute gilt in `cv_abgleich.offen()` jedes Ergebnis außer `browser-vorlaeufig` als fertig, und es gibt eine Zeile je Konto und Stelle (Migration 018); das muss angepasst werden.
+   - Aufklappen der Anzeige nur angemeldet (Migration 007 verweigert Gästen `abschnitte`/`text`).
    - Folge: Jede Stelle hat schon beim Merken Farben. Das erfüllt den Wunsch nach „sofortigen vorläufigen Farben“ (Q279) für Stellen aus der Liste.
 3. **Sortierung sichtbar über der Liste** (Handy und Laptop, nicht im Filterkasten). Auswahl:
    - **Passung**: Standard, sobald das Konto einen CV mit gültiger Einwilligung hat, sonst „Neueste“.
    - Neueste, Firma A–Z, Titel A–Z, Größe (wie heute).
    - **Nach Rangliste** (ersetzt die heutige Option „Rang in der Liste“).
    - Die Seite merkt sich die letzte Wahl samt Kategorie je Konto.
-4. **Regel „Passung“ (Q319).**
+4. **Regel „Passung“ (Q319, Q323).**
    - Oben stehen Stellen ohne Rot, darunter die mit wenig Gelb.
-   - Rot bei Muss-Anforderungen zieht stärker nach unten als Rot bei „wünschenswert“. Ungekennzeichnete Anforderungen zählen als Muss (Q26).
+   - **Rot bei einer Muss-Anforderung zieht stark nach unten.** Rot bei „wünschenswert“ zählt nur etwas schwerer als ein Gelb. So stehen geprüfte, gemerkte Stellen nicht automatisch hinter allen geschätzten (die nie Rot haben). Ungekennzeichnete Anforderungen zählen als Muss (Q26).
    - Genau geprüfte und geschätzte Stellen stehen gemischt in einer Reihenfolge.
-   - Stellen ohne erkannten Anforderungsteil kommen ans Ende.
+   - Ans Ende kommen Stellen ohne erkannten Anforderungsteil **und Stellen, die noch kein Ergebnis haben**: neu gefundene bis zum nächsten Abgleich, alle Stellen nach einer CV-Änderung bis zum nächsten Morgen, Rückstand beim ersten Nachholen.
+   - Die Option „Passung“ gibt es nur für Konten, für die tatsächlich gerechnet wird (heute: Admin-Konten mit gültiger Admin-Einwilligung). Andere Konten sehen sie nicht; ihr Standard bleibt „Neueste“.
    - Bei Gleichstand steht die neuere Stelle oben.
    - Es zählt je Stelle der am besten passende CV (Phase 6a, Q4).
    - **In der Oberfläche erscheinen keine Zahlen zur Passung** (Nutzer: „Ich möchte aber keine Zahlen sehen, das interessiert mich nicht“). Der interne Sortierwert bleibt unsichtbar.
 5. **Listen-Ansicht „Nach Rangliste“ (Q319–Q321).**
    - Daneben ein zweites Feld „Kategorie“ mit den sieben Kategorien aus `RANKING_KATEGORIEN`. Angeboten werden nur Kategorien mit mindestens einer für das Konto sichtbaren Liste.
+   - Das Feld „Kategorie“ wählt nur, welche Gruppe von Listen gezeigt wird. Die Filter-Häkchen „Liste“/„Kategorie“ im Filterkasten gelten weiter; eine Liste, die durch den Filter leer ist, erscheint nicht.
    - Darunter die Listen der Kategorie in fester Reihenfolge von groß nach klein. Börsennotiert: DAX → MDAX → SDAX → TecDAX; später kommen neue Listen aus P18 (z. B. Nasdaq) dazu. Die Reihenfolge steht als feste Tabelle im Code.
    - Jede Liste ist anfangs offen und einzeln zuklappbar.
    - Je Liste stehen **alle Firmen mit mindestens einer Stelle, die zu den aktuellen Filtern passt**, als Kacheln.
@@ -40,12 +43,13 @@ Der Nutzer will im Alltag schnell sehen, welche Stelle zu ihm passt, ohne zwei K
    - Nur angemeldet; Gäste sehen keine Ränge (Q73).
 6. **Merk-Kategorien (Q315).**
    - Neu gemerkte Stellen landen unter **„Neu gemerkt“**. Je Stelle schiebt ein Klick sie nach **„Gemerkt“** oder **„Für später“**.
-   - Sichtbar im Reiter „Bewerbungen“ als Unterteilung des Status „Gemerkt“. In der Stellenliste bleibt der Knopf „Gemerkt ✓“ wie heute.
+   - Im Reiter „Bewerbungen“: **Das Kanban-Board bleibt unverändert** (keine geteilte Spalte, keine neuen Spalten-IDs oder Zugwege). Karten im Status „Gemerkt“ bekommen nur ein kleines Schild „Neu“ bzw. „Später“. Die Liste unter dem Board unterteilt „Gemerkt“ in drei Gruppen. Die Knöpfe „Gemerkt“ / „Für später“ sitzen in der Liste und im Seitenfenster. In der Stellenliste bleibt der Knopf „Gemerkt ✓“ wie heute.
+   - Jede neu gemerkte Stelle landet in „Neu gemerkt“, egal auf welchem Weg (Stellenliste, Erweiterung, Link, manuell). Ein Zurückschieben von „Beworben“ nach „Gemerkt“ (`zurueckZuGemerkt`) landet in „Gemerkt“, nicht in „Neu“.
    - Alle drei bekommen den Abgleich wie heute.
    - Bestehende gemerkte Bewerbungen gelten beim Einführen als „Gemerkt“, nicht als neu.
 7. **„Anzeige offline“ (Q316).**
    - Bewerbungen, deren verknüpfte Stelle geschlossen ist (`jobs.status = 'geschlossen'`), zeigen ein Schild „Offline seit …“. Das gilt im Reiter Bewerbungen, im Seitenfenster und auf der Bewerbungsseite; in der Stellenliste erscheinen geschlossene Stellen ohnehin nicht.
-   - Ist die Bewerbung noch „Gemerkt“, ist **Bewerben gesperrt**: Kein Wechsel nach „Beworben“ per Knopf, Auswahlfeld oder Ziehen auf dem Board. Eine kurze Meldung nennt den Grund. Die Stelle bleibt, bis der Nutzer sie entfernt.
+   - Ist die Bewerbung noch „Gemerkt“, ist **Bewerben weich gesperrt (Q323)**: Die normalen Wege nach „Beworben“ (Knopf „Ich habe mich beworben“, Auswahlfeld, Ziehen auf dem Board) sind gesperrt, eine kurze Meldung nennt den Grund. Darunter steht klein „Schon beworben? Trotzdem eintragen“ mit Rückfrage. Das deckt den echten Fall „beworben, danach offline“ und Fehlalarme ab (`db.schreibe()` schließt jede nicht gesehene Stelle). Automatische Wechsel (Mail-Erkennung, Phase 3) dürfen immer eintragen. Die Stelle bleibt, bis der Nutzer sie entfernt.
    - Taucht die Stelle wieder auf (`status = 'offen'`), verschwinden Schild und Sperre von selbst.
    - Bewerbungen ab „Beworben“ zeigen nur das Schild.
 
@@ -74,6 +78,8 @@ Der Nutzer will im Alltag schnell sehen, welche Stelle zu ihm passt, ohne zwei K
 - **Kosten/Kontingent:**
   - Private Repos haben ein begrenztes Gratis-Kontingent an Actions-Minuten (Gratis-Tarif: 2.000 Minuten im Monat; vor dem Bau in der offiziellen Doku bestätigen, CLAUDE.md 3.3).
   - Der geschätzte Abgleich rechnet nur Stellen neu, deren `anforderungs_hash` oder CV-Hash sich geändert hat. Ziel: höchstens 15 Minuten pro Nacht.
+- **Backup:** Das Backup im privaten Repo schließt `cv_texte`, `cv_profile` und `cv_ergebnisse` schon aus (`--exclude-table-data`, geprüft 2026-11-25). Neue Tabellen mit CV-Bezug müssen dort ebenfalls ausgeschlossen werden.
+- **Actions-Minuten:** Den heutigen Verbrauch des privaten Repos vor Paket 4 messen. Reicht das Kontingent nicht, gilt eine harte Obergrenze pro Nacht; der Rückstand wird über mehrere Nächte abgebaut.
 - **Speicher:** Supabase 500 MB. Geschätzte Ergebnisse speichern nur Farbe je Anforderung, ohne Belegtexte.
 - **Sichtbarkeit:** Ränge nur gemäß der Sichtbarkeit der Ausgabe (RLS auf den Ranglisten-Tabellen, Q73/Q96).
 - **Keine Live-Abrufe vom Computer des Nutzers** (CLAUDE.md 3.8): Proben nur auf GitHub Actions oder mit Testdaten.
@@ -89,7 +95,11 @@ Der Nutzer will im Alltag schnell sehen, welche Stelle zu ihm passt, ohne zwei K
 
 ## Vom Nutzer entschieden
 
-Q313 alle grob, wichtige genau · Q314 plus Korrektur: keine Zahlen, Farben im Text · Q315 Neu gemerkt → Gemerkt/Für später · Q316 Offline markieren und Bewerben sperren · Q317 nur farbige Anforderungen in der Anzeige · Q318 Zusammenfassung · Q319 Passung = wenig Rot zuerst, gemischt, Standard Passung mit Merken, ohne Anforderungen ans Ende, Listen-Ansicht · Q320 Indizes nach Größe, Listen fest nach Bedeutung, alle Firmen mit passenden Stellen, Firma in jeder Liste · Q321 Aufruf über „Sortieren nach“ + Kategorie, Kachel mit Logo/Name/Platz/Stellenzahl · Q322 Abschluss.
+Q313 alle grob, wichtige genau · Q314 plus Korrektur: keine Zahlen, Farben im Text · Q315 Neu gemerkt → Gemerkt/Für später · Q316 Offline markieren und Bewerben sperren · Q317 nur farbige Anforderungen in der Anzeige · Q318 Zusammenfassung · Q319 Passung = wenig Rot zuerst, gemischt, Standard Passung mit Merken, ohne Anforderungen ans Ende, Listen-Ansicht · Q320 Indizes nach Größe, Listen fest nach Bedeutung, alle Firmen mit passenden Stellen, Firma in jeder Liste · Q321 Aufruf über „Sortieren nach“ + Kategorie, Kachel mit Logo/Name/Platz/Stellenzahl · Q322 Abschluss · Q323 weiche Offline-Sperre, Muss-Rot stark/Soll-Rot mild, Stellen ohne Ergebnis ans Ende.
+
+## Claudes Festlegungen nach der Lückenprüfung (Q323, vom Nutzer nicht einzeln gefragt)
+
+Passung nur für Konten, für die gerechnet wird; Aufklappen nur angemeldet; Kategorie-Feld respektiert die Filter; Board unverändert, nur Schild „Neu“/„Später“, Unterteilung in der Liste darunter; jeder Weg ins Merken landet in „Neu“, Rückschritt von „Beworben“ nicht; Schätzung überschreibt nie Claude-Ergebnisse.
 
 ## Dem Bauenden überlassen
 
