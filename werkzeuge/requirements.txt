@@ -1,5 +1,5 @@
 # Nur für werkzeuge/modell_verkleinern.py (einmalig beim Bau, nicht im Nachtlauf)
-onnx>=1.23  # Apache-2.0
+onnx>=1.23.2  # Apache-2.0
 onnxruntime>=1.32
 tokenizers>=0.23
 numpy>=2.0
