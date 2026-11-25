@@ -191,7 +191,7 @@ def _speichere(db, owner, stelle, bewertungen, empfohlen, claude, docs, cvs, weg
                           cv_hashes={d['id']: cvs[d['id']]['hash'] for d in docs})
 
 
-def _konto(owner, db, frage, einbetten, z):
+def _konto(owner, db, frage, einbetten, z, nur_schaetzen=False):
     if not db.hat_cv_einwilligung(owner, EINWILLIGUNG_FASSUNG):
         z['hinweise'].append('übersprungen: keine Einwilligung')
         return
@@ -199,42 +199,56 @@ def _konto(owner, db, frage, einbetten, z):
     if not docs:
         z['hinweise'].append('übersprungen: kein CV')
         return
-    cvs = {d['id']: _cv_text(d, owner, db, frage) for d in docs}
-    profile = {d['id']: _profil(d, cvs[d['id']], owner, db, frage) for d in docs}
-    stellen = db.stellen_fuer_abgleich(owner, z['grenze'])[:z['grenze']]
-    cache, warteschlange = {}, []
-    for i, s in enumerate(stellen):
-        bewertungen, empfohlen = _stufe1(s, profile, docs, einbetten, cache)
-        grenz = {}
-        for cv in empfohlen:
-            ids = [b['id'] for b in bewertungen[cv] if b['stufe'] == 'grenzfall']
-            if ids:
-                grenz[cv] = [{'id': a['id'], 'text': a['text']} for a in s['anforderungen'] if a['id'] in ids]
-        if grenz:
-            warteschlange.append((i, s, bewertungen, empfohlen, grenz))
-        else:
-            _speichere(db, owner, s, bewertungen, empfohlen, {}, docs, cvs)
-            z['stellen'] += 1
-    for start in range(0, len(warteschlange), BUENDEL):
-        buendel = warteschlange[start:start + BUENDEL]
-        daten = [{'stelle': i, 'grenzfaelle': grenz, 'belege': {cv: [p['beleg'] for p in profile[cv]] for cv in grenz}}
-                 for i, _, _, _, grenz in buendel]
-        z['aufrufe'] += 1
+    cvs = profile = None
+    cache = {}
+    fehler = None
+    if not nur_schaetzen:
         try:
-            antwort = frage(_abschnitt('Grenzfaelle') + '\n<daten>' + json.dumps(daten, ensure_ascii=False) + '</daten>')
-        except UngueltigeAntwort:
-            antwort, z['ungueltig'] = [], z['ungueltig'] + 1
-        for i, s, bewertungen, empfohlen, grenz in buendel:
-            eigene = [e for e in antwort if isinstance(e, dict) and e.get('stelle') == i] if isinstance(antwort, list) else []
-            ids = {g['id'] for v in grenz.values() for g in v}
-            claude = antwort_pruefen(eigene, [a for a in s['anforderungen'] if a['id'] in ids],
-                                     {cv: cvs[cv]['text'] for cv in grenz})
-            _speichere(db, owner, s, bewertungen, empfohlen, claude, docs, cvs)
-            z['stellen'] += 1
+            cvs = {d['id']: _cv_text(d, owner, db, frage) for d in docs}
+            profile = {d['id']: _profil(d, cvs[d['id']], owner, db, frage) for d in docs}
+            stellen = db.stellen_fuer_abgleich(owner, z['grenze'])[:z['grenze']]
+            warteschlange = []
+            for i, s in enumerate(stellen):
+                bewertungen, empfohlen = _stufe1(s, profile, docs, einbetten, cache)
+                grenz = {}
+                for cv in empfohlen:
+                    ids = [b['id'] for b in bewertungen[cv] if b['stufe'] == 'grenzfall']
+                    if ids:
+                        grenz[cv] = [{'id': a['id'], 'text': a['text']} for a in s['anforderungen'] if a['id'] in ids]
+                if grenz:
+                    warteschlange.append((i, s, bewertungen, empfohlen, grenz))
+                else:
+                    _speichere(db, owner, s, bewertungen, empfohlen, {}, docs, cvs)
+                    z['stellen'] += 1
+            for start in range(0, len(warteschlange), BUENDEL):
+                buendel = warteschlange[start:start + BUENDEL]
+                daten = [{'stelle': i, 'grenzfaelle': grenz, 'belege': {cv: [p['beleg'] for p in profile[cv]] for cv in grenz}}
+                         for i, _, _, _, grenz in buendel]
+                z['aufrufe'] += 1
+                try:
+                    antwort = frage(_abschnitt('Grenzfaelle') + '\n<daten>' + json.dumps(daten, ensure_ascii=False) + '</daten>')
+                except UngueltigeAntwort:
+                    antwort, z['ungueltig'] = [], z['ungueltig'] + 1
+                for i, s, bewertungen, empfohlen, grenz in buendel:
+                    eigene = [e for e in antwort if isinstance(e, dict) and e.get('stelle') == i] if isinstance(antwort, list) else []
+                    ids = {g['id'] for v in grenz.values() for g in v}
+                    claude = antwort_pruefen(eigene, [a for a in s['anforderungen'] if a['id'] in ids],
+                                             {cv: cvs[cv]['text'] for cv in grenz})
+                    _speichere(db, owner, s, bewertungen, empfohlen, claude, docs, cvs)
+                    z['stellen'] += 1
+        except (claude_cli.AboLimit, claude_cli.ClaudeFehler) as e:
+            fehler = e  # Schätzung (ohne Claude) läuft trotzdem; Ausnahme wird danach erneut geworfen
+    if cvs is None or profile is None:  # Claude-Teil übersprungen oder früh gescheitert: nur gespeicherte Daten, nie frage
+        cache = {}
+        cvs = {d['id']: d['cv_text'] or {'text': '', 'hash': _hash('')} for d in docs}
+        profile = {d['id']: d['profil']['aussagen'] if d.get('profil') and d['profil'].get('text_hash') == cvs[d['id']]['hash'] else []
+                   for d in docs}
     try:  # Schätzung darf den Lauf nie abbrechen; im Log nur der Fehlertyp
         _schaetzen(owner, db, einbetten, docs, profile, cvs, cache, z)
     except Exception as e:
         z['hinweise'].append(f'Schätzung abgebrochen ({type(e).__name__})')
+    if fehler:
+        raise fehler
 
 
 def _schaetzen(owner, db, einbetten, docs, profile, cvs, cache, z, uhr=None):
@@ -267,13 +281,14 @@ def main(db=None, frage=None, einbetten=None, heute=None):
     if admins:  # Reihenfolge wechselt täglich, damit bei knappem Kontingent nicht immer dasselbe Konto zu kurz kommt
         k = tag.toordinal() % len(admins)
         admins = admins[k:] + admins[:k]
-    try:
-        for admin in admins:
-            _konto(admin['user_id'], db, frage, einbetten, z)
-    except claude_cli.AboLimit:
-        z['hinweise'].append('Abbruch: Limit')
-    except claude_cli.ClaudeFehler:
-        z['hinweise'].append('Abbruch: Fehler')
+    nur_schaetzen = False  # nach Limit/Fehler: restliche Konten nur noch kostenlos schätzen
+    for admin in admins:
+        try:
+            _konto(admin['user_id'], db, frage, einbetten, z, nur_schaetzen)
+        except (claude_cli.AboLimit, claude_cli.ClaudeFehler) as e:
+            if not nur_schaetzen:
+                z['hinweise'].append('Abbruch: Limit' if isinstance(e, claude_cli.AboLimit) else 'Abbruch: Fehler')
+            nur_schaetzen = True
     print(f"CV-Abgleich: {z['stellen']} Stellen, {z['aufrufe']} Aufrufe, {z['ungueltig']} ungültige Antworten, {z['geschaetzt']} geschätzt"
           + ''.join('; ' + h for h in z['hinweise']))
     return 0

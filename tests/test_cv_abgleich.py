@@ -245,7 +245,7 @@ def test_schaetzung_haelt_zeitbudget(monkeypatch):
     t = iter(range(0, 10000, 400))  # jeder Aufruf +400 s
     monkeypatch.setattr(cv_abgleich.time, 'monotonic', lambda: next(t))
     _lauf(db, Claude())
-    assert 0 < len(db.ergebnisse) < 10
+    assert len(db.ergebnisse) == 2  # Uhr: Start 0, Prüfungen bei 400, 800 ok, 1200 > 900
 
 
 def test_schaetzfehler_bricht_nicht_ab(capsys):
@@ -255,3 +255,26 @@ def test_schaetzfehler_bricht_nicht_ab(capsys):
     assert len(db.ergebnisse) == 1
     log = capsys.readouterr().out
     assert 'Schätzung' in log and 'Geheimfirma' not in log
+
+
+def test_abo_limit_beide_admins_bekommen_schaetzung(capsys):
+    class ZweiAdmins(FakeDB):
+        def admin_ids(self):
+            return [{'user_id': 'admin-1'}, {'user_id': 'admin-2'}]
+
+        def speichere_ergebnis(self, owner, ziel, **daten):
+            self.ergebnisse.append((owner, daten))
+
+    db = ZweiAdmins(stellen=0)
+    db.schaetz = _schaetz_stellen(2)
+    aufrufe = []
+
+    def frage(prompt, bilder=()):
+        aufrufe.append(1)
+        raise claude_cli.AboLimit('Limit')
+    assert cv_abgleich.main(db=db, frage=frage, einbetten=_einbetten, heute='2026-11-24') == 0
+    assert sorted(o for o, _ in db.ergebnisse) == ['admin-1', 'admin-1', 'admin-2', 'admin-2']
+    assert all(d['weg'] == 'schaetzung' for _, d in db.ergebnisse)
+    assert len(aufrufe) == 1  # nur das erste Konto fragt Claude, das zweite läuft im Modus nur_schaetzen
+    log = capsys.readouterr().out
+    assert log.count('Abbruch: Limit') == 1 and '4 geschätzt' in log

@@ -295,3 +295,33 @@ def test_ki_spalten_fehlen_gibt_false(fake, capsys):
     fake.ohne_ki_spalten = True
     assert db.ki_spalten_da() is False
     assert "009" in capsys.readouterr().out
+
+
+def _schaetz_daten(monkeypatch, ergebnisse):
+    jobs = [{'id': 'J1', 'unternehmen': 'Sichtbar', 'anforderungsliste': [{'id': 'a'}], 'anforderungs_hash': 'neu'},
+            {'id': 'J2', 'unternehmen': 'Sichtbar', 'anforderungsliste': [{'id': 'a'}], 'anforderungs_hash': 'h'},
+            {'id': 'J3', 'unternehmen': 'Fremd', 'anforderungsliste': [{'id': 'a'}], 'anforderungs_hash': 'h'},
+            {'id': 'J4', 'unternehmen': 'Sichtbar', 'anforderungsliste': [{'id': 'a'}], 'anforderungs_hash': 'h'}]
+    monkeypatch.setattr(db, '_alle_zeilen', lambda t, p: ergebnisse if t == 'cv_ergebnisse' else jobs)
+    monkeypatch.setattr(db, 'sichtbare_firmen', lambda o: {'Sichtbar'})
+
+
+def test_stellen_fuer_schaetzung_filtert(monkeypatch):
+    _schaetz_daten(monkeypatch, [{'job_id': 'J1', 'weg': 'schaetzung', 'anforderungs_hash': 'alt'},
+                                 {'job_id': 'J2', 'weg': 'schaetzung', 'anforderungs_hash': 'h'},
+                                 {'job_id': 'J4', 'weg': 'claude', 'anforderungs_hash': 'alt'}])
+    # J1 veraltete Schätzung -> neu; J2 aktuell -> nein; J3 fremde Firma -> nein; J4 Claude-Ergebnis -> nein
+    assert [k['job_id'] for k in db.stellen_fuer_schaetzung('o')] == ['J1']
+
+
+def test_speichere_ergebnis_ohne_spalte_zweiter_post(monkeypatch):
+    aufrufe = []
+
+    def req(methode, pfad, **kw):
+        aufrufe.append((methode, dict(kw.get('json') or {})))
+        if methode == 'POST' and 'passung_sortwert' in kw['json']:
+            raise db.DatenbankFehler(methode, pfad, 400, 'PGRST204')
+    monkeypatch.setattr(db, '_req', req)
+    db.speichere_ergebnis('o', {'job_id': 'J'}, weg='schaetzung', passung_sortwert=5)
+    posts = [j for m, j in aufrufe if m == 'POST']
+    assert len(posts) == 2 and 'passung_sortwert' in posts[0] and 'passung_sortwert' not in posts[1]
