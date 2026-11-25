@@ -45,6 +45,15 @@ def test_mehrere_konten_kommen_reihum_dran(monkeypatch):
     assert konten.count('a') == 5 and konten.count('b') == 2
 
 
+def test_viele_alte_eintraege_eines_kontos_blockieren_andere_nicht(monkeypatch):
+    # Zweitprüfung S1: 600 Einträge mit uraltem Datum füllen das 500er-Fenster; Konto b kommt trotzdem dran
+    zeilen = [zeile(i, 'a', alt='2000-01-01') for i in range(600)] + [zeile(i, 'b') for i in range(2)]
+    monkeypatch.setattr(db, '_req', fake_mit(zeilen))
+    for gewaehlt in (db.bewerbungen_zum_nachruesten(), db.bewerbungen_original_offen()):
+        konten = [z['owner_id'] for z in gewaehlt]
+        assert konten.count('a') == 5 and konten.count('b') == 2 and len({z['id'] for z in gewaehlt}) == len(gewaehlt)
+
+
 def test_gesamtgrenze_bleibt(monkeypatch):
     zeilen = [zeile(i, ADMIN) for i in range(30)] + [zeile(i, f'k{i}') for i in range(30)]
     monkeypatch.setattr(db, '_req', fake_mit(zeilen))

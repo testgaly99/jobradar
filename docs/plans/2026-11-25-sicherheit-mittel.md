@@ -25,13 +25,13 @@ Stand 2026-11-25. Grundlage: Sicherheitsprüfung vom 2026-11-25 (Bericht nur im 
 
 ### Task 4: Nachtläufe gerecht je Konto (Befund 6)
 - `scraper/db.py`: `_gerecht(zeilen, limit, admins, je_konto=5)`: erst alle Zeilen der Admin-Konten, dann reihum höchstens `je_konto` je weiterem Konto, zusammen höchstens `limit`.
-- `bewerbungen_zum_nachruesten(limit=50)` und `bewerbungen_original_offen(limit=20)`: zwei Abfragen (Admin-Konten; übrige Konten mit Fenster 500), dann `_gerecht`. `anforderungen_bewerbungen()`: Admin-Konten zuerst.
+- `bewerbungen_zum_nachruesten(limit=50)` und `bewerbungen_original_offen(limit=20)`: erst Admin-Konten, dann übrige Konten in Fenstern zu 500; Konten mit 5 Einträgen werden in der nächsten Abfrage ausgeschlossen (Zweitprüfung S1), höchstens 20 Runden. `anforderungen_bewerbungen()`: Admin-Konten zuerst.
 - Tests in `tests/test_db.py`: 100 fremde Einträge mit altem `erstellt_am` + 3 Admin-Einträge → alle 3 Admin-Einträge dabei, fremdes Konto höchstens 5; zwei fremde Konten → beide kommen dran.
 - **Nicht-Ziel:** Datenbank-Trigger, der `nachruesten`/`original_suche`/`erstellt_am` nur dem Server erlaubt. Die Website setzt diese Felder mit dem Login des Nutzers (`web/app/bewerbungen/actions.ts`); ein Trigger würde „Anzeige lesen lassen“ und die Original-Suche abschalten. Die gerechte Auswahl macht eine Manipulation wirkungslos.
 
 ### Task 5: Uploads nur in erwarteten Formaten (Befund 8)
 - `web/app/unterlagen/upload.tsx`: `accept` am Dateifeld mit den freigegebenen Formaten (Q308).
-- Nutzer-To-do: Supabase → **Storage** → Bucket `dokumente` → **Edit bucket** → **Allowed MIME types** mit denselben Formaten. Gilt nur für neue Uploads; vorhandene Dateien bleiben.
+- Migration `025_dokumente_dateiarten.sql` setzt dieselben Formate als `allowed_mime_types` des Buckets (nach Zweitprüfung S2 statt Klickweg); Test `tests/test_uploads.py` hält Formular und Migration gleich. Gilt nur für neue Uploads; vorhandene Dateien bleiben.
 
 ### Task 6: GitHub-Tokens in Vercel eng fassen (Befund 7)
 - Nur Nutzer-To-do mit Klickanleitung: in GitHub prüfen, ob `GITHUB_DISPATCH_TOKEN` ein klassischer Token ist; falls ja, als fine-grained Token neu anlegen (nur Repo `jobradar`, nur „Actions: Read and write“, Ablaufdatum), in Vercel ersetzen, alten Token löschen. `GITHUB_ISSUE_TOKEN` wird mit To-do 43 gleich so angelegt.

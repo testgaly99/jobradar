@@ -556,15 +556,22 @@ def _gerecht(params, limit):
     deshalb darf keines die anderen verdrängen (Sicherheitsprüfung 2026-11-25, Befund 6)."""
     admins = [a['user_id'] for a in admin_ids()]
     eigene = _req('GET', 'applications', params={**params, 'owner_id': _in(admins), 'limit': limit}) if admins else []
-    # shortcut: Fenster 500 über alle übrigen Konten; erst bei sehr vielen Konten mit Rückstau je Konto einzeln abfragen
-    andere = _req('GET', 'applications', params={**params, **({'owner_id': 'not.' + _in(admins)} if admins else {}), 'limit': 500})
-    aus, je = list(eigene)[:limit], {}
-    for z in andere:
+    aus, je, voll, gesehen = list(eigene)[:limit], {}, set(admins), set()
+    for _ in range(20):  # jede volle Runde macht mind. ein Konto „voll“; 20 Runden als harte Grenze
         if len(aus) >= limit:
             break
-        je[z.get('owner_id')] = je.get(z.get('owner_id'), 0) + 1
-        if je[z.get('owner_id')] <= JE_KONTO:
+        andere = _req('GET', 'applications', params={**params, **({'owner_id': 'not.' + _in(sorted(voll))} if voll else {}), 'limit': 500})
+        for z in andere:
+            o = z.get('owner_id')
+            if len(aus) >= limit or z['id'] in gesehen or o in voll:
+                continue
+            gesehen.add(z['id'])
             aus.append(z)
+            je[o] = je.get(o, 0) + 1
+            if je[o] >= JE_KONTO:
+                voll.add(o)  # in der nächsten Abfrage ausgeschlossen: viele alte Einträge eines Kontos verdrängen niemanden
+        if len(andere) < 500:
+            break
     return aus
 
 
