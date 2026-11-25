@@ -31,7 +31,7 @@ test('manipulierte Vorschau wird vor Schreibaufruf validiert',()=>{
   assert.equal(baueAusgabe(eingabe,[{rang:1,firma:'A'},{rang:1,firma:'B'}],[],'2026-11-20').firmen.length,2);
 });
 test('Groq-Anleitung identisch; erfundene Firmennamen werden verworfen',async()=>{
-  assert.equal(PROMPT_LISTE.trim(),readFileSync(new URL('../../scraper/ki_prompt_liste.md',import.meta.url),'utf8').trim());
+  assert.equal(PROMPT_LISTE.trim(),readFileSync(new URL('../../scraper/ki_prompt_liste.md',import.meta.url),'utf8').replace(/\r\n/g,'\n').trim()); // Windows-Checkout kann CRLF liefern
   const holen=async()=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({eintraege:[{rang:1,firma:'Erfunden'}]})}}]}));
   assert.equal(await erkenneListe('1. Beispiel AG',holen,'synthetisch'),null);
 });

@@ -59,8 +59,8 @@ def test_konto_loeschen_komplett():
         assert r.status_code == 200, r.text
 
         def hoch(i):
-            return requests.post(f"{URL}/storage/v1/object/dokumente/{uid}/d{i:03}.txt", timeout=60,
-                                 headers={**_h(SERVICE), "Content-Type": "text/plain"}, data=b"x").status_code
+            return requests.post(f"{URL}/storage/v1/object/dokumente/{uid}/d{i:03}.pdf", timeout=60,
+                                 headers={**_h(SERVICE), "Content-Type": "application/pdf"}, data=b"%PDF-1.4 x").status_code
         with ThreadPoolExecutor(8) as ex:
             assert set(ex.map(hoch, range(N_DATEIEN))) == {200}
         assert len(_liste(uid)) == N_DATEIEN
