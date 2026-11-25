@@ -1,0 +1,20 @@
+# Monatlich höchstens ein Sammel-Vorschlag je Art (Q307). Übernommen wird nie automatisch: Claude prüft vorher (CLAUDE.md 4.3).
+# Bleibt ein Vorschlag liegen, passiert nichts: die festen Versionen laufen weiter, der Vorschlag wird im Folgemonat aktualisiert.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 1
+    groups:
+      python:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 1
+    groups:
+      actions:
+        patterns: ["*"]

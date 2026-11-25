@@ -48,7 +48,7 @@ def test_claude_hat_nur_geprueften_trusted_input_und_pr_statt_merge(name, label)
     assert "['OWNER', 'MEMBER', 'COLLABORATOR']" in text
     assert "steps.rechte.outputs.erlaubt == 'true'" in text
     assert "steps.pruefung.outputs.nummer != ''" in text
-    assert 'anthropics/claude-code-action@v1' in text and 'claude_code_oauth_token:' in text
+    assert 'anthropics/claude-code-action@4411a9e9b0283becf4b924f7bce360fd7756c78c  # v1' in text and 'claude_code_oauth_token:' in text
     assert f'label_trigger: {label}' in text
     assert 'exclude_comments_by_actor: "*"' in text
     assert 'allow_fork_prs: "false"' in text
