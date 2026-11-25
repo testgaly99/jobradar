@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { ERGEBNIS_LABEL, istStatus, istUuid, type Status } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { ladeZugZeile, spaltenFehlen } from "@/lib/tracker-daten";
-import { GEMERKT_GESPERRT, rueckgaengigErlaubt, rundePatch, zugPatch, zurueckZuGemerkt, type ZugAlt } from "@/lib/zug";
+import { bewerbenGesperrt, OFFLINE_GESPERRT } from "@/lib/offline";
+import { GEMERKT_GESPERRT, rueckgaengigErlaubt, STATUS_RANG, rundePatch, zugPatch, zurueckZuGemerkt, type ZugAlt } from "@/lib/zug";
 
 // Diese Actions antworten mit Ergebnissen statt redirect(): das Board zeigt Fehler selbst an.
 export type ZugVorher = ZugAlt & { zeitpunkt: string };
@@ -33,15 +34,16 @@ function neuLaden(id: string) {
 const kurzVorher = () => new Date(Date.now() - 1000).toISOString();
 
 export async function zugAusfuehren(
-  id: string, vonStatus: Status, ziel: { status: Status; ergebnis?: string },
+  id: string, vonStatus: Status, ziel: { status: Status; ergebnis?: string }, trotzdem = false,
 ): Promise<{ ok: true; vorher: ZugVorher; eventIds: string[] } | Fehler> {
   const { sb, fehler } = await start(id);
   if (fehler) return nein(fehler);
   if (!istStatus(vonStatus) || !istStatus(ziel?.status)) return nein("Ungültiger Status.");
-  const { alt, ohne006, fehler: lesefehler } = await ladeZugZeile(sb, id);
+  const { alt, ohne006, fehler: lesefehler, offline } = await ladeZugZeile(sb, id);
   if (lesefehler) return nein(DB_FEHLER);
   if (!alt) return nein("Bewerbung nicht gefunden.");
   if (zurueckZuGemerkt(alt.status, ziel.status)) return nein(GEMERKT_GESPERRT);
+  if (STATUS_RANG[ziel.status] >= STATUS_RANG.beworben && bewerbenGesperrt(alt.status, offline, trotzdem === true)) return nein(OFFLINE_GESPERRT);
   let patch;
   try { patch = zugPatch(alt, ziel, heuteLokal()); } catch { return nein("Bitte wähle ein Ergebnis."); }
   if (ohne006) delete patch.runde;

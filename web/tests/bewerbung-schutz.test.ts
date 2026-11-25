@@ -6,6 +6,7 @@ import { createRequire } from "node:module";
 import { runInNewContext } from "node:vm";
 import { aufBeworben, entmerkenMit } from "../lib/bewerbung-schutz.ts";
 import { anlegenAusJob } from "../lib/bewerbung-anlegen.ts";
+import * as offline from "../lib/offline.ts";
 
 function datenbank(optionen: {
   app?: Record<string, unknown> | null; lesefehler?: boolean; loeschfehler?: boolean; schreibfehler?: boolean;
@@ -181,6 +182,7 @@ function stellenAktionen({ vorhanden, kollidiert, migrationFehlt }: {
     "@/lib/bewerbung-anlegen": { anlegenAusJob, aufBeworben },
     "@/lib/fehler": { fehlerText: () => "Künstlicher allgemeiner Fehler" },
     "@/lib/filter": { heuteLokal: () => "2026-11-21" },
+    "@/lib/tracker-daten": { ladeZugZeile: async () => ({ alt: { status: "gemerkt" }, offline: false, fehler: false }) }, "@/lib/offline": offline,
     "@/lib/bewerbung-schutz": {}, "@/lib/nutzer": {}, "@/lib/supabase/admin": {}, "@/lib/firmendaten-issue": {}, "@/lib/wunschfirmen": {},
   };
   const exports = {} as Record<"merken" | "beworben", (id: string) => Promise<void>>;

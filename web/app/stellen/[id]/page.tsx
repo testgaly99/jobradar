@@ -144,7 +144,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
         )}
         {link && <a className="knopf knopf-rand knopf-schmal" href={link} target="_blank" rel="noopener noreferrer">Original-Anzeige öffnen</a>}
         {nutzer && (!app.data || app.data.status === "gemerkt") && (
-          <form action={beworben.bind(null, j.id)}><SendeKnopf text="Ich habe mich beworben" klasse="knopf knopf-schmal" /></form>
+          <form action={beworben.bind(null, j.id, false)}><SendeKnopf text="Ich habe mich beworben" klasse="knopf knopf-schmal" /></form>
         )}
       </div>
       {begriffe.length > 0 && <p className="meldung hinweis">{n} deiner wichtigen Punkte kommen vor</p>}

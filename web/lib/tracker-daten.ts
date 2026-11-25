@@ -55,13 +55,14 @@ export async function ladeKarten(sb: SupabaseClient, f: TabellenFilter & { archi
 }
 
 // Zeile für einen Zug lesen; ohne 006 fehlt `runde` (dann ohne006 = true, runde = null).
-export async function ladeZugZeile(sb: SupabaseClient, id: string): Promise<{ alt: ZugAlt | null; ohne006: boolean; fehler: boolean }> {
+export async function ladeZugZeile(sb: SupabaseClient, id: string): Promise<{ alt: ZugAlt | null; ohne006: boolean; fehler: boolean; offline: boolean }> {
   const lade = (spalten: string) => sb.from("applications").select(spalten).eq("id", id).maybeSingle();
-  let { data, error } = await lade("status,runde,ergebnis,beworben_am");
+  // jobs(status): offline = verknüpfte Stelle geschlossen; ohne job_id nie offline.
+  let { data, error } = await lade("status,runde,ergebnis,beworben_am,jobs(status)");
   const ohne006 = spaltenFehlen(error);
-  if (ohne006) ({ data, error } = await lade("status,ergebnis,beworben_am"));
-  const z = data as Partial<ZugAlt> | null;
-  return { alt: z && istStatus(z.status) ? { status: z.status, runde: z.runde ?? null, ergebnis: z.ergebnis ?? null, beworben_am: z.beworben_am ?? null } : null, ohne006, fehler: !!error };
+  if (ohne006) ({ data, error } = await lade("status,ergebnis,beworben_am,jobs(status)"));
+  const z = data as (Partial<ZugAlt> & { jobs?: { status?: string } | null }) | null;
+  return { alt: z && istStatus(z.status) ? { status: z.status, runde: z.runde ?? null, ergebnis: z.ergebnis ?? null, beworben_am: z.beworben_am ?? null } : null, ohne006, fehler: !!error, offline: z?.jobs?.status === "geschlossen" };
 }
 
 // "Diese Woche": offene Bewerbungen mit Schritt und Terminen.

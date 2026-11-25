@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { anlegenAusJob, aufBeworben } from "@/lib/bewerbung-anlegen";
 import { fehlerText } from "@/lib/fehler";
 import { heuteLokal } from "@/lib/filter";
+import { ladeZugZeile } from "@/lib/tracker-daten";
+import { bewerbenGesperrt, OFFLINE_GESPERRT } from "@/lib/offline";
 import { entmerkenMit } from "@/lib/bewerbung-schutz";
 import { aktuellerNutzer } from '@/lib/nutzer';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -66,7 +68,7 @@ export async function merken(jobId: string) {
 }
 
 // "Ich habe mich beworben": Bewerbung anlegen oder finden, Status beworben und Datum setzen (der Trigger schreibt den Verlauf).
-export async function beworben(jobId: string) {
+export async function beworben(jobId: string, trotzdem = false) {
   const sb = await createClient();
   const { data: claims } = await sb.auth.getClaims();
   if (!claims?.claims) redirect("/login");
@@ -75,6 +77,11 @@ export async function beworben(jobId: string) {
   if (!job) redirect("/stellen");
   const r = await anlegenAusJob(sb, job, claims.claims.sub);
   if ("fehler" in r) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent(fehlerText({}))}`);
+  if (!r.manuelleBewerbung) { // Sperre: gemerkt + Anzeige offline, außer "Trotzdem eintragen"
+    const z = await ladeZugZeile(sb, r.id);
+    if (z.fehler || !z.alt) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent(fehlerText({}))}`);
+    if (bewerbenGesperrt(z.alt.status, z.offline, trotzdem === true)) redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent(OFFLINE_GESPERRT)}`);
+  }
   if (!r.manuelleBewerbung && !(await aufBeworben(sb, r.id, heuteLokal()))) {
     redirect(`/stellen/${encodeURIComponent(jobId)}?fehler=${encodeURIComponent("Der Status konnte nicht gespeichert werden. Bitte erneut versuchen.")}`);
   }
