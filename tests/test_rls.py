@@ -76,7 +76,7 @@ def users():
         # Datei zuerst (Nutzer-Loeschung kann an Storage-Objekten scheitern), dann Nutzer
         if ids:
             try:
-                _warn("Datei", _retry(lambda: requests.delete(f"{URL}/storage/v1/object/dokumente/{ids[0]}/test.txt",
+                _warn("Datei", _retry(lambda: requests.delete(f"{URL}/storage/v1/object/dokumente/{ids[0]}/test.pdf",
                                                                 headers=_h(SERVICE), timeout=30)))
             except Exception as e:  # jeder Schritt einzeln, damit Nutzer B trotzdem geloescht wird
                 print("WARNUNG Cleanup Datei:", e)
@@ -139,8 +139,8 @@ def test_rls_isolation(users):
     assert 400 <= r.status_code < 500, r.text
 
     # Storage
-    path = f"{URL}/storage/v1/object/dokumente/{a_id}/test.txt"
-    r = requests.post(path, headers={**ha, "Content-Type": "text/plain"}, data=b"hallo", timeout=30)
+    path = f"{URL}/storage/v1/object/dokumente/{a_id}/test.pdf"
+    r = requests.post(path, headers={**ha, "Content-Type": "application/pdf"}, data=b"hallo", timeout=30)
     assert r.status_code in (200, 201), r.text
     r = requests.get(path, headers=ha, timeout=30)
     assert r.content == b"hallo"
