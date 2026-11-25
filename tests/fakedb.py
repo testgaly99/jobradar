@@ -104,11 +104,14 @@ class FakeDB:
             assert params["firma"] == params["titel"] == "is.null"
             return [{"id": a["id"], "snapshot_text": a["snapshot_text"]} for a in self.t["applications"]
                     if a["firma"] is None and a["titel"] is None]
-        elif method == "GET" and pfad == "applications" and params.get("select") == "id,link,firma":
+        elif method == "GET" and pfad == "admins":
+            return []  # keine Admin-Konten: db._gerecht fragt dann nur die übrigen ab
+        elif method == "GET" and pfad == "applications" and params.get("select") == "id,owner_id,link,firma":
             if self.ohne_nachruesten:
                 raise RuntimeError("Supabase GET applications: 400 42703")
             assert params["nachruesten"] == "eq.true"
-            return [{"id": a["id"], "link": a["link"], "firma": a.get("firma")} for a in self.t["applications"] if a.get("nachruesten")][:params["limit"]]
+            return [{"id": a["id"], "owner_id": a.get("owner_id"), "link": a["link"], "firma": a.get("firma")}
+                    for a in self.t["applications"] if a.get("nachruesten")][:params["limit"]]
         elif method == "GET" and pfad == "applications" and params.get("select", "").startswith("id,owner_id,geaendert_am,"):
             if self.ohne_original:
                 raise RuntimeError("Supabase GET applications: 400 42703")

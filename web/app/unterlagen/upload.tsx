@@ -8,6 +8,8 @@ import { cvTextSpeichern, dokumentAnlegen, dokumentLoeschen, einwilligen } from 
 import { LoeschForm } from "../bewerbungen/knoepfe";
 
 const MAX = 50 * 1024 * 1024;
+// Q308: dieselben Arten erlaubt der Speicher-Bucket `dokumente` (Supabase → Storage → Allowed MIME types).
+const ARTEN = ".pdf,.doc,.docx,.jpg,.jpeg,.png";
 // einwilligung: null = gültige Einwilligung liegt vor; sonst der Text (je Konto, web/lib/cv-einwilligung.json).
 export function UploadFormular({ einwilligung }: { einwilligung: string | null }) {
   const router = useRouter();
@@ -22,6 +24,7 @@ export function UploadFormular({ einwilligung }: { einwilligung: string | null }
     const datei = f.get("datei") as File;
     if (!datei || datei.size === 0) return setFehler("Bitte wähle eine Datei.");
     if (datei.size > MAX) return setFehler("Die Datei ist größer als 50 MB.");
+    if (!ARTEN.split(",").some((e) => datei.name.toLowerCase().endsWith(e))) return setFehler("Erlaubt sind PDF, Word, JPG und PNG.");
     setFehler(""); setLaeuft(true);
     try {
       if (art === "cv" && einwilligung) {
@@ -73,8 +76,8 @@ export function UploadFormular({ einwilligung }: { einwilligung: string | null }
       <label>Versionsdatum
         <input name="version_datum" type="date" required defaultValue={new Date().toISOString().slice(0, 10)} />
       </label>
-      <label>Datei (höchstens 50 MB)
-        <input name="datei" type="file" required />
+      <label>Datei (PDF, Word, JPG oder PNG, höchstens 50 MB)
+        <input name="datei" type="file" accept={ARTEN} required />
       </label>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
       <button className="knopf" type="submit" disabled={laeuft}>{laeuft ? "Lade hoch …" : "Hochladen"}</button>
