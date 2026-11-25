@@ -3,14 +3,10 @@ import re
 from pathlib import Path
 
 WURZEL = Path(__file__).resolve().parent.parent
-MIME = {'.pdf': 'application/pdf', '.doc': 'application/msword',
-        '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png'}
-
-
 def test_formular_und_speicher_gleich():
-    arten = re.search(r'const ARTEN = "([^"]+)"', (WURZEL / 'web/app/unterlagen/upload.tsx').read_text(encoding='utf-8')).group(1)
+    ts = (WURZEL / 'web/lib/dokumente.ts').read_text(encoding='utf-8')
+    block = re.search(r'DATEIARTEN: Record<string, string> = \{(.*?)\};', ts, re.S).group(1)
     sql = (WURZEL / 'supabase/migrations/025_dokumente_dateiarten.sql').read_text(encoding='utf-8')
     erlaubt = set(re.findall(r"'([a-z]+/[\w.+-]+)'", sql))
-    assert {MIME[e] for e in arten.split(',')} == erlaubt
+    assert set(re.findall(r'"\.\w+": "([^"]+)"', block)) == erlaubt
     assert "where id = 'dokumente'" in sql
