@@ -17,14 +17,14 @@ test("Standard- und Rankingabfrage behalten sichere Seitenbereiche und 50 Treffe
       } },
     });
     for (const [seite, offset] of [[1, "0"], [2, "50"], [3, "100"], [180143985094819, "9007199254740900"]] as const) {
-      const f = leseFilter({ liste: mitListe ? "test-a" : undefined, sort: mitListe ? "rang" : "titel", q: "Data" });
+      const f = leseFilter({ liste: mitListe ? "test-a" : undefined, sort: "titel", q: "Data" });
       const ergebnis = await stellenAbfrage(sb, { ...f, seite });
       assert.equal(ergebnis.error, null);
       const url = aufrufe.at(-1)!;
       assert.equal(url.pathname, mitListe ? "/rest/v1/rpc/ranking_stellen" : "/rest/v1/jobs");
       assert.equal(url.searchParams.get("offset"), offset);
       assert.equal(url.searchParams.get("limit"), "50");
-      assert.equal(url.searchParams.get("order"), mitListe ? "rang.asc.nullslast,unternehmen.asc,id.asc" : "titel.asc,id.asc");
+      assert.equal(url.searchParams.get("order"), "titel.asc,id.asc");
       assert.ok(url.searchParams.get("or")?.includes("titel.ilike"));
     }
     assert.equal(aufrufe.length, 4);

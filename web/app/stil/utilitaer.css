@@ -156,3 +156,21 @@
 .cvm-1 { display: none; }
 .cv-abgleich:has(#cv-spalte-1:checked) .cvm-1 { display: inline-flex; }
 .cv-abgleich:has(#cv-spalte-1:checked) .cvm-0 { display: none; }
+
+/* Anzeige offline: gleiche Bernsteinfarbe wie "neu" (Warnhinweis, kein Fehler) */
+.chip-offline { background: var(--color-neu); color: var(--color-neu-ink); }
+
+/* Merk-Stufe auf der Karte: gleiche Bernsteinfarbe wie "neu" */
+.chip-stufe { background: var(--color-neu); color: var(--color-neu-ink); }
+.meine-gruppe { margin: var(--space-3, 1rem) 0 0; font-weight: 600; }
+.meine-gruppe h3 { font-size: inherit; margin: 0; }
+
+/* Sortierung direkt über der Stellenliste (nicht im Filterkasten) */
+.sortierleiste { display: flex; justify-content: flex-end; margin-bottom: 0.75rem; }
+.sortierleiste label { display: flex; align-items: center; gap: 0.5rem; max-width: 100%; }
+.sortierleiste select { min-width: 0; max-width: 100%; }
+
+/* Anzeige in der Stellenliste aufklappen */
+.stelle-anzeige { margin-top: 0.5rem; max-width: 100%; }
+.stelle-anzeige summary { cursor: pointer; }
+.stelle-anzeige .anzeige { overflow-wrap: anywhere; }

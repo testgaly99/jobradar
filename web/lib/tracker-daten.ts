@@ -11,8 +11,8 @@ export { spaltenFehlen };
 export type { Karte };
 
 const BASIS = "id,firma,titel,status,ergebnis,interesse,beworben_am,erstellt_am,naechster_schritt,naechster_schritt_faellig,geaendert_am,angebot_fix,gehalt_wunsch,gehalt_spanne_anzeige";
-const VOLL = `${BASIS},runde,kommentar,jobs(steckbrief,companies(logo_url))`;
-const OHNE = `${BASIS},jobs(steckbrief)`;
+const VOLL = `${BASIS},runde,kommentar,jobs(steckbrief,status,zuletzt_gesehen,companies(logo_url))`;
+const OHNE = `${BASIS},jobs(steckbrief,status,zuletzt_gesehen)`;
 
 const LADEFEHLER = "Bewerbungen konnten nicht geladen werden.";
 
@@ -36,9 +36,15 @@ export async function ladeKarten(sb: SupabaseClient, f: TabellenFilter & { archi
     if (f.interesse) q = q.gte("interesse", f.interesse);
     return q;
   };
-  let { data, error } = await lade(VOLL);
-  const ohneSpalten = spaltenFehlen(error);
-  if (ohneSpalten) ({ data, error } = await lade(OHNE));
+  // Spalte merk_stufe (Migration 004) kann fehlen, 006-Spalten ebenso: erst beide, dann nur eine, dann keine; fehlende Stufe = "gemerkt".
+  const M = ",merk_stufe";
+  const versuche = [VOLL + M, OHNE + M, VOLL, OHNE];
+  let data: unknown, error: { code?: string; message: string } | null = null, nr = 0;
+  for (; nr < versuche.length; nr++) {
+    ({ data, error } = await lade(versuche[nr]));
+    if (!spaltenFehlen(error)) break;
+  }
+  const ohneSpalten = nr === 1 || nr === 3;
   if (error) { console.error("ladeKarten applications:", error.message); return { karten: [], ohneSpalten, fehler: LADEFEHLER }; }
   const zeilen = (data ?? []) as unknown as { id: string }[];
   const ids = zeilen.map((z) => z.id);
@@ -55,13 +61,14 @@ export async function ladeKarten(sb: SupabaseClient, f: TabellenFilter & { archi
 }
 
 // Zeile für einen Zug lesen; ohne 006 fehlt `runde` (dann ohne006 = true, runde = null).
-export async function ladeZugZeile(sb: SupabaseClient, id: string): Promise<{ alt: ZugAlt | null; ohne006: boolean; fehler: boolean }> {
+export async function ladeZugZeile(sb: SupabaseClient, id: string): Promise<{ alt: ZugAlt | null; ohne006: boolean; fehler: boolean; offline: boolean }> {
   const lade = (spalten: string) => sb.from("applications").select(spalten).eq("id", id).maybeSingle();
-  let { data, error } = await lade("status,runde,ergebnis,beworben_am");
+  // jobs(status): offline = verknüpfte Stelle geschlossen; ohne job_id nie offline.
+  let { data, error } = await lade("status,runde,ergebnis,beworben_am,jobs(status)");
   const ohne006 = spaltenFehlen(error);
-  if (ohne006) ({ data, error } = await lade("status,ergebnis,beworben_am"));
-  const z = data as Partial<ZugAlt> | null;
-  return { alt: z && istStatus(z.status) ? { status: z.status, runde: z.runde ?? null, ergebnis: z.ergebnis ?? null, beworben_am: z.beworben_am ?? null } : null, ohne006, fehler: !!error };
+  if (ohne006) ({ data, error } = await lade("status,ergebnis,beworben_am,jobs(status)"));
+  const z = data as (Partial<ZugAlt> & { jobs?: { status?: string } | null }) | null;
+  return { alt: z && istStatus(z.status) ? { status: z.status, runde: z.runde ?? null, ergebnis: z.ergebnis ?? null, beworben_am: z.beworben_am ?? null } : null, ohne006, fehler: !!error, offline: z?.jobs?.status === "geschlossen" };
 }
 
 // "Diese Woche": offene Bewerbungen mit Schritt und Terminen.

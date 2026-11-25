@@ -1,20 +1,25 @@
 // Reine Kartenlogik des Trackers (ohne server-only, damit testbar).
 import { STATUS_LABEL, istStatus, type Status } from "./bewerbung.ts";
+import { offlineSeit } from "./offline.ts";
 import { gehaltText, naechsterTermin, tageSeit } from "./karte.ts";
 
+export const MERK_STUFEN = ["neu", "gemerkt", "spaeter"] as const;
+export type MerkStufe = (typeof MERK_STUFEN)[number];
 export type Karte = {
   id: string; firma: string | null; titel: string | null; status: Status; ergebnis: string | null; interesse: number | null;
   beworben_am: string | null; erstellt_am: string; runde: number | null; kommentar: string | null; logo_url: string | null;
   gehalt: string | null; letzterSchritt: string; naechsterTermin: { datum: string; text: string } | null;
   schrittFaellig: string | null; // naechster_schritt_faellig, auch wenn überfällig (Vorauswahl)
+  offlineSeit: string | null; // Anzeige geschlossen: Datum, seit dem sie offline ist
+  merkStufe: MerkStufe; // nur bei Status gemerkt von Bedeutung: neu = noch nicht einsortiert
 };
 export type Ereignis = { datum: string; neuer_status: string | null };
 export type Termin = { datum: string | null; aufgabe: string | null; aufgabe_frist: string | null };
 type Zeile = {
   id: string; firma: string | null; titel: string | null; status: Status; erstellt_am: string; ergebnis?: string | null; interesse?: number | null;
   beworben_am?: string | null; runde?: number | null; kommentar?: string | null; naechster_schritt?: string | null; naechster_schritt_faellig?: string | null;
-  angebot_fix?: string | null; gehalt_wunsch?: string | null; gehalt_spanne_anzeige?: string | null;
-  jobs?: { steckbrief?: { gehalt?: never } | null; companies?: { logo_url?: string | null } | null } | null;
+  merk_stufe?: MerkStufe | null; angebot_fix?: string | null; gehalt_wunsch?: string | null; gehalt_spanne_anzeige?: string | null;
+  jobs?: { status?: string | null; zuletzt_gesehen?: string | null; steckbrief?: { gehalt?: never } | null; companies?: { logo_url?: string | null } | null } | null;
 };
 
 // PostgREST: 42703 = Spalte unbekannt (Postgres), PGRST204 = Spalte fehlt im Schema-Cache.
@@ -35,7 +40,7 @@ export function baueKarte(a: Zeile, events: Ereignis[], interviews: Termin[], he
     beworben_am: a.beworben_am ?? null, erstellt_am: a.erstellt_am, runde: a.runde ?? null, kommentar: a.kommentar ?? null,
     logo_url: a.jobs?.companies?.logo_url ?? null, gehalt: gehaltText(a, a.jobs?.steckbrief ?? null),
     letzterSchritt: letzt ? (label ? `${label} · ${tage}` : tage) : "", naechsterTermin: naechsterTermin(termine, heute),
-    schrittFaellig: a.naechster_schritt_faellig ?? null,
+    schrittFaellig: a.naechster_schritt_faellig ?? null, offlineSeit: offlineSeit(a.jobs), merkStufe: a.merk_stufe ?? "gemerkt",
   };
 }
 
@@ -68,4 +73,11 @@ export function vorauswahl(karten: Karte[], gewuenscht: string | undefined): Kar
   let best: Karte | null = null;
   for (const k of karten) { const d = datum(k); if (d && (!best || d < datum(best)!)) best = k; }
   return best ?? karten[0] ?? null;
+}
+
+// Liste „Gemerkt“: drei Gruppen, Reihenfolge innerhalb bleibt wie geliefert.
+export function nachMerkStufe(karten: Karte[]): Record<MerkStufe, Karte[]> {
+  const g: Record<MerkStufe, Karte[]> = { neu: [], gemerkt: [], spaeter: [] };
+  for (const k of karten) g[k.merkStufe].push(k);
+  return g;
 }

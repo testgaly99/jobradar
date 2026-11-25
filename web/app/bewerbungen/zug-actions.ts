@@ -4,7 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { ERGEBNIS_LABEL, istStatus, istUuid, type Status } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { ladeZugZeile, spaltenFehlen } from "@/lib/tracker-daten";
-import { GEMERKT_GESPERRT, rueckgaengigErlaubt, rundePatch, zugPatch, zurueckZuGemerkt, type ZugAlt } from "@/lib/zug";
+import { MERK_STUFEN, type MerkStufe } from "@/lib/tracker-karte";
+import { bewerbenGesperrt, OFFLINE_GESPERRT } from "@/lib/offline";
+import { GEMERKT_GESPERRT, rueckgaengigErlaubt, STATUS_RANG, rundePatch, zugPatch, zurueckZuGemerkt, type ZugAlt } from "@/lib/zug";
 
 // Diese Actions antworten mit Ergebnissen statt redirect(): das Board zeigt Fehler selbst an.
 export type ZugVorher = ZugAlt & { zeitpunkt: string };
@@ -33,15 +35,16 @@ function neuLaden(id: string) {
 const kurzVorher = () => new Date(Date.now() - 1000).toISOString();
 
 export async function zugAusfuehren(
-  id: string, vonStatus: Status, ziel: { status: Status; ergebnis?: string },
+  id: string, vonStatus: Status, ziel: { status: Status; ergebnis?: string }, trotzdem = false,
 ): Promise<{ ok: true; vorher: ZugVorher; eventIds: string[] } | Fehler> {
   const { sb, fehler } = await start(id);
   if (fehler) return nein(fehler);
   if (!istStatus(vonStatus) || !istStatus(ziel?.status)) return nein("Ungültiger Status.");
-  const { alt, ohne006, fehler: lesefehler } = await ladeZugZeile(sb, id);
+  const { alt, ohne006, fehler: lesefehler, offline } = await ladeZugZeile(sb, id);
   if (lesefehler) return nein(DB_FEHLER);
   if (!alt) return nein("Bewerbung nicht gefunden.");
   if (zurueckZuGemerkt(alt.status, ziel.status)) return nein(GEMERKT_GESPERRT);
+  if (STATUS_RANG[ziel.status] >= STATUS_RANG.beworben && bewerbenGesperrt(alt.status, offline, trotzdem === true)) return nein(OFFLINE_GESPERRT);
   let patch;
   try { patch = zugPatch(alt, ziel, heuteLokal()); } catch { return nein("Bitte wähle ein Ergebnis."); }
   if (ohne006) delete patch.runde;
@@ -90,6 +93,19 @@ export async function zugRueckgaengig(
     .select("id");
   // Vor 006 fehlt die Lösch-Policy: dann löscht RLS still 0 Zeilen. Der Status ist trotzdem zurück.
   if (delFehler || (weg?.length ?? 0) < alle.length) return { ok: true, hinweis: "Verlauf konnte nicht bereinigt werden (Migration 006 fehlt)." };
+  return { ok: true };
+}
+
+// Einsortieren innerhalb von „Gemerkt“; nur solange der Status gemerkt ist.
+export async function merkStufeSetzen(id: string, stufe: MerkStufe): Promise<{ ok: true } | Fehler> {
+  const { sb, fehler } = await start(id);
+  if (fehler) return nein(fehler);
+  if (!MERK_STUFEN.includes(stufe)) return nein("Ungültige Stufe.");
+  const { data, error } = await sb.from("applications").update({ merk_stufe: stufe }).eq("id", id).eq("status", "gemerkt").select("id");
+  if (spaltenFehlen(error)) return nein("Erst Migration 026 ausführen.");
+  if (error) return nein(DB_FEHLER);
+  if (!data?.length) return nein(GEAENDERT);
+  neuLaden(id);
   return { ok: true };
 }
 

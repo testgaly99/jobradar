@@ -25,14 +25,13 @@ test("Listen stehen zuerst und behalten stabile Kennungen in der Adresse", () =>
   const f = leseFilter({ liste: ["test-b", "test-a", "test-a"], sort: "rang", seite: "2" });
   assert.equal(GRUPPEN[0], "liste");
   assert.deepEqual(f.liste, ["test-b", "test-a"]);
-  assert.equal(filterZuUrl(f), "/stellen?liste=test-b&liste=test-a&sort=rang&seite=2");
+  assert.equal(filterZuUrl(f), "/stellen?liste=test-b&liste=test-a&sort=rangliste&seite=2");
 });
 
 test("Gäste verlieren Listenparameter und Rangsortierung; andere Filter bleiben", () => {
   const f = leseFilter({ liste: "test-a", sort: "rang", firma: "Testfirma", volltext: "1" });
   assert.deepEqual(rankingFilter(f, false), { ...f, liste: [], sort: "neu", volltext: false });
   assert.deepEqual(rankingFilter(f, true), f);
-  assert.equal(rankingFilter({ ...f, liste: ["test-a", "test-b"] }, true).sort, "neu");
 });
 
 test("Gast löst keinerlei Ranking-Abfragen aus", async () => {
@@ -99,7 +98,7 @@ test("Listenfilter arbeitet serverseitig vor Seiteneinteilung und globaler Rangs
     assert.equal(url.pathname, "/rest/v1/rpc/ranking_stellen");
     assert.deepEqual(JSON.parse(String(init.body)), { p_listen: ["test-a"] });
     assert.ok(new Headers(init.headers).get("Prefer")?.split(",").includes("count=exact"));
-    assert.equal(url.searchParams.get("order"), "rang.asc.nullslast,unternehmen.asc,id.asc");
+    assert.equal(url.searchParams.get("order"), "erstmals_gesehen.desc,id.asc"); // rangliste sortiert bis Paket 4 wie neu
     assert.equal(url.searchParams.get("offset"), "50");
     assert.equal(url.searchParams.get("limit"), "50");
     assert.equal(url.searchParams.get("groesse_klasse"), 'in.(250–999)');

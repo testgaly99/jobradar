@@ -4,6 +4,8 @@ import { useFormStatus } from "react-dom";
 import { bewerbungAusLink, firmaTitelVorschlag } from "./actions";
 import { MAX_TEXT } from "@/lib/uebernahme";
 import { PORTAL_EINGABE } from "@/lib/jobportale";
+import { merkStufeSetzen } from "./zug-actions";
+import type { MerkStufe } from "@/lib/tracker-karte";
 
 // Absende-Knopf: sperrt sich, solange das Formular läuft.
 export function SendeKnopf({ text, klasse = "knopf", warte = "Bitte warten …", gedrueckt, title }: { text: string; klasse?: string; warte?: string; gedrueckt?: boolean; title?: string }) {
@@ -98,5 +100,40 @@ export function LinkFormular() {
       {zustand && "fehler" in zustand && <p className="meldung fehler" role="alert">{zustand.fehler}</p>}
       <SendeKnopf text="Anlegen" />
     </form>
+  );
+}
+
+// Weiche Ausnahme bei offener Sperre ("Anzeige offline"): erst Knopf, dann Rückfrage (kein confirm()), dann die Aktion mit trotzdem = true.
+// Aktionen, die statt zu springen {ok:false, fehler} liefern (Board-Züge), zeigen den Fehler hier an.
+export function TrotzdemForm({ action, felder }: { action: (f: FormData) => Promise<unknown>; felder?: Record<string, string> }) {
+  const [frage, setFrage] = useState(false);
+  const [fehler, setFehler] = useState("");
+  if (!frage) return <button type="button" className="knopf knopf-rand knopf-schmal" onClick={() => setFrage(true)}>Schon beworben? Trotzdem eintragen</button>;
+  return (
+    <form className="knopfreihe" action={async (f) => {
+      const r = await action(f);
+      if (r && typeof r === "object" && "fehler" in r) setFehler(String(r.fehler));
+    }}>
+      {Object.entries(felder ?? {}).map(([n, w]) => <input key={n} type="hidden" name={n} value={w} />)}
+      <SendeKnopf text="Ja, eintragen" klasse="knopf knopf-schmal" />
+      <button type="button" className="knopf knopf-rand knopf-schmal" onClick={() => setFrage(false)}>Abbrechen</button>
+      {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
+    </form>
+  );
+}
+
+// Einsortieren eines gemerkten Eintrags: ein Klick, der Knopf der aktuellen Gruppe fehlt.
+const STUFE_KNOPF = [["gemerkt", "Gemerkt"], ["spaeter", "Für später"]] as const;
+export function MerkKnoepfe({ id, stufe }: { id: string; stufe: MerkStufe }) {
+  const [laeuft, starte] = useTransition();
+  const [fehler, setFehler] = useState("");
+  return (
+    <span className="knopfreihe">
+      {STUFE_KNOPF.filter(([s]) => s !== stufe).map(([s, text]) => (
+        <button key={s} type="button" className="knopf knopf-rand knopf-schmal" disabled={laeuft}
+          onClick={() => starte(async () => { const r = await merkStufeSetzen(id, s); setFehler("fehler" in r ? r.fehler : ""); })}>{text}</button>
+      ))}
+      {fehler && <span className="meldung fehler" role="alert">{fehler}</span>}
+    </span>
   );
 }

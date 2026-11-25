@@ -1,14 +1,17 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { firmenFarbe } from "@/lib/farbe";
 import { datumDe } from "@/lib/bewerbung";
-import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, standardSortierung, stadtAnzeige, tagePlus, type Gruppe, type Sortierung } from "@/lib/filter";
 import { istUmgerechnet, UMGERECHNET_HINWEIS, kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
 import { merken, entmerken } from "./actions";
+import AnzeigeAufklappen from "./anzeige-aufklappen";
 import FilterBlock from "./filterblock";
 import FilterClient from "./filter-client";
+import SortierAuswahl from "./sortierung";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 import FirmenLogo from "../firmenlogo";
 import Ranglisten from "../ranglisten";
@@ -36,7 +39,13 @@ const bekannt = (s: string | null) => (s && s.toLowerCase() !== "unbekannt" ? s 
 
 export default async function Seite({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
-  const roh = leseFilter(sp);
+  let roh = leseFilter(sp);
+  // Gemerkte Sortierung (Cookie) gilt nur ohne sort in der Adresse; Passung gibt es noch nicht (Paket 4).
+  if (!sp.sort) {
+    let c: { sort?: string; kat?: string } = {};
+    try { c = JSON.parse((await cookies()).get("stellen_sort")?.value ?? "{}") ?? {}; } catch { /* kaputtes Cookie: Standard */ }
+    roh = { ...roh, sort: standardSortierung(false, typeof c.sort === "string" ? c.sort : undefined), ansicht_kategorie: roh.ansicht_kategorie || (typeof c.kat === "string" && c.kat.length < 100 ? c.kat : "") };
+  }
   const fehler = typeof sp.fehler === "string" ? sp.fehler : null;
   const sb = await createClient();
   // Facetten zuerst: ohne Migration 005 fehlt "land", dann wird ein ?land= ignoriert statt die Abfrage zu sprengen.
@@ -94,6 +103,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
     for (const s of sbr.error ? [] : (sbr.data ?? [])) steckbriefe.set(s.id, s.steckbrief);
   }
 
+  const sortOptionen: Sortierung[] = ["neu", "firma", "titel", "groesse", ...(nutzer && katalog.verfuegbar ? ["rangliste" as const] : [])];
+
   return (
     <>
       {veraltet && letzterLauf && (
@@ -106,7 +117,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
         </p>
       </div>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
-      {listenHinweis && <p className="meldung hinweis" role="status">{listenHinweis} <Link href={filterZuUrl({ ...f, liste: [], sort: f.sort === "rang" ? "neu" : f.sort, seite: 1 })}>Listenfilter zurücksetzen</Link></p>}
+      {listenHinweis && <p className="meldung hinweis" role="status">{listenHinweis} <Link href={filterZuUrl({ ...f, liste: [], sort: f.sort === "rangliste" ? "neu" : f.sort, seite: 1 })}>Listenfilter zurücksetzen</Link></p>}
       {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
       {rankingKategorien.fehler && <p className="meldung hinweis" role="status">{rankingKategorien.fehler}</p>}
       {deutschFehlt && <p className="meldung hinweis" role="status">Deutsch-Filter geht erst nach Migration 013.</p>}
@@ -134,15 +145,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   <span>Auch im Anzeigentext suchen</span>
                 </label>
               )}
-              <label>Sortieren nach
-                <select key={f.sort} name="sort" defaultValue={f.sort}>
-                  <option value="neu">Online seit (neueste zuerst)</option>
-                  <option value="firma">Firma A bis Z</option>
-                  <option value="titel">Titel A bis Z</option>
-                  <option value="groesse">Größe</option>
-                  {nutzer && f.liste.length === 1 && !listeGesperrt && <option value="rang">Rang in der Liste</option>}
-                </select>
-              </label>
+              <input type="hidden" name="sort" value={f.sort} />
+              {f.ansicht_kategorie && <input type="hidden" name="kat" value={f.ansicht_kategorie} />}
               {nutzer && (
                 <label>Mein Deutschniveau
                   {/* "egal" muss eine gespeicherte Wahl für diesen Aufruf überstimmen ("alle"), sonst entfällt der Parameter */}
@@ -232,6 +236,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
 
         <section aria-label="Stellen">
           {!listeGesperrt && (!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
+          <SortierAuswahl filter={f} optionen={sortOptionen} />
           <ul className="stellenliste" id="stellenliste">
             {jobs.map((j) => {
               const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;
@@ -266,6 +271,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       </ul>
                     )}
                     {deHinweis && <p className="gedaempft klein">{deHinweis}</p>}
+                    {nutzer && <AnzeigeAufklappen jobId={j.id} />}
                   </div>
                   {!nutzer ? (
                     <Link className="knopf knopf-rand knopf-schmal" href="/login">Anmelden zum Merken</Link>
