@@ -489,6 +489,8 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q346 | Welches Paket als nächstes (Nutzer: „Was für ein Arbeitspaket kannst du als nächstes abarbeiten?“)? | Nutzer: „A: Restliste vorziehen (Empfohlen)“ | Claude sucht per Websuche (Anthropic-Server, keine Firmenseiten vom Nutzer-PC) Karriereseiten für die bereits gescheiterten Firmen und trägt Funde in `data/firmen_korrekturen.csv` ein; Rest morgen in die ChatGPT-CSV (P6). Unterbrochen durch Nutzerfrage „Zähle alle offenen Arbeitspakete auf“, Stand in STATUS P6 |
 | Q347 | Paket A (Restliste vorziehen) nach Unterbrechung fortsetzen? | Nutzer: „Nein, anderes Paket“ | Paket A ruht, wird am 27.11. mit der ChatGPT-CSV erledigt (STATUS P6, inkl. Codeänderung „Korrektur → sofort fällig“) |
 | Q348 | Welches Paket statt A? | Nutzer: „Aufräumpaket To-do 49 (Empfohlen)“ | Claude arbeitet P25 ab (Tests, Tempo Listen-Ansicht, TrotzdemForm usw.), Upload/Merge mit gesonderter Freigabe |
+| Q349 | Bauplan Aufräumpaket To-do 49 (`docs/plans/2026-11-26-aufraeumen-49.md`, 8 Schritte) freigeben? | Nutzer: „Freigeben (Empfohlen)“ | Bau auf `entwurf-ui`; Upload/Merge gesondert |
+| Q350 | Bauweise: selbst mit Prüfung am Ende oder Helfer je Schritt? | Nutzer: „Helfer je Schritt“ | subagent-driven-development: Umsetzer + Prüfer je Task, Gesamtprüfung opus |
 | Q342 | Klicktest der Listen-Ansicht mit einem Wegwerf-Konto (ohne Admin, ohne künstliche Daten), danach gelöscht? | Nutzer: „Ja, einmal ausführen (Empfohlen)“ | Ein Lauf vor der Upload-Frage zu Paket 5. | entschieden |
 | Q341 | Paket 4 live (main 89081ea). Mit Paket 5 (Listen-Ansicht) und Schlussrunde weitermachen? | Nutzer: „Ja, Paket 5 jetzt (Empfohlen)“ | Task 11–12, Gesamtprüfung, Kleinigkeiten; vor dem Hochladen neue Frage. | entschieden |
 | Q275 | 6a Einwilligung: speichern, welcher Fassung des Textes zugestimmt wurde (Nachweis nach DSGVO; bei Textänderung neu zustimmen)? | Nutzer: „Fassung speichern (Empfohlen)“ | Spalte `fassung` in `cv_einwilligung` (Migration 024); Website und Nachtlauf gelten nur bei aktueller Fassung. | entschieden |
@@ -727,6 +729,8 @@ Fragetexte Q345 (Claude, 2026-11-26, Auswahl): Morgen nach der 2. Nacht (Empfohl
 Fragetexte Q346 (Claude, 2026-11-26, Auswahl): A: Restliste vorziehen (Empfohlen) / B: Aufräumpaket To-do 49 / C: Absolventen-Punkt klären.
 Fragetexte Q347 (Claude, 2026-11-26, Auswahl): Ja, weitermachen (Empfohlen) / Nein, anderes Paket / Erst mal Pause.
 Fragetexte Q348 (Claude, 2026-11-26, Auswahl): Aufräumpaket To-do 49 (Empfohlen) / Einstiegs-Filter klären / Einstellungen prüfen (Vercel) / Telegram einrichten.
+Fragetexte Q349 (Claude, 2026-11-26, Auswahl): Freigeben (Empfohlen) / Erst ändern.
+Fragetexte Q350 (Claude, 2026-11-26, Auswahl): Selbst, Prüfung am Ende (Empfohlen) / Helfer je Schritt.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
