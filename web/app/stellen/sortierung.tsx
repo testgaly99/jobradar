@@ -22,6 +22,9 @@ export default function Sortierung({ filter, optionen, listen }: { filter: Filte
   const wurzel = useRef<HTMLDivElement>(null);
   const knopf = useRef<HTMLButtonElement>(null);
   const rangEintrag = useRef<HTMLButtonElement>(null);
+  // Zuletzt Maus/Touch? Dann bekommt programmatischer Fokus keinen Ring (Tastatur: Ring bleibt).
+  const zeiger = useRef(false);
+  const fokus = (el?: HTMLElement | null) => el?.focus(zeiger.current ? ({ focusVisible: false } as FocusOptions) : undefined);
 
   useEffect(() => {
     if (!offen) return;
@@ -34,7 +37,7 @@ export default function Sortierung({ filter, optionen, listen }: { filter: Filte
   useEffect(() => {
     if (!offen) return;
     const liste = eintraege(wurzel.current?.querySelector<HTMLElement>(".sortliste:not(.subliste)") ?? null);
-    (liste.find((e) => e.getAttribute("aria-current") === "true") ?? liste[0])?.focus();
+    fokus(liste.find((e) => e.getAttribute("aria-current") === "true") ?? liste[0]);
   }, [offen]);
 
   function wechseln(neu: { sort?: Sortierung; richtung?: Filter["richtung"]; rangliste?: string }) {
@@ -43,7 +46,7 @@ export default function Sortierung({ filter, optionen, listen }: { filter: Filte
     // "neu" lässt filterZuUrl weg: ohne sort-Parameter würde das Cookie gelten, also hier ausdrücklich setzen
     const u = filterZuUrl(f);
     // Das Menü verschwindet: Fokus zurück auf den Knopf, sonst geht er verloren.
-    if (offen) knopf.current?.focus();
+    if (offen) fokus(knopf.current);
     setOffen(false); setSub(false);
     start(() => router.push(f.sort === "neu" ? u + (u.includes("?") ? "&" : "?") + "sort=neu" : u));
   }
@@ -51,26 +54,27 @@ export default function Sortierung({ filter, optionen, listen }: { filter: Filte
   const ebene = (el: Element | null) => el?.closest<HTMLElement>('[role="menu"]') ?? null;
   const eintraege = (m: HTMLElement | null) => [...(m?.querySelectorAll<HTMLElement>(EINTRAG) ?? [])].filter((e) => ebene(e) === m);
   function tasten(e: KeyboardEvent<HTMLDivElement>) {
+    zeiger.current = false;
     if (e.target === knopf.current) { if (e.key === "Escape" && offen) { e.preventDefault(); setOffen(false); setSub(false); } return; }
     const m = ebene(e.target as Element);
     if (!m) return;
     const liste = eintraege(m);
     const i = liste.indexOf(e.target as HTMLElement);
-    const geh = (n: number) => { e.preventDefault(); liste[(n + liste.length) % liste.length]?.focus(); };
+    const geh = (n: number) => { e.preventDefault(); fokus(liste[(n + liste.length) % liste.length]); };
     if (e.key === "ArrowDown") geh(i + 1);
     else if (e.key === "ArrowUp") geh(i - 1);
     else if (e.key === "Home") geh(0);
     else if (e.key === "End") geh(liste.length - 1);
-    else if (e.key === "ArrowRight" && e.target === rangEintrag.current) { e.preventDefault(); setSub(true); requestAnimationFrame(() => eintraege(wurzel.current?.querySelector<HTMLElement>("[data-sub]") ?? null)[0]?.focus()); }
-    else if ((e.key === "Escape" || e.key === "ArrowLeft") && m.hasAttribute("data-sub")) { e.preventDefault(); setSub(false); rangEintrag.current?.focus(); }
-    else if (e.key === "Escape") { e.preventDefault(); setOffen(false); setSub(false); knopf.current?.focus(); }
+    else if (e.key === "ArrowRight" && e.target === rangEintrag.current) { e.preventDefault(); setSub(true); requestAnimationFrame(() => fokus(eintraege(wurzel.current?.querySelector<HTMLElement>("[data-sub]") ?? null)[0])); }
+    else if ((e.key === "Escape" || e.key === "ArrowLeft") && m.hasAttribute("data-sub")) { e.preventDefault(); setSub(false); fokus(rangEintrag.current); }
+    else if (e.key === "Escape") { e.preventDefault(); setOffen(false); setSub(false); fokus(knopf.current); }
     else if (e.key === "Tab") { setOffen(false); setSub(false); }
   }
 
   const aktuell = TEXT[filter.sort];
   return (
     <div className="sortierleiste">
-      <div className="sortmenue" ref={wurzel} onKeyDown={tasten}>
+      <div className="sortmenue" ref={wurzel} onKeyDown={tasten} onPointerDownCapture={() => { zeiger.current = true; }}>
         <button type="button" ref={knopf} className="sortknopf" aria-haspopup="menu" aria-expanded={offen}
           onClick={() => { setOffen(!offen); setSub(false); }}
           onKeyDown={(e) => { if (e.key === "ArrowDown") { e.preventDefault(); setOffen(true); } }}>
