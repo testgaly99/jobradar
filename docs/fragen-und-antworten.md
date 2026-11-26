@@ -486,6 +486,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q343 | Paket 5 (Listen-Ansicht) und Korrekturen der Gesamtprüfung hochladen und in main übernehmen? | Nutzer: „Hochladen und in main (Empfohlen)“ | Upload nach Einbau von Q344, grüner Codeprüfung und grünen Tests in main. | entschieden |
 | Q344 | Nutzer (zur Größen-Sortierung): „Ich möchte, dass wenn ich nach größe sortiere, erst die großen Unternehmen kommen. Außer ich änder die Richtung“ | (Nutzervorgabe) | Größe standardmäßig größte zuerst, ↑/↓ kehrt um, unbekannt immer zuletzt; ersetzt CLAUDE.md 2b „aufsteigend“ und das Ruling vom 2026-11-26; Liste und Kacheln damit gleich. | entschieden |
 | Q345 | Wann Vorschlag #6 (109+ neue Firmen mit Karriereseite) prüfen und zur Übernahme vorlegen (Nutzer zuvor: „Warum sehe ich bisher immernoch nur meine 13 Firmen auf der vercel seite?“)? | Nutzer: „Morgen nach der 2. Nacht (Empfohlen)“ | Am 27.11. nach dem Einrichtungslauf: Qualität (P19) und Laufzeit (P3) prüfen, dann Übernahme-Frage (P26). | entschieden |
+| Q346 | Welches Paket als nächstes (Nutzer: „Was für ein Arbeitspaket kannst du als nächstes abarbeiten?“)? | Nutzer: „A: Restliste vorziehen (Empfohlen)“ | Claude sucht per Websuche (Anthropic-Server, keine Firmenseiten vom Nutzer-PC) Karriereseiten für die bereits gescheiterten Firmen und trägt Funde in `data/firmen_korrekturen.csv` ein; Rest morgen in die ChatGPT-CSV (P6). Unterbrochen durch Nutzerfrage „Zähle alle offenen Arbeitspakete auf“, Stand in STATUS P6 |
 | Q342 | Klicktest der Listen-Ansicht mit einem Wegwerf-Konto (ohne Admin, ohne künstliche Daten), danach gelöscht? | Nutzer: „Ja, einmal ausführen (Empfohlen)“ | Ein Lauf vor der Upload-Frage zu Paket 5. | entschieden |
 | Q341 | Paket 4 live (main 89081ea). Mit Paket 5 (Listen-Ansicht) und Schlussrunde weitermachen? | Nutzer: „Ja, Paket 5 jetzt (Empfohlen)“ | Task 11–12, Gesamtprüfung, Kleinigkeiten; vor dem Hochladen neue Frage. | entschieden |
 | Q275 | 6a Einwilligung: speichern, welcher Fassung des Textes zugestimmt wurde (Nachweis nach DSGVO; bei Textänderung neu zustimmen)? | Nutzer: „Fassung speichern (Empfohlen)“ | Spalte `fassung` in `cv_einwilligung` (Migration 024); Website und Nachtlauf gelten nur bei aktueller Fassung. | entschieden |
@@ -721,6 +722,7 @@ Fragetexte Q341 (Claude, 2026-11-26, Auswahl): Ja, Paket 5 jetzt (Empfohlen) / E
 Fragetexte Q342 (Claude, 2026-11-26, Auswahl): Ja, einmal ausführen (Empfohlen) / Kein Klicktest.
 Fragetexte Q343 (Claude, 2026-11-26, Auswahl): Hochladen und in main (Empfohlen) / Nur hochladen / Noch nicht.
 Fragetexte Q345 (Claude, 2026-11-26, Auswahl): Morgen nach der 2. Nacht (Empfohlen) / Jetzt schon die 109 prüfen / Später.
+Fragetexte Q346 (Claude, 2026-11-26, Auswahl): A: Restliste vorziehen (Empfohlen) / B: Aufräumpaket To-do 49 / C: Absolventen-Punkt klären.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
