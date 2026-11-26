@@ -500,6 +500,7 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q351 | Zeitzonenangabe (Ortshinweis) im noch nicht hochgeladenen Codex-Protokolleintrag: was tun? | Nutzer: „Aus Verlauf entfernen (Empfohlen)“ | Codex-Commit vor dem Upload per Fixup umgeschrieben (nur ungepushte Commits), kein Vorkommen mehr in Zweigen |
 | Q352 | Klicktest „Trotzdem eintragen“ mit Wegwerf-Konto und künstlicher Offline-Bewerbung (Live-Schreiben) einmal ausführen? | Nutzer: „Ja, einmal ausführen (Empfohlen)“ | Lokal gegen die eigene Datenbank, danach Aufräumen |
 | Q353 | Erster Klicktest-Lauf brach ab (Firma für künstliche Stelle über Generalschlüssel gewählt, für das Wegwerf-Konto unsichtbar), zweiter Lauf von der Sicherheitsprüfung blockiert: korrigierten Test noch einmal ausführen? | Nutzer: „Ja, noch einmal (Empfohlen)“ | Firma jetzt aus Gastsicht gewählt; 12/12 bestanden, aufgeräumt (keine Reste-Stellen, keine Reste-Konten) |
+| Q354 | Aufräumpaket To-do 49 hochladen und in main übernehmen? | Nutzer: „Hochladen und in main (Empfohlen)“ | entwurf-ui hochgeladen, in main übernommen, main hochgeladen; keine Migration |
 | Q342 | Klicktest der Listen-Ansicht mit einem Wegwerf-Konto (ohne Admin, ohne künstliche Daten), danach gelöscht? | Nutzer: „Ja, einmal ausführen (Empfohlen)“ | Ein Lauf vor der Upload-Frage zu Paket 5. | entschieden |
 | Q341 | Paket 4 live (main 89081ea). Mit Paket 5 (Listen-Ansicht) und Schlussrunde weitermachen? | Nutzer: „Ja, Paket 5 jetzt (Empfohlen)“ | Task 11–12, Gesamtprüfung, Kleinigkeiten; vor dem Hochladen neue Frage. | entschieden |
 | Q275 | 6a Einwilligung: speichern, welcher Fassung des Textes zugestimmt wurde (Nachweis nach DSGVO; bei Textänderung neu zustimmen)? | Nutzer: „Fassung speichern (Empfohlen)“ | Spalte `fassung` in `cv_einwilligung` (Migration 024); Website und Nachtlauf gelten nur bei aktueller Fassung. | entschieden |
@@ -743,6 +744,7 @@ Fragetexte Q350 (Claude, 2026-11-26, Auswahl): Selbst, Prüfung am Ende (Empfohl
 Fragetexte Q351 (Claude, 2026-11-26, Auswahl): Aus Verlauf entfernen (Empfohlen) / Nur neuer Korrektur-Commit / So lassen.
 Fragetexte Q352 (Claude, 2026-11-26, Auswahl): Ja, einmal ausführen (Empfohlen) / Nein, später selbst.
 Fragetexte Q353 (Claude, 2026-11-26, Auswahl): Ja, noch einmal (Empfohlen) / Nein, offen lassen.
+Fragetexte Q354 (Claude, 2026-11-26, Auswahl): Hochladen und in main (Empfohlen) / Nur hochladen / Noch nicht.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
