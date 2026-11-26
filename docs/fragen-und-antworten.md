@@ -497,6 +497,8 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q348 | Welches Paket statt A? | Nutzer: „Aufräumpaket To-do 49 (Empfohlen)“ | Claude arbeitet P25 ab (Tests, Tempo Listen-Ansicht, TrotzdemForm usw.), Upload/Merge mit gesonderter Freigabe |
 | Q349 | Bauplan Aufräumpaket To-do 49 (`docs/plans/2026-11-26-aufraeumen-49.md`, 8 Schritte) freigeben? | Nutzer: „Freigeben (Empfohlen)“ | Bau auf `entwurf-ui`; Upload/Merge gesondert |
 | Q350 | Bauweise: selbst mit Prüfung am Ende oder Helfer je Schritt? | Nutzer: „Helfer je Schritt“ | subagent-driven-development: Umsetzer + Prüfer je Task, Gesamtprüfung opus |
+| Q351 | Zeitzonenangabe (Ortshinweis) im noch nicht hochgeladenen Codex-Protokolleintrag: was tun? | Nutzer: „Aus Verlauf entfernen (Empfohlen)“ | Codex-Commit vor dem Upload per Fixup umgeschrieben (nur ungepushte Commits), kein Vorkommen mehr in Zweigen |
+| Q352 | Klicktest „Trotzdem eintragen“ mit Wegwerf-Konto und künstlicher Offline-Bewerbung (Live-Schreiben) einmal ausführen? | Nutzer: „Ja, einmal ausführen (Empfohlen)“ | Lokal gegen die eigene Datenbank, danach Aufräumen |
 | Q342 | Klicktest der Listen-Ansicht mit einem Wegwerf-Konto (ohne Admin, ohne künstliche Daten), danach gelöscht? | Nutzer: „Ja, einmal ausführen (Empfohlen)“ | Ein Lauf vor der Upload-Frage zu Paket 5. | entschieden |
 | Q341 | Paket 4 live (main 89081ea). Mit Paket 5 (Listen-Ansicht) und Schlussrunde weitermachen? | Nutzer: „Ja, Paket 5 jetzt (Empfohlen)“ | Task 11–12, Gesamtprüfung, Kleinigkeiten; vor dem Hochladen neue Frage. | entschieden |
 | Q275 | 6a Einwilligung: speichern, welcher Fassung des Textes zugestimmt wurde (Nachweis nach DSGVO; bei Textänderung neu zustimmen)? | Nutzer: „Fassung speichern (Empfohlen)“ | Spalte `fassung` in `cv_einwilligung` (Migration 024); Website und Nachtlauf gelten nur bei aktueller Fassung. | entschieden |
@@ -737,6 +739,8 @@ Fragetexte Q347 (Claude, 2026-11-26, Auswahl): Ja, weitermachen (Empfohlen) / Ne
 Fragetexte Q348 (Claude, 2026-11-26, Auswahl): Aufräumpaket To-do 49 (Empfohlen) / Einstiegs-Filter klären / Einstellungen prüfen (Vercel) / Telegram einrichten.
 Fragetexte Q349 (Claude, 2026-11-26, Auswahl): Freigeben (Empfohlen) / Erst ändern.
 Fragetexte Q350 (Claude, 2026-11-26, Auswahl): Selbst, Prüfung am Ende (Empfohlen) / Helfer je Schritt.
+Fragetexte Q351 (Claude, 2026-11-26, Auswahl): Aus Verlauf entfernen (Empfohlen) / Nur neuer Korrektur-Commit / So lassen.
+Fragetexte Q352 (Claude, 2026-11-26, Auswahl): Ja, einmal ausführen (Empfohlen) / Nein, später selbst.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
