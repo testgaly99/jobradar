@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createClient } from "@supabase/supabase-js";
 import { leseFilter } from "../lib/filter.ts";
-import { PRO_SEITE, stellenAbfrage } from "../lib/stellen.ts";
+import { PRO_SEITE, stellenAbfrage, stellenFilter } from "../lib/stellen.ts";
 
 test("Standard- und Rankingabfrage behalten sichere Seitenbereiche und 50 Treffer pro Seite", async () => {
   assert.equal(PRO_SEITE, 50);
@@ -168,11 +168,12 @@ test("Größe: Standard ist größte zuerst, dir=auf kleinste zuerst, Unbekannt 
   }
 });
 
-test("Größe ohne Migration 028: Rückfall auf groesse_rang aufsteigend, ohne groesse_sort im Select", async () => {
+test("stellenFilter(sb, f, spalten): dritter Parameter ersetzt die Auswahl; Größe sortiert immer über groesse_sort", async () => {
   const aufrufe: URL[] = [];
-  await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort: "groesse", dir: "auf" }), true);
-  assert.equal(aufrufe[0].searchParams.get("order"), "companies(groesse_rang).asc,erstmals_gesehen.desc,id.asc");
-  assert.ok(!(aufrufe[0].searchParams.get("select") ?? "").includes("groesse_sort"));
+  await stellenFilter(sbMitAufrufen(aufrufe), leseFilter({ sort: "groesse" }), { tabelle: "id,companies!inner(aktiv)", rpc: "id" });
+  assert.equal(aufrufe[0].searchParams.get("select"), "id,companies!inner(aktiv)");
+  await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort: "groesse", dir: "auf" }));
+  assert.ok((aufrufe[1].searchParams.get("order") ?? "").startsWith("companies(groesse_sort).asc"));
 });
 
 test("Ohne sort=groesse steht groesse_sort nie im Select (läuft auch ohne Migration 028)", async () => {

@@ -311,7 +311,22 @@ def test_stellen_fuer_schaetzung_filtert(monkeypatch):
                                  {'job_id': 'J2', 'weg': 'schaetzung', 'anforderungs_hash': 'h'},
                                  {'job_id': 'J4', 'weg': 'claude', 'anforderungs_hash': 'alt'}])
     # J1 veraltete Schätzung -> neu; J2 aktuell -> nein; J3 fremde Firma -> nein; J4 Claude-Ergebnis -> nein
-    assert [k['job_id'] for k in db.stellen_fuer_schaetzung('o')] == ['J1']
+    assert [k['job_id'] for k in db.stellen_fuer_schaetzung('o', {})] == ['J1']
+
+
+def test_schaetzung_neu_wenn_cv_dazukommt(monkeypatch):
+    _schaetz_daten(monkeypatch, [{'job_id': 'J2', 'weg': 'schaetzung', 'anforderungs_hash': 'h', 'cv_hashes': {'cv1': 'a'}}])
+    assert [k['job_id'] for k in db.stellen_fuer_schaetzung('o', {'cv1': 'a', 'cv2': 'b'})] == ['J1', 'J2', 'J4']
+
+
+def test_schaetzung_neu_wenn_cv_text_anders(monkeypatch):
+    _schaetz_daten(monkeypatch, [{'job_id': 'J2', 'weg': 'schaetzung', 'anforderungs_hash': 'h', 'cv_hashes': {'cv1': 'alt'}}])
+    assert 'J2' in [k['job_id'] for k in db.stellen_fuer_schaetzung('o', {'cv1': 'neu'})]
+
+
+def test_schaetzung_bleibt_bei_weniger_cvs(monkeypatch):
+    _schaetz_daten(monkeypatch, [{'job_id': 'J2', 'weg': 'schaetzung', 'anforderungs_hash': 'h', 'cv_hashes': {'cv1': 'a', 'cv2': 'b'}}])
+    assert 'J2' not in [k['job_id'] for k in db.stellen_fuer_schaetzung('o', {'cv1': 'a'})]
 
 
 def test_speichere_ergebnis_ohne_spalte_zweiter_post(monkeypatch):

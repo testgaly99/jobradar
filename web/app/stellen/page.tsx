@@ -24,8 +24,8 @@ import { STUFEN, deutschText, deutschWirksam, leseDeutsch } from "@/lib/sprachni
 // Spalte jobs.deutsch_stufe fehlt (Migration 013 offen): Postgres 42703, PostgREST PGRST204
 const OHNE_DEUTSCH_SPALTE = ["42703", "PGRST204"];
 
-// Postgres 42P01/42501, PostgREST PGRST200/201/205: View fehlt, nicht lesbar oder Einbettung nicht erkannt
-const PASSUNG_FEHLT = ["42P01", "42501", "PGRST200", "PGRST201", "PGRST205"];
+// Postgres 42P01/42501/42703, PostgREST PGRST200/201/205: View fehlt, nicht lesbar oder Einbettung nicht erkannt
+const PASSUNG_FEHLT = ["42P01", "42501", "42703", "PGRST200", "PGRST201", "PGRST205"];
 
 const TITEL: Record<Gruppe, string> = {
   liste: "Liste",
@@ -73,7 +73,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   let deutsch = deutschWirksam(f.deutsch, sprach.error ? null : sprach.data?.niveau, !!nutzer);
   // Listenansicht nur für Angemeldete (sortOptionen lässt "rangliste" für Gäste nie zu).
   const listenAnsicht = !!nutzer && katalog.verfuegbar && f.sort === "rangliste";
-  let ohneGroesseSort = false; // Migration 028 fehlt: Größe sortiert nur klein zuerst
+  let passungRueckfall = false;
   let [ergebnis, lauf, erster, listen] = await Promise.all([
     listeGesperrt || listenAnsicht ? { data: [], count: 0, error: null } : stellenAbfrage(sb, { ...f, deutsch }),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
@@ -83,16 +83,13 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   // View fehlt (Migration 027) oder nicht lesbar: Liste nach neu statt Fehlerseite.
   if (f.sort === "passung" && ergebnis.error && PASSUNG_FEHLT.includes(ergebnis.error.code ?? "")) {
     f.sort = "neu";
+    passungRueckfall = true;
     ergebnis = await stellenAbfrage(sb, { ...f, deutsch });
-  }
-  if (f.sort === "groesse" && ergebnis.error?.code === "42703") {
-    ohneGroesseSort = true;
-    ergebnis = await stellenAbfrage(sb, { ...f, deutsch }, true);
   }
   const deutschFehlt = !!deutsch && OHNE_DEUTSCH_SPALTE.includes(ergebnis.error?.code ?? "");
   if (deutschFehlt) {
     deutsch = "";
-    ergebnis = await stellenAbfrage(sb, { ...f, deutsch }, ohneGroesseSort);
+    ergebnis = await stellenAbfrage(sb, { ...f, deutsch });
   }
   const ersterLauf: string | null = erster.data?.datum ?? null;
   const jobs = (ergebnis.data ?? []) as unknown as Job[];
@@ -138,6 +135,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
           {listenAnsicht ? (letzterLauf && `Stand ${datumDe(letzterLauf)}`) : <><span className="num">{gesamt}</span> Treffer{letzterLauf && `, Stand ${datumDe(letzterLauf)}`}</>}
         </p>
       </div>
+      {passungRueckfall && <p className="meldung">Sortierung „Empfohlen“ ist gerade nicht verfügbar, die Liste ist nach „Neu“ sortiert.</p>}
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
       {listenHinweis && <p className="meldung hinweis" role="status">{listenHinweis} <Link href={filterZuUrl({ ...f, liste: [], sort: f.sort === "rangliste" ? "neu" : f.sort, seite: 1 })}>Listenfilter zurücksetzen</Link></p>}
       {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
@@ -168,7 +166,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   <span>Auch im Anzeigentext suchen</span>
                 </label>
               )}
-              <input type="hidden" name="sort" value={f.sort} />
+              <input type="hidden" name="sort" value={passungRueckfall ? "passung" : f.sort} />
               {f.richtung === "auf" && <input type="hidden" name="dir" value="auf" />}
               {f.rangliste !== "alle" && <input type="hidden" name="rl" value={f.rangliste} />}
               {nutzer && (

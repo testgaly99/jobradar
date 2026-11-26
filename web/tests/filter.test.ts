@@ -121,9 +121,14 @@ test("sort: Unbekanntes und entfallene firma/titel werden neu, groesse und neu i
 test("formZuUrl: Filterwechsel behaelt q aus der Adresse, Suche nimmt es aus dem Formular", () => {
   const form = new URLSearchParams("q=neu&volltext=1&level=Senior&sort=neu&seite=3&seit=");
   const aktuell = new URLSearchParams("q=alt");
-  assert.equal(formZuUrl("/stellen", form, aktuell, false), "/stellen?level=Senior&q=alt");
-  assert.equal(formZuUrl("/stellen", form, aktuell, true), "/stellen?q=neu&volltext=1&level=Senior");
+  assert.equal(formZuUrl("/stellen", form, aktuell, false), "/stellen?level=Senior&sort=neu&q=alt");
+  assert.equal(formZuUrl("/stellen", form, aktuell, true), "/stellen?q=neu&volltext=1&level=Senior&sort=neu");
   assert.equal(formZuUrl("/stellen", new URLSearchParams("sort=groesse"), new URLSearchParams(), false), "/stellen?sort=groesse");
+});
+
+test("formZuUrl behält sort=neu", () => {
+  const form = new URLSearchParams("sort=neu&stadt=München");
+  assert.equal(formZuUrl("/stellen", form, new URLSearchParams(), false), "/stellen?sort=neu&stadt=M%C3%BCnchen");
 });
 
 test("formZuUrl mit textFelder [firma]: ungesendeter Firmentext kommt aus der Adresse", () => {

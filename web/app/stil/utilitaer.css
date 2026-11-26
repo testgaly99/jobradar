@@ -150,7 +150,11 @@
 .cv-gelb { background: var(--cv-gelb-bg); color: var(--cv-gelb-ink); }
 .cv-rot { background: var(--cv-rot-bg); color: var(--cv-rot-ink); }
 /* Nachtschätzung ohne KI: gleiche Farben, nur blasser; dazu das Wort "geschätzt" an der Überschrift */
-.geschaetzt .cv-marke { opacity: 0.6; }
+/* Blass nur über den Hintergrund (50 % zur Seitenfarbe), Schrift bleibt voll: Kontrast Schrift/Hintergrund (Text, Ziel >= 4,5:1)
+   hell: grün 8,95 · gelb 9,75 · rot 6,39; dunkel: grün 11,74 · gelb 12,25 · rot 8,83 (zum Vergleich "fertig": 8,38/9,25/6,12 hell, 9,24/9,81/7,41 dunkel) */
+.geschaetzt .cv-gruen { background: color-mix(in srgb, var(--cv-gruen-bg) 50%, var(--color-paper)); }
+.geschaetzt .cv-gelb { background: color-mix(in srgb, var(--cv-gelb-bg) 50%, var(--color-paper)); }
+.geschaetzt .cv-rot { background: color-mix(in srgb, var(--cv-rot-bg) 50%, var(--color-paper)); }
 .geschaetzt-wort { font-size: var(--text-xs); font-weight: normal; color: var(--color-muted); }
 .cv-beleg { font-size: var(--text-sm); color: var(--color-muted); }
 .cv-umschalter { display: flex; flex-wrap: wrap; gap: var(--space-sm); border: 0; }

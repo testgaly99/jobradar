@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { useActionState, useEffect, useId, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { bewerbungAusLink, firmaTitelVorschlag } from "./actions";
 import { MAX_TEXT } from "@/lib/uebernahme";
@@ -108,15 +108,24 @@ export function LinkFormular() {
 export function TrotzdemForm({ action, felder }: { action: (f: FormData) => Promise<unknown>; felder?: Record<string, string> }) {
   const [frage, setFrage] = useState(false);
   const [fehler, setFehler] = useState("");
-  if (!frage) return <button type="button" className="knopf knopf-rand knopf-schmal" onClick={() => setFrage(true)}>Schon beworben? Trotzdem eintragen</button>;
+  const textId = useId();
+  const formRef = useRef<HTMLFormElement>(null);
+  const startRef = useRef<HTMLButtonElement>(null);
+  const zurueck = useRef(false); // Fokus nur nach Abbrechen zurückgeben, nicht beim ersten Anzeigen
+  useEffect(() => {
+    if (frage) formRef.current?.querySelector<HTMLButtonElement>("button[type=submit]")?.focus();
+    else if (zurueck.current) { zurueck.current = false; startRef.current?.focus(); }
+  }, [frage]);
+  if (!frage) return <button ref={startRef} type="button" className="knopf knopf-rand knopf-schmal" onClick={() => setFrage(true)}>Schon beworben? Trotzdem eintragen</button>;
   return (
-    <form className="knopfreihe" action={async (f) => {
+    <form ref={formRef} className="knopfreihe" role="group" aria-labelledby={textId} action={async (f) => {
       const r = await action(f);
       if (r && typeof r === "object" && "fehler" in r) setFehler(String(r.fehler));
     }}>
+      <p id={textId}>Die Anzeige ist offline. Trotzdem als beworben eintragen?</p>
       {Object.entries(felder ?? {}).map(([n, w]) => <input key={n} type="hidden" name={n} value={w} />)}
       <SendeKnopf text="Ja, eintragen" klasse="knopf knopf-schmal" />
-      <button type="button" className="knopf knopf-rand knopf-schmal" onClick={() => setFrage(false)}>Abbrechen</button>
+      <button type="button" className="knopf knopf-rand knopf-schmal" onClick={() => { setFehler(""); zurueck.current = true; setFrage(false); }}>Abbrechen</button>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
     </form>
   );

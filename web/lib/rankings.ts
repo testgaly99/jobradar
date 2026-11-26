@@ -92,15 +92,14 @@ export async function ladeRankingZuordnungen(sb: SupabaseClient, angemeldet: boo
   const zuordnungen: RankingZuordnung[] = [];
   if (!angemeldet) return { zuordnungen, fehler: null };
   const namen = [...new Set(firmen)].filter(Boolean);
-  for (let i = 0; i < namen.length; i += 40) {
-    for (let von = 0; ; von += SEITE) {
-      const { data, error } = await sb.rpc("ranking_zuordnungen", { p_firmen: namen.slice(i, i + 40) })
-        .order("unternehmen").order("liste_id").range(von, von + SEITE - 1);
-      if (error) return { zuordnungen: [], fehler: fehlt(error.code) ? null : "Ranglistenangaben konnten nicht geladen werden." };
-      const teil = (data ?? []) as RankingZuordnung[];
-      zuordnungen.push(...teil);
-      if (teil.length < SEITE) break;
-    }
+  // POST: die Namen stehen im Body, keine Adresslängengrenze; daher eine RPC für alle.
+  for (let von = 0; ; von += SEITE) {
+    const { data, error } = await sb.rpc("ranking_zuordnungen", { p_firmen: namen })
+      .order("unternehmen").order("liste_id").range(von, von + SEITE - 1);
+    if (error) return { zuordnungen: [], fehler: fehlt(error.code) ? null : "Ranglistenangaben konnten nicht geladen werden." };
+    const teil = (data ?? []) as RankingZuordnung[];
+    zuordnungen.push(...teil);
+    if (teil.length < SEITE) break;
   }
   return { zuordnungen, fehler: null };
 }

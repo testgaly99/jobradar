@@ -2,6 +2,12 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Q-Codex-Abschluss26 – Restumfang und Termin (2026-11-26)
+
+Nutzer: „Prüfe die offenen Punkte, die noch abgearbeitet werden müssen. Wann sind wir endgültig durch mit dem gesamten Projekt?“
+
+Aktueller Abgleich siehe STATUS „Bestandsaufnahme und Restaufwand“. 6a inzwischen gebaut; sieben größere Planpakete, restliches Aufräumpaket und echte Abnahmen/Firmenstabilisierung offen. Konkret geplanter Rest45–80 Agentenstunden plus5–10 Stunden Nutzermitwirkung geschätzt; bei4 Agentenstunden/Werktag3–6 Wochen (17.12.–07.01.), unter Annahmen, keine Zusage oder Modellmessung. Zusätzlicher unklarer Backlog nicht enthalten, daher kein seriöser Gesamttermin für unbegrenzten Umfang. Empfehlung feste Abschlussversion, keine Nutzerentscheidung dazu erfunden. Keine Implementierung oder Live-Freigabe aus der Statusfrage abgeleitet.
+
 ## Q-Codex-Weitere-Todos (2026-11-22)
 
 Nutzer: „Was sind die weiteren To Dos?“
@@ -485,6 +491,16 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q340 | Paket 4 + Nachträge (Task 8–10, 13, 14) hochladen und nach grüner Codeprüfung und grünen Tests in main übernehmen? | Nutzer: „Hochladen und in main (Empfohlen)“ | Push entwurf-ui, Codeprüfung, Merge in main nach vollständiger Testsuite (inkl. Live-Tests). CV-Lauf (90 min Grenze) verkraftet 2 × 15 min Schätzung. | entschieden |
 | Q343 | Paket 5 (Listen-Ansicht) und Korrekturen der Gesamtprüfung hochladen und in main übernehmen? | Nutzer: „Hochladen und in main (Empfohlen)“ | Upload nach Einbau von Q344, grüner Codeprüfung und grünen Tests in main. | entschieden |
 | Q344 | Nutzer (zur Größen-Sortierung): „Ich möchte, dass wenn ich nach größe sortiere, erst die großen Unternehmen kommen. Außer ich änder die Richtung“ | (Nutzervorgabe) | Größe standardmäßig größte zuerst, ↑/↓ kehrt um, unbekannt immer zuletzt; ersetzt CLAUDE.md 2b „aufsteigend“ und das Ruling vom 2026-11-26; Liste und Kacheln damit gleich. | entschieden |
+| Q345 | Wann Vorschlag #6 (109+ neue Firmen mit Karriereseite) prüfen und zur Übernahme vorlegen (Nutzer zuvor: „Warum sehe ich bisher immernoch nur meine 13 Firmen auf der vercel seite?“)? | Nutzer: „Morgen nach der 2. Nacht (Empfohlen)“ | Am 27.11. nach dem Einrichtungslauf: Qualität (P19) und Laufzeit (P3) prüfen, dann Übernahme-Frage (P26). | entschieden |
+| Q346 | Welches Paket als nächstes (Nutzer: „Was für ein Arbeitspaket kannst du als nächstes abarbeiten?“)? | Nutzer: „A: Restliste vorziehen (Empfohlen)“ | Claude sucht per Websuche (Anthropic-Server, keine Firmenseiten vom Nutzer-PC) Karriereseiten für die bereits gescheiterten Firmen und trägt Funde in `data/firmen_korrekturen.csv` ein; Rest morgen in die ChatGPT-CSV (P6). Unterbrochen durch Nutzerfrage „Zähle alle offenen Arbeitspakete auf“, Stand in STATUS P6 |
+| Q347 | Paket A (Restliste vorziehen) nach Unterbrechung fortsetzen? | Nutzer: „Nein, anderes Paket“ | Paket A ruht, wird am 27.11. mit der ChatGPT-CSV erledigt (STATUS P6, inkl. Codeänderung „Korrektur → sofort fällig“) |
+| Q348 | Welches Paket statt A? | Nutzer: „Aufräumpaket To-do 49 (Empfohlen)“ | Claude arbeitet P25 ab (Tests, Tempo Listen-Ansicht, TrotzdemForm usw.), Upload/Merge mit gesonderter Freigabe |
+| Q349 | Bauplan Aufräumpaket To-do 49 (`docs/plans/2026-11-26-aufraeumen-49.md`, 8 Schritte) freigeben? | Nutzer: „Freigeben (Empfohlen)“ | Bau auf `entwurf-ui`; Upload/Merge gesondert |
+| Q350 | Bauweise: selbst mit Prüfung am Ende oder Helfer je Schritt? | Nutzer: „Helfer je Schritt“ | subagent-driven-development: Umsetzer + Prüfer je Task, Gesamtprüfung opus |
+| Q351 | Zeitzonenangabe (Ortshinweis) im noch nicht hochgeladenen Codex-Protokolleintrag: was tun? | Nutzer: „Aus Verlauf entfernen (Empfohlen)“ | Codex-Commit vor dem Upload per Fixup umgeschrieben (nur ungepushte Commits), kein Vorkommen mehr in Zweigen |
+| Q352 | Klicktest „Trotzdem eintragen“ mit Wegwerf-Konto und künstlicher Offline-Bewerbung (Live-Schreiben) einmal ausführen? | Nutzer: „Ja, einmal ausführen (Empfohlen)“ | Lokal gegen die eigene Datenbank, danach Aufräumen |
+| Q353 | Erster Klicktest-Lauf brach ab (Firma für künstliche Stelle über Generalschlüssel gewählt, für das Wegwerf-Konto unsichtbar), zweiter Lauf von der Sicherheitsprüfung blockiert: korrigierten Test noch einmal ausführen? | Nutzer: „Ja, noch einmal (Empfohlen)“ | Firma jetzt aus Gastsicht gewählt; 12/12 bestanden, aufgeräumt (keine Reste-Stellen, keine Reste-Konten) |
+| Q354 | Aufräumpaket To-do 49 hochladen und in main übernehmen? | Nutzer: „Hochladen und in main (Empfohlen)“ | entwurf-ui hochgeladen, in main übernommen, main hochgeladen; keine Migration |
 | Q342 | Klicktest der Listen-Ansicht mit einem Wegwerf-Konto (ohne Admin, ohne künstliche Daten), danach gelöscht? | Nutzer: „Ja, einmal ausführen (Empfohlen)“ | Ein Lauf vor der Upload-Frage zu Paket 5. | entschieden |
 | Q341 | Paket 4 live (main 89081ea). Mit Paket 5 (Listen-Ansicht) und Schlussrunde weitermachen? | Nutzer: „Ja, Paket 5 jetzt (Empfohlen)“ | Task 11–12, Gesamtprüfung, Kleinigkeiten; vor dem Hochladen neue Frage. | entschieden |
 | Q275 | 6a Einwilligung: speichern, welcher Fassung des Textes zugestimmt wurde (Nachweis nach DSGVO; bei Textänderung neu zustimmen)? | Nutzer: „Fassung speichern (Empfohlen)“ | Spalte `fassung` in `cv_einwilligung` (Migration 024); Website und Nachtlauf gelten nur bei aktueller Fassung. | entschieden |
@@ -719,6 +735,16 @@ Fragetexte Q340 (Claude, 2026-11-26, Auswahl): Hochladen und in main (Empfohlen)
 Fragetexte Q341 (Claude, 2026-11-26, Auswahl): Ja, Paket 5 jetzt (Empfohlen) / Erst selbst ansehen / Später.
 Fragetexte Q342 (Claude, 2026-11-26, Auswahl): Ja, einmal ausführen (Empfohlen) / Kein Klicktest.
 Fragetexte Q343 (Claude, 2026-11-26, Auswahl): Hochladen und in main (Empfohlen) / Nur hochladen / Noch nicht.
+Fragetexte Q345 (Claude, 2026-11-26, Auswahl): Morgen nach der 2. Nacht (Empfohlen) / Jetzt schon die 109 prüfen / Später.
+Fragetexte Q346 (Claude, 2026-11-26, Auswahl): A: Restliste vorziehen (Empfohlen) / B: Aufräumpaket To-do 49 / C: Absolventen-Punkt klären.
+Fragetexte Q347 (Claude, 2026-11-26, Auswahl): Ja, weitermachen (Empfohlen) / Nein, anderes Paket / Erst mal Pause.
+Fragetexte Q348 (Claude, 2026-11-26, Auswahl): Aufräumpaket To-do 49 (Empfohlen) / Einstiegs-Filter klären / Einstellungen prüfen (Vercel) / Telegram einrichten.
+Fragetexte Q349 (Claude, 2026-11-26, Auswahl): Freigeben (Empfohlen) / Erst ändern.
+Fragetexte Q350 (Claude, 2026-11-26, Auswahl): Selbst, Prüfung am Ende (Empfohlen) / Helfer je Schritt.
+Fragetexte Q351 (Claude, 2026-11-26, Auswahl): Aus Verlauf entfernen (Empfohlen) / Nur neuer Korrektur-Commit / So lassen.
+Fragetexte Q352 (Claude, 2026-11-26, Auswahl): Ja, einmal ausführen (Empfohlen) / Nein, später selbst.
+Fragetexte Q353 (Claude, 2026-11-26, Auswahl): Ja, noch einmal (Empfohlen) / Nein, offen lassen.
+Fragetexte Q354 (Claude, 2026-11-26, Auswahl): Hochladen und in main (Empfohlen) / Nur hochladen / Noch nicht.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 
