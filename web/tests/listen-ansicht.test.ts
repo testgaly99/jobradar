@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { gruppiere } from "../lib/listen-ansicht.ts";
+import { firmenStellenMit, gruppiere } from "../lib/listen-ansicht.ts";
 import type { RankingZuordnung } from "../lib/rankings.ts";
 
 const z = (unternehmen: string, liste_id: string, rang: number | null, name = liste_id.toUpperCase()): RankingZuordnung =>
@@ -51,4 +51,37 @@ test("einzelne Liste zeigt nur diese", () => {
 test("Logo und Rang landen in der Kachel", () => {
   const b = gruppiere([z("A", "dax", 7)], stellen(["A", 4]), new Map(), new Map([["A", "https://logo.example/a.png"]]), "dax", kat);
   assert.deepEqual(b[0].kacheln[0], { firma: "A", logo: "https://logo.example/a.png", rang: 7, stellen: 4 });
+});
+
+// Aufzeichnende Attrappe: jede Methode merkt sich Name und Argumente und gibt dieselbe Kette zurück; await liefert das Ergebnis.
+function attrappe(ergebnis: { data: unknown; error: unknown } = { data: [], error: null }) {
+  const calls: [string, unknown[]][] = [];
+  const kette: unknown = new Proxy({}, { get: (_t, name: string) => name === "then"
+    ? (res: (v: unknown) => void) => res(ergebnis)
+    : (...a: unknown[]) => { calls.push([name, a]); return kette; } });
+  return { sb: kette as never, calls };
+}
+
+test("firmenStellen ohne Anmeldung: Fehler, keine Abfrage", async () => {
+  const { sb, calls } = attrappe();
+  const r = await firmenStellenMit(sb, null, "SAP", "");
+  assert.ok("fehler" in r);
+  assert.equal(calls.length, 0);
+});
+
+test("firmenStellen: Filter aus der Adresse und die Firma werden angewendet, ohne Passung neueste zuerst", async () => {
+  const { sb, calls } = attrappe({ data: [{ id: "a:1", titel: "T", ort: "München", companies: {} }], error: null });
+  const r = await firmenStellenMit(sb, { admin: false }, "SAP", "modell=Remote&seit=7&sort=rangliste");
+  assert.deepEqual(r, { stellen: [{ id: "a:1", titel: "T", ort: "München" }] });
+  assert.ok(calls.some(([n, a]) => n === "in" && a[0] === "arbeitsmodell" && (a[1] as string[])[0] === "Remote"));
+  assert.ok(calls.some(([n, a]) => n === "gte" && a[0] === "erstmals_gesehen"));
+  assert.ok(calls.some(([n, a]) => n === "eq" && a[0] === "unternehmen" && a[1] === "SAP"));
+  assert.ok(calls.some(([n, a]) => n === "order" && a[0] === "erstmals_gesehen"));
+  assert.ok(!calls.some(([n, a]) => n === "order" && a[0] === "passung_sortwert"));
+});
+
+test("firmenStellen: ungültige Eingaben und Datenbankfehler ergeben Fehler", async () => {
+  assert.ok("fehler" in await firmenStellenMit(attrappe().sb, { admin: false }, "", ""));
+  assert.ok("fehler" in await firmenStellenMit(attrappe().sb, { admin: false }, 5, ""));
+  assert.ok("fehler" in await firmenStellenMit(attrappe({ data: null, error: { code: "x" } }).sb, { admin: false }, "SAP", ""));
 });

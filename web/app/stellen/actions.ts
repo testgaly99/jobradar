@@ -15,6 +15,7 @@ import { aktuellerNutzer } from '@/lib/nutzer';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { firmendatenIssue } from '@/lib/firmendaten-issue';
 import { wunschfirmaMit } from '@/lib/wunschfirmen';
+import { firmenStellenMit } from '@/lib/listen-ansicht';
 
 export async function wunschfirmaUmschalten(form:FormData){
   const n=await aktuellerNutzer();if(!n)redirect('/login');
@@ -126,4 +127,9 @@ export async function anzeigeLaden(jobId: string): Promise<{ abschnitte: Anzeige
     begriffe: wp.error ? [] : (wp.data ?? []).map((p: { begriff: string }) => p.begriff),
     spalten: cv?.zustand === "fertig" ? cv.spalten : [], geschaetzt: cv?.zustand === "fertig" && cv.geschaetzt === true,
   };
+}
+
+// Listenansicht: Stellen einer Firma unter den aktuellen Filtern, geladen erst beim Aufklappen (nur Angemeldete).
+export async function firmenStellen(firma: string, query: string): Promise<{ stellen: { id: string; titel: string; ort: string | null }[] } | { fehler: string }> {
+  return firmenStellenMit(await createClient(), await aktuellerNutzer(), firma, query);
 }

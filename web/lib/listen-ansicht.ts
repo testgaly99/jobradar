@@ -2,6 +2,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { RANKING_KATEGORIEN, type Filter } from "./filter.ts";
 import { ladeRankingZuordnungen, type RankingZuordnung } from "./rankings.ts";
 import { stellenFilter } from "./stellen.ts";
+import { leseFilter } from "./filter.ts";
+import { passungVerfuegbar } from "./passung.ts";
+import { rankingFilter } from "./rankings.ts";
 
 // Kategorie -> Listen in fester Reihenfolge. Die Kategorie ist nur Ordnungshilfe; unbekannte Listen folgen danach nach Name.
 export const LISTEN_REIHENFOLGE: Record<string, string[]> = { "Börsennotiert": ["dax", "mdax", "sdax", "tecdax"] };
@@ -50,20 +53,42 @@ export async function ladeListenAnsicht(sb: SupabaseClient, f: Filter, rangliste
     if (teil.length < SEITE) break;
   }
   const firmen = [...stellenJeFirma.keys()];
-  const { zuordnungen, fehler } = await ladeRankingZuordnungen(sb, true, firmen);
-  if (fehler) return { bloecke: [], fehler };
-  const listenKategorie = new Map<string, string>();
-  const { data: ld, error: le } = await sb.from("ranking_listen").select("id,kategorie");
-  if (le) return { bloecke: [], fehler: FEHLER };
-  for (const l of (ld ?? []) as { id: string; kategorie: string | null }[]) if (l.kategorie) listenKategorie.set(l.id, l.kategorie);
-  const groesse = new Map<string, number>(); const logos = new Map<string, string>();
-  for (let i = 0; i < firmen.length; i += 40) {
-    const { data, error } = await sb.from("companies").select("name,logo_url,groesse_rang").in("name", firmen.slice(i, i + 40));
-    if (error) return { bloecke: [], fehler: FEHLER };
-    for (const c of (data ?? []) as { name: string; logo_url: string | null; groesse_rang: number | null }[]) {
-      if (c.groesse_rang !== null) groesse.set(c.name, c.groesse_rang);
-      if (c.logo_url) logos.set(c.name, c.logo_url);
+  const firmaDaten = async () => {
+    const groesse = new Map<string, number>(); const logos = new Map<string, string>();
+    for (let i = 0; i < firmen.length; i += 40) {
+      const { data, error } = await sb.from("companies").select("name,logo_url,groesse_rang").in("name", firmen.slice(i, i + 40));
+      if (error) return null;
+      for (const c of (data ?? []) as { name: string; logo_url: string | null; groesse_rang: number | null }[]) {
+        if (c.groesse_rang !== null) groesse.set(c.name, c.groesse_rang);
+        if (c.logo_url) logos.set(c.name, c.logo_url);
+      }
     }
-  }
-  return { bloecke: gruppiere(zuordnungen, stellenJeFirma, groesse, logos, rangliste, listenKategorie), fehler: null };
+    return { groesse, logos };
+  };
+  // Drei voneinander unabhaengige Abfragen gleichzeitig.
+  const [{ zuordnungen, fehler }, ld, fd] = await Promise.all([ladeRankingZuordnungen(sb, true, firmen), sb.from("ranking_listen").select("id,kategorie"), firmaDaten()]);
+  if (fehler) return { bloecke: [], fehler };
+  if (ld.error || !fd) return { bloecke: [], fehler: FEHLER };
+  const listenKategorie = new Map<string, string>();
+  for (const l of (ld.data ?? []) as { id: string; kategorie: string | null }[]) if (l.kategorie) listenKategorie.set(l.id, l.kategorie);
+  return { bloecke: gruppiere(zuordnungen, stellenJeFirma, fd.groesse, fd.logos, rangliste, listenKategorie), fehler: null };
+}
+
+const MAX_FIRMA_STELLEN = 100;
+
+// Stellen einer Firma unter den aktuellen Filtern (query = Adressteil nach "?"); nur fuer Angemeldete. Nach Passung, sonst neueste zuerst.
+export async function firmenStellenMit(sb: SupabaseClient, nutzer: { admin: boolean } | null, firma: unknown, query: unknown):
+  Promise<{ stellen: { id: string; titel: string; ort: string | null }[] } | { fehler: string }> {
+  if (!nutzer) return { fehler: "Bitte anmelden." };
+  if (typeof firma !== "string" || !firma || firma.length > 200 || typeof query !== "string" || query.length > 4000) return { fehler: "Ungültige Anfrage." };
+  const u = new URLSearchParams(query);
+  const params: Record<string, string[]> = {};
+  for (const k of new Set(u.keys())) params[k] = u.getAll(k);
+  const f = rankingFilter(leseFilter(params), true);
+  f.sort = (await passungVerfuegbar(sb, nutzer)) ? "passung" : "neu"; f.richtung = "ab";
+  const q = stellenFilter(sb, f, false, { tabelle: "id,titel,ort,companies!inner(aktiv,groesse_klasse,kategorie)", rpc: "id,titel,ort" }).eq("unternehmen", firma);
+  const { data, error } = await (f.sort === "passung" ? q.order("passung_sortwert", { ascending: true, nullsFirst: false }) : q)
+    .order("erstmals_gesehen", { ascending: false }).order("id").limit(MAX_FIRMA_STELLEN);
+  if (error) return { fehler: "Stellen konnten nicht geladen werden." };
+  return { stellen: ((data ?? []) as unknown as { id: string; titel: string; ort: string | null }[]).map((j) => ({ id: j.id, titel: j.titel, ort: j.ort })) };
 }
