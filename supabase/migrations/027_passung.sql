@@ -9,7 +9,9 @@ alter table public.cv_ergebnisse add column if not exists passung_sortwert integ
 -- Die View läuft mit den Rechten des Aufrufers (security_invoker): jobs-RLS gilt weiter. Sie führt alle
 -- jobs-Spalten (j.*), anon darf aber nur einzelne lesen (007) und bekommt die View deshalb nicht: Gäste
 -- lesen weiter direkt `jobs` (Passung gibt es für sie nicht).
-create or replace view public.stellen_passung with (security_invoker = true) as
+-- j.* wird beim Anlegen festgeschrieben: nach neuen jobs-Spalten 027 erneut ausführen.
+drop view if exists public.stellen_passung;
+create view public.stellen_passung with (security_invoker = true) as
   select j.*,
     (select e.passung_sortwert from public.cv_ergebnisse e
       where e.owner_id = auth.uid() and e.job_id = j.id) as passung_sortwert
