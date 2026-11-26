@@ -158,7 +158,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           {cv && <AbgleichKopf a={cv} />}
           <details className="karte" open={cv?.zustand === "fertig"}>
             <summary>Ganze Anzeige lesen</summary>
-            <Abschnitte abschnitte={abschnitte} text={text} begriffe={begriffe} ebene={2} spalten={cv?.zustand === "fertig" ? cv.spalten : []} />
+            <Abschnitte abschnitte={abschnitte} text={text} begriffe={begriffe} ebene={2} spalten={cv?.zustand === "fertig" ? cv.spalten : []} geschaetzt={cv?.zustand === "fertig" && cv.geschaetzt === true} />
           </details>
         </div>
       ) : (

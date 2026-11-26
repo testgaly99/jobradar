@@ -4,9 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { firmenFarbe } from "@/lib/farbe";
 import { datumDe } from "@/lib/bewerbung";
-import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, standardSortierung, stadtAnzeige, tagePlus, type Gruppe, type Sortierung } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, SORTIERUNG, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, sortCookie, standardSortierung, stadtAnzeige, tagePlus, type Gruppe, type Sortierung } from "@/lib/filter";
 import { istUmgerechnet, UMGERECHNET_HINWEIS, kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
+import { passungVerfuegbar } from "@/lib/passung";
 import { merken, entmerken } from "./actions";
 import AnzeigeAufklappen from "./anzeige-aufklappen";
 import FilterBlock from "./filterblock";
@@ -20,6 +21,9 @@ import { STUFEN, deutschText, deutschWirksam, leseDeutsch } from "@/lib/sprachni
 
 // Spalte jobs.deutsch_stufe fehlt (Migration 013 offen): Postgres 42703, PostgREST PGRST204
 const OHNE_DEUTSCH_SPALTE = ["42703", "PGRST204"];
+
+// Postgres 42P01/42501, PostgREST PGRST200/201/205: View fehlt, nicht lesbar oder Einbettung nicht erkannt
+const PASSUNG_FEHLT = ["42P01", "42501", "PGRST200", "PGRST201", "PGRST205"];
 
 const TITEL: Record<Gruppe, string> = {
   liste: "Liste",
@@ -40,35 +44,50 @@ const bekannt = (s: string | null) => (s && s.toLowerCase() !== "unbekannt" ? s 
 export default async function Seite({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
   let roh = leseFilter(sp);
-  // Gemerkte Sortierung (Cookie) gilt nur ohne sort in der Adresse; Passung gibt es noch nicht (Paket 4).
-  if (!sp.sort) {
-    let c: { sort?: string; kat?: string } = {};
-    try { c = JSON.parse((await cookies()).get("stellen_sort")?.value ?? "{}") ?? {}; } catch { /* kaputtes Cookie: Standard */ }
-    roh = { ...roh, sort: standardSortierung(false, typeof c.sort === "string" ? c.sort : undefined), ansicht_kategorie: roh.ansicht_kategorie || (typeof c.kat === "string" && c.kat.length < 100 ? c.kat : "") };
+  const sb = await createClient();
+  const nutzer = await aktuellerNutzer();
+  const passung = await passungVerfuegbar(sb, nutzer);
+  // Gemerkte Sortierung (Cookie) gilt ohne gültiges sort in der Adresse (auch alte Adressen mit sort=firma/titel).
+  const s0 = [sp.sort].flat()[0];
+  if (!s0 || (s0 !== "rang" && !(SORTIERUNG as readonly string[]).includes(s0))) {
+    const c = sortCookie((await cookies()).get("stellen_sort")?.value);
+    roh = { ...roh, sort: standardSortierung(passung, c.sort), richtung: sp.dir ? roh.richtung : c.dir ?? "ab", rangliste: sp.rl ? roh.rangliste : c.rl ?? "alle" };
   }
   const fehler = typeof sp.fehler === "string" ? sp.fehler : null;
-  const sb = await createClient();
   // Facetten zuerst: ohne Migration 005 fehlt "land", dann wird ein ?land= ignoriert statt die Abfrage zu sprengen.
   const fac = await sb.rpc("facetten"); // fehlt die Funktion noch (002_facetten.sql), gibt es Filter ohne Zahlen
   const fa: Facetten = fac.error ? {} : (fac.data ?? {});
-  const nutzer = await aktuellerNutzer();
   // Besucher ohne Konto dürfen den Anzeigentext nicht lesen (Migration 007): Suche und Ausschluss nur im Titel.
   const katalog = await ladeRankingKatalog(sb, !!nutzer);
   const f = rankingFilter(landNurMitFacette(roh, !!fa.land), !!nutzer);
+  // Nur angebotene Sortierungen gelten: ein nicht verfügbares ?sort=passung oder Cookie sortiert nie und zeigt kein falsches Feld.
+  const sortOptionen: Sortierung[] = [...(passung ? ["passung" as const] : []), "neu", "groesse", ...(nutzer && katalog.verfuegbar ? ["rangliste" as const] : [])];
+  if (!sortOptionen.includes(f.sort)) f.sort = "neu";
+  if (f.rangliste !== "alle" && !katalog.listen.some((l) => l.id === f.rangliste)) f.rangliste = "alle";
   const listenHinweis = rankingHinweis(f, katalog);
   const listeGesperrt = !!listenHinweis && f.liste.length > 0;
   // Gespeicherte Spracheinstellung (Konto); fehlt die Tabelle (Migration 013), gilt nur die Adresse.
   const sprach = nutzer ? await sb.from("sprach_einstellung").select("zeigen,niveau").maybeSingle() : { data: null, error: null };
   let deutsch = deutschWirksam(f.deutsch, sprach.error ? null : sprach.data?.niveau, !!nutzer);
+  let ohneGroesseSort = false; // Migration 028 fehlt: Größe sortiert nur klein zuerst
   let [ergebnis, lauf, erster] = await Promise.all([
     listeGesperrt ? { data: [], count: 0, error: null } : stellenAbfrage(sb, { ...f, deutsch }),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
     sb.from("laeufe").select("datum").order("datum", { ascending: true }).limit(1).maybeSingle(), // fehlt die Tabelle: nur 3-Tage-Regel
   ]);
+  // View fehlt (Migration 027) oder nicht lesbar: Liste nach neu statt Fehlerseite.
+  if (f.sort === "passung" && ergebnis.error && PASSUNG_FEHLT.includes(ergebnis.error.code ?? "")) {
+    f.sort = "neu";
+    ergebnis = await stellenAbfrage(sb, { ...f, deutsch });
+  }
+  if (f.sort === "groesse" && ergebnis.error?.code === "42703") {
+    ohneGroesseSort = true;
+    ergebnis = await stellenAbfrage(sb, { ...f, deutsch }, true);
+  }
   const deutschFehlt = !!deutsch && OHNE_DEUTSCH_SPALTE.includes(ergebnis.error?.code ?? "");
   if (deutschFehlt) {
     deutsch = "";
-    ergebnis = await stellenAbfrage(sb, { ...f, deutsch });
+    ergebnis = await stellenAbfrage(sb, { ...f, deutsch }, ohneGroesseSort);
   }
   const ersterLauf: string | null = erster.data?.datum ?? null;
   const jobs = (ergebnis.data ?? []) as unknown as Job[];
@@ -102,8 +121,6 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
     for (const a of apps.data ?? []) status.set(a.job_id, { status: a.status, id: a.id });
     for (const s of sbr.error ? [] : (sbr.data ?? [])) steckbriefe.set(s.id, s.steckbrief);
   }
-
-  const sortOptionen: Sortierung[] = ["neu", "firma", "titel", "groesse", ...(nutzer && katalog.verfuegbar ? ["rangliste" as const] : [])];
 
   return (
     <>
@@ -146,7 +163,8 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 </label>
               )}
               <input type="hidden" name="sort" value={f.sort} />
-              {f.ansicht_kategorie && <input type="hidden" name="kat" value={f.ansicht_kategorie} />}
+              {f.richtung === "auf" && <input type="hidden" name="dir" value="auf" />}
+              {f.rangliste !== "alle" && <input type="hidden" name="rl" value={f.rangliste} />}
               {nutzer && (
                 <label>Mein Deutschniveau
                   {/* "egal" muss eine gespeicherte Wahl für diesen Aufruf überstimmen ("alle"), sonst entfällt der Parameter */}
@@ -236,7 +254,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
 
         <section aria-label="Stellen">
           {!listeGesperrt && (!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
-          <SortierAuswahl filter={f} optionen={sortOptionen} />
+          <SortierAuswahl filter={f} optionen={sortOptionen} listen={katalog.listen} />
           <ul className="stellenliste" id="stellenliste">
             {jobs.map((j) => {
               const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;

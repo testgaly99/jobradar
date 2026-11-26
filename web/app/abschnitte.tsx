@@ -10,14 +10,16 @@ function Markiert({ text, begriffe }: { text: string; begriffe: string[] }) {
 // Gegliederte Anzeige. Ohne Abschnitte: Fließtext als Absätze unter "Beschreibung". Alles als Text.
 // ebene: Überschriftenstufe der Abschnitte, passend zur Seite (direkt unter h1: 2, unter einem h2: 3).
 // spalten: CV-Abgleich je empfohlener CV; Markierung am Punkt mit exakt gleichem Text.
-export default function Abschnitte({ abschnitte, text, begriffe = [], ebene = 3, spalten = [] }: { abschnitte: Anzeigenteil[] | null; text: string | null; begriffe?: string[]; ebene?: 2 | 3; spalten?: Spalte[] }) {
+export default function Abschnitte({ abschnitte, text, begriffe = [], ebene = 3, spalten = [], geschaetzt = false }: { abschnitte: Anzeigenteil[] | null; text: string | null; begriffe?: string[]; ebene?: 2 | 3; spalten?: Spalte[]; geschaetzt?: boolean }) {
   const H = ebene === 2 ? "h2" : "h3";
   if (abschnitte?.length) {
+    // Das Wort "geschätzt" steht an der Überschrift des Abschnitts, in dem Markierungen sitzen (dem Anforderungsabschnitt)
+    const mitMarke = geschaetzt ? abschnitte.findIndex((a) => a.punkte.some((p) => spalten.some((s) => s.markierungen[p]))) : -1;
     return (
-      <div className="anzeige">
+      <div className={geschaetzt ? "anzeige geschaetzt" : "anzeige"}>
         {abschnitte.map((a, i) => (
           <section key={i}>
-            <H><Markiert text={a.titel} begriffe={begriffe} /></H>
+            <H><Markiert text={a.titel} begriffe={begriffe} />{i === mitMarke && <span className="geschaetzt-wort"> geschätzt</span>}</H>
             <ul>{a.punkte.map((p, j) => <li key={j}><Markiert text={p} begriffe={begriffe} />{spalten.map((s, k) => s.markierungen[p] && <CvMarke key={k} m={s.markierungen[p]} spalte={k} />)}</li>)}</ul>
           </section>
         ))}

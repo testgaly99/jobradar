@@ -6,17 +6,20 @@ import { ausschlussBedingungen, ausschlussWoerter, onlineSeitGrenze, seitenBerei
 const arr = (l: string[]) => `{${l.map((s) => `"${s.replace(/[\\"]/g, "\\$&")}"`).join(",")}}`;
 
 export { PRO_SEITE } from "./filter.ts";
+// groesse_sort (Migration 028) wird nur bei sort=groesse mitgelesen, damit alle anderen Sortierungen und Gäste ohne 028 laufen.
 export const SPALTEN =
   "id,unternehmen,titel,ort,staedte,remote,arbeitsmodell,vertragsart,abteilung,erfahrungslevel,url,erstmals_gesehen,companies!inner(groesse_klasse,groesse_rang,kategorie,aktiv)";
 
 // Eine Abfrage aus dem Filter. companies!inner + aktiv=true blendet Stellen inaktiver Firmen aus.
-export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
+// ohneGroesseSort: Rückfall, solange Migration 028 (Spalte groesse_sort) fehlt; Größe sortiert dann nur klein zuerst.
+export function stellenAbfrage(sb: SupabaseClient, f: Filter, ohneGroesseSort = false) {
   const mitListe = f.liste.length > 0 || f.rangkategorie.length > 0;
   // Die Funktion liefert eine Zeile je Stelle. PostgREST filtert, zählt und sortiert global, erst dann folgt range().
   let q = mitListe
     ? sb.rpc("ranking_stellen", { p_listen: f.liste, ...(f.rangkategorie.length ? { p_kategorien: f.rangkategorie } : {}) }, { count: "exact" })
-      .select(SPALTEN.replace("companies!inner(groesse_klasse,groesse_rang,kategorie,aktiv)", "companies"))
-    : sb.from("jobs").select(SPALTEN, { count: "exact" })
+      .select(SPALTEN.slice(0, SPALTEN.indexOf("companies!inner")) + "companies")
+    // Die View gibt es nur für Angemeldete; die Seite lässt sort=passung nur für Konten mit Passung zu.
+    : sb.from(f.sort === "passung" ? "stellen_passung" : "jobs").select(f.sort === "groesse" && !ohneGroesseSort ? SPALTEN.replace("groesse_rang,", "groesse_rang,groesse_sort,") : SPALTEN, { count: "exact" })
       .eq("status", "offen").eq("sichtbar", true).eq("companies.aktiv", true);
   if (f.groesse.length) q = q.in(mitListe ? "groesse_klasse" : "companies.groesse_klasse", f.groesse);
   if (f.kategorie.length) q = q.overlaps(mitListe ? "kategorie" : "companies.kategorie", arr(f.kategorie));
@@ -39,11 +42,15 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter) {
   if (de !== null) q = q.or(`deutsch_stufe.is.null,deutsch_stufe.lte.${de}`);
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
   const { von, bis } = seitenBereich(f.seite);
-  // passung und rangliste sortieren bis Paket 4 wie neu
-  const o = f.sort === "groesse" ? q.order(mitListe ? "companies->groesse_rang" : "companies(groesse_rang)")
+  // Standardrichtung: passung kleinster Sortwert zuerst, groesse klein zuerst, neu/rangliste neueste zuerst
+  // (rangliste sortiert bis zur Listenansicht wie neu); "auf" kehrt um. Ohne Ergebnis/Größenangabe immer am Ende (nullsFirst: false).
+  const um = f.richtung === "auf";
+  const gr = (spalte: string) => q.order(spalte, { ascending: !um, nullsFirst: false });
+  const o = f.sort === "passung" ? q.order("passung_sortwert", { ascending: !um, nullsFirst: false }).order("erstmals_gesehen", { ascending: false }).order("id")
+    : f.sort === "groesse" ? (ohneGroesseSort ? q.order(mitListe ? "companies->groesse_rang" : "companies(groesse_rang)")
+      // rpc: fehlt der Schlüssel groesse_sort im JSON (028 fehlt), greift die zweite Ordnung nach groesse_rang
+      : mitListe ? gr("companies->groesse_sort").order("companies->groesse_rang", { ascending: !um }) : gr("companies(groesse_sort)"))
     .order("erstmals_gesehen", { ascending: false }).order("id")
-    : f.sort === "firma" ? q.order("unternehmen").order("id")
-    : f.sort === "titel" ? q.order("titel").order("id")
-    : q.order("erstmals_gesehen", { ascending: false }).order("id");
+    : q.order("erstmals_gesehen", { ascending: um }).order("id");
   return o.range(von, bis);
 }

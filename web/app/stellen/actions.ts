@@ -108,7 +108,7 @@ export async function entmerken(jobId: string) {
 
 
 // Lädt die gegliederte Anzeige für das Aufklappen in der Liste (nur Angemeldete; Gäste dürfen text/abschnitte nicht lesen).
-// geschaetzt ist bis Paket 4 immer false.
+// geschaetzt: das gezeigte Ergebnis ist die Nachtschätzung (weg = schaetzung).
 export async function anzeigeLaden(jobId: string): Promise<{ abschnitte: Anzeigenteil[] | null; text: string | null; begriffe: string[]; spalten: Spalte[]; geschaetzt: boolean } | { fehler: string }> {
   if (!(await aktuellerNutzer())) return { fehler: "Bitte anmelden." };
   if (typeof jobId !== "string" || !ID_FORM.test(jobId)) return { fehler: "Ungültige Stelle." };
@@ -124,6 +124,6 @@ export async function anzeigeLaden(jobId: string): Promise<{ abschnitte: Anzeige
   return {
     abschnitte: leseAbschnitte(j.data.abschnitte), text: j.data.text ?? null,
     begriffe: wp.error ? [] : (wp.data ?? []).map((p: { begriff: string }) => p.begriff),
-    spalten: cv?.zustand === "fertig" ? cv.spalten : [], geschaetzt: false,
+    spalten: cv?.zustand === "fertig" ? cv.spalten : [], geschaetzt: cv?.zustand === "fertig" && cv.geschaetzt === true,
   };
 }
