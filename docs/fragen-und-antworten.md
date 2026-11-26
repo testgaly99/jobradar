@@ -2,6 +2,12 @@
 
 Stand: 2026-11-17. Einstieg für Claude Code und alle anderen Agenten. Zu Beginn jeder Sitzung und vor weiteren Rückfragen lesen. Die verbindliche Arbeitsregel steht in [CLAUDE.md, Abschnitt 7](../CLAUDE.md#7-arbeitsweise); [AGENTS.md](../AGENTS.md) verpflichtet weitere Agenten ebenso.
 
+## Q-Codex-Abschluss26 – Restumfang und Termin (2026-11-26)
+
+Nutzer: „Prüfe die offenen Punkte, die noch abgearbeitet werden müssen. Wann sind wir endgültig durch mit dem gesamten Projekt?“
+
+Aktueller Abgleich siehe STATUS „Bestandsaufnahme und Restaufwand“. 6a inzwischen gebaut; sieben größere Planpakete, restliches Aufräumpaket und echte Abnahmen/Firmenstabilisierung offen. Konkret geplanter Rest45–80 Agentenstunden plus5–10 Stunden Nutzermitwirkung geschätzt; bei4 Agentenstunden/Werktag3–6 Wochen (17.12.–07.01.), unter Annahmen, keine Zusage oder Modellmessung. Zusätzlicher unklarer Backlog nicht enthalten, daher kein seriöser Gesamttermin für unbegrenzten Umfang. Empfehlung feste Abschlussversion, keine Nutzerentscheidung dazu erfunden. Keine Implementierung oder Live-Freigabe aus der Statusfrage abgeleitet.
+
 ## Q-Codex-Weitere-Todos (2026-11-22)
 
 Nutzer: „Was sind die weiteren To Dos?“

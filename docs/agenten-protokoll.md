@@ -16,6 +16,12 @@ Vorlage für einen Eintrag:
 
 Prüfvermerk von Claude unter jedem Eintrag: `Geprüft von Claude am JJJJ-MM-TT: ok` bzw. die gefundenen Punkte.
 
+## 2026-11-26 11:07 – Codex – Restumfang und Abschluss geschätzt
+- Auftrag: offene Punkte und endgültigen Projektabschluss prüfen. HEAD c066dca, sauberer Arbeitsstand, aktuelle Commits/STATUS/Warteschlange und relevante Pläne gelesen; keine Liveprüfung.
+- Befund: 6a/Passung inzwischen gebaut, Warteschlange teils historisch; sieben größere Baupakete plus Aufräumrest, Firmenbasis und echte Abnahmen. Planmigrationen kollidieren teilweise mit inzwischen belegten Nummern. Empfehlung Bestands-/Planabgleich vor weiterem Bau.
+- Schätzung:45–80 Agentenstunden plus5–10 Nutzerstunden für konkret geplanten Rest;3–6 Wochen bei4 Agentenstunden/Werktag und zeitnahen Freigaben. Nicht spezifizierter Zusatzbacklog ausgeschlossen, keine Termingarantie. Details/Annahmen in STATUS und Fragenprotokoll.
+- Dateien: STATUS, Fragenprotokoll und dieses Protokoll. Lokaler Commit „Restumfang und Abschlussfenster aktualisieren“, Schlusszeile Agent: Codex. Nur Dokumentationsdiff/Geheimnismuster prüfen, keine Anwendungstests bei reiner Analyse. Keine Geheimnisse, Live-Daten oder externe Aktionen, keine neue Bau-/Uploadfreigabe; keine Abweichung.
+
 ## 2026-11-24 – Claude – Nr. 10 Phase 6a, Task 0 Vorprüfung
 - Auftrag: Nutzer „Erst QLever-Sammelabfragen, dann Nr. 10“ (Q272); Claude baut Nr. 10 statt Codex.
 - Claude-CLI 2.1.100 lokal (`claude --help`, keine Anfrage): `-p`, `--model haiku`, `--output-format json`, `--json-schema`, `--tools ""` (keine Werkzeuge), `--no-session-persistence`, `--bare`, Eingabe über stdin. Verhalten am Limit: kein eigener Subtype dokumentiert; laut offenem Fehlerbericht liefert ein Ratenlimit `subtype: success`, `is_error: true`, Exitcode 0, Text nur in `result` ([Headless-Doku](https://code.claude.com/docs/en/headless.md), [Fehlerbericht](https://claudeissues.com/issue/79500-bug-headless-claude-p-api-errors-e-g-rate-limit-return-subtype-success-exit-code)). Festlegung: jedes `is_error: true` oder Exitcode ≠ 0 beendet den Nachtlauf sofort (Plan: „bei einem Fehler sofort aufhören“).

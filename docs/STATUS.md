@@ -2,6 +2,21 @@
 
 Stand: 2026-11-22. Fragen und Antworten: [fragen-und-antworten.md](fragen-und-antworten.md). Abgeschlossene Codex-Pakete: [plans/2026-11-16-codex-pakete.md](plans/2026-11-16-codex-pakete.md). Spätere Phasen: [phasen-vorarbeit.md](phasen-vorarbeit.md). Testzahlen: nur im [Agentenprotokoll](agenten-protokoll.md).
 
+## Bestandsaufnahme und Restaufwand – 2026-11-26
+
+Codex-Abgleich mit HEAD c066dca, jüngsten Commits, Warteschlange, STATUS-Prüfpunkten und Bauplänen; keine eigene Live-Prüfung. Die Auskunft vom22.11. mit acht noch zu bauenden Paketen ist überholt: 6a wurde inzwischen von Claude gebaut, außerdem Passungs-/Listenansicht (To-do49) und weitere Firmen-/Sicherheitsarbeiten. Manche Tabellen und Plan-Checkboxen sind historisch; nicht jede offene Markierung ist noch offene Implementierung.
+
+Noch abzuarbeiten:
+- Aufräumpaket P25: laut Commits Tasks1–3 implementiert; Tasks4–8 sowie Abschlussprüfung/Veröffentlichung noch nicht als erledigt belegt.
+- Firmenbasis P1–P8/P17/P19/P26: Vorschlag#6, korrekte Firmen-/Landzuordnung, Quellenqualität und Laufzeit prüfen. P6/P7 (CSV mit allen fehlenden Firmen/Anweisung) und P26 sind für27.11. vorgemerkt; heute nicht ausführen. Korrekturen müssen gescheiterte Firmen früher erneut fällig machen. Ranglistenkorrektheit hat Vorrang vor bloßer Anzahl angebundener Firmen.
+- Sieben größere Planpakete: 6b Browser-CV-Abgleich; Bewerben-Helfer; Bewerbungsformular; Erinnerungen; Phase5-Filter; Pendelzeit; Gmail/Kalender. Teilfunktionen (Sofortfarben/Passung/Anzeige offline) wurden schon vorgezogen, deshalb Pläne zuerst gegen Bestand abgleichen. Alte Nummern024–027 kollidieren inzwischen mit vorhandenen Migrationen; nicht unverändert ausführen.
+- Echte Abnahmen/Einrichtung: 6a-Probelauf mit Stellen und Verbrauchsmessung (48), Empfohlen mit echtem Admin (P24), Vercel-/Erweiterungs-/Portaltests (36/44–46), Telegram und Reparatur (42/43), Sicherheitseinstellungen und enger Starttoken (51/52/54, P12/P13/P23), mehrere tatsächliche Nachtläufe. Frühere bestätigte SQL-Prüfungen nicht erneut als ungetan zählen.
+- Zusätzliche Planung offen: Firmenauswahl erweitern(P18), Telegram-Befehle(P20), neuer Absolventen-Backlog und weitere Plattformen. Diese sind kein abschließend spezifizierter Bauumfang.
+
+Schätzung, kein gemessener Modellvergleich: für den bisher konkret geplanten Rest einschließlich Aufräumen, Firmenstabilisierung, Tests, Fehlersuche, Einrichtung und Abnahmen rund45–80 produktive Agentenstunden sowie etwa5–10 Stunden aktive Nutzermitwirkung. Grobe Aufteilung in Stunden: Aufräumen/Planabgleich4–7, Firmen6–12, Browser-CV5–9, Bewerben/Formular/Erinnerungen8–14, Filter6–10, Pendelzeit4–8, Google7–12, Abschluss5–8. Überschneidungen nicht nochmals als volle Pakete zählen.
+
+Bei ungefähr4 Agentenstunden pro Werktag, zeitnahen Entscheidungen und ohne längere Nutzungslimits:3–6 Wochen, als Planungsfenster17.12.2026–07.01.2027, keine Terminzusage. Schon gebaute Kernfunktionen stabil abnehmen: grob15–30 Stunden bzw.1–2 Wochen unter denselben Annahmen. Diese Spannen schließen noch unklare Zusatzwünsche/kommerzielle Öffnung nicht ein. Für wirklich alle Backlog-Ideen gibt es keinen belastbaren Endtermin, solange Umfang/Abnahme offen sind. Empfehlung: eine feste Abschlussversion definieren, danach neue Ideen als Folgeversionen; keine solche Scopeentscheidung im Namen des Nutzers getroffen.
+
 ## Was funktioniert
 - **Phase 4c umgesetzt und von Claude geprüft:** offene Quellen über QLever lesen, Firmen zusammenführen, monatlichen Abruf und einmalige Einrichtung als prüfbare Änderungsvorschläge vorbereiten. Der Nachtlauf importiert gültige Ausgaben und überspringt nicht eingerichtete Firmen. Migration 014 laut Nutzer eingespielt; erster echter Quellen-/Einrichtungslauf bleibt To-do 39.
 - **Täglicher Lauf** (GitHub Actions, 04:00 UTC): 12 von 13 Firmen aus `data/companies.csv`, schreibt in Supabase, legt `data/bericht.md` ab. Kaputte Einzelstellen werden seit 2026-11-17 übersprungen statt die Firma abzubrechen (Bericht „N Stellen übersprungen …, nichts geschlossen“).
