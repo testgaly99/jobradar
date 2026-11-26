@@ -160,3 +160,11 @@ test("Größe ohne Migration 028: Rückfall auf groesse_rang aufsteigend, ohne g
   assert.equal(aufrufe[0].searchParams.get("order"), "companies(groesse_rang).asc,erstmals_gesehen.desc,id.asc");
   assert.ok(!(aufrufe[0].searchParams.get("select") ?? "").includes("groesse_sort"));
 });
+
+test("Ohne sort=groesse steht groesse_sort nie im Select (läuft auch ohne Migration 028)", async () => {
+  for (const sort of ["neu", "passung", "rangliste"]) {
+    const aufrufe: URL[] = [];
+    await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort }));
+    assert.ok(!(aufrufe[0].searchParams.get("select") ?? "").includes("groesse_sort"), sort);
+  }
+});

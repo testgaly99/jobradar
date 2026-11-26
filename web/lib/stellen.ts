@@ -6,8 +6,9 @@ import { ausschlussBedingungen, ausschlussWoerter, onlineSeitGrenze, seitenBerei
 const arr = (l: string[]) => `{${l.map((s) => `"${s.replace(/[\\"]/g, "\\$&")}"`).join(",")}}`;
 
 export { PRO_SEITE } from "./filter.ts";
+// groesse_sort (Migration 028) wird nur bei sort=groesse mitgelesen, damit alle anderen Sortierungen und Gäste ohne 028 laufen.
 export const SPALTEN =
-  "id,unternehmen,titel,ort,staedte,remote,arbeitsmodell,vertragsart,abteilung,erfahrungslevel,url,erstmals_gesehen,companies!inner(groesse_klasse,groesse_rang,groesse_sort,kategorie,aktiv)";
+  "id,unternehmen,titel,ort,staedte,remote,arbeitsmodell,vertragsart,abteilung,erfahrungslevel,url,erstmals_gesehen,companies!inner(groesse_klasse,groesse_rang,kategorie,aktiv)";
 
 // Eine Abfrage aus dem Filter. companies!inner + aktiv=true blendet Stellen inaktiver Firmen aus.
 // ohneGroesseSort: Rückfall, solange Migration 028 (Spalte groesse_sort) fehlt; Größe sortiert dann nur klein zuerst.
@@ -18,7 +19,7 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter, ohneGroesseSort = 
     ? sb.rpc("ranking_stellen", { p_listen: f.liste, ...(f.rangkategorie.length ? { p_kategorien: f.rangkategorie } : {}) }, { count: "exact" })
       .select(SPALTEN.slice(0, SPALTEN.indexOf("companies!inner")) + "companies")
     // Die View gibt es nur für Angemeldete; die Seite lässt sort=passung nur für Konten mit Passung zu.
-    : sb.from(f.sort === "passung" ? "stellen_passung" : "jobs").select(ohneGroesseSort ? SPALTEN.replace("groesse_sort,", "") : SPALTEN, { count: "exact" })
+    : sb.from(f.sort === "passung" ? "stellen_passung" : "jobs").select(f.sort === "groesse" && !ohneGroesseSort ? SPALTEN.replace("groesse_rang,", "groesse_rang,groesse_sort,") : SPALTEN, { count: "exact" })
       .eq("status", "offen").eq("sichtbar", true).eq("companies.aktiv", true);
   if (f.groesse.length) q = q.in(mitListe ? "groesse_klasse" : "companies.groesse_klasse", f.groesse);
   if (f.kategorie.length) q = q.overlaps(mitListe ? "kategorie" : "companies.kategorie", arr(f.kategorie));
