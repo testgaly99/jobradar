@@ -12,14 +12,15 @@ export const SPALTEN =
 
 // Eine Abfrage aus dem Filter. companies!inner + aktiv=true blendet Stellen inaktiver Firmen aus.
 // ohneGroesseSort: Rückfall, solange Migration 028 (Spalte groesse_sort) fehlt; Größe sortiert dann nur klein zuerst.
-export function stellenAbfrage(sb: SupabaseClient, f: Filter, ohneGroesseSort = false) {
+// spalten: nur für die Listenansicht (Zählung), ersetzt die Auswahl; die Filter bleiben dieselben.
+export function stellenFilter(sb: SupabaseClient, f: Filter, ohneGroesseSort = false, spalten?: { tabelle: string; rpc: string }) {
   const mitListe = f.liste.length > 0 || f.rangkategorie.length > 0;
   // Die Funktion liefert eine Zeile je Stelle. PostgREST filtert, zählt und sortiert global, erst dann folgt range().
   let q = mitListe
     ? sb.rpc("ranking_stellen", { p_listen: f.liste, ...(f.rangkategorie.length ? { p_kategorien: f.rangkategorie } : {}) }, { count: "exact" })
-      .select(SPALTEN.slice(0, SPALTEN.indexOf("companies!inner")) + "companies")
+      .select(spalten?.rpc ?? SPALTEN.slice(0, SPALTEN.indexOf("companies!inner")) + "companies")
     // Die View gibt es nur für Angemeldete; die Seite lässt sort=passung nur für Konten mit Passung zu.
-    : sb.from(f.sort === "passung" ? "stellen_passung" : "jobs").select(f.sort === "groesse" && !ohneGroesseSort ? SPALTEN.replace("groesse_rang,", "groesse_rang,groesse_sort,") : SPALTEN, { count: "exact" })
+    : sb.from(f.sort === "passung" ? "stellen_passung" : "jobs").select(spalten?.tabelle ?? (f.sort === "groesse" && !ohneGroesseSort ? SPALTEN.replace("groesse_rang,", "groesse_rang,groesse_sort,") : SPALTEN), { count: "exact" })
       .eq("status", "offen").eq("sichtbar", true).eq("companies.aktiv", true);
   if (f.groesse.length) q = q.in(mitListe ? "groesse_klasse" : "companies.groesse_klasse", f.groesse);
   if (f.kategorie.length) q = q.overlaps(mitListe ? "kategorie" : "companies.kategorie", arr(f.kategorie));
@@ -41,6 +42,12 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter, ohneGroesseSort = 
   const de = stufenRang(f.deutsch);
   if (de !== null) q = q.or(`deutsch_stufe.is.null,deutsch_stufe.lte.${de}`);
   if (f.seit) q = q.gte("erstmals_gesehen", onlineSeitGrenze(f.seit, new Date()));
+  return q;
+}
+
+export function stellenAbfrage(sb: SupabaseClient, f: Filter, ohneGroesseSort = false) {
+  const mitListe = f.liste.length > 0 || f.rangkategorie.length > 0;
+  const q = stellenFilter(sb, f, ohneGroesseSort);
   const { von, bis } = seitenBereich(f.seite);
   // Standardrichtung: passung kleinster Sortwert zuerst, groesse klein zuerst, neu/rangliste neueste zuerst
   // (rangliste sortiert bis zur Listenansicht wie neu); "auf" kehrt um. Ohne Ergebnis/Größenangabe immer am Ende (nullsFirst: false).
