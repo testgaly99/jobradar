@@ -14,7 +14,8 @@ import { SteckbriefKarte, Ueberblick } from "../../anzeige-bloecke";
 import { sprachenZeigen, sprachzeilen } from "@/lib/sprachniveau";
 import { merken, beworben, entmerken, wunschfirmaUmschalten } from "../actions";
 import FirmendatenForm from '../firmendaten-form';
-import { SendeKnopf } from "../../bewerbungen/knoepfe";
+import { SendeKnopf, TrotzdemForm } from "../../bewerbungen/knoepfe";
+import { offlineSeit } from "@/lib/offline";
 import Abschnitte from "../../abschnitte";
 import Ranglisten from "../../ranglisten";
 import { ladeRankingZuordnungen } from "@/lib/rankings";
@@ -42,7 +43,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
   const wunsch=nutzer?await sb.from('wunschfirmen').select('unternehmen').eq('owner_id',nutzer.id).eq('unternehmen',firma).maybeSingle():{data:null,error:null};
   const ranglisten = await ladeRankingZuordnungen(sb, !!nutzer, [firma]);
   const leer = { data: null, error: null };
-  const [tx, ab, sbr, wp, app, lf, schonBeworben, kr, se, al] = await Promise.all([
+  const [tx, ab, sbr, wp, app, lf, schonBeworben, kr, se, al, zg] = await Promise.all([
     nutzer ? sb.from("jobs").select("text").eq("id", id).maybeSingle() : leer,
     nutzer ? sb.from("jobs").select("abschnitte").eq("id", id).maybeSingle() : leer,
     sb.from("jobs").select("steckbrief").eq("id", id).maybeSingle(),
@@ -56,6 +57,8 @@ export default async function Seite({ params, searchParams }: { params: Promise<
     nutzer ? sb.from("sprach_einstellung").select("zeigen").maybeSingle() : leer,
     // Fehlt Migration 018, scheitert nur diese Abfrage: dann kein CV-Abgleich.
     nutzer ? sb.from("jobs").select("anforderungsliste,anforderungs_hash").eq("id", id).maybeSingle() : leer,
+    // Gäste dürfen zuletzt_gesehen nicht lesen (Migration 007) und sehen geschlossene Stellen ohnehin nicht.
+    nutzer ? sb.from("jobs").select("status,zuletzt_gesehen").eq("id", id).maybeSingle() : leer,
   ]);
   const cv = nutzer && al.data ? await ladeAbgleich(sb, { job_id: id }, al.data.anforderungsliste, al.data.anforderungs_hash) : null;
   const text: string | null = tx.data?.text ?? null;
@@ -74,6 +77,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
     steckbrief: leseSteckbrief(sbr.error ? null : sbr.data?.steckbrief),
   }, [...FELDER]);
   const link = sicher(j.url);
+  const offline = offlineSeit(zg.data);
   const ki = leseKi(kr.data?.ki);
   const sprachen = nutzer && sprachenZeigen(se.error ? null : se.data?.zeigen, nutzer.admin) ? sprachzeilen(sbr.error ? null : sbr.data?.steckbrief) : [];
 
@@ -82,6 +86,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
       <p><Link href="/stellen">Alle Stellen</Link></p>
       <h1>{j.titel}</h1>
       <p className="firma" style={{ "--firma-h": firmenFarbe(j.unternehmen) } as React.CSSProperties}>{j.unternehmen}</p>
+      {offline && <p><span className="chip chip-offline">Offline seit {datumDe(offline)}</span></p>}
       <Ranglisten zuordnungen={ranglisten.zuordnungen} />
       {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
       {nutzer && (
@@ -144,7 +149,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
         )}
         {link && <a className="knopf knopf-rand knopf-schmal" href={link} target="_blank" rel="noopener noreferrer">Original-Anzeige öffnen</a>}
         {nutzer && (!app.data || app.data.status === "gemerkt") && (
-          <form action={beworben.bind(null, j.id)}><SendeKnopf text="Ich habe mich beworben" klasse="knopf knopf-schmal" /></form>
+          offline ? <TrotzdemForm action={beworben.bind(null, j.id, true)} /> : <form action={beworben.bind(null, j.id, false)}><SendeKnopf text="Ich habe mich beworben" klasse="knopf knopf-schmal" /></form>
         )}
       </div>
       {begriffe.length > 0 && <p className="meldung hinweis">{n} deiner wichtigen Punkte kommen vor</p>}
@@ -153,7 +158,7 @@ export default async function Seite({ params, searchParams }: { params: Promise<
           {cv && <AbgleichKopf a={cv} />}
           <details className="karte" open={cv?.zustand === "fertig"}>
             <summary>Ganze Anzeige lesen</summary>
-            <Abschnitte abschnitte={abschnitte} text={text} begriffe={begriffe} ebene={2} spalten={cv?.zustand === "fertig" ? cv.spalten : []} />
+            <Abschnitte abschnitte={abschnitte} text={text} begriffe={begriffe} ebene={2} spalten={cv?.zustand === "fertig" ? cv.spalten : []} geschaetzt={cv?.zustand === "fertig" && cv.geschaetzt === true} />
           </details>
         </div>
       ) : (

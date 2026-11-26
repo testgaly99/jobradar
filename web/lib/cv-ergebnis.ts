@@ -45,7 +45,7 @@ export function markierung(punkt: string, liste: Anforderung[] | null | undefine
 
 export type Cv = { id: string; name: string; standard: boolean; hash: string | null };
 export type Spalte = { cv: Cv; markierungen: Record<string, Markierung> };
-export type Abgleich = { zustand: "kein_abschnitt" } | { zustand: "offen" } | { zustand: "fertig"; spalten: Spalte[] };
+export type Abgleich = { zustand: "kein_abschnitt" } | { zustand: "offen" } | { zustand: "fertig"; spalten: Spalte[]; geschaetzt?: boolean };
 
 // Was Stellen- und Bewerbungsseite zeigen; null = keine CV, dann kein Abgleich-Block.
 // Je empfohlener CV eine vollständige Spalte (A7), Standard-CV zuerst.

@@ -225,7 +225,32 @@ def speichere_ergebnis(owner, ziel, **daten):
     if feld not in ('job_id', 'application_id'):
         raise ValueError('Ungültiges Ziel')
     _req('DELETE', 'cv_ergebnisse', params={'owner_id': f'eq.{owner}', feld: f'eq.{wert}'})
-    _req('POST', 'cv_ergebnisse', headers={'Prefer': 'return=minimal'}, json={'owner_id': owner, feld: wert, **daten})
+    zeile = {'owner_id': owner, feld: wert, **daten}
+    try:
+        _req('POST', 'cv_ergebnisse', headers={'Prefer': 'return=minimal'}, json=zeile)
+    except RuntimeError as e:  # Migration 027 noch offen: ohne Sortwert schreiben, Nachtlauf läuft weiter
+        if ': 400 ' not in str(e) or not any(c in str(e) for c in ('42703', 'PGRST204')):
+            raise
+        zeile.pop('passung_sortwert', None)
+        _req('POST', 'cv_ergebnisse', headers={'Prefer': 'return=minimal'}, json=zeile)
+
+
+def stellen_fuer_schaetzung(owner, cv_hashes):
+    """Offene, sichtbare Stellen sichtbarer Firmen mit Anforderungsliste, die noch kein Claude-Ergebnis und keine aktuelle
+    Schätzung haben; neueste zuerst. Veraltet: Anforderungen geändert oder ein aktueller CV fehlt/anders in der Schätzung."""
+    sichtbar = sichtbare_firmen(owner)
+    ergebnisse = {z['job_id']: z for z in _alle_zeilen('cv_ergebnisse', {
+        'select': 'job_id,weg,anforderungs_hash,cv_hashes', 'owner_id': f'eq.{owner}', 'job_id': 'not.is.null', 'order': 'id'})}
+    aus = []
+    for j in _alle_zeilen('jobs', {'select': 'id,unternehmen,anforderungsliste,anforderungs_hash', 'status': 'eq.offen',
+                                   'sichtbar': 'eq.true', 'anforderungs_hash': 'not.is.null',
+                                   'order': 'erstmals_gesehen.desc,id'}):
+        e = ergebnisse.get(j['id'])
+        if j.get('unternehmen') in sichtbar and j.get('anforderungsliste') and (
+                e is None or (e['weg'] == 'schaetzung' and (e.get('anforderungs_hash') != j['anforderungs_hash'] or any(
+                    (e.get('cv_hashes') or {}).get(c) != h for c, h in cv_hashes.items())))):
+            aus.append({'job_id': j['id'], 'anforderungen': j['anforderungsliste'], 'anforderungs_hash': j['anforderungs_hash']})
+    return aus
 
 
 def ki_spalten_da():

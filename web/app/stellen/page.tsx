@@ -1,14 +1,20 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { aktuellerNutzer } from "@/lib/nutzer";
 import { firmenFarbe } from "@/lib/farbe";
 import { datumDe } from "@/lib/bewerbung";
-import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, stadtAnzeige, tagePlus, type Gruppe } from "@/lib/filter";
+import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, SORTIERUNG, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, sortCookie, standardSortierung, stadtAnzeige, tagePlus, type Gruppe, type Sortierung } from "@/lib/filter";
 import { istUmgerechnet, UMGERECHNET_HINWEIS, kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
+import { ladeListenAnsicht } from "@/lib/listen-ansicht";
+import { passungVerfuegbar } from "@/lib/passung";
 import { merken, entmerken } from "./actions";
+import AnzeigeAufklappen from "./anzeige-aufklappen";
 import FilterBlock from "./filterblock";
 import FilterClient from "./filter-client";
+import SortierAuswahl from "./sortierung";
+import ListenAnsicht from "./listen-ansicht";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 import FirmenLogo from "../firmenlogo";
 import Ranglisten from "../ranglisten";
@@ -17,6 +23,9 @@ import { STUFEN, deutschText, deutschWirksam, leseDeutsch } from "@/lib/sprachni
 
 // Spalte jobs.deutsch_stufe fehlt (Migration 013 offen): Postgres 42703, PostgREST PGRST204
 const OHNE_DEUTSCH_SPALTE = ["42703", "PGRST204"];
+
+// Postgres 42P01/42501/42703, PostgREST PGRST200/201/205: View fehlt, nicht lesbar oder Einbettung nicht erkannt
+const PASSUNG_FEHLT = ["42P01", "42501", "42703", "PGRST200", "PGRST201", "PGRST205"];
 
 const TITEL: Record<Gruppe, string> = {
   liste: "Liste",
@@ -36,26 +45,47 @@ const bekannt = (s: string | null) => (s && s.toLowerCase() !== "unbekannt" ? s 
 
 export default async function Seite({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
-  const roh = leseFilter(sp);
-  const fehler = typeof sp.fehler === "string" ? sp.fehler : null;
+  let roh = leseFilter(sp);
   const sb = await createClient();
+  const nutzer = await aktuellerNutzer();
+  const passung = await passungVerfuegbar(sb, nutzer);
+  // Gemerkte Sortierung (Cookie) gilt ohne gültiges sort in der Adresse (auch alte Adressen mit sort=firma/titel).
+  const s0 = [sp.sort].flat()[0];
+  if (!s0 || (s0 !== "rang" && !(SORTIERUNG as readonly string[]).includes(s0))) {
+    const c = sortCookie((await cookies()).get("stellen_sort")?.value);
+    roh = { ...roh, sort: standardSortierung(passung, c.sort), richtung: sp.dir ? roh.richtung : c.dir ?? "ab", rangliste: sp.rl ? roh.rangliste : c.rl ?? "alle" };
+  }
+  const fehler = typeof sp.fehler === "string" ? sp.fehler : null;
   // Facetten zuerst: ohne Migration 005 fehlt "land", dann wird ein ?land= ignoriert statt die Abfrage zu sprengen.
   const fac = await sb.rpc("facetten"); // fehlt die Funktion noch (002_facetten.sql), gibt es Filter ohne Zahlen
   const fa: Facetten = fac.error ? {} : (fac.data ?? {});
-  const nutzer = await aktuellerNutzer();
   // Besucher ohne Konto dürfen den Anzeigentext nicht lesen (Migration 007): Suche und Ausschluss nur im Titel.
   const katalog = await ladeRankingKatalog(sb, !!nutzer);
   const f = rankingFilter(landNurMitFacette(roh, !!fa.land), !!nutzer);
+  // Nur angebotene Sortierungen gelten: ein nicht verfügbares ?sort=passung oder Cookie sortiert nie und zeigt kein falsches Feld.
+  const sortOptionen: Sortierung[] = [...(passung ? ["passung" as const] : []), "neu", "groesse", ...(nutzer && katalog.verfuegbar ? ["rangliste" as const] : [])];
+  if (!sortOptionen.includes(f.sort)) f.sort = "neu";
+  if (f.rangliste !== "alle" && !katalog.listen.some((l) => l.id === f.rangliste)) f.rangliste = "alle";
   const listenHinweis = rankingHinweis(f, katalog);
   const listeGesperrt = !!listenHinweis && f.liste.length > 0;
   // Gespeicherte Spracheinstellung (Konto); fehlt die Tabelle (Migration 013), gilt nur die Adresse.
   const sprach = nutzer ? await sb.from("sprach_einstellung").select("zeigen,niveau").maybeSingle() : { data: null, error: null };
   let deutsch = deutschWirksam(f.deutsch, sprach.error ? null : sprach.data?.niveau, !!nutzer);
-  let [ergebnis, lauf, erster] = await Promise.all([
-    listeGesperrt ? { data: [], count: 0, error: null } : stellenAbfrage(sb, { ...f, deutsch }),
+  // Listenansicht nur für Angemeldete (sortOptionen lässt "rangliste" für Gäste nie zu).
+  const listenAnsicht = !!nutzer && katalog.verfuegbar && f.sort === "rangliste";
+  let passungRueckfall = false;
+  let [ergebnis, lauf, erster, listen] = await Promise.all([
+    listeGesperrt || listenAnsicht ? { data: [], count: 0, error: null } : stellenAbfrage(sb, { ...f, deutsch }),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
     sb.from("laeufe").select("datum").order("datum", { ascending: true }).limit(1).maybeSingle(), // fehlt die Tabelle: nur 3-Tage-Regel
+    listenAnsicht ? ladeListenAnsicht(sb, { ...f, deutsch }, f.rangliste) : null,
   ]);
+  // View fehlt (Migration 027) oder nicht lesbar: Liste nach neu statt Fehlerseite.
+  if (f.sort === "passung" && ergebnis.error && PASSUNG_FEHLT.includes(ergebnis.error.code ?? "")) {
+    f.sort = "neu";
+    passungRueckfall = true;
+    ergebnis = await stellenAbfrage(sb, { ...f, deutsch });
+  }
   const deutschFehlt = !!deutsch && OHNE_DEUTSCH_SPALTE.includes(ergebnis.error?.code ?? "");
   if (deutschFehlt) {
     deutsch = "";
@@ -102,14 +132,16 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       <div className="seitenkopf">
         <h1>Stellen</h1>
         <p className="gedaempft">
-          <span className="num">{gesamt}</span> Treffer{letzterLauf && `, Stand ${datumDe(letzterLauf)}`}
+          {listenAnsicht ? (letzterLauf && `Stand ${datumDe(letzterLauf)}`) : <><span className="num">{gesamt}</span> Treffer{letzterLauf && `, Stand ${datumDe(letzterLauf)}`}</>}
         </p>
       </div>
+      {passungRueckfall && <p className="meldung">Sortierung „Empfohlen“ ist gerade nicht verfügbar, die Liste ist nach „Neu“ sortiert.</p>}
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
-      {listenHinweis && <p className="meldung hinweis" role="status">{listenHinweis} <Link href={filterZuUrl({ ...f, liste: [], sort: f.sort === "rang" ? "neu" : f.sort, seite: 1 })}>Listenfilter zurücksetzen</Link></p>}
+      {listenHinweis && <p className="meldung hinweis" role="status">{listenHinweis} <Link href={filterZuUrl({ ...f, liste: [], sort: f.sort === "rangliste" ? "neu" : f.sort, seite: 1 })}>Listenfilter zurücksetzen</Link></p>}
       {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
       {rankingKategorien.fehler && <p className="meldung hinweis" role="status">{rankingKategorien.fehler}</p>}
       {deutschFehlt && <p className="meldung hinweis" role="status">Deutsch-Filter geht erst nach Migration 013.</p>}
+      {listen?.fehler && <p className="meldung fehler" role="alert">{listen.fehler}</p>}
       {ergebnis.error && ergebnis.error.code !== "PGRST103" && <p className="meldung fehler">Stellen konnten nicht geladen werden.</p>}
       <div className="stellen-layout">
         <aside className="filterleiste">
@@ -134,15 +166,9 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   <span>Auch im Anzeigentext suchen</span>
                 </label>
               )}
-              <label>Sortieren nach
-                <select key={f.sort} name="sort" defaultValue={f.sort}>
-                  <option value="neu">Online seit (neueste zuerst)</option>
-                  <option value="firma">Firma A bis Z</option>
-                  <option value="titel">Titel A bis Z</option>
-                  <option value="groesse">Größe</option>
-                  {nutzer && f.liste.length === 1 && !listeGesperrt && <option value="rang">Rang in der Liste</option>}
-                </select>
-              </label>
+              <input type="hidden" name="sort" value={passungRueckfall ? "passung" : f.sort} />
+              {f.richtung === "auf" && <input type="hidden" name="dir" value="auf" />}
+              {f.rangliste !== "alle" && <input type="hidden" name="rl" value={f.rangliste} />}
               {nutzer && (
                 <label>Mein Deutschniveau
                   {/* "egal" muss eine gespeicherte Wahl für diesen Aufruf überstimmen ("alle"), sonst entfällt der Parameter */}
@@ -231,8 +257,10 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
         </aside>
 
         <section aria-label="Stellen">
-          {!listeGesperrt && (!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
-          <ul className="stellenliste" id="stellenliste">
+          {!listeGesperrt && !listenAnsicht && (!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
+          <SortierAuswahl filter={f} optionen={sortOptionen} listen={katalog.listen} />
+          {listen && <ListenAnsicht bloecke={listen.bloecke} query={filterZuUrl({ ...f, deutsch, seite: 1 }).split("?")[1] ?? ""} />}
+          {!listenAnsicht && <ul className="stellenliste" id="stellenliste">
             {jobs.map((j) => {
               const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;
               const neu = !!(j.erstmals_gesehen && istNeu(j.erstmals_gesehen, jetzt, ersterLauf));
@@ -266,6 +294,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                       </ul>
                     )}
                     {deHinweis && <p className="gedaempft klein">{deHinweis}</p>}
+                    {nutzer && <AnzeigeAufklappen jobId={j.id} />}
                   </div>
                   {!nutzer ? (
                     <Link className="knopf knopf-rand knopf-schmal" href="/login">Anmelden zum Merken</Link>
@@ -284,12 +313,12 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 </li>
               );
             })}
-          </ul>
-          <nav className="seiten" aria-label="Seiten">
+          </ul>}
+          {!listenAnsicht && <nav className="seiten" aria-label="Seiten">
             {f.seite > 1 ? <Link className="knopf knopf-rand" href={filterZuUrl({ ...f, seite: f.seite - 1 })}>Zurück</Link> : <span />}
             <span className="gedaempft">Seite {f.seite} von {seiten}</span>
             {f.seite < seiten ? <Link className="knopf knopf-rand" href={filterZuUrl({ ...f, seite: f.seite + 1 })}>Weiter</Link> : <span />}
-          </nav>
+          </nav>}
         </section>
       </div>
     </>

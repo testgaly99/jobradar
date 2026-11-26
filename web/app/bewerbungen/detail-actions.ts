@@ -5,7 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { istUuid, parseAbschnitt, type Abschnitt, type Status } from "@/lib/bewerbung";
 import { heuteLokal } from "@/lib/filter";
 import { ladeZugZeile } from "@/lib/tracker-daten";
-import { GEMERKT_GESPERRT, zugPatch, zurueckZuGemerkt, type ZugPatch } from "@/lib/zug";
+import { bewerbenGesperrt, OFFLINE_GESPERRT } from "@/lib/offline";
+import { GEMERKT_GESPERRT, STATUS_RANG, zugPatch, zurueckZuGemerkt, type ZugPatch } from "@/lib/zug";
 
 // Jede Aktion prüft zuerst die Sitzung und die Form der id. RLS beschränkt alles auf eigene Zeilen.
 async function start(id?: string) {
@@ -29,11 +30,12 @@ export async function abschnittSpeichern(id: string, abschnitt: Abschnitt, f: Fo
   let vonStatus: Status | null = null;
   // Statuswechsel im Formular "Ablauf": dieselben Zugregeln wie das Board, Bedingung im Schreibbefehl.
   if (abschnitt === "ablauf") {
-    const { alt, ohne006, fehler } = await ladeZugZeile(sb, id);
+    const { alt, ohne006, fehler, offline } = await ladeZugZeile(sb, id);
     if (fehler) zurueck(id, DB_FEHLER);
     if (!alt) notFound();
     const status = r.daten.status as Status;
     if (zurueckZuGemerkt(alt.status, status)) zurueck(id, GEMERKT_GESPERRT);
+    if (STATUS_RANG[status] >= STATUS_RANG.beworben && bewerbenGesperrt(alt.status, offline, f.get("trotzdem") === "1")) zurueck(id, OFFLINE_GESPERRT);
     if (status !== alt.status) {
       const heute = heuteLokal();
       let patch: ZugPatch;

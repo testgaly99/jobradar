@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { karteAendern, nachSpalten, naechsteSpalte, type Karte } from "../lib/tracker-karte.ts";
+import { karteAendern, nachMerkStufe, nachSpalten, naechsteSpalte, type Karte } from "../lib/tracker-karte.ts";
 
 const k = (id: string, status: Karte["status"]) => ({ id, status } as Karte);
 
@@ -28,4 +28,12 @@ test("naechsteSpalte: nach Lage sortiert, am Rand null", () => {
   assert.equal(naechsteSpalte(sp, "gemerkt", -1), null);
   assert.equal(naechsteSpalte(sp, "abgeschlossen", 1), null);
   assert.equal(naechsteSpalte(sp, "fehlt", 1), null);
+});
+
+test("nachMerkStufe: gruppiert in drei Stufen und behält die Reihenfolge", () => {
+  const m = (id: string, merkStufe: Karte["merkStufe"]) => ({ id, merkStufe } as Karte);
+  const g = nachMerkStufe([m("a", "gemerkt"), m("b", "neu"), m("c", "spaeter"), m("d", "neu"), m("e", "gemerkt")]);
+  assert.deepEqual(g.neu.map((x) => x.id), ["b", "d"]);
+  assert.deepEqual(g.gemerkt.map((x) => x.id), ["a", "e"]);
+  assert.deepEqual(g.spaeter.map((x) => x.id), ["c"]);
 });

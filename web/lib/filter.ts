@@ -6,9 +6,11 @@ export const RANKING_KATEGORIEN = ["Top-Arbeitgeber", "Beliebt bei Studierenden"
 export type Gruppe = (typeof GRUPPEN)[number];
 export const SEIT_WERTE = ["heute", "3", "7", "30"] as const;
 export type Seit = (typeof SEIT_WERTE)[number];
-export const SORTIERUNG = ["neu", "firma", "titel", "groesse", "rang"] as const;
+export const SORTIERUNG = ["passung", "neu", "groesse", "rangliste"] as const;
 export type Sortierung = (typeof SORTIERUNG)[number];
-export type Filter = Record<Gruppe, string[]> & { q: string; ohne: string; volltext: boolean; seit: Seit | ""; seite: number; sort: Sortierung; deutsch: string };
+export type Filter = Record<Gruppe, string[]> & { q: string; ohne: string; volltext: boolean; seit: Seit | ""; seite: number; sort: Sortierung; richtung: Richtung; deutsch: string; rangliste: string };
+// "ab" = Standardrichtung der Sortierung (beste/neueste/größte zuerst, Platz 1 zuerst), "auf" = umgekehrt.
+export type Richtung = "auf" | "ab";
 type Params = Record<string, string | string[] | undefined>;
 
 export const PRO_SEITE = 50;
@@ -25,11 +27,11 @@ const liste = (v: string | string[] | undefined) =>
   [...new Set((Array.isArray(v) ? v : v === undefined ? [] : [v]).map((s) => s.trim()).filter(Boolean))];
 
 export function leseFilter(p: Params): Filter {
-  const f = { q: liste(p.q)[0] ?? "", ohne: liste(p.ohne)[0] ?? "", volltext: liste(p.volltext)[0] === "1", seit: "", seite: 1, sort: "neu", deutsch: "" } as Filter;
+  const f = { q: liste(p.q)[0] ?? "", ohne: liste(p.ohne)[0] ?? "", volltext: liste(p.volltext)[0] === "1", seit: "", seite: 1, sort: "neu", richtung: liste(p.dir)[0] === "auf" ? "auf" : "ab", deutsch: "", rangliste: liste(p.rl)[0] || "alle" } as Filter;
   for (const g of GRUPPEN) f[g] = liste(p[g]);
   const seit = liste(p.seit)[0] as Seit;
   if (SEIT_WERTE.includes(seit)) f.seit = seit;
-  const so = liste(p.sort)[0] as Sortierung;
+  const so = (liste(p.sort)[0] === "rang" ? "rangliste" : liste(p.sort)[0]) as Sortierung; // alte Adressen
   if (SORTIERUNG.includes(so)) f.sort = so;
   f.seite = seitenBereich(Number(liste(p.seite)[0])).seite;
   // Stufe oder "alle" (= gespeicherte Wahl für diesen Aufruf aus); Unsinn wird verworfen
@@ -47,6 +49,8 @@ export function filterZuUrl(f: Filter): string {
   if (f.seit) u.set("seit", f.seit);
   if (f.sort !== "neu") u.set("sort", f.sort);
   if (f.deutsch) u.set("deutsch", f.deutsch);
+  if (f.richtung === "auf") u.set("dir", "auf");
+  if (f.rangliste !== "alle") u.set("rl", f.rangliste);
   const { seite } = seitenBereich(f.seite);
   if (seite > 1) u.set("seite", String(seite));
   const s = u.toString();
@@ -140,13 +144,30 @@ export const landNurMitFacette = (f: Filter, hatLand: boolean): Filter => (hatLa
 // Job-ids sind "<firma>:<ext>"; Firmenname darf Leerzeichen enthalten.
 export const ID_FORM = /^[^:]{1,100}:\S{1,200}$/;
 
-// Formular -> Adresse. Leere Werte, seite und sort=neu entfallen. Suchfeld (q, volltext) kommt nur beim Absenden
-// der Suche aus dem Formular, sonst bleibt der Stand aus der aktuellen Adresse.
+// Formular -> Adresse. Leere Werte und seite entfallen; sort=neu bleibt, weil es ein ausdrücklich gewählter Wunsch ist.
+// Suchfeld (q, volltext) kommt nur beim Absenden der Suche aus dem Formular, sonst bleibt der Stand aus der aktuellen Adresse.
 export function formZuUrl(aktion: string, form: URLSearchParams, aktuell: URLSearchParams, mitSuche: boolean, textFelder: string[] = ["q", "ohne", "volltext"]): string {
   const u = new URLSearchParams();
   const suche = (k: string) => textFelder.includes(k);
-  for (const [k, v] of form) if (v.trim() !== "" && k !== "seite" && !(k === "sort" && v === "neu") && (mitSuche || !suche(k))) u.append(k, v.trim());
+  for (const [k, v] of form) if (v.trim() !== "" && k !== "seite" && (mitSuche || !suche(k))) u.append(k, v.trim());
   if (!mitSuche) for (const [k, v] of aktuell) if (suche(k) && v.trim() !== "") u.append(k, v.trim());
   const s = u.toString();
   return s ? `${aktion}?${s}` : aktion;
+}
+
+// Start-Sortierung ohne sort in der Adresse: gemerkte Wahl (Cookie), sofern bekannt und verfügbar, sonst Passung bzw. neu.
+export function standardSortierung(passungVerfuegbar: boolean, cookie: string | undefined): Sortierung {
+  const c = SORTIERUNG.find((s) => s === cookie);
+  return c && (c !== "passung" || passungVerfuegbar) ? c : passungVerfuegbar ? "passung" : "neu";
+}
+
+// Gemerkte Sortierung aus dem Cookie; jedes Feld wird einzeln geprüft (rl gegen den Katalog prüft die Seite).
+export function sortCookie(roh: string | undefined): { sort?: string; dir?: Richtung; rl?: string } {
+  let c: { sort?: unknown; dir?: unknown; rl?: unknown } = {};
+  try { c = JSON.parse(roh ?? "{}") ?? {}; } catch { /* kaputtes Cookie: Standard */ }
+  return {
+    sort: typeof c.sort === "string" && SORTIERUNG.some((x) => x === c.sort) ? c.sort : undefined,
+    dir: c.dir === "auf" || c.dir === "ab" ? c.dir : undefined,
+    rl: typeof c.rl === "string" && c.rl.length > 0 && c.rl.length < 100 ? c.rl : undefined,
+  };
 }

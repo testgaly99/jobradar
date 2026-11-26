@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createClient } from "@supabase/supabase-js";
 import { leseFilter } from "../lib/filter.ts";
-import { PRO_SEITE, stellenAbfrage } from "../lib/stellen.ts";
+import { PRO_SEITE, stellenAbfrage, stellenFilter } from "../lib/stellen.ts";
 
 test("Standard- und Rankingabfrage behalten sichere Seitenbereiche und 50 Treffer pro Seite", async () => {
   assert.equal(PRO_SEITE, 50);
@@ -17,14 +17,14 @@ test("Standard- und Rankingabfrage behalten sichere Seitenbereiche und 50 Treffe
       } },
     });
     for (const [seite, offset] of [[1, "0"], [2, "50"], [3, "100"], [180143985094819, "9007199254740900"]] as const) {
-      const f = leseFilter({ liste: mitListe ? "test-a" : undefined, sort: mitListe ? "rang" : "titel", q: "Data" });
+      const f = leseFilter({ liste: mitListe ? "test-a" : undefined, sort: "neu", q: "Data" });
       const ergebnis = await stellenAbfrage(sb, { ...f, seite });
       assert.equal(ergebnis.error, null);
       const url = aufrufe.at(-1)!;
       assert.equal(url.pathname, mitListe ? "/rest/v1/rpc/ranking_stellen" : "/rest/v1/jobs");
       assert.equal(url.searchParams.get("offset"), offset);
       assert.equal(url.searchParams.get("limit"), "50");
-      assert.equal(url.searchParams.get("order"), mitListe ? "rang.asc.nullslast,unternehmen.asc,id.asc" : "titel.asc,id.asc");
+      assert.equal(url.searchParams.get("order"), "erstmals_gesehen.desc,id.asc");
       assert.ok(url.searchParams.get("or")?.includes("titel.ilike"));
     }
     assert.equal(aufrufe.length, 4);
@@ -84,11 +84,102 @@ for (const mitListe of [false, true]) {
     assert.deepEqual(ids, erwartet.map(j => j.id));
     assert.deepEqual(aufrufe.map(u => u.searchParams.get("offset")), ["0", "50", "100"]);
     for (const url of aufrufe) {
-      assert.equal(url.searchParams.get("order"), `${mitListe ? "companies->groesse_rang" : "companies(groesse_rang)"}.asc,erstmals_gesehen.desc,id.asc`);
+      assert.equal(url.searchParams.get("order"), mitListe ? "companies->groesse_sort.desc.nullslast,companies->groesse_rang.asc,erstmals_gesehen.desc,id.asc" : "companies(groesse_sort).desc.nullslast,erstmals_gesehen.desc,id.asc");
       // Sortierspalte muss im Embed mitselektiert sein, sonst Fehler 42703 (Live-Bug)
-      assert.match(url.searchParams.get("select") ?? "", mitListe ? /companies(?!\()/ : /companies!inner\([^)]*groesse_rang/);
+      assert.match(url.searchParams.get("select") ?? "", mitListe ? /companies(?!\()/ : /companies!inner\([^)]*groesse_sort/);
       assert.equal(url.searchParams.get("erfahrungslevel"), "in.(Senior)");
       assert.equal(url.searchParams.get("limit"), "50");
     }
   });
 }
+
+function sbMitAufrufen(aufrufe: URL[]) {
+  return createClient("https://datenbank.example.invalid", "test-ohne-zugangsdaten", {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    global: { fetch: async (input) => {
+      aufrufe.push(new URL(typeof input === "string" ? input : input instanceof URL ? input.href : input.url));
+      return new Response("[]", { headers: { "Content-Type": "application/json" } });
+    } },
+  });
+}
+
+test("sort=passung: View stellen_passung, kleinster Wert zuerst, ohne Ergebnis am Ende, dann neueste", async () => {
+  const aufrufe: URL[] = [];
+  await stellenAbfrage(sbMitAufrufen(aufrufe), { ...leseFilter({ sort: "passung" }) });
+  assert.equal(aufrufe[0].pathname, "/rest/v1/stellen_passung");
+  assert.equal(aufrufe[0].searchParams.get("order"), "passung_sortwert.asc.nullslast,erstmals_gesehen.desc,id.asc");
+});
+
+test("sort=passung mit Listenfilter: ranking_stellen, gleiche Sortierung", async () => {
+  const aufrufe: URL[] = [];
+  await stellenAbfrage(sbMitAufrufen(aufrufe), { ...leseFilter({ sort: "passung", liste: "test-a" }) });
+  assert.equal(aufrufe[0].pathname, "/rest/v1/rpc/ranking_stellen");
+  assert.equal(aufrufe[0].searchParams.get("order"), "passung_sortwert.asc.nullslast,erstmals_gesehen.desc,id.asc");
+});
+
+test("andere Sortierungen fassen die View nie an (Gäste dürfen sie nicht lesen)", async () => {
+  for (const sort of ["neu", "groesse", "rangliste"]) {
+    const aufrufe: URL[] = [];
+    await stellenAbfrage(sbMitAufrufen(aufrufe), { ...leseFilter({ sort }) });
+    assert.equal(aufrufe[0].pathname, "/rest/v1/jobs", sort);
+  }
+});
+
+test("dir=auf kehrt die Reihenfolge um; passung bleibt nullslast", async () => {
+  const fall: [string, string][] = [
+    ["neu", "erstmals_gesehen.asc,id.asc"],
+    ["rangliste", "erstmals_gesehen.asc,id.asc"],
+    ["passung", "passung_sortwert.desc.nullslast,erstmals_gesehen.desc,id.asc"],
+    ["groesse", "companies(groesse_sort).asc.nullslast,erstmals_gesehen.desc,id.asc"],
+  ];
+  for (const [sort, order] of fall) {
+    const aufrufe: URL[] = [];
+    await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort, dir: "auf" }));
+    assert.equal(aufrufe[0].searchParams.get("order"), order, sort);
+  }
+});
+
+test("dir=auf mit Listenfilter (rpc): gleiche Umkehr, Größe ohne Angabe bleibt am Ende", async () => {
+  const fall: [string, string][] = [
+    ["neu", "erstmals_gesehen.asc,id.asc"],
+    ["passung", "passung_sortwert.desc.nullslast,erstmals_gesehen.desc,id.asc"],
+    ["groesse", "companies->groesse_sort.asc.nullslast,companies->groesse_rang.asc,erstmals_gesehen.desc,id.asc"],
+  ];
+  for (const [sort, order] of fall) {
+    const aufrufe: URL[] = [];
+    await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort, dir: "auf", liste: "test-a" }));
+    assert.equal(aufrufe[0].pathname, "/rest/v1/rpc/ranking_stellen", sort);
+    assert.equal(aufrufe[0].searchParams.get("order"), order, sort);
+    assert.ok((aufrufe[0].searchParams.get("select") ?? "").endsWith(",companies"), sort);
+  }
+});
+
+test("Größe: Standard ist größte zuerst, dir=auf kleinste zuerst, Unbekannt bleibt in beiden Richtungen am Ende", async () => {
+  const fall: [Record<string, unknown>, string, string][] = [
+    [{}, "companies(groesse_sort).desc.nullslast,erstmals_gesehen.desc,id.asc", "companies->groesse_sort.desc.nullslast,companies->groesse_rang.asc,erstmals_gesehen.desc,id.asc"],
+    [{ dir: "auf" }, "companies(groesse_sort).asc.nullslast,erstmals_gesehen.desc,id.asc", "companies->groesse_sort.asc.nullslast,companies->groesse_rang.asc,erstmals_gesehen.desc,id.asc"],
+  ];
+  for (const [extra, jobs, rpc] of fall) {
+    const aufrufe: URL[] = [];
+    await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort: "groesse", ...extra }));
+    assert.equal(aufrufe[0].searchParams.get("order"), jobs, JSON.stringify(extra));
+    await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort: "groesse", liste: "test-a", ...extra }));
+    assert.equal(aufrufe[1].searchParams.get("order"), rpc, JSON.stringify(extra));
+  }
+});
+
+test("stellenFilter(sb, f, spalten): dritter Parameter ersetzt die Auswahl; Größe sortiert immer über groesse_sort", async () => {
+  const aufrufe: URL[] = [];
+  await stellenFilter(sbMitAufrufen(aufrufe), leseFilter({ sort: "groesse" }), { tabelle: "id,companies!inner(aktiv)", rpc: "id" });
+  assert.equal(aufrufe[0].searchParams.get("select"), "id,companies!inner(aktiv)");
+  await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort: "groesse", dir: "auf" }));
+  assert.ok((aufrufe[1].searchParams.get("order") ?? "").startsWith("companies(groesse_sort).asc"));
+});
+
+test("Ohne sort=groesse steht groesse_sort nie im Select (läuft auch ohne Migration 028)", async () => {
+  for (const sort of ["neu", "passung", "rangliste"]) {
+    const aufrufe: URL[] = [];
+    await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort }));
+    assert.ok(!(aufrufe[0].searchParams.get("select") ?? "").includes("groesse_sort"), sort);
+  }
+});

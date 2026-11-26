@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, facettenSortieren, LEVEL_REIHENFOLGE, stadtAnzeige, suchBedingung, ausschlussWoerter, ausschlussBedingungen, formZuUrl, landNurMitFacette, ID_FORM } from "../lib/filter.ts";
+import { leseFilter, filterZuUrl, escapeIlike, tagePlus, GROESSEN_REIHENFOLGE, levelText, onlineSeitGrenze, istNeu, facettenSortieren, LEVEL_REIHENFOLGE, stadtAnzeige, suchBedingung, ausschlussWoerter, ausschlussBedingungen, formZuUrl, landNurMitFacette, ID_FORM, standardSortierung, sortCookie } from "../lib/filter.ts";
 
 test("leerer Filter gibt /stellen", () => {
   const f = leseFilter({});
@@ -109,19 +109,26 @@ test("istNeu: Stellen des ersten Laufs sind nie neu", () => {
   assert.equal(istNeu("2026-11-07", JETZT, null), true);
 });
 
-test("sort: Unbekanntes wird neu, firma und neu in der URL", () => {
+test("sort: Unbekanntes und entfallene firma/titel werden neu, groesse und neu in der URL", () => {
   assert.equal(leseFilter({ sort: "foo" }).sort, "neu");
+  assert.equal(leseFilter({ sort: "firma" }).sort, "neu");
+  assert.equal(leseFilter({ sort: "titel" }).sort, "neu");
   const leer = leseFilter({});
-  assert.ok(filterZuUrl({ ...leer, sort: "firma" }).includes("sort=firma"));
+  assert.ok(filterZuUrl({ ...leer, sort: "groesse" }).includes("sort=groesse"));
   assert.ok(!filterZuUrl({ ...leer, sort: "neu" }).includes("sort"));
 });
 
 test("formZuUrl: Filterwechsel behaelt q aus der Adresse, Suche nimmt es aus dem Formular", () => {
   const form = new URLSearchParams("q=neu&volltext=1&level=Senior&sort=neu&seite=3&seit=");
   const aktuell = new URLSearchParams("q=alt");
-  assert.equal(formZuUrl("/stellen", form, aktuell, false), "/stellen?level=Senior&q=alt");
-  assert.equal(formZuUrl("/stellen", form, aktuell, true), "/stellen?q=neu&volltext=1&level=Senior");
-  assert.equal(formZuUrl("/stellen", new URLSearchParams("sort=firma"), new URLSearchParams(), false), "/stellen?sort=firma");
+  assert.equal(formZuUrl("/stellen", form, aktuell, false), "/stellen?level=Senior&sort=neu&q=alt");
+  assert.equal(formZuUrl("/stellen", form, aktuell, true), "/stellen?q=neu&volltext=1&level=Senior&sort=neu");
+  assert.equal(formZuUrl("/stellen", new URLSearchParams("sort=groesse"), new URLSearchParams(), false), "/stellen?sort=groesse");
+});
+
+test("formZuUrl behält sort=neu", () => {
+  const form = new URLSearchParams("sort=neu&stadt=München");
+  assert.equal(formZuUrl("/stellen", form, new URLSearchParams(), false), "/stellen?sort=neu&stadt=M%C3%BCnchen");
 });
 
 test("formZuUrl mit textFelder [firma]: ungesendeter Firmentext kommt aus der Adresse", () => {
@@ -165,20 +172,58 @@ test("Bestehende Zahlenformate und größte vollständig sichere Seite bleiben e
 });
 
 test("Erster bereinigter Mehrfachwert und übrige Filter bleiben bei Seitenfehlern erhalten", () => {
-  const f = leseFilter({ seite: [" ", "2", "3"], stadt: [" Berlin ", "Remote", "Berlin"], q: " Data ", sort: "titel" });
+  const f = leseFilter({ seite: [" ", "2", "3"], stadt: [" Berlin ", "Remote", "Berlin"], q: " Data ", sort: "groesse" });
   assert.equal(f.seite, 2);
   assert.deepEqual(f.stadt, ["Berlin", "Remote"]);
   assert.equal(f.q, "Data");
-  assert.equal(f.sort, "titel");
+  assert.equal(f.sort, "groesse");
   assert.equal(leseFilter({ seite: ["Infinity", "2"] }).seite, 1);
 });
 
 test("URL-Schreiber lässt ungültige programmatische Seiten weg und erhält gültige Seiten und Filter", () => {
-  const f = leseFilter({ level: ["Senior", "Lead"], q: "Data", sort: "titel" });
+  const f = leseFilter({ level: ["Senior", "Lead"], q: "Data", sort: "groesse" });
   const basis = filterZuUrl(f);
   for (const seite of [0, -2, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER, 180143985094820]) {
     assert.equal(filterZuUrl({ ...f, seite }), basis, String(seite));
   }
   assert.equal(filterZuUrl({ ...f, seite: 2 }), basis + "&seite=2");
   assert.equal(filterZuUrl({ ...f, seite: 180143985094819 }), basis + "&seite=180143985094819");
+});
+
+test("sort: alter Wert rang wird rangliste", () => {
+  assert.equal(leseFilter({ sort: "rang" }).sort, "rangliste");
+  assert.ok(!filterZuUrl(leseFilter({})).includes("kat"));
+});
+
+test("dir: auf oder ab, ungueltig ab; nur auf steht in der URL", () => {
+  assert.equal(leseFilter({ dir: "auf" }).richtung, "auf");
+  assert.equal(leseFilter({ dir: "ab" }).richtung, "ab");
+  assert.equal(leseFilter({ dir: "quer" }).richtung, "ab");
+  assert.equal(leseFilter({}).richtung, "ab");
+  assert.ok(filterZuUrl(leseFilter({ dir: "auf" })).includes("dir=auf"));
+  assert.ok(!filterZuUrl(leseFilter({ dir: "ab" })).includes("dir"));
+});
+
+test("rl: Listen-ID oder alle; leer ist alle; nur Listen-ID steht in der URL", () => {
+  assert.equal(leseFilter({ rl: "dax" }).rangliste, "dax");
+  assert.equal(leseFilter({ rl: "" }).rangliste, "alle");
+  assert.equal(leseFilter({}).rangliste, "alle");
+  assert.ok(filterZuUrl(leseFilter({ sort: "rangliste", rl: "dax" })).includes("rl=dax"));
+  assert.ok(!filterZuUrl(leseFilter({ sort: "rangliste" })).includes("rl"));
+});
+
+test("sortCookie prueft jedes Feld", () => {
+  assert.deepEqual(sortCookie(JSON.stringify({ sort: "groesse", dir: "auf", rl: "dax" })), { sort: "groesse", dir: "auf", rl: "dax" });
+  assert.deepEqual(sortCookie(JSON.stringify({ sort: "firma", dir: "quer", rl: 5 })), { sort: undefined, dir: undefined, rl: undefined });
+  assert.deepEqual(sortCookie("kaputt{"), { sort: undefined, dir: undefined, rl: undefined });
+  assert.deepEqual(sortCookie(undefined), { sort: undefined, dir: undefined, rl: undefined });
+});
+
+test("standardSortierung: Passung nur wenn verfuegbar, Cookie nur wenn gueltig", () => {
+  assert.equal(standardSortierung(true, undefined), "passung");
+  assert.equal(standardSortierung(false, undefined), "neu");
+  assert.equal(standardSortierung(false, "passung"), "neu");
+  assert.equal(standardSortierung(true, "groesse"), "groesse");
+  assert.equal(standardSortierung(true, "firma"), "passung");
+  assert.equal(standardSortierung(true, "unsinn"), "passung");
 });
