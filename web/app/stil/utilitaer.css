@@ -189,3 +189,6 @@
 .stelle-anzeige { margin-top: 0.5rem; max-width: 100%; }
 .stelle-anzeige summary { cursor: pointer; }
 .stelle-anzeige .anzeige { overflow-wrap: anywhere; }
+
+/* Formulare bleiben lesbar schmal, auch im 1600px-Container (gleiche Grenze wie .bewerbung-seite) */
+.formular { max-width: 52rem; }
