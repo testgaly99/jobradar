@@ -260,7 +260,7 @@ def _schaetzen(owner, db, einbetten, docs, profile, cvs, cache, z, uhr=None):
     """Stufe 1 allein (sicher -> grün, sonst gelb, nie rot) für alle übrigen sichtbaren Stellen, im Zeitbudget."""
     uhr = uhr or time.monotonic
     start = uhr()
-    for s in db.stellen_fuer_schaetzung(owner):
+    for s in db.stellen_fuer_schaetzung(owner, {d['id']: cvs[d['id']]['hash'] for d in docs}):
         if uhr() - start >= SCHAETZ_BUDGET_S:
             break
         bewertungen, empfohlen = _stufe1(s, profile, docs, einbetten, cache)

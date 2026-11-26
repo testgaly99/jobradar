@@ -39,7 +39,8 @@ class FakeDB:
         self.grenze = grenze
         return self.stellen
 
-    def stellen_fuer_schaetzung(self, owner):
+    def stellen_fuer_schaetzung(self, owner, cv_hashes):
+        self.schaetz_hashes = cv_hashes
         if self.schaetz_fehler:
             raise RuntimeError('Geheimfirma kaputt')
         return self.schaetz
@@ -237,6 +238,12 @@ def test_schaetzung_nur_gruen_gelb_und_ohne_claude():
     for ziel, d in db.ergebnisse:
         assert d['weg'] == 'schaetzung' and d['passung_sortwert'] is not None
         assert {e['farbe'] for a in d['anforderungen'] for e in a['je_cv'].values()} <= {'gruen', 'gelb'}
+
+
+def test_schaetzen_gibt_cv_hashes_weiter():
+    db = FakeDB(stellen=0, cvs=('cv1', 'cv2'))
+    _lauf(db, Claude())
+    assert db.schaetz_hashes == {'cv1': 'h-cv1', 'cv2': 'h-cv2'}
 
 
 def test_schaetzung_haelt_zeitbudget(monkeypatch):
