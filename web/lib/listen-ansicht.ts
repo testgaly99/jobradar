@@ -47,7 +47,7 @@ export async function ladeListenAnsicht(sb: SupabaseClient, f: Filter, rangliste
   const stellenJeFirma = new Map<string, number>();
   const zaehlF = { ...f, sort: "neu" as const };
   for (let von = 0; ; von += SEITE) {
-    const { data, error } = await stellenFilter(sb, zaehlF, false, { tabelle: "unternehmen,companies!inner(aktiv,groesse_klasse,kategorie)", rpc: "unternehmen" })
+    const { data, error } = await stellenFilter(sb, zaehlF, { tabelle: "unternehmen,companies!inner(aktiv,groesse_klasse,kategorie)", rpc: "unternehmen" })
       .order("id").range(von, von + SEITE - 1);
     if (error) return { bloecke: [], fehler: FEHLER };
     const teil = (data ?? []) as unknown as { unternehmen: string }[];
@@ -88,7 +88,7 @@ export async function firmenStellenMit(sb: SupabaseClient, nutzer: { admin: bool
   for (const k of new Set(u.keys())) params[k] = u.getAll(k);
   const f = rankingFilter(leseFilter(params), true);
   f.sort = (await passungVerfuegbar(sb, nutzer)) ? "passung" : "neu"; f.richtung = "ab";
-  const q = stellenFilter(sb, f, false, { tabelle: "id,titel,ort,companies!inner(aktiv,groesse_klasse,kategorie)", rpc: "id,titel,ort" }).eq("unternehmen", firma);
+  const q = stellenFilter(sb, f, { tabelle: "id,titel,ort,companies!inner(aktiv,groesse_klasse,kategorie)", rpc: "id,titel,ort" }).eq("unternehmen", firma);
   const { data, error } = await (f.sort === "passung" ? q.order("passung_sortwert", { ascending: true, nullsFirst: false }) : q)
     .order("erstmals_gesehen", { ascending: false }).order("id").limit(MAX_FIRMA_STELLEN + 1); // eine mehr: zeigt, ob es weitere gibt
   if (error) return { fehler: "Stellen konnten nicht geladen werden." };
