@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { RANKING_KATEGORIEN, type Filter } from "./filter.ts";
+import { RANKING_KATEGORIEN, filterZuUrl, type Filter, type Richtung } from "./filter.ts";
 import { ladeRankingZuordnungen, type RankingZuordnung } from "./rankings.ts";
 import { stellenFilter } from "./stellen.ts";
 import { leseFilter } from "./filter.ts";
@@ -17,8 +17,9 @@ const UNBEKANNT = 99; // groesse_rang (Migration 010): 0 klein ... 3 groß, 99 u
 
 export function gruppiere(
   zuordnungen: RankingZuordnung[], stellenJeFirma: Map<string, number>, groesseRang: Map<string, number>,
-  logos: Map<string, string>, rangliste: string, listenKategorie: Map<string, string>,
+  logos: Map<string, string>, rangliste: string, listenKategorie: Map<string, string>, richtung: Richtung = "ab",
 ): ListeBlock[] {
+  const u = richtung === "auf" ? -1 : 1; // dreht nur den Vergleich innerhalb eines Blocks
   const gr = (f: string) => { const g = groesseRang.get(f); return g === undefined || g === UNBEKANNT ? -1 : g; }; // -1 = zuletzt
   const nachListe = new Map<string, { name: string; kacheln: Kachel[] }>();
   for (const z of zuordnungen) {
@@ -32,9 +33,10 @@ export function gruppiere(
   const katPos = (id: string) => { const i = RANKING_KATEGORIEN.indexOf(listenKategorie.get(id) as typeof RANKING_KATEGORIEN[number]); return i < 0 ? RANKING_KATEGORIEN.length : i; };
   const listPos = (id: string) => { const i = (LISTEN_REIHENFOLGE[listenKategorie.get(id) ?? ""] ?? []).indexOf(id); return i < 0 ? Infinity : i; };
   return [...nachListe].map(([id, b]) => ({ id, name: b.name, kacheln: b.kacheln.sort((a, c) =>
-      a.rang !== null && c.rang !== null ? a.rang - c.rang || a.firma.localeCompare(c.firma, "de")
+      a.rang !== null && c.rang !== null ? u * (a.rang - c.rang) || a.firma.localeCompare(c.firma, "de")
       : a.rang !== null ? -1 : c.rang !== null ? 1
-      : gr(c.firma) - gr(a.firma) || a.firma.localeCompare(c.firma, "de")) }))
+      : gr(a.firma) < 0 || gr(c.firma) < 0 ? gr(c.firma) - gr(a.firma) || a.firma.localeCompare(c.firma, "de") // unbekannte Größe immer hinten
+      : u * (gr(c.firma) - gr(a.firma)) || a.firma.localeCompare(c.firma, "de")) }))
     .sort((a, c) => katPos(a.id) - katPos(c.id) || listPos(a.id) - listPos(c.id) || a.name.localeCompare(c.name, "de"));
 }
 
@@ -71,14 +73,14 @@ export async function ladeListenAnsicht(sb: SupabaseClient, f: Filter, rangliste
   if (ld.error || !fd) return { bloecke: [], fehler: FEHLER };
   const listenKategorie = new Map<string, string>();
   for (const l of (ld.data ?? []) as { id: string; kategorie: string | null }[]) if (l.kategorie) listenKategorie.set(l.id, l.kategorie);
-  return { bloecke: gruppiere(zuordnungen, stellenJeFirma, fd.groesse, fd.logos, rangliste, listenKategorie), fehler: null };
+  return { bloecke: gruppiere(zuordnungen, stellenJeFirma, fd.groesse, fd.logos, rangliste, listenKategorie, f.richtung), fehler: null };
 }
 
 const MAX_FIRMA_STELLEN = 100;
 
 // Stellen einer Firma unter den aktuellen Filtern (query = Adressteil nach "?"); nur fuer Angemeldete. Nach Passung, sonst neueste zuerst.
 export async function firmenStellenMit(sb: SupabaseClient, nutzer: { admin: boolean } | null, firma: unknown, query: unknown):
-  Promise<{ stellen: { id: string; titel: string; ort: string | null }[] } | { fehler: string }> {
+  Promise<{ stellen: { id: string; titel: string; ort: string | null }[]; alle?: string } | { fehler: string }> {
   if (!nutzer) return { fehler: "Bitte anmelden." };
   if (typeof firma !== "string" || !firma || firma.length > 200 || typeof query !== "string" || query.length > 4000) return { fehler: "Ungültige Anfrage." };
   const u = new URLSearchParams(query);
@@ -88,7 +90,9 @@ export async function firmenStellenMit(sb: SupabaseClient, nutzer: { admin: bool
   f.sort = (await passungVerfuegbar(sb, nutzer)) ? "passung" : "neu"; f.richtung = "ab";
   const q = stellenFilter(sb, f, false, { tabelle: "id,titel,ort,companies!inner(aktiv,groesse_klasse,kategorie)", rpc: "id,titel,ort" }).eq("unternehmen", firma);
   const { data, error } = await (f.sort === "passung" ? q.order("passung_sortwert", { ascending: true, nullsFirst: false }) : q)
-    .order("erstmals_gesehen", { ascending: false }).order("id").limit(MAX_FIRMA_STELLEN);
+    .order("erstmals_gesehen", { ascending: false }).order("id").limit(MAX_FIRMA_STELLEN + 1); // eine mehr: zeigt, ob es weitere gibt
   if (error) return { fehler: "Stellen konnten nicht geladen werden." };
-  return { stellen: ((data ?? []) as unknown as { id: string; titel: string; ort: string | null }[]).map((j) => ({ id: j.id, titel: j.titel, ort: j.ort })) };
+  const zeilen = (data ?? []) as unknown as { id: string; titel: string; ort: string | null }[];
+  const stellen = zeilen.slice(0, MAX_FIRMA_STELLEN).map((j) => ({ id: j.id, titel: j.titel, ort: j.ort }));
+  return zeilen.length > MAX_FIRMA_STELLEN ? { stellen, alle: filterZuUrl({ ...f, firma: [firma], seite: 1 }) } : { stellen };
 }

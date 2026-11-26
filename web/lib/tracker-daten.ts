@@ -36,7 +36,7 @@ export async function ladeKarten(sb: SupabaseClient, f: TabellenFilter & { archi
     if (f.interesse) q = q.gte("interesse", f.interesse);
     return q;
   };
-  // Spalte merk_stufe (Migration 004) kann fehlen, 006-Spalten ebenso: erst beide, dann nur eine, dann keine; fehlende Stufe = "gemerkt".
+  // Spalte merk_stufe (Migration 026) kann fehlen, 006-Spalten ebenso: erst beide, dann nur eine, dann keine; fehlende Stufe = "gemerkt".
   const M = ",merk_stufe";
   const versuche = [VOLL + M, OHNE + M, VOLL, OHNE];
   let data: unknown, error: { code?: string; message: string } | null = null, nr = 0;

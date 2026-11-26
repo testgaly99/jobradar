@@ -53,6 +53,22 @@ test("Logo und Rang landen in der Kachel", () => {
   assert.deepEqual(b[0].kacheln[0], { firma: "A", logo: "https://logo.example/a.png", rang: 7, stellen: 4 });
 });
 
+test("richtung auf: Rang letzter zuerst, Größe klein zuerst; ohne Rang/Größe bleiben hinten", () => {
+  const rang = gruppiere([z("B", "top", 2), z("A", "top", 1), z("C", "top", 3), z("N", "top", null)], stellen(["A", 1], ["B", 1], ["C", 1], ["N", 1]), new Map(), leer, "top", kat, "auf");
+  assert.deepEqual(rang[0].kacheln.map((k) => k.firma), ["C", "B", "A", "N"]);
+  const g = new Map([["Klein", 0], ["Gross", 3], ["Unbekannt", 99]]);
+  const ohne = gruppiere(["Unbekannt", "Klein", "Gross", "Zeta"].map((n) => z(n, "index", null)),
+    stellen(...["Unbekannt", "Klein", "Gross", "Zeta"].map((n) => [n, 1] as [string, number])), g, leer, "index", kat, "auf");
+  assert.deepEqual(ohne[0].kacheln.map((k) => k.firma), ["Klein", "Gross", "Unbekannt", "Zeta"]);
+});
+
+test("firmenStellen: mehr als 100 Treffer geben einen Link auf die gefilterte Liste", async () => {
+  const viele = Array.from({ length: 101 }, (_, i) => ({ id: "a:" + i, titel: "T", ort: null, companies: {} }));
+  const r = await firmenStellenMit(attrappe({ data: viele, error: null }).sb, { admin: false }, "SAP", "seit=7");
+  assert.ok("stellen" in r && r.stellen.length === 100);
+  assert.ok("alle" in r && r.alle === "/stellen?firma=SAP&seit=7");
+});
+
 // Aufzeichnende Attrappe: jede Methode merkt sich Name und Argumente und gibt dieselbe Kette zurück; await liefert das Ergebnis.
 function attrappe(ergebnis: { data: unknown; error: unknown } = { data: [], error: null }) {
   const calls: [string, unknown[]][] = [];

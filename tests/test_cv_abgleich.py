@@ -304,3 +304,17 @@ def test_schaetzung_gemischt_nutzt_nur_cv_mit_profil():
     cv_abgleich.main(db=db, frage=_limit, einbetten=_einbetten, heute='2026-11-24')
     (_, d), = db.ergebnisse
     assert d['empfohlen'] == ['cv1'] and d['geprueft'] == ['cv1'] and list(d['cv_hashes']) == ['cv1']
+
+
+def test_schaetzung_speichert_keine_belegtexte():
+    db = FakeDB(stellen=0)
+    stelle = _schaetz_stellen(1)[0]
+    bew = {'cv1': [{'id': 'a1', 'stufe': 'sicher', 'beleg': 'Geheimer Belegtext'}, {'id': 'a2', 'stufe': 'nicht_belegt'}]}
+    cv_abgleich._speichere(db, 'o', stelle, bew, ['cv1'], {}, db.docs, {'cv1': {'hash': 'h'}}, weg='schaetzung')
+    es = [e for a in db.ergebnisse[0][1]['anforderungen'] for e in a['je_cv'].values()]
+    assert es[0]['farbe'] == 'gruen' and all(e['beleg'] is None for e in es) and 'Geheimer' not in json.dumps(db.ergebnisse)
+
+
+def test_sortwert_fehlende_muss_kennzeichnung_zaehlt_als_muss():
+    a = [{'id': 'a0', 'text': 't'}]
+    assert cv_abgleich.passung_sortwert(a, {'a0': {'cv1': {'farbe': 'rot'}}}, ['cv1']) >= 1000

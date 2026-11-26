@@ -9,7 +9,7 @@ export type Seit = (typeof SEIT_WERTE)[number];
 export const SORTIERUNG = ["passung", "neu", "groesse", "rangliste"] as const;
 export type Sortierung = (typeof SORTIERUNG)[number];
 export type Filter = Record<Gruppe, string[]> & { q: string; ohne: string; volltext: boolean; seit: Seit | ""; seite: number; sort: Sortierung; richtung: Richtung; deutsch: string; rangliste: string };
-// "ab" = Standardrichtung der Sortierung (beste/neueste/größte zuerst, Platz 1 zuerst), "auf" = umgekehrt.
+// "ab" = Standardrichtung der Sortierung (beste/neueste/kleinste zuerst, Platz 1 zuerst), "auf" = umgekehrt.
 export type Richtung = "auf" | "ab";
 type Params = Record<string, string | string[] | undefined>;
 

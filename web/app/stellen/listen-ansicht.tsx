@@ -12,7 +12,7 @@ export default function ListenAnsicht({ bloecke, query }: { bloecke: ListeBlock[
           <summary><h2>{b.name} <span className="gedaempft">({b.kacheln.length})</span></h2></summary>
           <div className="kacheln">
             {b.kacheln.map((k) => (
-              <FirmaAufklappen key={k.firma} firma={k.firma} query={query} kopf={
+              <FirmaAufklappen key={k.firma + "|" + query} firma={k.firma} query={query} kopf={
                 <span className="kachel-kopf">
                   <FirmenLogo firma={k.firma} url={k.logo ?? undefined} />
                   <span className="kachel-name">{k.firma}</span>

@@ -10,13 +10,14 @@ type Stelle = { id: string; titel: string; ort: string | null };
 export default function FirmaAufklappen({ firma, query, kopf }: { firma: string; query: string; kopf: React.ReactNode }) {
   const [stellen, setStellen] = useState<Stelle[] | null>(null);
   const [fehler, setFehler] = useState<string | null>(null);
+  const [alle, setAlle] = useState<string | null>(null);
   const [laedt, setLaedt] = useState(false);
   const beiToggle = async (e: React.SyntheticEvent<HTMLDetailsElement>) => {
     if (!e.currentTarget.open || stellen || laedt) return;
     setLaedt(true); setFehler(null);
     try {
       const r = await firmenStellen(firma, query);
-      if ("fehler" in r) setFehler(r.fehler); else setStellen(r.stellen);
+      if ("fehler" in r) setFehler(r.fehler); else { setStellen(r.stellen); setAlle(r.alle ?? null); }
     } catch { setFehler("Stellen konnten nicht geladen werden."); }
     setLaedt(false);
   };
@@ -37,6 +38,7 @@ export default function FirmaAufklappen({ firma, query, kopf }: { firma: string;
           {stellen.length === 0 && <li className="gedaempft">Keine Stellen gefunden.</li>}
         </ul>
       )}
+      {alle && <p className="gedaempft klein">Erste 100 – <Link href={alle}>alle ansehen</Link></p>}
     </details>
   );
 }

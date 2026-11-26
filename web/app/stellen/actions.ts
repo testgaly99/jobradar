@@ -130,6 +130,6 @@ export async function anzeigeLaden(jobId: string): Promise<{ abschnitte: Anzeige
 }
 
 // Listenansicht: Stellen einer Firma unter den aktuellen Filtern, geladen erst beim Aufklappen (nur Angemeldete).
-export async function firmenStellen(firma: string, query: string): Promise<{ stellen: { id: string; titel: string; ort: string | null }[] } | { fehler: string }> {
+export async function firmenStellen(firma: string, query: string): Promise<{ stellen: { id: string; titel: string; ort: string | null }[]; alle?: string } | { fehler: string }> {
   return firmenStellenMit(await createClient(), await aktuellerNutzer(), firma, query);
 }
