@@ -205,10 +205,11 @@ export default async function BewerbungInhalt({ id, fehler }: { id: string; fehl
           <summary><h2>Ablauf</h2></summary>
           <form action={speichern("ablauf")} className="formular">
           <label>Status
-            <select name="status" defaultValue={v(row.status)}>
+            <select name="status" defaultValue={v(row.status)} aria-describedby={gesperrt ? "status-gesperrt" : undefined}>
               {STATUS.map((s) => <option key={s} value={s} disabled={zurueckZuGemerkt(row.status as Status, s) || (gesperrt && STATUS_RANG[s] >= STATUS_RANG.beworben)}>{STATUS_LABEL[s]}</option>)}
             </select>
           </label>
+          {gesperrt && <small id="status-gesperrt">Anzeige offline: „Beworben“ und spätere Stufen sind gesperrt. Darunter kannst du es trotzdem eintragen.</small>}
           <Text a={row} name="naechster_schritt" label="Nächster Schritt" />
           <Text a={row} name="naechster_schritt_faellig" label="Fällig am" type="date" />
           <SendeKnopf text="Ablauf speichern" />
