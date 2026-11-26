@@ -358,7 +358,7 @@ Jede Phase muss für sich benutzbar sein und beginnt mit einer eigenen Klärung 
    - Als letzter Schritt meine offenen To-dos aus `docs/STATUS.md`, darunter Vercel und die Migrationen.
 2b. **Website-Überarbeitung (geklärt 2026-11-08, nach meinem Klicktest), vor dem Einladen von Freunden:**
    - **Stellenliste:**
-     - Größe aufsteigend sortiert, mit „Mitarbeitende“.
+     - Größe mit „Mitarbeitende“; beim Sortieren nach Größe zuerst die großen Unternehmen, Richtung per Pfeil umkehrbar, ohne Angabe immer zuletzt (Q344, ersetzt „aufsteigend“).
      - Filter „Branche“ (statt Kategorie) und „Funktion“ (statt Bereich).
      - Neuer Filter „Land“ (Deutschland, Österreich, Schweiz, Remote; die Daten kommen mit Phase 4).
      - Erfahrungslevel mit Jahren: Junior 0–2, Mid 2–5, Senior 5–8, Lead 8+ (aus dem Titel abgeleitet).
