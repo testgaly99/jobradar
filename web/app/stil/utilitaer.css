@@ -192,3 +192,16 @@
 
 /* Formulare bleiben lesbar schmal, auch im 1600px-Container (gleiche Grenze wie .bewerbung-seite) */
 .formular { max-width: 52rem; }
+
+/* Listenansicht: Blöcke je Rangliste, Kacheln im Raster (je Firma aufklappbar) */
+.listen-ansicht { display: grid; gap: 1.25rem; min-width: 0; }
+.listen-block > summary { cursor: pointer; }
+.listen-block > summary h2 { display: inline; font-size: 1.15rem; }
+.kacheln { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); gap: 0.75rem; margin-top: 0.75rem; align-items: start; }
+.kachel { border: 1px solid var(--color-rule); border-radius: 4px; padding: 0.6rem 0.75rem; background: var(--color-surface); min-width: 0; }
+.kachel > summary { cursor: pointer; }
+.kachel-kopf { display: inline-grid; grid-template-columns: auto 1fr; column-gap: 0.6rem; align-items: center; vertical-align: middle; max-width: calc(100% - 1.5rem); }
+.kachel-kopf > :last-child { grid-column: 2; }
+.kachel-name { font-weight: 700; overflow-wrap: anywhere; }
+.kachel-stellen { list-style: none; padding: 0; margin: 0.6rem 0 0; display: grid; gap: 0.6rem; }
+.kachel-stellen li { overflow-wrap: anywhere; }

@@ -7,12 +7,14 @@ import { datumDe } from "@/lib/bewerbung";
 import { AUSGEBLENDET_BRANCHE, GRUPPEN, RANKING_KATEGORIEN, SORTIERUNG, facettenSortieren, filterZuUrl, heuteLokal, istNeu, landNurMitFacette, leseFilter, levelText, sortCookie, standardSortierung, stadtAnzeige, tagePlus, type Gruppe, type Sortierung } from "@/lib/filter";
 import { istUmgerechnet, UMGERECHNET_HINWEIS, kurzzeile, modellText, leseSteckbrief, waehleFelder } from "@/lib/steckbrief";
 import { PRO_SEITE, stellenAbfrage } from "@/lib/stellen";
+import { ladeListenAnsicht } from "@/lib/listen-ansicht";
 import { passungVerfuegbar } from "@/lib/passung";
 import { merken, entmerken } from "./actions";
 import AnzeigeAufklappen from "./anzeige-aufklappen";
 import FilterBlock from "./filterblock";
 import FilterClient from "./filter-client";
 import SortierAuswahl from "./sortierung";
+import ListenAnsicht from "./listen-ansicht";
 import { SendeKnopf } from "../bewerbungen/knoepfe";
 import FirmenLogo from "../firmenlogo";
 import Ranglisten from "../ranglisten";
@@ -69,11 +71,14 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   // Gespeicherte Spracheinstellung (Konto); fehlt die Tabelle (Migration 013), gilt nur die Adresse.
   const sprach = nutzer ? await sb.from("sprach_einstellung").select("zeigen,niveau").maybeSingle() : { data: null, error: null };
   let deutsch = deutschWirksam(f.deutsch, sprach.error ? null : sprach.data?.niveau, !!nutzer);
+  // Listenansicht nur für Angemeldete (sortOptionen lässt "rangliste" für Gäste nie zu).
+  const listenAnsicht = !!nutzer && katalog.verfuegbar && f.sort === "rangliste";
   let ohneGroesseSort = false; // Migration 028 fehlt: Größe sortiert nur klein zuerst
-  let [ergebnis, lauf, erster] = await Promise.all([
-    listeGesperrt ? { data: [], count: 0, error: null } : stellenAbfrage(sb, { ...f, deutsch }),
+  let [ergebnis, lauf, erster, listen] = await Promise.all([
+    listeGesperrt || listenAnsicht ? { data: [], count: 0, error: null } : stellenAbfrage(sb, { ...f, deutsch }),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
     sb.from("laeufe").select("datum").order("datum", { ascending: true }).limit(1).maybeSingle(), // fehlt die Tabelle: nur 3-Tage-Regel
+    listenAnsicht ? ladeListenAnsicht(sb, { ...f, deutsch }, f.rangliste) : null,
   ]);
   // View fehlt (Migration 027) oder nicht lesbar: Liste nach neu statt Fehlerseite.
   if (f.sort === "passung" && ergebnis.error && PASSUNG_FEHLT.includes(ergebnis.error.code ?? "")) {
@@ -130,7 +135,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       <div className="seitenkopf">
         <h1>Stellen</h1>
         <p className="gedaempft">
-          <span className="num">{gesamt}</span> Treffer{letzterLauf && `, Stand ${datumDe(letzterLauf)}`}
+          {listenAnsicht ? (letzterLauf && `Stand ${datumDe(letzterLauf)}`) : <><span className="num">{gesamt}</span> Treffer{letzterLauf && `, Stand ${datumDe(letzterLauf)}`}</>}
         </p>
       </div>
       {fehler && <p className="meldung fehler" role="alert">{fehler}</p>}
@@ -138,6 +143,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
       {ranglisten.fehler && <p className="meldung hinweis" role="status">{ranglisten.fehler}</p>}
       {rankingKategorien.fehler && <p className="meldung hinweis" role="status">{rankingKategorien.fehler}</p>}
       {deutschFehlt && <p className="meldung hinweis" role="status">Deutsch-Filter geht erst nach Migration 013.</p>}
+      {listen?.fehler && <p className="meldung fehler" role="alert">{listen.fehler}</p>}
       {ergebnis.error && ergebnis.error.code !== "PGRST103" && <p className="meldung fehler">Stellen konnten nicht geladen werden.</p>}
       <div className="stellen-layout">
         <aside className="filterleiste">
@@ -253,9 +259,10 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
         </aside>
 
         <section aria-label="Stellen">
-          {!listeGesperrt && (!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
+          {!listeGesperrt && !listenAnsicht && (!ergebnis.error || ergebnis.error.code === "PGRST103") && jobs.length === 0 && <p className="leer">Keine Stellen für diese Auswahl.</p>}
           <SortierAuswahl filter={f} optionen={sortOptionen} listen={katalog.listen} />
-          <ul className="stellenliste" id="stellenliste">
+          {listen && <ListenAnsicht bloecke={listen.bloecke} query={filterZuUrl({ ...f, deutsch, seite: 1 }).split("?")[1] ?? ""} />}
+          {!listenAnsicht && <ul className="stellenliste" id="stellenliste">
             {jobs.map((j) => {
               const ort = j.staedte?.length ? stadtAnzeige(j.staedte, f.stadt) : j.ort;
               const neu = !!(j.erstmals_gesehen && istNeu(j.erstmals_gesehen, jetzt, ersterLauf));
@@ -308,12 +315,12 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                 </li>
               );
             })}
-          </ul>
-          <nav className="seiten" aria-label="Seiten">
+          </ul>}
+          {!listenAnsicht && <nav className="seiten" aria-label="Seiten">
             {f.seite > 1 ? <Link className="knopf knopf-rand" href={filterZuUrl({ ...f, seite: f.seite - 1 })}>Zurück</Link> : <span />}
             <span className="gedaempft">Seite {f.seite} von {seiten}</span>
             {f.seite < seiten ? <Link className="knopf knopf-rand" href={filterZuUrl({ ...f, seite: f.seite + 1 })}>Weiter</Link> : <span />}
-          </nav>
+          </nav>}
         </section>
       </div>
     </>

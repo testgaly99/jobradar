@@ -169,7 +169,7 @@ def passung_sortwert(anforderungen, je_cv, empfohlen):
         for a in anforderungen:
             f = je_cv[a['id']][cv]['farbe']
             if f == 'rot':
-                muss_rot, soll_rot = muss_rot + bool(a.get('muss')), soll_rot + (not a.get('muss'))
+                muss_rot, soll_rot = muss_rot + bool(a.get('muss', True)), soll_rot + (not a.get('muss', True))
             elif f == 'gelb':
                 gelb += 1
         werte.append(1000 * muss_rot + round(100 * (gelb + 1.5 * soll_rot) / n))
@@ -183,6 +183,8 @@ def _speichere(db, owner, stelle, bewertungen, empfohlen, claude, docs, cvs, weg
         for cv in empfohlen:
             b = next(x for x in bewertungen[cv] if x['id'] == a['id'])
             je_cv[cv] = _farbe(b) or claude.get(a['id'], {}).get(cv) or dict(GELB_NICHT_PRUEFBAR)
+            if weg == 'schaetzung':  # Spec: Schätzungen speichern nur Farbe, keine Belegtexte
+                je_cv[cv] = {**je_cv[cv], 'beleg': None}
         anforderungen.append({'id': a['id'], 'je_cv': je_cv})
     ziel = {'job_id': stelle['job_id']} if stelle.get('job_id') else {'application_id': stelle['application_id']}
     sortwert = passung_sortwert(stelle['anforderungen'], {a['id']: a['je_cv'] for a in anforderungen}, empfohlen)

@@ -483,6 +483,10 @@ Nutzer 2026-11-18 nach erfolgreichem Vercel-Test der Groq-Erkennung aus Text: �
 | Q338 | Migration 028 (Größen-Sortierung) jetzt einspielen? | Nutzer: „Ja, ich spiele sie jetzt ein (Empfohlen)“ | Klicktest wartet auf „028 ist drin“. | entschieden |
 | Q339 | Klicktest nach Abbruch durch Ausgabefehler im Skript (nichts geprüft, aufgeräumt) noch einmal ausführen? | Nutzer: „Ja, noch einmal (Empfohlen)“ | Zweiter Lauf: 18/22, aufgeräumt; 4 rote betreffen „Empfohlen“, weil die Website Admins über `ADMIN_EMAIL` erkennt und ein Wegwerf-Konto nicht Admin werden kann → Prüfung mit echtem Konto nach dem Hochladen (P24). | entschieden |
 | Q340 | Paket 4 + Nachträge (Task 8–10, 13, 14) hochladen und nach grüner Codeprüfung und grünen Tests in main übernehmen? | Nutzer: „Hochladen und in main (Empfohlen)“ | Push entwurf-ui, Codeprüfung, Merge in main nach vollständiger Testsuite (inkl. Live-Tests). CV-Lauf (90 min Grenze) verkraftet 2 × 15 min Schätzung. | entschieden |
+| Q343 | Paket 5 (Listen-Ansicht) und Korrekturen der Gesamtprüfung hochladen und in main übernehmen? | Nutzer: „Hochladen und in main (Empfohlen)“ | Upload nach Einbau von Q344, grüner Codeprüfung und grünen Tests in main. | entschieden |
+| Q344 | Nutzer (zur Größen-Sortierung): „Ich möchte, dass wenn ich nach größe sortiere, erst die großen Unternehmen kommen. Außer ich änder die Richtung“ | (Nutzervorgabe) | Größe standardmäßig größte zuerst, ↑/↓ kehrt um, unbekannt immer zuletzt; ersetzt CLAUDE.md 2b „aufsteigend“ und das Ruling vom 2026-11-26; Liste und Kacheln damit gleich. | entschieden |
+| Q342 | Klicktest der Listen-Ansicht mit einem Wegwerf-Konto (ohne Admin, ohne künstliche Daten), danach gelöscht? | Nutzer: „Ja, einmal ausführen (Empfohlen)“ | Ein Lauf vor der Upload-Frage zu Paket 5. | entschieden |
+| Q341 | Paket 4 live (main 89081ea). Mit Paket 5 (Listen-Ansicht) und Schlussrunde weitermachen? | Nutzer: „Ja, Paket 5 jetzt (Empfohlen)“ | Task 11–12, Gesamtprüfung, Kleinigkeiten; vor dem Hochladen neue Frage. | entschieden |
 | Q275 | 6a Einwilligung: speichern, welcher Fassung des Textes zugestimmt wurde (Nachweis nach DSGVO; bei Textänderung neu zustimmen)? | Nutzer: „Fassung speichern (Empfohlen)“ | Spalte `fassung` in `cv_einwilligung` (Migration 024); Website und Nachtlauf gelten nur bei aktueller Fassung. | entschieden |
 | Q274 | 6a Einwilligung: Anlass Nutzer 2026-11-24 „Es ist wichtig, dass es vollständig compliant ist, dass die Leute also zustimmen, dass ihre CVs von einer AI ausgelesen werden. Das muss allen beim Upload klar sein“. Text je Konto passend oder ein Text für alle? | Nutzer: „Je Konto passend (Empfohlen)“ | Admin: KI Claude von Anthropic (USA), nachts; alle anderen: KI nur im eigenen Browser, an keinen KI-Dienst. | entschieden |
 | Q273 | 6a Task 0b: verkleinertes Modell (36 MB) erreicht 199/200 Prüfsätze exakt, ein Satz mit unbekanntem Firmennamen nur 0,984 statt ≥ 0,99. Wie weiter? | Nutzer: „So akzeptieren (Empfohlen)“ | 36-MB-Modell; Testgrenze: mindestens 199/200 Prüfsätze ≥ 0,99, keiner unter 0,98. | entschieden |
@@ -712,6 +716,9 @@ Fragetexte Q337 (Claude, 2026-11-26, Auswahl): Ja, einmal ausführen (Empfohlen)
 Fragetexte Q338 (Claude, 2026-11-26, Auswahl): Ja, ich spiele sie jetzt ein (Empfohlen) / Später.
 Fragetexte Q339 (Claude, 2026-11-26, Auswahl): Ja, noch einmal (Empfohlen) / Nein.
 Fragetexte Q340 (Claude, 2026-11-26, Auswahl): Hochladen und in main (Empfohlen) / Nur hochladen / Noch nicht.
+Fragetexte Q341 (Claude, 2026-11-26, Auswahl): Ja, Paket 5 jetzt (Empfohlen) / Erst selbst ansehen / Später.
+Fragetexte Q342 (Claude, 2026-11-26, Auswahl): Ja, einmal ausführen (Empfohlen) / Kein Klicktest.
+Fragetexte Q343 (Claude, 2026-11-26, Auswahl): Hochladen und in main (Empfohlen) / Nur hochladen / Noch nicht.
 
 Fragetext Q103 (Claude, 2026-11-19, Auswahl): Ja, sofort + nachts genauer (Empfohlen) / Nein, nur nachts.
 

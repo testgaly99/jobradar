@@ -8,7 +8,7 @@ const TEXT: Record<Sortierung, string> = { passung: "Empfohlen", neu: "Online se
 // Titel des Richtungsknopfs: Standardrichtung ("ab") zuerst, umgekehrt ("auf") danach.
 const RICHTUNG: Record<Sortierung, [string, string]> = {
   passung: ["Beste zuerst", "Schwächste zuerst"], neu: ["Neueste zuerst", "Älteste zuerst"],
-  groesse: ["Kleinste zuerst", "Größte zuerst"], rangliste: ["Platz 1 zuerst", "Letzter Platz zuerst"],
+  groesse: ["Größte zuerst", "Kleinste zuerst"], rangliste: ["Platz 1 zuerst", "Letzter Platz zuerst"],
 };
 const EINTRAG = '[role="menuitem"]';
 
