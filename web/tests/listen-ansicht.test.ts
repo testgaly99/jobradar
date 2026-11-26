@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { firmenStellenMit, gruppiere } from "../lib/listen-ansicht.ts";
-import type { RankingZuordnung } from "../lib/rankings.ts";
+import { firmenStellenMit, gruppiere, ladeListenAnsicht } from "../lib/listen-ansicht.ts";
+import { ladeRankingZuordnungen, type RankingZuordnung } from "../lib/rankings.ts";
+import { leseFilter } from "../lib/filter.ts";
 
 const z = (unternehmen: string, liste_id: string, rang: number | null, name = liste_id.toUpperCase()): RankingZuordnung =>
   ({ unternehmen, liste_id, name, jahr: 2026, rang, quelle_url: "https://beispiel.example/", lizenz: "test" });
@@ -100,4 +101,55 @@ test("firmenStellen: ungültige Eingaben und Datenbankfehler ergeben Fehler", as
   assert.ok("fehler" in await firmenStellenMit(attrappe().sb, { admin: false }, "", ""));
   assert.ok("fehler" in await firmenStellenMit(attrappe().sb, { admin: false }, 5, ""));
   assert.ok("fehler" in await firmenStellenMit(attrappe({ data: null, error: { code: "x" } }).sb, { admin: false }, "SAP", ""));
+});
+
+// Zählende Attrappe: Tabellen/RPCs werden gezählt, Zählseiten (order("id").range) liefern 1000 Zeilen je Seite bis "gesamt".
+function zaehler(o: { gesamt?: number; fehlerSeite?: number } = {}) {
+  const n: Record<string, number> = {};
+  const mk = (key: string) => {
+    n[key] = (n[key] ?? 0) + 1;
+    let von = 0;
+    const kette: unknown = new Proxy({}, { get: (_t, name: string) => name === "then"
+      ? (res: (v: unknown) => void) => {
+        if (key === "from:jobs" || key === "rpc:ranking_stellen") {
+          if (von === (o.fehlerSeite ?? -1) * 1000) return res({ data: null, error: { code: "x" } });
+          const m = Math.max(0, Math.min(1000, (o.gesamt ?? 0) - von));
+          return res({ data: Array.from({ length: m }, (_, i) => ({ unternehmen: "F" + ((von + i) % 5), companies: { groesse_rang: 2, logo_url: "https://l/x.png" } })), error: null });
+        }
+        return res({ data: [], error: null });
+      }
+      : (...a: unknown[]) => { if (name === "range") von = a[0] as number; return kette; } });
+    return kette;
+  };
+  return { sb: { from: (t: string) => mk("from:" + t), rpc: (r: string) => mk("rpc:" + r) } as never, n };
+}
+
+test("ladeListenAnsicht: 2500 Stellen → 3 Zählseiten, keine companies-Abfrage auf dem Tabellenweg", async () => {
+  const { sb, n } = zaehler({ gesamt: 2500 });
+  const r = await ladeListenAnsicht(sb, leseFilter({}), "alle");
+  assert.equal(r.fehler, null);
+  assert.equal(n["from:jobs"], 3);
+  assert.equal(n["from:companies"], undefined);
+});
+
+test("ladeListenAnsicht: Ranglisten-Filter → companies-Abfrage für Logos bleibt", async () => {
+  const { sb, n } = zaehler({ gesamt: 10 });
+  const r = await ladeListenAnsicht(sb, leseFilter({ liste: ["dax"] }), "alle");
+  assert.equal(r.fehler, null);
+  assert.equal(n["rpc:ranking_stellen"], 1);
+  assert.equal(n["from:companies"], 1);
+});
+
+test("ladeRankingZuordnungen: 120 Firmen → eine RPC", async () => {
+  const { sb, n } = zaehler();
+  const r = await ladeRankingZuordnungen(sb, true, Array.from({ length: 120 }, (_, i) => "F" + i));
+  assert.equal(r.fehler, null);
+  assert.equal(n["rpc:ranking_zuordnungen"], 1);
+});
+
+test("ladeListenAnsicht: Fehler auf Seite 2 → fehler gesetzt, keine Blöcke", async () => {
+  const { sb } = zaehler({ gesamt: 2500, fehlerSeite: 1 });
+  const r = await ladeListenAnsicht(sb, leseFilter({}), "alle");
+  assert.ok(r.fehler);
+  assert.deepEqual(r.bloecke, []);
 });

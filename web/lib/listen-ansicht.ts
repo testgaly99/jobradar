@@ -45,35 +45,43 @@ const FEHLER = "Die Listenansicht konnte nicht geladen werden.";
 export async function ladeListenAnsicht(sb: SupabaseClient, f: Filter, rangliste: string): Promise<{ bloecke: ListeBlock[]; fehler: string | null }> {
   // Gleiche Filter wie die Stellenliste (stellenFilter), nur Spalte unternehmen, alle Seiten. Sortierung "passung" würde die View brauchen.
   const stellenJeFirma = new Map<string, number>();
+  const groesse = new Map<string, number>(); const logos = new Map<string, string>();
   const zaehlF = { ...f, sort: "neu" as const };
+  const mitListe = f.liste.length > 0 || f.rangkategorie.length > 0;
   for (let von = 0; ; von += SEITE) {
-    const { data, error } = await stellenFilter(sb, zaehlF, { tabelle: "unternehmen,companies!inner(aktiv,groesse_klasse,kategorie)", rpc: "unternehmen" })
+    // Tabellenweg: Größe und Logo kommen aus companies mit; der RPC-Weg liefert kein Logo (siehe firmaDaten).
+    const { data, error } = await stellenFilter(sb, zaehlF, { tabelle: "unternehmen,companies!inner(aktiv,groesse_klasse,kategorie,groesse_rang,logo_url)", rpc: "unternehmen" })
       .order("id").range(von, von + SEITE - 1);
     if (error) return { bloecke: [], fehler: FEHLER };
-    const teil = (data ?? []) as unknown as { unternehmen: string }[];
-    for (const j of teil) stellenJeFirma.set(j.unternehmen, (stellenJeFirma.get(j.unternehmen) ?? 0) + 1);
+    const teil = (data ?? []) as unknown as { unternehmen: string; companies?: { groesse_rang: number | null; logo_url: string | null } | null }[];
+    for (const j of teil) {
+      stellenJeFirma.set(j.unternehmen, (stellenJeFirma.get(j.unternehmen) ?? 0) + 1);
+      if (!mitListe && j.companies) {
+        if (j.companies.groesse_rang !== null && j.companies.groesse_rang !== undefined) groesse.set(j.unternehmen, j.companies.groesse_rang);
+        if (j.companies.logo_url) logos.set(j.unternehmen, j.companies.logo_url);
+      }
+    }
     if (teil.length < SEITE) break;
   }
   const firmen = [...stellenJeFirma.keys()];
   const firmaDaten = async () => {
-    const groesse = new Map<string, number>(); const logos = new Map<string, string>();
     for (let i = 0; i < firmen.length; i += 40) {
       const { data, error } = await sb.from("companies").select("name,logo_url,groesse_rang").in("name", firmen.slice(i, i + 40));
-      if (error) return null;
+      if (error) return false;
       for (const c of (data ?? []) as { name: string; logo_url: string | null; groesse_rang: number | null }[]) {
         if (c.groesse_rang !== null) groesse.set(c.name, c.groesse_rang);
         if (c.logo_url) logos.set(c.name, c.logo_url);
       }
     }
-    return { groesse, logos };
+    return true;
   };
-  // Drei voneinander unabhaengige Abfragen gleichzeitig.
-  const [{ zuordnungen, fehler }, ld, fd] = await Promise.all([ladeRankingZuordnungen(sb, true, firmen), sb.from("ranking_listen").select("id,kategorie"), firmaDaten()]);
+  // Voneinander unabhaengige Abfragen gleichzeitig.
+  const [{ zuordnungen, fehler }, ld, fd] = await Promise.all([ladeRankingZuordnungen(sb, true, firmen), sb.from("ranking_listen").select("id,kategorie"), mitListe ? firmaDaten() : true]);
   if (fehler) return { bloecke: [], fehler };
   if (ld.error || !fd) return { bloecke: [], fehler: FEHLER };
   const listenKategorie = new Map<string, string>();
   for (const l of (ld.data ?? []) as { id: string; kategorie: string | null }[]) if (l.kategorie) listenKategorie.set(l.id, l.kategorie);
-  return { bloecke: gruppiere(zuordnungen, stellenJeFirma, fd.groesse, fd.logos, rangliste, listenKategorie, f.richtung), fehler: null };
+  return { bloecke: gruppiere(zuordnungen, stellenJeFirma, groesse, logos, rangliste, listenKategorie, f.richtung), fehler: null };
 }
 
 const MAX_FIRMA_STELLEN = 100;
