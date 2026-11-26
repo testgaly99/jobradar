@@ -186,6 +186,12 @@ def test_migration_010_definiert_groesse_rang_vor_ranking_stellen_und_nur_dort()
     # 027 ergänzt passung_sortwert und behält Größen-/Sprachfelder.
     sql_027 = (ordner / '027_passung.sql').read_text(encoding='utf-8')
     assert "'groesse_rang',c.groesse_rang" in sql_027 and 'j.deutsch_stufe' in sql_027
+    # 028 ergänzt groesse_sort (NULL für unbekannte Größe) und behält groesse_rang, deutsch_stufe und passung_sortwert.
+    sql_028 = (ordner / '028_groesse_sortierung.sql').read_text(encoding='utf-8')
+    assert "'groesse_rang',c.groesse_rang,'groesse_sort',c.groesse_sort" in sql_028
+    assert 'j.deutsch_stufe' in sql_028 and 'passung_sortwert integer' in sql_028 and 'e.passung_sortwert' in sql_028
+    assert "else null end" in sql_028 and "grant select (groesse_sort) on public.companies to anon" in sql_028
+    assert sql_028.count("create function public.ranking_stellen") == 1
     for datei in ordner.glob("*.sql"):
-        if datei.name not in ("010_rankings.sql", "013_sprachniveau.sql", "015_ranglisten_sichtbarkeit.sql", "027_passung.sql"):
+        if datei.name not in ("010_rankings.sql", "013_sprachniveau.sql", "015_ranglisten_sichtbarkeit.sql", "027_passung.sql", "028_groesse_sortierung.sql"):
             assert "function public.ranking_stellen" not in datei.read_text(encoding="utf-8"), datei.name

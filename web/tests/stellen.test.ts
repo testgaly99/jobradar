@@ -84,9 +84,9 @@ for (const mitListe of [false, true]) {
     assert.deepEqual(ids, erwartet.map(j => j.id));
     assert.deepEqual(aufrufe.map(u => u.searchParams.get("offset")), ["0", "50", "100"]);
     for (const url of aufrufe) {
-      assert.equal(url.searchParams.get("order"), `${mitListe ? "companies->groesse_rang" : "companies(groesse_rang)"}.asc,erstmals_gesehen.desc,id.asc`);
+      assert.equal(url.searchParams.get("order"), mitListe ? "companies->groesse_sort.asc.nullslast,companies->groesse_rang.asc,erstmals_gesehen.desc,id.asc" : "companies(groesse_sort).asc.nullslast,erstmals_gesehen.desc,id.asc");
       // Sortierspalte muss im Embed mitselektiert sein, sonst Fehler 42703 (Live-Bug)
-      assert.match(url.searchParams.get("select") ?? "", mitListe ? /companies(?!\()/ : /companies!inner\([^)]*groesse_rang/);
+      assert.match(url.searchParams.get("select") ?? "", mitListe ? /companies(?!\()/ : /companies!inner\([^)]*groesse_sort/);
       assert.equal(url.searchParams.get("erfahrungslevel"), "in.(Senior)");
       assert.equal(url.searchParams.get("limit"), "50");
     }
@@ -130,11 +130,33 @@ test("dir=auf kehrt die Reihenfolge um; passung bleibt nullslast", async () => {
     ["neu", "erstmals_gesehen.asc,id.asc"],
     ["rangliste", "erstmals_gesehen.asc,id.asc"],
     ["passung", "passung_sortwert.desc.nullslast,erstmals_gesehen.desc,id.asc"],
-    ["groesse", "companies(groesse_rang).desc,erstmals_gesehen.desc,id.asc"],
+    ["groesse", "companies(groesse_sort).desc.nullslast,erstmals_gesehen.desc,id.asc"],
   ];
   for (const [sort, order] of fall) {
     const aufrufe: URL[] = [];
     await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort, dir: "auf" }));
     assert.equal(aufrufe[0].searchParams.get("order"), order, sort);
   }
+});
+
+test("dir=auf mit Listenfilter (rpc): gleiche Umkehr, Größe ohne Angabe bleibt am Ende", async () => {
+  const fall: [string, string][] = [
+    ["neu", "erstmals_gesehen.asc,id.asc"],
+    ["passung", "passung_sortwert.desc.nullslast,erstmals_gesehen.desc,id.asc"],
+    ["groesse", "companies->groesse_sort.desc.nullslast,companies->groesse_rang.desc,erstmals_gesehen.desc,id.asc"],
+  ];
+  for (const [sort, order] of fall) {
+    const aufrufe: URL[] = [];
+    await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort, dir: "auf", liste: "test-a" }));
+    assert.equal(aufrufe[0].pathname, "/rest/v1/rpc/ranking_stellen", sort);
+    assert.equal(aufrufe[0].searchParams.get("order"), order, sort);
+    assert.ok((aufrufe[0].searchParams.get("select") ?? "").endsWith(",companies"), sort);
+  }
+});
+
+test("Größe ohne Migration 028: Rückfall auf groesse_rang aufsteigend, ohne groesse_sort im Select", async () => {
+  const aufrufe: URL[] = [];
+  await stellenAbfrage(sbMitAufrufen(aufrufe), leseFilter({ sort: "groesse", dir: "auf" }), true);
+  assert.equal(aufrufe[0].searchParams.get("order"), "companies(groesse_rang).asc,erstmals_gesehen.desc,id.asc");
+  assert.ok(!(aufrufe[0].searchParams.get("select") ?? "").includes("groesse_sort"));
 });

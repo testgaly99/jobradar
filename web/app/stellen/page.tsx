@@ -69,6 +69,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
   // Gespeicherte Spracheinstellung (Konto); fehlt die Tabelle (Migration 013), gilt nur die Adresse.
   const sprach = nutzer ? await sb.from("sprach_einstellung").select("zeigen,niveau").maybeSingle() : { data: null, error: null };
   let deutsch = deutschWirksam(f.deutsch, sprach.error ? null : sprach.data?.niveau, !!nutzer);
+  let ohneGroesseSort = false; // Migration 028 fehlt: Größe sortiert nur klein zuerst
   let [ergebnis, lauf, erster] = await Promise.all([
     listeGesperrt ? { data: [], count: 0, error: null } : stellenAbfrage(sb, { ...f, deutsch }),
     sb.from("laeufe").select("datum").order("datum", { ascending: false }).limit(1).maybeSingle(),
@@ -79,10 +80,14 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
     f.sort = "neu";
     ergebnis = await stellenAbfrage(sb, { ...f, deutsch });
   }
+  if (f.sort === "groesse" && ergebnis.error?.code === "42703") {
+    ohneGroesseSort = true;
+    ergebnis = await stellenAbfrage(sb, { ...f, deutsch }, true);
+  }
   const deutschFehlt = !!deutsch && OHNE_DEUTSCH_SPALTE.includes(ergebnis.error?.code ?? "");
   if (deutschFehlt) {
     deutsch = "";
-    ergebnis = await stellenAbfrage(sb, { ...f, deutsch });
+    ergebnis = await stellenAbfrage(sb, { ...f, deutsch }, ohneGroesseSort);
   }
   const ersterLauf: string | null = erster.data?.datum ?? null;
   const jobs = (ergebnis.data ?? []) as unknown as Job[];

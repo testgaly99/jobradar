@@ -5,6 +5,11 @@ import { filterZuUrl, type Filter, type Sortierung } from "@/lib/filter";
 import type { RankingListe } from "@/lib/rankings";
 
 const TEXT: Record<Sortierung, string> = { passung: "Empfohlen", neu: "Online seit", groesse: "Größe", rangliste: "Nach Rangliste" };
+// Titel des Richtungsknopfs: Standardrichtung ("ab") zuerst, umgekehrt ("auf") danach.
+const RICHTUNG: Record<Sortierung, [string, string]> = {
+  passung: ["Beste zuerst", "Schwächste zuerst"], neu: ["Neueste zuerst", "Älteste zuerst"],
+  groesse: ["Kleinste zuerst", "Größte zuerst"], rangliste: ["Platz 1 zuerst", "Letzter Platz zuerst"],
+};
 const EINTRAG = '[role="menuitem"]';
 
 // Sichtbare Sortierung über der Liste (eigenes Menü, damit "Nach Rangliste" ein Untermenü haben kann).
@@ -25,11 +30,20 @@ export default function Sortierung({ filter, optionen, listen }: { filter: Filte
     return () => document.removeEventListener("pointerdown", aus);
   }, [offen]);
 
+  // Beim Öffnen springt der Fokus auf den aktuellen (sonst ersten) Eintrag.
+  useEffect(() => {
+    if (!offen) return;
+    const liste = eintraege(wurzel.current?.querySelector<HTMLElement>(".sortliste:not(.subliste)") ?? null);
+    (liste.find((e) => e.getAttribute("aria-current") === "true") ?? liste[0])?.focus();
+  }, [offen]);
+
   function wechseln(neu: { sort?: Sortierung; richtung?: Filter["richtung"]; rangliste?: string }) {
     const f = { ...filter, ...neu, seite: 1 };
     document.cookie = `stellen_sort=${encodeURIComponent(JSON.stringify({ sort: f.sort, dir: f.richtung, rl: f.rangliste }))}; path=/; max-age=31536000; samesite=lax`;
     // "neu" lässt filterZuUrl weg: ohne sort-Parameter würde das Cookie gelten, also hier ausdrücklich setzen
     const u = filterZuUrl(f);
+    // Das Menü verschwindet: Fokus zurück auf den Knopf, sonst geht er verloren.
+    if (offen) knopf.current?.focus();
     setOffen(false); setSub(false);
     start(() => router.push(f.sort === "neu" ? u + (u.includes("?") ? "&" : "?") + "sort=neu" : u));
   }
@@ -37,6 +51,7 @@ export default function Sortierung({ filter, optionen, listen }: { filter: Filte
   const ebene = (el: Element | null) => el?.closest<HTMLElement>('[role="menu"]') ?? null;
   const eintraege = (m: HTMLElement | null) => [...(m?.querySelectorAll<HTMLElement>(EINTRAG) ?? [])].filter((e) => ebene(e) === m);
   function tasten(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.target === knopf.current) { if (e.key === "Escape" && offen) { e.preventDefault(); setOffen(false); setSub(false); } return; }
     const m = ebene(e.target as Element);
     if (!m) return;
     const liste = eintraege(m);
@@ -58,7 +73,7 @@ export default function Sortierung({ filter, optionen, listen }: { filter: Filte
       <div className="sortmenue" ref={wurzel} onKeyDown={tasten}>
         <button type="button" ref={knopf} className="sortknopf" aria-haspopup="menu" aria-expanded={offen}
           onClick={() => { setOffen(!offen); setSub(false); }}
-          onKeyDown={(e) => { if (e.key === "ArrowDown") { e.preventDefault(); setOffen(true); requestAnimationFrame(() => eintraege(wurzel.current?.querySelector<HTMLElement>('[role="menu"]') ?? null)[0]?.focus()); } }}>
+          onKeyDown={(e) => { if (e.key === "ArrowDown") { e.preventDefault(); setOffen(true); } }}>
           Sortieren nach: <strong>{aktuell}</strong> <span aria-hidden="true">▾</span>
         </button>
         {offen && (
@@ -83,7 +98,7 @@ export default function Sortierung({ filter, optionen, listen }: { filter: Filte
           </div>
         )}
       </div>
-      <button type="button" className="sortrichtung" aria-label="Richtung umkehren" title="Richtung umkehren"
+      <button type="button" className="sortrichtung" aria-label="Richtung umkehren" title={`${RICHTUNG[filter.sort][filter.richtung === "auf" ? 1 : 0]}. Richtung umkehren`}
         onClick={() => wechseln({ richtung: filter.richtung === "auf" ? "ab" : "auf" })}>{filter.richtung === "auf" ? "↑" : "↓"}</button>
     </div>
   );

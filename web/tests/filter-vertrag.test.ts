@@ -78,7 +78,7 @@ test("Alle Sortierungen und Rang-Fallbacks behalten stabile Reihenfolge und Pagi
       const f = rankingFilter(leseFilter({ liste, sort, seite: "2" }), true);
       const { url } = await abfrage(f);
       assert.equal(url.searchParams.get("order"), sort === "groesse"
-        ? `${liste.length ? "companies->groesse_rang" : "companies(groesse_rang)"}.asc,erstmals_gesehen.desc,id.asc`
+        ? liste.length ? "companies->groesse_sort.asc.nullslast,companies->groesse_rang.asc,erstmals_gesehen.desc,id.asc" : "companies(groesse_sort).asc.nullslast,erstmals_gesehen.desc,id.asc"
         : standard);
       assert.equal(url.searchParams.get("offset"), "50");
       assert.equal(url.searchParams.get("limit"), "50");
