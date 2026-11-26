@@ -1,10 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { RANKING_KATEGORIEN, filterZuUrl, type Filter, type Richtung } from "./filter.ts";
-import { ladeRankingZuordnungen, type RankingZuordnung } from "./rankings.ts";
+import { RANKING_KATEGORIEN, filterZuUrl, leseFilter, type Filter, type Richtung } from "./filter.ts";
+import { ladeRankingZuordnungen, rankingFilter, type RankingZuordnung } from "./rankings.ts";
 import { stellenFilter } from "./stellen.ts";
-import { leseFilter } from "./filter.ts";
 import { passungVerfuegbar } from "./passung.ts";
-import { rankingFilter } from "./rankings.ts";
 
 // Kategorie -> Listen in fester Reihenfolge. Die Kategorie ist nur Ordnungshilfe; unbekannte Listen folgen danach nach Name.
 export const LISTEN_REIHENFOLGE: Record<string, string[]> = { "Börsennotiert": ["dax", "mdax", "sdax", "tecdax"] };

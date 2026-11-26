@@ -166,7 +166,7 @@ export default async function Seite({ searchParams }: { searchParams: Promise<Re
                   <span>Auch im Anzeigentext suchen</span>
                 </label>
               )}
-              <input type="hidden" name="sort" value={f.sort} />
+              <input type="hidden" name="sort" value={passungRueckfall ? "passung" : f.sort} />
               {f.richtung === "auf" && <input type="hidden" name="dir" value="auf" />}
               {f.rangliste !== "alle" && <input type="hidden" name="rl" value={f.rangliste} />}
               {nutzer && (
