@@ -49,14 +49,15 @@ export function stellenAbfrage(sb: SupabaseClient, f: Filter, ohneGroesseSort = 
   const mitListe = f.liste.length > 0 || f.rangkategorie.length > 0;
   const q = stellenFilter(sb, f, ohneGroesseSort);
   const { von, bis } = seitenBereich(f.seite);
-  // Standardrichtung: passung kleinster Sortwert zuerst, groesse klein zuerst, neu/rangliste neueste zuerst
+  // Standardrichtung: passung kleinster Sortwert zuerst, groesse größte zuerst, neu/rangliste neueste zuerst
   // (rangliste sortiert bis zur Listenansicht wie neu); "auf" kehrt um. Ohne Ergebnis/Größenangabe immer am Ende (nullsFirst: false).
   const um = f.richtung === "auf";
-  const gr = (spalte: string) => q.order(spalte, { ascending: !um, nullsFirst: false });
+  const gr = (spalte: string, aufsteigend = !um) => q.order(spalte, { ascending: aufsteigend, nullsFirst: false });
   const o = f.sort === "passung" ? q.order("passung_sortwert", { ascending: !um, nullsFirst: false }).order("erstmals_gesehen", { ascending: false }).order("id")
     : f.sort === "groesse" ? (ohneGroesseSort ? q.order(mitListe ? "companies->groesse_rang" : "companies(groesse_rang)")
-      // rpc: fehlt der Schlüssel groesse_sort im JSON (028 fehlt), greift die zweite Ordnung nach groesse_rang
-      : mitListe ? gr("companies->groesse_sort").order("companies->groesse_rang", { ascending: !um }) : gr("companies(groesse_sort)"))
+      // rpc: fehlt der Schlüssel groesse_sort im JSON (028 fehlt), greift die zweite Ordnung nach groesse_rang.
+      // groesse_rang immer aufsteigend: 99 (unbekannt) steht so auch bei "größte zuerst" nicht vorn.
+      : mitListe ? gr("companies->groesse_sort", um).order("companies->groesse_rang", { ascending: true }) : gr("companies(groesse_sort)", um))
     .order("erstmals_gesehen", { ascending: false }).order("id")
     : q.order("erstmals_gesehen", { ascending: um }).order("id");
   return o.range(von, bis);
