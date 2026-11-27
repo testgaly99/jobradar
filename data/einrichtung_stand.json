@@ -1046,5 +1046,981 @@
   "HITACHI LTD": {
     "datum": "2026-11-25",
     "suche": 1
+  },
+  "ROCHE HOLDING AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Randstad Deutschland": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Vonovia": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "PDD HOLDINGS INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Tchibo": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CARL ZEISS AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hubert Burda Media Holding": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "TÜV Nord": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "WESTERN DIGITAL CORP": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Dr. Oetker GmbH": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SUZUKI MOTOR CORPORATION": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "MERCADOLIBRE, INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Stadtwerke München": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Bertrandt": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "NIO INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Messer Group": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "RENESAS ELECTRONICS CORPORATION": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CUMMINS INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Heidelberger Druckmaschinen": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "HP INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Uniper": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Giesecke+Devrient": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Friedhelm Loh Group": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "TDK CORPORATION": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "BOSTON SCIENTIFIC CORP": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "LOCKHEED MARTIN CORP": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Landesbank Baden-Württemberg": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Kraftverkehr Nagel": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "TOKYO ELECTRON LIMITED": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "EBAY INC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "PricewaterhouseCoopers (Deutschland)": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "DANAHER CORP": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hager SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "LLOYDS BANKING GROUP PLC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "MTU Aero Engines": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "DERTOUR Group": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "HANGZHOU HIKVISION DIGITAL TECHNOLOGY CO., LTD.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "DB Services": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SNAP INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Gruner + Jahr": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CADENCE DESIGN SYSTEMS INC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hartmann Gruppe": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "HAIER SMART HOME CO., LTD.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "HUK-Coburg": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Bartels-Langness": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "RIVIAN AUTOMOTIVE, INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "HONEYWELL INTERNATIONAL INC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "LexisNexis": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "BARCLAYS PLC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "msg systems ag": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "LI AUTO INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Wilh. Werhahn KG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Generali Deutschland": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "EWE AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "AISIN CORPORATION": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Ifm electronic": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "BOE TECHNOLOGY GROUP CO.,LTD.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "TKMS": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ASICS": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SPOTIFY TECHNOLOGY S.A.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Bain & Company": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CONSTELLATION SOFTWARE INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ANALOG DEVICES INC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "NKD": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "AUTODESK INC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "WAGO GmbH & Co. KG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Flughafen München GmbH": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "LG CHEM LTD.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "DEUTSCHE BANK AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Kathrein-Werke": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "DB Fahrzeuginstandhaltung": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "MITSUBISHI ELECTRIC CORPORATION": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ABB LTD": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Eaton Industries": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Volkswagen Financial Services": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SIEMENS ENERGY AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Zeppelin (Konzern)": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Neoplan": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "STRYKER CORPORATION": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "L'OREAL": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ZAG – Zeitarbeits-Gesellschaft": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CORTEVA, INC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Kirchhoff Automotive": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "GfK": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "THERMO FISHER SCIENTIFIC INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "DATEV": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ArianeGroup": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "DONGFENG MOTOR GROUP COMPANY LIMITED": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CMS": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "GREAT WALL MOTOR COMPANY LIMITED": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CWS International": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "KLA CORPORATION": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CSL LIMITED": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Deutsches Zentrum für Luft- und Raumfahrt": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "1&1 AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ABB": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ABBOTT": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ADVA Optical Networking": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ALPHABET": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "APPLE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ARAMCO": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ASML": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "AUMOVIO SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Airbus SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Aixtron": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "AlzChem": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Aroundtown SA": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Asta Energy Solutions": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Atoss": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Aumovio SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Aurubis": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Auto1 Group": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "BAYER": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "BECTON, DICKINSON": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "BOEING": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "BYD": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Basler AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Bechtle AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Befesa": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Bilfinger SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Boston Scientific": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "British American Tobacco": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CATL": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CEWE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CISCO": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CTS Eventim": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Cancom SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Canon": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Carl Zeiss Meditec": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "CompuGroup Medical": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "DAIKIN": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "DSM-FIRMENICH": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "DWS Group": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Danaher Corporation": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Dermapharm": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Deutsche Beteiligungs AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Deutsche Börse": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Deutsche EuroShop AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Deutsche Pfandbriefbank": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Deutz AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Drägerwerk": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Dürr AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Eckert & Ziegler": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Edwards Lifesciences": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Einhell Germany": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Elmos Semiconductor": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Energiekontor": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Ericsson": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Evotec": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Freenet AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Friedrich Vorwerk Group": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Fuchs Petrolub SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Fujifilm": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Fujitsu": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "GE AEROSPACE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "GE VERNOVA": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "GEA Group": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "GFT Technologies": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Grand City Properties": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Grenke AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hamborner": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hannover Rück SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hensoldt": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hilti": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hitachi": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hoffmann-La Roche": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Honeywell": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hornbach Holding": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Huawei": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Hypoport": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "INIT Innovation in Traffic Systems": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Illinois Tool Works": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Indus Holding": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Ionos": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "JFE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Jenoptik": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "John Deere": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Jost Werke": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "KSB SE & Co. KGaA": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "KWS Saat": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Kontron": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Krones AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Kubota": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Kyocera": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "LEG Immobilien": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "LENOVO": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "LG Electronics": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "LPKF Laser & Electronics": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "MBB SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "MEDTRONIC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "MICROSOFT": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "MLP SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Medios AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Mitsubishi Electric": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Mitsubishi Heavy Industries": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Mutares": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "NIPPON STEEL": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "NOKIA": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "NORMA Group SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "NTT, INC.": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "NXP Semiconductors": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Nemetschek SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Nestlé": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Nordex SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "OHB SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Ottobock": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "PANASONIC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "PNE AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "PVA TePla": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Patrizia Immobilien": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Philip Morris International": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Philips": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Porsche Automobil Holding SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "ProCredit Holding": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Procter & Gamble": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Qiagen": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "RENAULT GROUP": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "RTX": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Rational AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Redcare Pharmacy": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Renk": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "S&T": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SAF-Holland": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SAINT-GOBAIN": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SAMSUNG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SCHNEIDER": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SFC Energy": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SGL Carbon SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SIEMENS ENERGY": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SIXT SE": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SK": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SLB LIMITED": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SMA Solar Technology": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "SONY": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "STMICROELECTRONICS": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "STRATEC": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Safran": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Salzgitter AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Sartorius AG": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Schaeffler Gruppe": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Schott Pharma AG & Co. KGaA": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Scout24": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Siemens Healthineers": {
+    "datum": "2026-11-26",
+    "suche": 1
+  },
+  "Signify": {
+    "datum": "2026-11-26",
+    "suche": 1
   }
 }
