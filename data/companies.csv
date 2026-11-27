@@ -204,25 +204,25 @@ Qiagen,,,,1.000+,4910,Sonstige,Venlo,nein,,https://www.qiagen.com,Q315287,dax;te
 GEA Group,https://gea.wd3.myworkdayjobs.com/GEACareers/introduceYourself,sitemap,https://gea.wd3.myworkdayjobs.com/GEACareers/siteMap.xml#/job/,,,Konsumgüter & Lebensmittel,Düsseldorf,nein,,https://www.gea.com/,Q446895,dax,offen,Probe fehlgeschlagen: HTTPError: HTTP 429
 Siemens Healthineers,https://careers.siemens-healthineers.com,sitemap,https://careers.siemens-healthineers.com/de/de/sitemap_index.xml#/job/,,,Medizintechnik & Gesundheit,Erlangen,ja,,http://siemens-healthineers.com,Q472451,dax;tecdax,aktiv,
 Hannover Rück SE,https://jobs.hannover-re.com,sitemap,https://jobs.hannover-re.com/sitemap.xml#/job/,1.000+,3300,Versicherung,Hannover,ja,,http://www.hannover-re.com/,Q657359,dax,aktiv,
-Symrise,,,,,,Chemie & Pharma,Holzminden,nein,,http://www.symrise.com/,Q73251,dax,offen,
+Symrise,,,,,,Chemie & Pharma,Holzminden,nein,,http://www.symrise.com/,Q73251,dax,offen,Karriereseite nicht gefunden
 CTS Eventim,,,,1.000+,3733,Sonstige,München,nein,,http://www.eventim.de/,Q1024514,mdax,offen,Karriereseite nicht gefunden
 DWS Group,,,,,,Sonstige,Frankfurt am Main,nein,,http://www.dws.com,Q1156210,mdax,offen,Karriereseite nicht gefunden
 Elmos Semiconductor,https://elmos.softgarden.io/imprint,,,,,Sonstige,Dortmund,nein,,http://www.elmos.com/,Q1333071,mdax;tecdax,portal_nicht_unterstuetzt,softgarden
 Aumovio SE,,,,,,Automobil & Mobilität,Frankfurt am Main,nein,,https://www.aumovio.com/de.html,Q136412247,mdax,offen,Karriereseite nicht gefunden
-flatexDEGIRO,,,,,,Sonstige,Frankfurt am Main,nein,,https://flatexdegiro.com/,Q1427303,mdax,offen,
+flatexDEGIRO,https://jobs.flatexdegiro.com,sitemap,https://jobs.flatexdegiro.com/sitemap.xml#/job/,,,Sonstige,Frankfurt am Main,ja,,https://flatexdegiro.com/,Q1427303,mdax,aktiv,
 Rational AG,https://jobs.rational-online.com,sitemap,https://jobs.rational-online.com/sitemap.xml#/job/,,,Sonstige,Landsberg am Lech,ja,,https://www.rational-online.com,Q1638448,mdax,aktiv,
 Sartorius AG,https://sartorius.wd3.myworkdayjobs.com/sartoriuscareers/login,,,,,Maschinenbau & Industrie,Göttingen,nein,,http://www.sartorius.com/,Q175835,mdax;tecdax,portal_nicht_unterstuetzt,workday
 LEG Immobilien,https://karriere.leg-wohnen.de,sitemap,https://karriere.leg-wohnen.de/sitemap.xml#/offer/,,,Immobilien & Bau,Düsseldorf,ja,,https://www.leg-wohnen.de/,Q1802165,mdax,aktiv,
 Porsche Automobil Holding SE,,,,<50,41,Sonstige,Stuttgart,nein,,http://www.porsche-se.com/,Q2104551,mdax,offen,Karriereseite nicht gefunden
 Hensoldt,https://jobs.hensoldt.net,sitemap,https://jobs.hensoldt.net/sitemap.xml#/job/,,,"Luft- & Raumfahrt, Verteidigung",Taufkirchen,ja,,https://www.hensoldt.net,Q21236526,mdax;tecdax,aktiv,
 Renk,,,,1.000+,3734,Automobil & Mobilität,Augsburg,nein,,https://www.renk.com/,Q2144015,mdax,offen,Karriereseite nicht gefunden
-Siltronic,,,,,,Maschinenbau & Industrie,München,nein,,http://www.siltronic.com,Q2286374,mdax;tecdax,offen,
-Ströer,,,,1.000+,2380,Sonstige,Köln,nein,,https://www.stroeer.de/,Q2357618,mdax,offen,
-Suss Microtec,,,,,,Sonstige,Garching bei München,nein,,https://www.suss.com/en,Q2382257,mdax;tecdax,offen,
-TAG Immobilien,,,,,,Immobilien & Bau,Hamburg,nein,,http://www.tag-ag.com,Q2383552,mdax,offen,
+Siltronic,https://siltronic.career.softgarden.de,sitemap,https://siltronic.career.softgarden.de/sitemap.xml#/jobs/,,,Maschinenbau & Industrie,München,ja,,http://www.siltronic.com,Q2286374,mdax;tecdax,aktiv,
+Ströer,https://karriere.stroeer.com,sitemap,https://karriere.stroeer.com/sitemap.xml#/job/,1.000+,2380,Sonstige,Köln,ja,,https://www.stroeer.de/,Q2357618,mdax,aktiv,
+Suss Microtec,https://career.suss.com,sitemap,https://career.suss.com/sitemap.xml#/jobs/,,,Sonstige,Garching bei München,ja,,https://www.suss.com/en,Q2382257,mdax;tecdax,aktiv,
+TAG Immobilien,https://karriere.tag-ag.com,sitemap,https://karriere.tag-ag.com/sitemap.xml#/offer/,,,Immobilien & Bau,Hamburg,ja,,http://www.tag-ag.com,Q2383552,mdax,aktiv,
 Freenet AG,,,,1.000+,3686,Telekommunikation,Büdelsdorf,nein,,http://freenet.ag,Q265273,mdax;tecdax,offen,Karriereseite nicht gefunden
 Bilfinger SE,,,,,,Sonstige,Mannheim,nein,,https://www.bilfinger.com/,Q284672,mdax,offen,Karriereseite nicht gefunden
-United Internet,,,,,,Telekommunikation,Montabaur,nein,,http://united-internet.de/,Q322579,mdax;tecdax,offen,
+United Internet,,,,,,Telekommunikation,Montabaur,nein,,http://united-internet.de/,Q322579,mdax;tecdax,offen,Karriereseite nicht gefunden
 Aroundtown SA,,,,,,Immobilien & Bau,Luxemburg,nein,,https://www.aroundtown.de/,Q32788516,mdax,offen,Karriereseite nicht gefunden
 Aixtron,,,,1.000+,1029,Tech & Software,Herzogenrath,nein,,http://www.aixtron.com,Q411528,mdax;tecdax,offen,Karriereseite nicht gefunden
 Jenoptik,https://careers.jenoptik.com,sitemap,https://careers.jenoptik.com/sitemap.xml#/job/,,,Maschinenbau & Industrie,Jena,ja,,http://www.jenoptik.com,Q450403,mdax;tecdax,aktiv,
@@ -230,9 +230,9 @@ Schaeffler Gruppe,https://jobs.schaeffler.com,sitemap,https://jobs.schaeffler.co
 Auto1 Group,https://www.auto1-group.com,sitemap,https://www.auto1-group.com/sitemap.xml#/jobs/,,,Handel & E-Commerce,Berlin,ja,,https://www.auto1-group.com/,Q47457075,mdax,aktiv,
 Aurubis,https://jobs.aurubis.com,sitemap,https://jobs.aurubis.com/sitemap.xml#/jobs/,,,Maschinenbau & Industrie,Hamburg,ja,,https://www.aurubis.com/,Q486013,mdax,aktiv,
 Deutz AG,https://career.deutz.com,sitemap,https://career.deutz.com/sitemap.xml#/job/,,,Automobil & Mobilität,Köln,ja,,http://www.deutz.com,Q533617,mdax,aktiv,
-Wacker Chemie AG,,,,,,Chemie & Pharma,München,nein,,http://www.wacker.com,Q535517,mdax,offen,
+Wacker Chemie AG,https://jobs.wacker.com,sitemap,https://jobs.wacker.com/sitemap.xml#/job/,,,Chemie & Pharma,München,ja,,http://www.wacker.com,Q535517,mdax,aktiv,
 Nordex SE,https://jobs.nordex-online.com,sitemap,https://jobs.nordex-online.com/sitemap.xml#/job/,,,Sonstige,Rostock,ja,,https://www.nordex-online.com,Q571700,mdax;tecdax,aktiv,
-TUI,,,,,,Sonstige,Hannover,nein,,https://www.tuigroup.com,Q573103,mdax,offen,
+TUI,https://careers.tuigroup.com,sitemap,https://careers.tuigroup.com/sitemap.xml#/job/,,,Sonstige,Hannover,ja,,https://www.tuigroup.com,Q573103,mdax,aktiv,
 Salzgitter AG,https://jobs.salzgitter-ag.com,sitemap,https://jobs.salzgitter-ag.com/sitemap.xml#/job/,,,Sonstige,Salzgitter,ja,,https://www.salzgitter-ag.com/,Q652442,mdax,aktiv,
 Nemetschek SE,https://careers.nemetschek.com,sitemap,https://careers.nemetschek.com/sitemap.xml#/job/,,,Tech & Software,München,ja,,http://www.nemetschek.com,Q666476,mdax;tecdax,aktiv,
 Krones AG,https://career.krones.com,sitemap,https://career.krones.com/sitemap.xml#/job/,,,Sonstige,Neutraubling,ja,,https://www.krones.com/,Q705337,mdax,aktiv,
@@ -245,7 +245,7 @@ Befesa,,,,,,Sonstige,,nein,,https://www.befesa.com,Q107485902,sdax,offen,Karrier
 Friedrich Vorwerk Group,,,,,,Sonstige,Tostedt,nein,,https://www.friedrich-vorwerk.de/en/,Q110016728,sdax,offen,Website nicht erreichbar
 Deutsche Beteiligungs AG,,,,,,Sonstige,Frankfurt am Main,nein,,http://www.deutsche-beteiligung.de/,Q1202213,sdax,offen,Karriereseite nicht gefunden
 Schott Pharma AG & Co. KGaA,,,,,,Sonstige,Mainz,nein,,https://www.schott-pharma.com/,Q123766224,sdax,offen,Website nicht erreichbar
-Tonies,,,,,,Sonstige,Luxemburg,nein,,https://tonies.com/,Q124693054,sdax,offen,
+Tonies,https://jobs.ashbyhq.com/tonies,ashby,tonies,,,Sonstige,Luxemburg,ja,,https://tonies.com/,Q124693054,sdax,aktiv,
 1&1 AG,,,,,,Telekommunikation,Montabaur,nein,,https://www.1und1.ag/,Q1259028,sdax,offen,Karriereseite nicht gefunden
 Dürr AG,https://www.bbsautomation.com,sitemap,https://www.bbsautomation.com/sitemap.xml#/stellenangebote/,,,Maschinenbau & Industrie,Stuttgart,ja,,http://www.durr-group.com,Q1272125,sdax,aktiv,
 Eckert & Ziegler,,,,,,Sonstige,Berlin,nein,,http://www.ezag.de/,Q1281619,sdax;tecdax,offen,Karriereseite nicht gefunden
@@ -253,7 +253,7 @@ Hamborner,https://hamborner-reit-ag.jobs.personio.de/?language=de,personio,hambo
 Einhell Germany,,,,,,Sonstige,Landau an der Isar,nein,,http://www.einhell.de,Q1307902,sdax,offen,mehrere Portale: softgarden
 Energiekontor,,,,,,Sonstige,Bremen,nein,,https://www.energiekontor.de,Q1341306,sdax,offen,Karriereseite nicht gefunden
 Evotec,https://careers.evotec.com,sitemap,https://careers.evotec.com/sitemap.xml#/job/,,,Sonstige,Hamburg,ja,,http://www.evotec.com/,Q1382629,sdax;tecdax,aktiv,
-Vincorion,,,,,,Sonstige,Wedel,nein,,https://vincorion.com,Q138651829,sdax,offen,
+Vincorion,,,,,,Sonstige,Wedel,nein,,https://vincorion.com,Q138651829,sdax,offen,Karriereseite nicht gefunden
 Asta Energy Solutions,,,,,,Sonstige,Oed,nein,,https://www.astagroup.com/de/,Q140314995,sdax,offen,Karriereseite nicht gefunden
 GFT Technologies,https://jobs.gft.com,sitemap,https://jobs.gft.com/sitemap.xml#/job/,,,Sonstige,Stuttgart,ja,,http://www.gft.com/,Q1485459,sdax,aktiv,
 Grenke AG,https://jobs.grenke.com,sitemap,https://jobs.grenke.com/sitemap.xml#/job/,,,Bank,Baden-Baden,ja,,http://www.grenke.de,Q1545677,sdax,aktiv,
@@ -271,16 +271,16 @@ MBB SE,,,,,,Sonstige,Berlin,nein,,http://www.mbb.com/,Q1881223,sdax,offen,Karrie
 NORMA Group SE,https://jobs.normagroup.com,sitemap,https://jobs.normagroup.com/sitemap.xml#/job/,,,Sonstige,Maintal,nein,,http://www.normagroup.com,Q1999268,sdax,keine_stellen_de,keine passenden Stellen in DE/remote
 PVA TePla,,,,,,Sonstige,Wettenberg,nein,,http://www.pvatepla.com/,Q2044830,sdax;tecdax,offen,Karriereseite nicht gefunden
 Patrizia Immobilien,,,,250–999,987,Immobilien & Bau,Augsburg,nein,,https://www.patrizia.ag/,Q2058186,sdax,offen,lehnt Abruf ab (403)
-Springer Nature,,,,,,"Marketing, Medien & Werbung",Berlin,nein,,https://www.springernature.com/gp,Q21096327,sdax,offen,
-secunet Security Networks,,,,,,Sonstige,Essen,nein,,http://www.secunet.com/,Q2264056,sdax,offen,
+Springer Nature,,,,,,"Marketing, Medien & Werbung",Berlin,nein,,https://www.springernature.com/gp,Q21096327,sdax,offen,mehrere Portale: workday
+secunet Security Networks,,,,,,Sonstige,Essen,nein,,http://www.secunet.com/,Q2264056,sdax,offen,Karriereseite nicht gefunden
 STRATEC,https://jobs.stratec.com,sitemap,https://jobs.stratec.com/sitemap.xml#/job/,,,Sonstige,Birkenfeld,nein,,http://www.stratec.com/,Q22909101,sdax,keine_stellen_de,keine passenden Stellen in DE/remote
-Stabilus SE,,,,,,Automobil & Mobilität,Luxemburg,nein,,http://www.stabilus.com,Q2325499,sdax,offen,
+Stabilus SE,,,,,,Automobil & Mobilität,Luxemburg,nein,,http://www.stabilus.com,Q2325499,sdax,offen,Karriereseite nicht gefunden
 Redcare Pharmacy,,,,1.000+,2075,Sonstige,,nein,,https://www.redcare-pharmacy.com/,Q26794476,sdax,offen,mehrere Portale: smartrecruiters
 ADVA Optical Networking,https://adtran.wd3.myworkdayjobs.com/ADTRAN,sitemap,https://adtran.wd3.myworkdayjobs.com/OSA/siteMap.xml#/job/,,,Telekommunikation,Martinsried,nein,,http://www.adva.com,Q290718,sdax,offen,Probe fehlgeschlagen: HTTPError: HTTP 429
 Kontron,,,,1.000+,1479,Maschinenbau & Industrie,Augsburg,nein,,http://www.kontron.com,Q316017,sdax;tecdax,offen,Karriereseite nicht gefunden
 Grand City Properties,,,,,,Immobilien & Bau,Luxemburg,nein,,http://grandcityproperties.com/,Q31840389,sdax,offen,Karriereseite nicht gefunden
 SGL Carbon SE,,,,1.000+,4193,Sonstige,Wiesbaden,nein,,https://www.sglcarbon.com/,Q320207,sdax,offen,Karriereseite nicht gefunden
-Wacker Neuson SE,,,,,,Maschinenbau & Industrie,München,nein,,http://www.wackerneuson.com,Q323802,sdax,offen,
+Wacker Neuson SE,,,,,,Maschinenbau & Industrie,München,nein,,http://www.wackerneuson.com,Q323802,sdax,offen,Karriereseite nicht gefunden
 AlzChem,,,,1.000+,1400,Chemie & Pharma,Trostberg,nein,,http://www.alzchem.de/,Q450577,sdax,offen,Karriereseite nicht gefunden
 SMA Solar Technology,,,,,,Sonstige,Niestetal,nein,,https://www.sma-italia.com/,Q463337,sdax,offen,Karriereseite nicht gefunden
 OHB SE,,,,1.000+,3292,"Luft- & Raumfahrt, Verteidigung",Bremen,nein,,https://www.ohb.de/,Q471019,sdax;tecdax,offen,Karriereseite nicht gefunden
@@ -289,12 +289,12 @@ MLP SE,,,,1.000+,1306,Asset Management & Investment,Wiesloch,nein,,https://mlp-s
 ProCredit Holding,,,,,,Bank,Frankfurt am Main,nein,,https://www.procredit-holding.com,Q567304,sdax,offen,Karriereseite nicht gefunden
 Drägerwerk,,,,,,Sonstige,Lübeck,nein,,http://www.draeger.com,Q605908,sdax,offen,lehnt Abruf ab (403)
 Deutsche EuroShop AG,,,,,,Sonstige,Hamburg,nein,,https://www.deutsche-euroshop.de,Q628556,sdax,offen,Karriereseite nicht gefunden
-Vossloh,,,,,,Sonstige,Werdohl,nein,,http://vossloh.com/en/home/home.jsp,Q689256,sdax,offen,
+Vossloh,,,,,,Sonstige,Werdohl,nein,,http://vossloh.com/en/home/home.jsp,Q689256,sdax,offen,mehrere Portale: workday
 SIXT SE,,,,,,Sonstige,Pullach im Isartal,nein,,https://www.sixt.com,Q705664,sdax,offen,Karriereseite nicht gefunden
 Atoss,,,,,,Sonstige,München,nein,,http://www.atoss.com,Q757695,sdax;tecdax,offen,Karriereseite nicht gefunden
 Basler AG,https://career.baslerweb.com,sitemap,https://career.baslerweb.com/sitemap.xml#,,,Sonstige,Ahrensburg,ja,,http://www.baslerweb.com/,Q810387,sdax,aktiv,
-Verbio,,,,,,Chemie & Pharma,Zörbig,nein,,https://www.verbio.de/,Q833474,sdax;tecdax,offen,
-Sto,,,,,,Sonstige,Stühlingen,nein,,http://www.sto.de/,Q833959,sdax,offen,
+Verbio,,,,,,Chemie & Pharma,Zörbig,nein,,https://www.verbio.de/,Q833474,sdax;tecdax,offen,Karriereseite nicht gefunden
+Sto,,,,,,Sonstige,Stühlingen,nein,,http://www.sto.de/,Q833959,sdax,offen,Karriereseite nicht gefunden
 Ottobock,https://jobs.ottobock.com,sitemap,https://jobs.ottobock.com/sitemap.xml#/job/,,,Sonstige,Duderstadt,ja,,http://www.ottobock.com/,Q836005,sdax;tecdax,aktiv,
 KWS Saat,https://jobs.kws.com,sitemap,https://jobs.kws.com/sitemap.xml#/job/,,,Konsumgüter & Lebensmittel,Einbeck,ja,,https://www.kws.com/,Q871483,sdax,aktiv,
 Carl Zeiss Meditec,,,,,,Sonstige,Jena,nein,,http://www.meditec.zeiss.com/,Q874182,sdax;tecdax,offen,Website nicht erreichbar
@@ -513,22 +513,22 @@ SONY,,,,,,Sonstige,,nein,,https://www.sony.co.jp,,epa-patente,offen,lehnt Abruf 
 INTERDIGITAL,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
 PANASONIC,,,,,,Sonstige,,nein,,https://holdings.panasonic,,epa-patente,offen,lehnt Abruf ab (403)
 Canon,,,,1.000+,165547,Maschinenbau & Industrie,Ōta,nein,,https://global.canon/,,epa-patente,offen,Karriereseite nicht gefunden
-ZTE,,,,1.000+,72093,Telekommunikation,Shenzhen,nein,,https://www.zte.com.cn/,,epa-patente,offen,
+ZTE,,,,1.000+,72093,Telekommunikation,Shenzhen,nein,,https://www.zte.com.cn/,,epa-patente,offen,Karriereseite nicht gefunden
 APPLE,,,,,,Sonstige,,nein,,https://www.applerecords.com,Q213710,epa-patente,offen,Website nicht erreichbar
 Signify,https://www.careers.signify.com,sitemap,https://www.careers.signify.com/global/en/sitemap.xml#/job/,,,Sonstige,Eindhoven,ja,,https://www.signify.com/,Q2336380,epa-patente,aktiv,
 Fujifilm,,,,1.000+,75845,Sonstige,Tokio,nein,,https://www.fujifilm.com/,Q164740,epa-patente,offen,lehnt Abruf ab (403)
-TOYOTA MOTOR,,,,,,Sonstige,,nein,,,,epa-patente,offen,
-Hoffmann-La Roche,https://careers.roche.com,sitemap,https://careers.roche.com/de/de/sitemap_index.xml#/job/,,,Chemie & Pharma,Basel,ja,,https://www.roche.com/,Q212646,epa-patente,aktiv,
+TOYOTA MOTOR,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
+Hoffmann-La Roche,https://careers.roche.com,sitemap,https://careers.roche.com/de/de/sitemap_index.xml#/job/,,,Chemie & Pharma,Basel,ja,,https://www.roche.com/,,epa-patente,aktiv,
 Philip Morris International,https://join.pmicareers.com,sitemap,https://join.pmicareers.com/de/de/sitemap_index.xml#/job/,1.000+,79800,Sonstige,Lausanne,ja,,https://www.pmi.com/,Q1852556,epa-patente,aktiv,
 Hitachi,https://careers.hitachi.com,sitemap,https://careers.hitachi.com/sitemap.xml#/job/,1.000+,287901,Maschinenbau & Industrie,Marunouchi,ja,,https://www.hitachi.com/,,epa-patente,aktiv,
-VALEO (Zuordnung offen),,,,,,Sonstige,,nein,,https://www.valeo.com,,epa-patente,offen,
+VALEO (Zuordnung offen),,,,,,Sonstige,,nein,,https://www.valeo.com,,epa-patente,offen,mehrere Portale: workday
 Boston Scientific,,,,1.000+,59000,Sonstige,Marlborough,nein,,http://www.bostonscientific.com,,epa-patente,offen,robots.txt verbietet Abruf
 OPPO MOBILE,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
 FRAUNHOFER GES.,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
 Safran,,,,,,"Luft- & Raumfahrt, Verteidigung",Paris,nein,,https://www.safran-group.com,Q1886126,epa-patente,offen,robots.txt verbietet Abruf
 "BECTON, DICKINSON",,,,,,Sonstige,,nein,,https://www.bdbiosciences.com,Q813780,epa-patente,offen,lehnt Abruf ab (403)
 Honeywell,,,,1.000+,99000,Handel & E-Commerce,Charlotte,nein,,https://www.honeywell.com/,,epa-patente,offen,Karriereseite nicht gefunden
-Volvo,,,,1.000+,102000,Automobil & Mobilität,Göteborg,nein,,https://www.volvogroup.com/en/,,epa-patente,offen,
+Volvo,https://jobs.volvogroup.com,sitemap,https://jobs.volvogroup.com/sitemap.xml#/job/,1.000+,102000,Automobil & Mobilität,Göteborg,ja,,https://www.volvogroup.com/en/,,epa-patente,aktiv,
 Kyocera,,,,1.000+,79185,Maschinenbau & Industrie,Fushimi-ku,nein,,https://americas.kyocera.com/,Q745099,epa-patente,offen,Karriereseite nicht gefunden
 MEDTRONIC,,,,,,Sonstige,,nein,,https://www.medtronic.com,Q642189,epa-patente,offen,lehnt Abruf ab (403)
 SK,,,,,,Sonstige,Seoul,nein,,https://www.sk-inc.com/en/,Q494136,epa-patente,offen,Karriereseite nicht gefunden
@@ -537,12 +537,12 @@ SIEMENS ENERGY,https://jobs.siemens-energy.com/en_US/jobs/Jobs/?29457_format=113
 CEA,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
 ABB,,,,1.000+,110000,Maschinenbau & Industrie,Västerås,nein,,https://global.abb/,Q52825,epa-patente,offen,Website nicht erreichbar
 HYUNDAI MOTOR,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
-Stellantis,,,,1.000+,258275,Automobil & Mobilität,Amsterdam,nein,,https://www.stellantis.com/,,epa-patente,offen,
-Unilever,,,,1.000+,148000,Konsumgüter & Lebensmittel,London,nein,,https://unilever.com,Q157062,epa-patente,offen,
+Stellantis,,,,1.000+,258275,Automobil & Mobilität,Amsterdam,nein,,https://www.stellantis.com/,,epa-patente,offen,Karriereseite nicht gefunden
+Unilever,https://careers.unilever.com,sitemap,https://careers.unilever.com/sitemap.xml#/job/,1.000+,148000,Konsumgüter & Lebensmittel,London,ja,,https://unilever.com,Q157062,epa-patente,aktiv,
 Procter & Gamble,https://www.pgcareers.com,sitemap,https://www.pgcareers.com/de/de/sitemap.xml#/job/,1.000+,105000,Chemie & Pharma,Cincinnati,ja,,http://www.pg.com/,,epa-patente,aktiv,
-TENCENT,,,,,,Sonstige,,nein,,https://www.tencent.com,,epa-patente,offen,
+TENCENT,,,,,,Sonstige,,nein,,https://www.tencent.com,,epa-patente,offen,Karriereseite nicht gefunden
 ARAMCO,,,,,,Sonstige,,nein,,https://www.aramco.com,Q679322,epa-patente,offen,Karriereseite nicht gefunden
-DOW,https://dow.wd1.myworkdayjobs.com/en-US/ExternalCareers/login?redirect=%2Fen-US%2FExternalCareers%2FuserHome,sitemap,https://dow.wd1.myworkdayjobs.com/ExternalCareers/siteMap.xml#/job/,,,Sonstige,,nein,,https://www.dow.com,Q62739842,epa-patente,offen,"Ratenbegrenzung, später erneut"
+DOW,https://dow.wd1.myworkdayjobs.com/en-US/ExternalCareers/login?redirect=%2Fen-US%2FExternalCareers%2FuserHome,,,,,Sonstige,,nein,,https://www.dow.com,Q62739842,epa-patente,portal_nicht_unterstuetzt,workday
 BOEING,https://jobs.boeing.com,sitemap,https://jobs.boeing.com/sitemap.xml#/job/,,,Sonstige,,ja,,https://boeing.com,,epa-patente,aktiv,
 British American Tobacco,https://careers.bat.com,sitemap,https://careers.bat.com/sitemap.xml#/job/,1.000+,55000,Konsumgüter & Lebensmittel,London,ja,,https://bat.com,Q856411,epa-patente,aktiv,
 HONOR DEVICE,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
@@ -550,15 +550,15 @@ ASML,,,,1.000+,43520,Tech & Software,Veldhoven,nein,,https://www.asml.com/,,epa-
 JFE,,,,,,Sonstige,,nein,,https://www.jfe-holdings.co.jp,Q962591,epa-patente,offen,Karriereseite nicht gefunden
 LENOVO,https://jobs.lenovo.com/en_US/careers/SearchJobs,liste,https://jobs.lenovo.com/en_US/careers/SearchJobs#/JobDetail/,,,Sonstige,,ja,,https://www.lenovo.com,,epa-patente,aktiv,
 "NTT, INC.",,,,,,Sonstige,,nein,,https://group.ntt,,epa-patente,offen,Karriereseite nicht gefunden
-Tata-Gruppe,,,,1.000+,722281,Sonstige,Mumbai,nein,,http://www.tata.com,Q331715,epa-patente,offen,
+Tata-Gruppe,https://careers.tataelectronics.com,sitemap,https://careers.tataelectronics.com/sitemap.xml#/job/,1.000+,722281,Sonstige,Mumbai,ja,,http://www.tata.com,Q331715,epa-patente,aktiv,
 BYD,,,,1.000+,703500,Automobil & Mobilität,Shenzhen,nein,,https://www.bydglobal.com/,,epa-patente,offen,Karriereseite nicht gefunden
-Snap Inc.,,,,,,Sonstige,Santa Monica,nein,,https://snap.com/,,epa-patente,offen,
-Thales Group,,,,1.000+,83020,Telekommunikation,Meudon,nein,,https://www.thalesgroup.com/,Q1161666,epa-patente,offen,
+Snap Inc.,,,,,,Sonstige,Santa Monica,nein,,https://snap.com/,,epa-patente,offen,Karriereseite nicht gefunden
+Thales Group,https://careers.thalesgroup.com,sitemap,https://careers.thalesgroup.com/de/de/sitemap_index.xml#/job/,1.000+,83020,Telekommunikation,Meudon,ja,,https://www.thalesgroup.com/,Q1161666,epa-patente,aktiv,
 JT INTERNATIONAL,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
 DAIKIN,,,,,,Sonstige,,nein,,https://www.daikin.com,Q11439298,epa-patente,offen,Karriereseite nicht gefunden
 GE AEROSPACE,https://careers.geaerospace.com,sitemap,https://careers.geaerospace.com/de/de/sitemap_index.xml#/job/,,,Sonstige,,ja,,https://www.geaerospace.com,Q1485061,epa-patente,aktiv,
 SAINT-GOBAIN,,,,1.000+,171000,Chemie & Pharma,Tour Saint Gobain,nein,,https://www.saint-gobain.com/,Q678565,epa-patente,offen,lehnt Abruf ab (403)
-ZITIAO NETWORK,,,,,,Sonstige,,nein,,,,epa-patente,offen,
+ZITIAO NETWORK,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
 Nestlé,,,,1.000+,270000,Konsumgüter & Lebensmittel,Vevey,nein,,https://www.nestle.com/,Q160746,epa-patente,offen,lehnt Abruf ab (403)
 Hilti,https://careers.hilti.group,sitemap,https://careers.hilti.group/sitemap.xml#/jobs/,1.000+,30000,Maschinenbau & Industrie,Schaan,ja,,https://www.hilti.ch/,Q1361530,epa-patente,aktiv,
 Illinois Tool Works,https://careers.itw.com,sitemap,https://careers.itw.com/us/en/sitemap_index.xml#/job/,1.000+,51000,Sonstige,Glenview,ja,,https://www.itw.com/,Q1510378,epa-patente,aktiv,
@@ -568,16 +568,16 @@ NIPPON STEEL,,,,,,Sonstige,,nein,,https://www.nipponsteel.com,Q1151693,epa-paten
 DSM-FIRMENICH,,,,,,Sonstige,,nein,,https://www.dsm-firmenich.com,Q120091633,epa-patente,offen,robots.txt verbietet Abruf
 GE VERNOVA,https://careers.gevernova.com/,sitemap,https://careers.gevernova.com/sitemap.xml#/job/,,,Sonstige,,ja,,https://www.gevernova.com,Q118957699,epa-patente,aktiv,
 SCHNEIDER,,,,,,Sonstige,,nein,,https://www.schneider-lekaren.sk,Q93514377,epa-patente,offen,Karriereseite nicht gefunden
-Tetra Laval,,,,,,Sonstige,Pully,nein,,http://www.tetralaval.com,Q3519156,epa-patente,offen,
-VOLKSWAGEN,,,,,,Sonstige,,nein,,https://www.vw.com,Q246,epa-patente,offen,
+Tetra Laval,,,,,,Sonstige,Pully,nein,,http://www.tetralaval.com,Q3519156,epa-patente,offen,lehnt Abruf ab (403)
+VOLKSWAGEN,https://jobs.volkswagen-group.com,sitemap,https://jobs.volkswagen-group.com/sitemap.xml#/job/,,,Sonstige,,ja,,https://www.vw.com,Q246,epa-patente,aktiv,
 CISCO,https://careers.cisco.com,sitemap,https://careers.cisco.com/global/en/sitemap_index.xml#/job/,,,Sonstige,,ja,,https://www.cisco.com,,epa-patente,aktiv,
-ZF Friedrichshafen AG,,,,,,Maschinenbau & Industrie,Friedrichshafen,nein,,http://www.zf.com/,,epa-patente,offen,
+ZF Friedrichshafen AG,https://jobs.zf.com,sitemap,https://jobs.zf.com/sitemap.xml#/job/,,,Maschinenbau & Industrie,Friedrichshafen,ja,,http://www.zf.com/,,epa-patente,aktiv,
 RENAULT GROUP,,,,,,Sonstige,,nein,,https://www.renaultgroup.com,,epa-patente,offen,Karriereseite nicht gefunden
 Danaher Corporation,https://jobs.danaher.com,sitemap,https://jobs.danaher.com/global/en/sitemap_index.xml#/job/,,,Sonstige,"Washington, D.C.",ja,,https://www.danaher.com/,,epa-patente,aktiv,
 EVE ENERGY,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
 Mitsubishi Heavy Industries,,,,1.000+,68213,Sonstige,Minato,nein,,https://www.mhi.com,Q648280,epa-patente,offen,Karriereseite nicht gefunden
 SHIN-ETSU,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
-VIVO MOBILE,,,,,,Sonstige,,nein,,,,epa-patente,offen,
+VIVO MOBILE,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
 ABBOTT,https://www.jobs.abbott,sitemap,https://www.jobs.abbott/global/de/sitemap_index.xml#/job/,,,Sonstige,,ja,,https://abbott.com,,epa-patente,aktiv,
 CHINA NATIONAL CHEMICAL,,,,,,Sonstige,,nein,,,,epa-patente,offen,keine Website bekannt
 Edwards Lifesciences,,,,1.000+,14000,Sonstige,Irvine,nein,,http://www.EdwardsLifesciences.com/,Q16966841,epa-patente,offen,Karriereseite nicht gefunden

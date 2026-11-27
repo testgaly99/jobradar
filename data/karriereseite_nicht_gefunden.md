@@ -257,26 +257,19 @@
 | Airbus SE | https://airbus.com |  | mehrere Portale: workday |
 | Qiagen | https://www.qiagen.com |  | mehrere Portale: sitemap, workday |
 | GEA Group | https://www.gea.com/ |  | Probe fehlgeschlagen: HTTPError: HTTP 429 |
-| Symrise | http://www.symrise.com/ |  |  |
+| Symrise | http://www.symrise.com/ |  | Karriereseite nicht gefunden |
 | CTS Eventim | http://www.eventim.de/ |  | Karriereseite nicht gefunden |
 | DWS Group | http://www.dws.com |  | Karriereseite nicht gefunden |
 | Elmos Semiconductor | http://www.elmos.com/ |  | softgarden |
 | Aumovio SE | https://www.aumovio.com/de.html |  | Karriereseite nicht gefunden |
-| flatexDEGIRO | https://flatexdegiro.com/ |  |  |
 | Sartorius AG | http://www.sartorius.com/ |  | workday |
 | Porsche Automobil Holding SE | http://www.porsche-se.com/ |  | Karriereseite nicht gefunden |
 | Renk | https://www.renk.com/ |  | Karriereseite nicht gefunden |
-| Siltronic | http://www.siltronic.com |  |  |
-| Ströer | https://www.stroeer.de/ |  |  |
-| Suss Microtec | https://www.suss.com/en |  |  |
-| TAG Immobilien | http://www.tag-ag.com |  |  |
 | Freenet AG | http://freenet.ag |  | Karriereseite nicht gefunden |
 | Bilfinger SE | https://www.bilfinger.com/ |  | Karriereseite nicht gefunden |
-| United Internet | http://united-internet.de/ |  |  |
+| United Internet | http://united-internet.de/ |  | Karriereseite nicht gefunden |
 | Aroundtown SA | https://www.aroundtown.de/ |  | Karriereseite nicht gefunden |
 | Aixtron | http://www.aixtron.com |  | Karriereseite nicht gefunden |
-| Wacker Chemie AG | http://www.wacker.com |  |  |
-| TUI | https://www.tuigroup.com |  |  |
 | Fuchs Petrolub SE | http://www.fuchs-germany.com/en/ |  | Karriereseite nicht gefunden |
 | Ionos | https://www.ionos.com/ |  | Karriereseite nicht gefunden |
 | Cancom SE | https://www.cancom.de/ |  | Karriereseite nicht gefunden |
@@ -285,12 +278,11 @@
 | Friedrich Vorwerk Group | https://www.friedrich-vorwerk.de/en/ |  | Website nicht erreichbar |
 | Deutsche Beteiligungs AG | http://www.deutsche-beteiligung.de/ |  | Karriereseite nicht gefunden |
 | Schott Pharma AG & Co. KGaA | https://www.schott-pharma.com/ |  | Website nicht erreichbar |
-| Tonies | https://tonies.com/ |  |  |
 | 1&1 AG | https://www.1und1.ag/ |  | Karriereseite nicht gefunden |
 | Eckert & Ziegler | http://www.ezag.de/ |  | Karriereseite nicht gefunden |
 | Einhell Germany | http://www.einhell.de |  | mehrere Portale: softgarden |
 | Energiekontor | https://www.energiekontor.de |  | Karriereseite nicht gefunden |
-| Vincorion | https://vincorion.com |  |  |
+| Vincorion | https://vincorion.com |  | Karriereseite nicht gefunden |
 | Asta Energy Solutions | https://www.astagroup.com/de/ |  | Karriereseite nicht gefunden |
 | Indus Holding | http://www.indus.de |  | Karriereseite nicht gefunden |
 | Deutsche Pfandbriefbank | https://www.pfandbriefbank.com |  | Karriereseite nicht gefunden |
@@ -305,16 +297,16 @@
 | NORMA Group SE | http://www.normagroup.com |  | keine passenden Stellen in DE/remote |
 | PVA TePla | http://www.pvatepla.com/ |  | Karriereseite nicht gefunden |
 | Patrizia Immobilien | https://www.patrizia.ag/ |  | lehnt Abruf ab (403) |
-| Springer Nature | https://www.springernature.com/gp |  |  |
-| secunet Security Networks | http://www.secunet.com/ |  |  |
+| Springer Nature | https://www.springernature.com/gp |  | mehrere Portale: workday |
+| secunet Security Networks | http://www.secunet.com/ |  | Karriereseite nicht gefunden |
 | STRATEC | http://www.stratec.com/ |  | keine passenden Stellen in DE/remote |
-| Stabilus SE | http://www.stabilus.com |  |  |
+| Stabilus SE | http://www.stabilus.com |  | Karriereseite nicht gefunden |
 | Redcare Pharmacy | https://www.redcare-pharmacy.com/ |  | mehrere Portale: smartrecruiters |
 | ADVA Optical Networking | http://www.adva.com |  | Probe fehlgeschlagen: HTTPError: HTTP 429 |
 | Kontron | http://www.kontron.com |  | Karriereseite nicht gefunden |
 | Grand City Properties | http://grandcityproperties.com/ |  | Karriereseite nicht gefunden |
 | SGL Carbon SE | https://www.sglcarbon.com/ |  | Karriereseite nicht gefunden |
-| Wacker Neuson SE | http://www.wackerneuson.com |  |  |
+| Wacker Neuson SE | http://www.wackerneuson.com |  | Karriereseite nicht gefunden |
 | AlzChem | http://www.alzchem.de/ |  | Karriereseite nicht gefunden |
 | SMA Solar Technology | https://www.sma-italia.com/ |  | Karriereseite nicht gefunden |
 | OHB SE | https://www.ohb.de/ |  | Karriereseite nicht gefunden |
@@ -323,11 +315,11 @@
 | ProCredit Holding | https://www.procredit-holding.com |  | Karriereseite nicht gefunden |
 | Drägerwerk | http://www.draeger.com |  | lehnt Abruf ab (403) |
 | Deutsche EuroShop AG | https://www.deutsche-euroshop.de |  | Karriereseite nicht gefunden |
-| Vossloh | http://vossloh.com/en/home/home.jsp |  |  |
+| Vossloh | http://vossloh.com/en/home/home.jsp |  | mehrere Portale: workday |
 | SIXT SE | https://www.sixt.com |  | Karriereseite nicht gefunden |
 | Atoss | http://www.atoss.com |  | Karriereseite nicht gefunden |
-| Verbio | https://www.verbio.de/ |  |  |
-| Sto | http://www.sto.de/ |  |  |
+| Verbio | https://www.verbio.de/ |  | Karriereseite nicht gefunden |
+| Sto | http://www.sto.de/ |  | Karriereseite nicht gefunden |
 | Carl Zeiss Meditec | http://www.meditec.zeiss.com/ |  | Website nicht erreichbar |
 | Dermapharm | http://www.dermapharm.de |  | Website nicht erreichbar |
 | KSB SE & Co. KGaA | https://ksb.com/ |  | Karriereseite nicht gefunden |
@@ -347,55 +339,49 @@
 | INTERDIGITAL |  |  | keine Website bekannt |
 | PANASONIC | https://holdings.panasonic |  | lehnt Abruf ab (403) |
 | Canon | https://global.canon/ |  | Karriereseite nicht gefunden |
-| ZTE | https://www.zte.com.cn/ |  |  |
+| ZTE | https://www.zte.com.cn/ |  | Karriereseite nicht gefunden |
 | APPLE | https://www.applerecords.com |  | Website nicht erreichbar |
 | Fujifilm | https://www.fujifilm.com/ |  | lehnt Abruf ab (403) |
-| TOYOTA MOTOR |  |  |  |
-| VALEO (Zuordnung offen) | https://www.valeo.com |  |  |
+| TOYOTA MOTOR |  |  | keine Website bekannt |
+| VALEO (Zuordnung offen) | https://www.valeo.com |  | mehrere Portale: workday |
 | Boston Scientific | http://www.bostonscientific.com |  | robots.txt verbietet Abruf |
 | OPPO MOBILE |  |  | keine Website bekannt |
 | FRAUNHOFER GES. |  |  | keine Website bekannt |
 | Safran | https://www.safran-group.com |  | robots.txt verbietet Abruf |
 | BECTON, DICKINSON | https://www.bdbiosciences.com |  | lehnt Abruf ab (403) |
 | Honeywell | https://www.honeywell.com/ |  | Karriereseite nicht gefunden |
-| Volvo | https://www.volvogroup.com/en/ |  |  |
 | Kyocera | https://americas.kyocera.com/ |  | Karriereseite nicht gefunden |
 | MEDTRONIC | https://www.medtronic.com |  | lehnt Abruf ab (403) |
 | SK | https://www.sk-inc.com/en/ |  | Karriereseite nicht gefunden |
 | CEA |  |  | keine Website bekannt |
 | ABB | https://global.abb/ |  | Website nicht erreichbar |
 | HYUNDAI MOTOR |  |  | keine Website bekannt |
-| Stellantis | https://www.stellantis.com/ |  |  |
-| Unilever | https://unilever.com |  |  |
-| TENCENT | https://www.tencent.com |  |  |
+| Stellantis | https://www.stellantis.com/ |  | Karriereseite nicht gefunden |
+| TENCENT | https://www.tencent.com |  | Karriereseite nicht gefunden |
 | ARAMCO | https://www.aramco.com |  | Karriereseite nicht gefunden |
-| DOW | https://www.dow.com |  | Ratenbegrenzung, später erneut |
+| DOW | https://www.dow.com |  | workday |
 | HONOR DEVICE |  |  | keine Website bekannt |
 | ASML | https://www.asml.com/ |  | Karriereseite nicht gefunden |
 | JFE | https://www.jfe-holdings.co.jp |  | Karriereseite nicht gefunden |
 | NTT, INC. | https://group.ntt |  | Karriereseite nicht gefunden |
-| Tata-Gruppe | http://www.tata.com |  |  |
 | BYD | https://www.bydglobal.com/ |  | Karriereseite nicht gefunden |
-| Snap Inc. | https://snap.com/ |  |  |
-| Thales Group | https://www.thalesgroup.com/ |  |  |
+| Snap Inc. | https://snap.com/ |  | Karriereseite nicht gefunden |
 | JT INTERNATIONAL |  |  | keine Website bekannt |
 | DAIKIN | https://www.daikin.com |  | Karriereseite nicht gefunden |
 | SAINT-GOBAIN | https://www.saint-gobain.com/ |  | lehnt Abruf ab (403) |
-| ZITIAO NETWORK |  |  |  |
+| ZITIAO NETWORK |  |  | keine Website bekannt |
 | Nestlé | https://www.nestle.com/ |  | lehnt Abruf ab (403) |
 | STMICROELECTRONICS | https://www.st.com |  | Website nicht erreichbar |
 | Fujitsu | https://global.fujitsu |  | Website nicht erreichbar |
 | NIPPON STEEL | https://www.nipponsteel.com |  | Karriereseite nicht gefunden |
 | DSM-FIRMENICH | https://www.dsm-firmenich.com |  | robots.txt verbietet Abruf |
 | SCHNEIDER | https://www.schneider-lekaren.sk |  | Karriereseite nicht gefunden |
-| Tetra Laval | http://www.tetralaval.com |  |  |
-| VOLKSWAGEN | https://www.vw.com |  |  |
-| ZF Friedrichshafen AG | http://www.zf.com/ |  |  |
+| Tetra Laval | http://www.tetralaval.com |  | lehnt Abruf ab (403) |
 | RENAULT GROUP | https://www.renaultgroup.com |  | Karriereseite nicht gefunden |
 | EVE ENERGY |  |  | keine Website bekannt |
 | Mitsubishi Heavy Industries | https://www.mhi.com |  | Karriereseite nicht gefunden |
 | SHIN-ETSU |  |  | keine Website bekannt |
-| VIVO MOBILE |  |  |  |
+| VIVO MOBILE |  |  | keine Website bekannt |
 | CHINA NATIONAL CHEMICAL |  |  | keine Website bekannt |
 | Edwards Lifesciences | http://www.EdwardsLifesciences.com/ |  | Karriereseite nicht gefunden |
 | Kubota | https://www.kubota.com/ |  | Karriereseite nicht gefunden |
@@ -412,4 +398,4 @@
 | smartrecruiters | 4 | 6 | Robert Bosch, Deutsche Vermögensberatung, ROBERT BOSCH GESELLSCHAFT MIT BESCHRAENKTER HAFTUNG |
 | softgarden | 1 |  | Elmos Semiconductor |
 | successfactors | 5 | 15 | Lidl, Hornbach, Vodafone Deutschland |
-| workday | 13 | 7 | Fielmann, Postbank, CMS |
+| workday | 14 | 7 | Fielmann, Postbank, CMS |
